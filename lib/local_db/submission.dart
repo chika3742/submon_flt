@@ -4,6 +4,7 @@ import "package:intl/intl.dart";
 
 const tableSubmission = "submission";
 
+// ここと
 const colId = "id";
 const colTitle = "title";
 const colDate = "date";
@@ -13,7 +14,20 @@ const colImportant = "important";
 const colRepeat = "repeat";
 const colColor = "color";
 
+// ここと
+const allCols = [
+  colId,
+  colTitle,
+  colDate,
+  colDetail,
+  colDone,
+  colImportant,
+  colRepeat,
+  colColor,
+];
+
 class Submission {
+  // ここと
   int? id;
   String title = "";
   DateTime? date = DateTime.now();
@@ -23,12 +37,13 @@ class Submission {
   Repeat? repeat = Repeat.none;
   Color? color = Colors.white;
 
-  var formatter = DateFormat("yyyy/MM/dd", 'ja_JP');
+  final _formatter = DateFormat("yyyy/MM/dd HH:mm", 'ja_JP');
 
   Map<String, Object?> toMap() {
     Map<String, Object?> map = {
+      // ここと
       colTitle: title,
-      colDate: formatter.format(date!),
+      colDate: _formatter.format(date!),
       colDetail: detail,
       colDone: done == true ? 1 : 0,
       colImportant: important == true ? 1 : 0,
@@ -44,9 +59,10 @@ class Submission {
   Submission();
 
   Submission.fromMap(Map<String, dynamic> map) {
+    // ここと
     id = map[colId];
     title = map[colTitle];
-    date = map[colDate] != null ? formatter.parse(map[colDate]) : null;
+    date = map[colDate] != null ? _formatter.parse(map[colDate]) : null;
     detail = map[colDetail];
     done = map[colDone] == 1;
     important = map[colImportant] == 1;
@@ -63,6 +79,7 @@ class SubmissionProvider {
 
   Future<void> open() async {
     db = await openDatabase("main.db", version: schemaVer, onCreate: (db, version) async {
+      // ここに追加
       await db.execute('''create table $tableSubmission (
         $colId integer primary key autoincrement,
         $colTitle text not null,
@@ -76,8 +93,8 @@ class SubmissionProvider {
     }, onUpgrade: _migrate, onDowngrade: onDatabaseDowngradeDelete);
   }
 
-  Future<Submission?> getSubmission(int id) async {
-    var maps = await db.query(tableSubmission, columns: [colId, colTitle, colDone], where: "$colId = ?", whereArgs: [id]);
+  Future<Submission?> getSubmission(int id, List<String> columns) async {
+    var maps = await db.query(tableSubmission, columns: columns, where: "$colId = ?", whereArgs: [id]);
 
     if (maps.isNotEmpty) {
       return Submission.fromMap(maps.first);

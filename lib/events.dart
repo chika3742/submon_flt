@@ -4,6 +4,10 @@ final eventBus = EventBus();
 
 class BottomNavDoubleClickEvent {
   int index;
-
   BottomNavDoubleClickEvent(this.index);
+}
+
+class SubmissionInserted {
+  int id;
+  SubmissionInserted(this.id);
 }

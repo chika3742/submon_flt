@@ -1,7 +1,8 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/components/submission_list.dart';
-import 'package:submon/pages/submission_edit_page.dart';
+import 'package:submon/events.dart';
+import 'package:submon/pages/submission_create_page.dart';
 
 class TabSubmissions extends StatefulWidget {
   const TabSubmissions({Key? key}) : super(key: key);
@@ -20,7 +21,7 @@ class _TabSubmissionsState extends State<TabSubmissions> {
           alignment: Alignment.bottomRight,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: OpenContainer(
+            child: OpenContainer<int>(
               useRootNavigator: true,
               closedElevation: 8,
               closedShape: const CircleBorder(),
@@ -30,7 +31,10 @@ class _TabSubmissionsState extends State<TabSubmissions> {
                 onPressed: callback,
               ),
               openBuilder: (context, callback) {
-                return const SubmissionEditPage();
+                return const SubmissionCreatePage();
+              },
+              onClosed: (result) {
+                if (result != null) eventBus.fire(SubmissionInserted(result));
               },
             )
           ),

@@ -22,7 +22,7 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
   Widget build(BuildContext context) {
     var item = widget.item;
     return Dismissible(
-      key: UniqueKey(),
+      key: ObjectKey(item.id),
       secondaryBackground: Container(
         color: Colors.redAccent,
         child: const Align(
@@ -112,7 +112,7 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
                         ),
                         const Spacer(),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          padding: const EdgeInsets.only(left: 8, right: 8, top: 4),
                           child: Row(
                             children: [
                               InkWell(
@@ -121,18 +121,22 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
                                     _weekView = !_weekView;
                                   });
                                 },
-                                child: Text.rich(
-                                  TextSpan(children: [
-                                    TextSpan(
-                                        text:
-                                        _weekView ? weekViewString[0] :"$remainingDate",
-                                        style: TextStyle(
-                                            fontSize: 36,
-                                            fontWeight: FontWeight.bold,
-                                            color: getRemainingDateColor(remainingDate))),
-                                    TextSpan(
-                                        text: _weekView ? weekViewString[1] : "日", style: const TextStyle(fontSize: 18))
-                                  ]),
+                                borderRadius: BorderRadius.circular(4),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                  child: Text.rich(
+                                    TextSpan(children: [
+                                      TextSpan(
+                                          text:
+                                          _weekView ? weekViewString[0] :"$remainingDate",
+                                          style: TextStyle(
+                                              fontSize: 36,
+                                              fontWeight: FontWeight.bold,
+                                              color: getRemainingDateColor(remainingDate))),
+                                      TextSpan(
+                                          text: _weekView ? weekViewString[1] : "日", style: const TextStyle(fontSize: 18))
+                                    ]),
+                                  ),
                                 ),
                               ),
                               const SizedBox(
@@ -178,7 +182,7 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
               ),
             );
           },
-          openBuilder: (context, cb) => const SubmissionDetailPage(),
+          openBuilder: (context, cb) => SubmissionDetailPage(widget.item.id!),
           transitionDuration: const Duration(milliseconds: 300),
         ),
         margin: const EdgeInsets.all(8),

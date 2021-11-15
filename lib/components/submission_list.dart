@@ -17,16 +17,14 @@ class _SubmissionListState extends State<SubmissionList> {
   late List<Submission> items;
 
   final _scrollController = ScrollController();
+  final _dataCols = [colId, colDate, colTitle, colColor, colDone];
 
   @override
   void initState() {
     super.initState();
 
     SubmissionProvider.use((provider) async {
-      var data = Submission();
-      data.title = "Tasdaditle";
-      // await provider.insert(data);
-      items = await provider.getSubmissions([colId, colDate, colTitle, colColor, colDone]);
+      items = await provider.getSubmissions(_dataCols);
       items.asMap().forEach((index, element) async {
         _listKey.currentState?.insertItem(index, duration: const Duration());
       });
@@ -36,6 +34,19 @@ class _SubmissionListState extends State<SubmissionList> {
       if (event.index == 0) {
         _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOutQuint);
       }
+    });
+
+    eventBus.on<SubmissionInserted>().listen((event) {
+      var prov = SubmissionProvider();
+      prov.open().then((value) {
+        return prov.getSubmission(event.id, _dataCols);
+      }).then((data) {
+        prov.close();
+        if (data != null) {
+          items.add(data);
+          _listKey.currentState?.insertItem(items.length - 1);
+        }
+      });
     });
   }
 
