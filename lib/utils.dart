@@ -8,13 +8,15 @@ String getWeekdayString(int weekday) {
   return weekdays[weekday];
 }
 
-String getRemainingString(int days) {
-  if (days < 7) {
-    return "$days 日";
-  } else if (days < 28) {
-    return "${(days / 7).floor()} 週間";
+List<String> getRemainingString(Duration diff, bool weekView) {
+  if (diff.inDays == 0) {
+    return "${diff.inHours} 時間".split(" ");
+  } else if (diff.inDays < 7 || !weekView) {
+    return "${diff.inDays} 日".split(" ");
+  } else if (diff.inDays < 28) {
+    return "${(diff.inDays / 7).floor()} 週間".split(" ");
   } else {
-    return "${(days / 28).floor()} ヶ月";
+    return "${(diff.inDays / 28).floor()} ヶ月".split(" ");
   }
 }
 
@@ -36,4 +38,13 @@ void pushPage(BuildContext context, Widget page) {
     route = MaterialPageRoute(builder: (settings) => page);
   }
   Navigator.of(context, rootNavigator: true).push(route);
+}
+
+void showSnackBar(BuildContext context, String text, {Duration duration = const Duration(seconds: 5), SnackBarAction? action}) {
+  ScaffoldMessenger.maybeOf(context)?.showSnackBar(SnackBar(
+    behavior: SnackBarBehavior.floating,
+    content: Text(text),
+    duration: duration,
+    action: action,
+  ));
 }

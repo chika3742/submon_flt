@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:submon/components/submission_list.dart';
 
 class DoneSubmissionsPage extends StatefulWidget {
   const DoneSubmissionsPage({Key? key}) : super(key: key);
@@ -14,6 +15,6 @@ class _DoneSubmissionsPageState extends State<DoneSubmissionsPage> {
       appBar: AppBar(
         title: const Text('完了済みの提出物'),
       ),
-      body: Container());
+      body: const SubmissionList(null, done: true));
   }
 }

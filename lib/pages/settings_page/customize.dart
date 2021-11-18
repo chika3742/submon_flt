@@ -10,6 +10,8 @@ class SettingCustomize extends StatefulWidget {
 class _SettingCustomizeState extends State<SettingCustomize> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return const Center(
+      child: Text("Not implemented yet"),
+    );
   }
 }

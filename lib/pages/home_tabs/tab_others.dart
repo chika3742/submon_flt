@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:settings_ui/settings_ui.dart';
 import 'package:submon/pages/done_submissions_page.dart';
 import 'package:submon/pages/settings_page.dart';
 import 'package:submon/pages/settings_page/customize.dart';
@@ -20,29 +20,35 @@ class TabOthers extends StatefulWidget {
 class _TabOthersState extends State<TabOthers> {
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        ListTile(
-          leading: const Icon(Icons.check),
-          title: const Text("完了済みの提出物"),
-          onTap: () { _pushPage(const DoneSubmissionsPage()); },
-        ),
-        ListTile(
-          leading: const Icon(Icons.auto_fix_high),
-          title: const Text("カスタマイズ設定"),
-          onTap: () { _pushPage(const SettingsPage("カスタマイズ設定", page: SettingCustomize())); },
-        ),
-        ListTile(
-          leading: const Icon(Icons.settings),
-          title: const Text("機能設定"),
-          onTap: () { _pushPage(const SettingsPage("機能設定", page: SettingFunctions())); },
-        ),
-        ListTile(
-          leading: const Icon(Icons.info),
-          title: const Text("全般"),
-          onTap: () { _pushPage(const SettingsPage("全般", page: SettingGeneral())); },
-        ),
-
+    return SettingsList(
+      contentPadding: !Platform.isIOS && !Platform.isMacOS ? const EdgeInsets.only(top: 16) : null,
+      backgroundColor: Theme.of(context).canvasColor,
+      sections: [
+        SettingsSection(
+          title: "Have a nice day",
+          tiles: [
+            SettingsTile(
+              title: "完了済みの提出物",
+              leading: const Icon(Icons.check),
+              onPressed: (context) { _pushPage(const DoneSubmissionsPage()); },
+            ),
+            SettingsTile(
+              title: "カスタマイズ設定",
+              leading: const Icon(Icons.auto_fix_high),
+              onPressed: (context) { _pushPage(const SettingsPage("カスタマイズ設定", page: SettingCustomize())); },
+            ),
+            SettingsTile(
+              title: "機能設定",
+              leading: const Icon(Icons.settings),
+              onPressed: (context) { _pushPage(const SettingsPage("機能設定", page: SettingFunctions())); },
+            ),
+            SettingsTile(
+              title: "全般",
+              leading: const Icon(Icons.info),
+              onPressed: (context) { _pushPage(const SettingsPage("全般", page: SettingGeneral())); },
+            ),
+          ],
+        )
       ],
     );
   }

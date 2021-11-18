@@ -1,5 +1,6 @@
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:submon/events.dart';
 import 'package:submon/pages/home_tabs/tab_memorize_card.dart';
 import 'package:submon/pages/home_tabs/tab_others.dart';
@@ -17,9 +18,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
+  final _eventBus = EventBus();
   var tabIndex = 0;
 
-  static const _bottomNavigationItems = [
+  List<BottomNavigationBarItem> _bottomNavigationItems() => const [
     BottomNavigationBarItem(
       icon: Icon(Icons.home),
       label: "提出物",
@@ -38,18 +40,25 @@ class _HomePageState extends State<HomePage> {
     ),
   ];
 
-  var pages = [
-    const TabSubmissions(),
-    const TabTimetable(),
-    const TabMemorizeCard(),
-    const TabOthers(),
-  ];
+  List<Widget> pages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    pages = [
+      TabSubmissions(_eventBus),
+      const TabTimetable(),
+      const TabMemorizeCard(),
+      const TabOthers(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Submon"),
+    return PlatformScaffold(
+      key: const ObjectKey(0),
+      appBar: PlatformAppBar(
+        title: Text(_bottomNavigationItems()[tabIndex].label!),
       ),
       body: SafeArea(
         child: Navigator(
@@ -59,20 +68,20 @@ class _HomePageState extends State<HomePage> {
           },
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavBar: PlatformNavBar(
         currentIndex: tabIndex,
-        items: _bottomNavigationItems,
-        onTap: onBottomNavTap,
+        items: _bottomNavigationItems(),
+        itemChanged: onBottomNavTap,
       ),
     );
   }
 
   void onBottomNavTap(int index) {
     if (tabIndex == index) {
-      eventBus.fire(BottomNavDoubleClickEvent(index));
+      _eventBus.fire(BottomNavDoubleClickEvent(index));
       return;
     }
-    _navigatorKey.currentState?.push(FadeThroughPageRoute(pages[index]));
+    _navigatorKey.currentState?.pushReplacement(FadeThroughPageRoute(pages[index]));
     setState(() {
       tabIndex = index;
     });

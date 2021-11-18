@@ -26,6 +26,23 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.submissionId != null) {
+      SubmissionProvider.use((provider) {
+        provider.getSubmission(widget.submissionId!, allCols).then((data) {
+          setState(() {
+            _titleController.text = data!.title;
+            _detailController.text = data.detail;
+            _date = data.date!;
+            _color = data.color!;
+          });
+        });
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
@@ -168,6 +185,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
 
       dynamic result;
       if (widget.submissionId != null) {
+        await provider.update(data);
         result = true;
       } else {
         result = (await provider.insert(data)).id;

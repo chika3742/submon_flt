@@ -1,15 +1,15 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:submon/components/formatted_date_remaining.dart';
 import 'package:submon/local_db/submission.dart';
 import 'package:submon/pages/submission_detail_page.dart';
 import 'package:submon/utils.dart';
 
 class SubmissionListItem extends StatefulWidget {
-  const SubmissionListItem(this.item, {Key? key, this.onDone, this.onDelete, this.onToggleImportant}) : super(key: key);
+  const SubmissionListItem(this.item, {Key? key, this.onDone, this.onDelete}) : super(key: key);
   final Submission item;
   final Function? onDone;
   final Function? onDelete;
-  final Function? onToggleImportant;
 
   @override
   _SubmissionListItemState createState() => _SubmissionListItemState();
@@ -17,12 +17,18 @@ class SubmissionListItem extends StatefulWidget {
 
 class _SubmissionListItemState extends State<SubmissionListItem> {
   var _weekView = true;
+  late Submission _item;
+
+  @override
+  void initState() {
+    super.initState();
+    _item = widget.item;
+  }
 
   @override
   Widget build(BuildContext context) {
-    var item = widget.item;
     return Dismissible(
-      key: ObjectKey(item.id),
+      key: ObjectKey(_item.id),
       secondaryBackground: Container(
         color: Colors.redAccent,
         child: const Align(
@@ -56,14 +62,13 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
             borderRadius: BorderRadius.all(Radius.circular(16))),
         child: OpenContainer(
           useRootNavigator: true,
+          routeSettings: const RouteSettings(name: "/submission/detail"),
           closedColor: Theme.of(context).cardColor,
           closedShape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(8))),
           closedBuilder: (context, callback) {
-            var remainingDate = item.date!.difference(DateTime.now()).inDays;
-            var weekViewString = getRemainingString(remainingDate).split(" ");
             return Material(
-              color: item.color!.withOpacity(0.2),
+              color: _item.color!.withOpacity(0.2),
               child: InkWell(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,15 +98,15 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
                                   child: Text.rich(
                                     TextSpan(children: [
                                       TextSpan(
-                                          text: "${item.date!.month} / ",
+                                          text: "${_item.date!.month} / ",
                                           style: const TextStyle(fontSize: 20)),
                                       TextSpan(
-                                          text: "${item.date!.day}",
+                                          text: "${_item.date!.day}",
                                           style: const TextStyle(
                                               fontSize: 36,
                                               fontWeight: FontWeight.bold)),
                                       TextSpan(
-                                          text: " (${getWeekdayString(item.date!.weekday - 1)})",
+                                          text: " (${getWeekdayString(_item.date!.weekday - 1)})",
                                           style: const TextStyle(fontSize: 20)),
                                     ]),
                                   ),
@@ -122,22 +127,7 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
                                   });
                                 },
                                 borderRadius: BorderRadius.circular(4),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                                  child: Text.rich(
-                                    TextSpan(children: [
-                                      TextSpan(
-                                          text:
-                                          _weekView ? weekViewString[0] :"$remainingDate",
-                                          style: TextStyle(
-                                              fontSize: 36,
-                                              fontWeight: FontWeight.bold,
-                                              color: getRemainingDateColor(remainingDate))),
-                                      TextSpan(
-                                          text: _weekView ? weekViewString[1] : "日", style: const TextStyle(fontSize: 18))
-                                    ]),
-                                  ),
-                                ),
+                                child: FormattedDateRemaining(_item.date!.difference(DateTime.now()), weekView: _weekView),
                               ),
                               const SizedBox(
                                 width: 8,
@@ -155,7 +145,7 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
                           child: Padding(
                             padding: const EdgeInsets.only(left: 8, bottom: 8, right: 8),
                             child: Text(
-                              item.title,
+                              _item.title,
                               style: const TextStyle(
                                   fontSize: 22, fontWeight: FontWeight.bold),
                               softWrap: false,
@@ -165,11 +155,12 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
                         ),
                         IconButton(
                           icon: Icon(
-                            item.important ? Icons.star : Icons.star_border,
-                            color: item.important ? Colors.orange : null,
+                            _item.important ? Icons.star : Icons.star_border,
+                            color: _item.important ? Colors.orange : null,
                           ),
+                          splashRadius: 22,
                           onPressed: () {
-                            widget.onToggleImportant?.call();
+                            toggleImportant();
                           },
                         )
                       ],
@@ -182,11 +173,29 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
               ),
             );
           },
+          onClosed: (result) {
+            SubmissionProvider.use((provider) {
+              provider.getSubmission(_item.id!, allCols).then((value) {
+                setState(() {
+                  _item = value!;
+                });
+              });
+            });
+          },
           openBuilder: (context, cb) => SubmissionDetailPage(widget.item.id!),
           transitionDuration: const Duration(milliseconds: 300),
         ),
         margin: const EdgeInsets.all(8),
       ),
     );
+  }
+
+  void toggleImportant() {
+    setState(() {
+      _item.important = !_item.important;
+    });
+    SubmissionProvider.use((provider) {
+      provider.update(_item);
+    });
   }
 }

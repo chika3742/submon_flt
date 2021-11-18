@@ -1,22 +1,26 @@
 import 'package:animations/animations.dart';
+import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/components/submission_list.dart';
 import 'package:submon/events.dart';
 import 'package:submon/pages/submission_create_page.dart';
 
 class TabSubmissions extends StatefulWidget {
-  const TabSubmissions({Key? key}) : super(key: key);
+  const TabSubmissions(this.eventBus, {Key? key}) : super(key: key);
+
+  final EventBus eventBus;
 
   @override
   _TabSubmissionsState createState() => _TabSubmissionsState();
 }
 
 class _TabSubmissionsState extends State<TabSubmissions> {
+
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        const SubmissionList(),
+        SubmissionList(widget.eventBus),
         Align(
           alignment: Alignment.bottomRight,
           child: Padding(
@@ -34,7 +38,7 @@ class _TabSubmissionsState extends State<TabSubmissions> {
                 return const SubmissionCreatePage();
               },
               onClosed: (result) {
-                if (result != null) eventBus.fire(SubmissionInserted(result));
+                if (result != null) widget.eventBus.fire(SubmissionInserted(result));
               },
             )
           ),
