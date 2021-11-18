@@ -31,7 +31,7 @@ class Submission {
   int? id;
   String title = "";
   DateTime? date = DateTime.now();
-  String? detail = "";
+  String detail = "";
   bool done = false;
   bool important = false;
   Repeat? repeat = Repeat.none;
@@ -63,7 +63,7 @@ class Submission {
     id = map[colId];
     title = map[colTitle];
     date = map[colDate] != null ? _formatter.parse(map[colDate]) : null;
-    detail = map[colDetail];
+    if (map[colDetail] != null) detail = map[colDetail];
     done = map[colDone] == 1;
     important = map[colImportant] == 1;
     color = map[colColor] != null ? Color(map[colColor]) : null;
@@ -103,7 +103,7 @@ class SubmissionProvider {
     }
   }
 
-  Future<List<Submission>> getSubmissions(List<String> columns, [String? where, List<dynamic>? whereArgs]) async {
+  Future<List<Submission>> getSubmissions(List<String> columns, {String? where, List<dynamic>? whereArgs}) async {
     var maps = await db.query(tableSubmission, columns: columns, where: where, whereArgs: whereArgs);
     return maps.map((e) => Submission.fromMap(e)).toList();
   }
@@ -113,8 +113,12 @@ class SubmissionProvider {
     return data;
   }
 
-  Future delete(int id) async {
+  Future<int> delete(int id) async {
     return await db.delete(tableSubmission, where: "$colId = ?", whereArgs: [id]);
+  }
+
+  Future<int> update(Submission data) async {
+    return await db.update(tableSubmission, data.toMap(), where: "$colId = ?", whereArgs: [data.id]);
   }
 
   static use(dynamic Function(SubmissionProvider provider) fn) async {
