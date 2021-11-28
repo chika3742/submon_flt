@@ -18,8 +18,8 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
   @override
   void initState() {
     super.initState();
-    SubmissionProvider.use((provider) {
-      provider.getSubmission(widget.submissionId, [colTitle, colDate, colDetail]).then((value) {
+    SubmissionProvider().use((provider) {
+      provider.get(widget.submissionId).then((value) {
         setState(() {
           item = value;
         });
@@ -36,9 +36,10 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
-              await Navigator.pushNamed(context, "/submission/edit", arguments: {"submissionId": widget.submissionId});
-              SubmissionProvider.use((provider) {
-                provider.getSubmission(widget.submissionId, [colTitle, colDate, colDetail]).then((value) {
+              await Navigator.pushNamed(context, "/submission/edit",
+                  arguments: {"submissionId": widget.submissionId});
+              SubmissionProvider().use((provider) {
+                provider.get(widget.submissionId).then((value) {
                   setState(() {
                     item = value;
                   });

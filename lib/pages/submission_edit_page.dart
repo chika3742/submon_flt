@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:submon/components/submission_editor.dart';
 
 class SubmissionEditPage extends StatelessWidget {
-  const SubmissionEditPage({Key? key}) : super(key: key);
+  const SubmissionEditPage(this.id, {Key? key}) : super(key: key);
+
+  final int id;
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +13,7 @@ class SubmissionEditPage extends StatelessWidget {
           title: const Text('編集'),
         ),
         body: WillPopScope(
-          child: SubmissionEditor(submissionId: (ModalRoute.of(context)!.settings.arguments as dynamic)["submissionId"]),
+          child: SubmissionEditor(submissionId: id),
           onWillPop: () async {
             var focusScopeNode = FocusScope.of(context);
             if (focusScopeNode.focusedChild?.hasFocus == true) {
