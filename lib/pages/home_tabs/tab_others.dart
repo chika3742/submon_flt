@@ -2,13 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
-import 'package:submon/pages/done_submissions_page.dart';
-import 'package:submon/pages/settings_page.dart';
-import 'package:submon/pages/settings_page/customize.dart';
-import 'package:submon/pages/settings_page/functions.dart';
-import 'package:submon/pages/settings_page/general.dart';
 
-import '../../utils.dart';
+import '../../utils/utils.dart';
 
 class TabOthers extends StatefulWidget {
   const TabOthers({Key? key}) : super(key: key);
@@ -30,22 +25,33 @@ class _TabOthersState extends State<TabOthers> {
             SettingsTile(
               title: "完了済みの提出物",
               leading: const Icon(Icons.check),
-              onPressed: (context) { _pushPage(const DoneSubmissionsPage()); },
+              onPressed: (context) {
+                Navigator.of(context, rootNavigator: true).pushNamed("/done");
+              },
             ),
             SettingsTile(
               title: "カスタマイズ設定",
               leading: const Icon(Icons.auto_fix_high),
-              onPressed: (context) { _pushPage(const SettingsPage("カスタマイズ設定", page: SettingCustomize())); },
+              onPressed: (context) {
+                Navigator.of(context, rootNavigator: true)
+                    .pushNamed("/settings/customize");
+              },
             ),
             SettingsTile(
               title: "機能設定",
               leading: const Icon(Icons.settings),
-              onPressed: (context) { _pushPage(const SettingsPage("機能設定", page: SettingFunctions())); },
+              onPressed: (context) {
+                Navigator.of(context, rootNavigator: true)
+                    .pushNamed("/settings/functions");
+              },
             ),
             SettingsTile(
               title: "全般",
               leading: const Icon(Icons.info),
-              onPressed: (context) { _pushPage(const SettingsPage("全般", page: SettingGeneral())); },
+              onPressed: (context) {
+                Navigator.of(context, rootNavigator: true)
+                    .pushNamed("/settings/general");
+              },
             ),
           ],
         )

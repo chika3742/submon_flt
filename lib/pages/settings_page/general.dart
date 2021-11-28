@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:submon/browser.dart';
+import 'package:submon/local_db/shared_prefs.dart';
 
 class SettingGeneral extends StatefulWidget {
   const SettingGeneral({Key? key}) : super(key: key);
@@ -14,6 +16,7 @@ class SettingGeneral extends StatefulWidget {
 
 class _SettingGeneralState extends State<SettingGeneral> {
   String _version = "取得中";
+  bool? _analyticsEnabled;
 
   @override
   void initState() {
@@ -22,6 +25,9 @@ class _SettingGeneralState extends State<SettingGeneral> {
       setState(() {
         _version = info.version;
       });
+    });
+    SharedPrefs.use((prefs) {
+      _analyticsEnabled = prefs.analyticsEnabled;
     });
   }
 
@@ -44,13 +50,23 @@ class _SettingGeneralState extends State<SettingGeneral> {
                 openChangelog();
               },
             ),
-            SettingsTile.switchTile(
-              title: "ユーザー使用状況の収集を許可",
-              switchValue: false,
-              onToggle: (value) {
-
-              },
-            ),
+            if (_analyticsEnabled != null)
+              SettingsTile.switchTile(
+                title: "ユーザー使用状況の収集を許可",
+                subtitle: "個人が特定できないよう加工された統計情報の収集を許可します。",
+                subtitleMaxLines: 3,
+                switchValue: _analyticsEnabled,
+                onToggle: (value) {
+                  setState(() {
+                    _analyticsEnabled = value;
+                  });
+                  SharedPrefs.use((prefs) {
+                    prefs.analyticsEnabled = value;
+                  });
+                  FirebaseAnalytics.instance
+                      .setAnalyticsCollectionEnabled(value);
+                },
+              ),
           ],
         ),
         SettingsSection(

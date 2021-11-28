@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:submon/components/formatted_date_remaining.dart';
 import 'package:submon/local_db/submission.dart';
 import 'package:submon/pages/submission_detail_page.dart';
-import 'package:submon/utils.dart';
+import 'package:submon/utils/ui.dart';
 
 class SubmissionListItem extends StatefulWidget {
   const SubmissionListItem(this.item, {Key? key, this.onDone, this.onDelete}) : super(key: key);
@@ -68,7 +68,7 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
               borderRadius: BorderRadius.all(Radius.circular(8))),
           closedBuilder: (context, callback) {
             return Material(
-              color: _item.color!.withOpacity(0.2),
+              color: _item.color.withOpacity(0.2),
               child: InkWell(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,8 +174,8 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
             );
           },
           onClosed: (result) {
-            SubmissionProvider.use((provider) {
-              provider.getSubmission(_item.id!, allCols).then((value) {
+            SubmissionProvider().use((provider) {
+              provider.get(_item.id!).then((value) {
                 setState(() {
                   _item = value!;
                 });
@@ -194,7 +194,7 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
     setState(() {
       _item.important = !_item.important;
     });
-    SubmissionProvider.use((provider) {
+    SubmissionProvider().use((provider) {
       provider.update(_item);
     });
   }

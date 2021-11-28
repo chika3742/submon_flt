@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/components/submission_list_item.dart';
 import 'package:submon/events.dart';
+import 'package:submon/local_db/shared_prefs.dart';
 import 'package:submon/local_db/submission.dart';
-import 'package:submon/utils.dart';
+import 'package:submon/utils/ui.dart';
 
 class SubmissionList extends StatefulWidget {
   const SubmissionList(this.eventBus, {Key? key, this.done = false}) : super(key: key);
@@ -24,17 +26,20 @@ class _SubmissionListState extends State<SubmissionList> {
   StreamSubscription? _stream1;
   StreamSubscription? _stream2;
 
+  final AudioCache _audioCache = AudioCache();
+  bool? _enableSE;
+
   final _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
 
-    SubmissionProvider.use((provider) async {
+    SubmissionProvider().use((provider) async {
       if (!widget.done) {
-        items = await provider.getSubmissions(allCols, where: "$colDone = 0");
+        items = await provider.getList(where: "$colDone = 0");
       } else {
-        items = await provider.getSubmissions(allCols, where: "$colDone = 1");
+        items = await provider.getList(where: "$colDone = 1");
       }
       setState(() {
         items?.asMap().forEach((index, element) async {
@@ -50,18 +55,27 @@ class _SubmissionListState extends State<SubmissionList> {
     });
 
     _stream2 = widget.eventBus?.on<SubmissionInserted>().listen((event) {
-      SubmissionProvider.use((provider) async {
+      SubmissionProvider().use((provider) async {
         if (!provider.db.isOpen) return;
-        var data = await provider.getSubmission(event.id, allCols);
+        var data = await provider.get(event.id);
         if (data != null) {
           setState(() {
             items!.add(data);
           });
           _listKey.currentState?.insertItem(items!.length - 1);
-          _scrollController.animateTo(_scrollController.position.maxScrollExtent, duration: const Duration(milliseconds: 300), curve: Curves.easeOutQuint);
+          _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutQuint);
         }
       });
     });
+
+    SharedPrefs.use((prefs) {
+      _enableSE = prefs.enableSE;
+    });
+
+    _audioCache.load("audio/decision28.mp3");
   }
 
   @override
@@ -101,15 +115,19 @@ class _SubmissionListState extends State<SubmissionList> {
 
   void checkDone(int index) {
     var item = items![index];
-    SubmissionProvider.use((provider) async{
+    SubmissionProvider().use((provider) async {
       item.done = !widget.done;
       provider.update(item);
       setState(() {
         items!.removeAt(index);
-        _listKey.currentState?.removeItem(index, (context, animation) => Container(), duration: const Duration(milliseconds: 1));
+        _listKey.currentState?.removeItem(
+            index, (context, animation) => Container(),
+            duration: const Duration(milliseconds: 1));
       });
     });
 
+    if (!widget.done && _enableSE == true)
+      _audioCache.play("audio/decision28.mp3");
     showSnackBar(context, !widget.done ? "完了にしました" : "完了を外しました", action: SnackBarAction(
       label: "元に戻す",
       textColor: Colors.pinkAccent,
@@ -123,17 +141,17 @@ class _SubmissionListState extends State<SubmissionList> {
         } catch (e) {
           print(e);
         }
-        SubmissionProvider.use((provider) {
-          item.done = !item.done;
-          provider.update(item);
-        });
+        SubmissionProvider().use((provider) {
+              item.done = !item.done;
+              provider.update(item);
+            });
       },
     ));
   }
 
   void delete(int index) {
     var item = items![index];
-    SubmissionProvider.use((provider) async{
+    SubmissionProvider().use((provider) async {
       provider.delete(item.id!);
     });
     try {
@@ -151,9 +169,9 @@ class _SubmissionListState extends State<SubmissionList> {
         setState(() {
           items!.insert(index, item);
           _listKey.currentState?.insertItem(index);
-          SubmissionProvider.use((provider) {
-            provider.insert(item);
-          });
+          SubmissionProvider().use((provider) {
+                provider.insert(item);
+              });
         });
       },
     ));

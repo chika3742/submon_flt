@@ -29,13 +29,13 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
   void initState() {
     super.initState();
     if (widget.submissionId != null) {
-      SubmissionProvider.use((provider) {
-        provider.getSubmission(widget.submissionId!, allCols).then((data) {
+      SubmissionProvider().use((provider) {
+        provider.get(widget.submissionId!).then((data) {
           setState(() {
             _titleController.text = data!.title;
             _detailController.text = data.detail;
             _date = data.date!;
-            _color = data.color!;
+            _color = data.color;
           });
         });
       });
@@ -171,10 +171,10 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
   }
 
   void save() {
-    SubmissionProvider.use((provider) async {
+    SubmissionProvider().use((provider) async {
       Submission data;
       if (widget.submissionId != null) {
-        data = (await provider.getSubmission(widget.submissionId!, allCols))!;
+        data = (await provider.get(widget.submissionId!))!;
       } else {
         data = Submission();
       }
