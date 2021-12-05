@@ -3,9 +3,13 @@ import 'package:intl/intl.dart';
 import 'package:submon/local_db/submission.dart';
 
 class SubmissionEditor extends StatefulWidget {
-  const SubmissionEditor({Key? key, this.submissionId}) : super(key: key);
+  const SubmissionEditor(
+      {Key? key, this.submissionId, this.initialTitle, this.initialDeadline})
+      : super(key: key);
 
   final int? submissionId;
+  final String? initialTitle;
+  final DateTime? initialDeadline;
 
   @override
   _SubmissionEditorState createState() => _SubmissionEditorState();
@@ -40,6 +44,9 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
         });
       });
     }
+    if (widget.initialTitle != null)
+      _titleController.text = widget.initialTitle!;
+    if (widget.initialDeadline != null) _date = widget.initialDeadline!;
   }
 
   @override
@@ -142,7 +149,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
       builder: (context) {
         return DatePickerDialog(
           initialDate: _date,
-          firstDate: DateTime.now(),
+          firstDate: DateTime(2020),
           lastDate: DateTime(2099),
         );
       },

@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:submon/local_db/shared_prefs.dart';
 import 'package:submon/utils/ui.dart';
 
@@ -47,8 +46,8 @@ class EmailLoginPageState extends State<EmailLoginPage>
 
   @override
   Widget build(BuildContext context) {
-    return PlatformScaffold(
-      appBar: PlatformAppBar(title: const Text("メールアドレスを使用")),
+    return Scaffold(
+      appBar: AppBar(title: const Text("メールアドレスを使用")),
       body: SafeArea(
         child: Stack(
           children: [
@@ -376,8 +375,8 @@ class _EmailRegisterPageState extends State<EmailRegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PlatformScaffold(
-      appBar: PlatformAppBar(
+    return Scaffold(
+      appBar: AppBar(
         title: const Text("新規登録"),
       ),
       body: Stack(

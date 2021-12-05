@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 
-const _channel = "submon/main";
+const channel = "submon/main";
 
 void openTermsOfUse() {
   _openWebPage("利用規約", "https://www.chikach.net/submon-terms/?nonav=1");
@@ -15,6 +15,6 @@ void openChangelog() {
 }
 
 void _openWebPage(String title, String url) {
-  var mc = const MethodChannel(_channel);
+  var mc = const MethodChannel(channel);
   mc.invokeMethod("openWebPage", {"title": title, "url": url});
 }

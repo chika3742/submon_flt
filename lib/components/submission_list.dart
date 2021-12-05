@@ -63,6 +63,7 @@ class _SubmissionListState extends State<SubmissionList> {
             items!.add(data);
           });
           _listKey.currentState?.insertItem(items!.length - 1);
+          await Future.delayed(const Duration(milliseconds: 300));
           _scrollController.animateTo(
               _scrollController.position.maxScrollExtent,
               duration: const Duration(milliseconds: 300),

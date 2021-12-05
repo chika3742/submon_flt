@@ -1,5 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 
+const schemaVer = 1;
+
 abstract class SqlProvider<T> {
   late Database db;
 
@@ -9,9 +11,6 @@ abstract class SqlProvider<T> {
   List<String> _getColumnNameList() {
     return columns().map((e) => e.fieldName).toList();
   }
-
-  /// Gets database schema version.
-  int schemaVersion();
 
   /// Gets name of table.
   String tableName();
@@ -28,7 +27,7 @@ abstract class SqlProvider<T> {
   /// Opens database.
   Future<void> open() async {
     db = await openDatabase("main.db",
-        version: schemaVersion(),
+        version: schemaVer,
         onUpgrade: migrate,
         onDowngrade: onDatabaseDowngradeDelete);
     var createSql = "create table if not exists ${tableName()} ( ";
@@ -87,6 +86,18 @@ abstract class SqlProvider<T> {
   Future<int> update(T data) async {
     return await db.update(tableName(), objToMap(data),
         where: "id = ?", whereArgs: [(data as dynamic).id]);
+  }
+
+  Future<void> deleteAll() async {
+    await db.execute("delete from ${tableName()}");
+  }
+
+  Future<void> setAll(List<Map<String, dynamic>> list) async {
+    await deleteAll();
+    await Future.forEach<Map<String, dynamic>>(list, (element) async {
+      await db.insert(tableName(), objToMap(mapToObj(element)),
+          conflictAlgorithm: ConflictAlgorithm.replace);
+    });
   }
 
   use(dynamic Function(SqlProvider<T> provider) fn) async {

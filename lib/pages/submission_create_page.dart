@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:submon/components/submission_editor.dart';
 
 class SubmissionCreatePage extends StatelessWidget {
-  const SubmissionCreatePage({Key? key}) : super(key: key);
+  const SubmissionCreatePage(
+      {Key? key, this.initialTitle, this.initialDeadline})
+      : super(key: key);
+
+  final String? initialTitle;
+  final DateTime? initialDeadline;
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +16,8 @@ class SubmissionCreatePage extends StatelessWidget {
           title: const Text('新規作成'),
         ),
         body: WillPopScope(
-          child: const SubmissionEditor(),
+          child: SubmissionEditor(
+              initialTitle: initialTitle, initialDeadline: initialDeadline),
           onWillPop: () async {
             var focusScopeNode = FocusScope.of(context);
             if (focusScopeNode.focusedChild?.hasFocus == true) {

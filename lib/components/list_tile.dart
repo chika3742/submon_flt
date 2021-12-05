@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 
-class SettingsPage extends StatelessWidget {
-  const SettingsPage(this.title, {Key? key, this.page}) : super(key: key);
+class SimpleListTile extends StatelessWidget {
+  const SimpleListTile({Key? key, required this.title, this.onTap})
+      : super(key: key);
 
-  final Widget? page;
-  final String title;
+  final String? title;
+  final Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-        ),
-        body: page);
+    assert(title != null);
+    return ListTile(
+      title: Text(title!),
+      onTap: onTap,
+    );
   }
 }
 
@@ -24,8 +25,11 @@ class CategoryListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
+      child: Text(
+        title,
+        style: const TextStyle(color: Colors.pink),
+      ),
       padding: const EdgeInsets.only(left: 16, top: 16, right: 16, bottom: 4),
-      child: Text(title, style: const TextStyle(color: Colors.pinkAccent)));
+    );
   }
 }
-

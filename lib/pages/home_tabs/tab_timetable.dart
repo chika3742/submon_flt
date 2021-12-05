@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:submon/components/timetable.dart';
 import 'package:submon/local_db/shared_prefs.dart';
+import 'package:submon/local_db/timetable.dart' as db;
 
 class TabTimetable extends StatefulWidget {
-  const TabTimetable({key: Key}) : super(key: key);
+  const TabTimetable({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => TabTimetableState();
@@ -12,6 +13,7 @@ class TabTimetable extends StatefulWidget {
 class TabTimetableState extends State<TabTimetable> {
   var loading = false;
   bool? timetableBanner1Flag;
+  Map<int, db.Timetable>? table;
 
   @override
   void initState() {
@@ -19,7 +21,7 @@ class TabTimetableState extends State<TabTimetable> {
     getPref();
   }
 
-  void getPref() async {
+  void getPref() {
     SharedPrefs.use((prefs) {
       setState(() {
         timetableBanner1Flag = prefs.timetableBanner1Flag;
@@ -28,6 +30,7 @@ class TabTimetableState extends State<TabTimetable> {
   }
 
   var bannerKey = GlobalKey();
+  var tableKey = GlobalKey<TimetableState>();
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +72,9 @@ class TabTimetableState extends State<TabTimetable> {
                   ),
                 ),
               ),
-              const Timetable(),
+              Timetable(
+                key: tableKey,
+              ),
             ],
           ),
         ],
