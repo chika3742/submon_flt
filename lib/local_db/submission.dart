@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import "package:intl/intl.dart";
 import 'package:sqflite/sqflite.dart';
+import 'package:submon/firestore/firestore.dart';
 import 'package:submon/local_db/sql_provider.dart';
 
 const tableSubmission = "submission";
@@ -38,9 +39,6 @@ class Submission {
 
 class SubmissionProvider extends SqlProvider<Submission> {
   final _formatter = DateFormat("yyyy/MM/dd HH:mm", "ja_JP");
-
-  @override
-  int schemaVersion() => 1;
 
   @override
   String tableName() => "submission";
@@ -83,6 +81,24 @@ class SubmissionProvider extends SqlProvider<Submission> {
       colColor: data.color.value,
       colRepeat: data.repeat.index,
     };
+  }
+
+  @override
+  Future<int> delete(int id) {
+    FirestoreProvider.submission.delete(id.toString());
+    return super.delete(id);
+  }
+
+  @override
+  Future<Submission> insert(Submission data) {
+    FirestoreProvider.submission.set(data.id.toString(), objToMap(data));
+    return super.insert(data);
+  }
+
+  @override
+  Future<int> update(Submission data) {
+    FirestoreProvider.submission.set(data.id.toString(), objToMap(data));
+    return super.update(data);
   }
 
   @override

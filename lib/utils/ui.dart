@@ -155,3 +155,45 @@ class SelectSheetAction {
 
   SelectSheetAction(this.title, this.onPressed);
 }
+
+Future<dynamic> showRoundedBottomSheet({
+  BuildContext? context,
+  String? title,
+  List<Widget>? children,
+}) {
+  return showModalBottomSheet(
+    context: context!,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(8), topRight: Radius.circular(8))),
+    builder: (ctx) {
+      return Padding(
+        padding: MediaQuery.of(context).viewInsets,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              height: 4,
+              width: 40,
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).textTheme.bodyText1!.color,
+                  borderRadius: BorderRadius.circular(8)),
+            ),
+            Text(title!,
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: children!,
+              ),
+            )
+          ],
+        ),
+      );
+    },
+  );
+}

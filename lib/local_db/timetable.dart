@@ -11,6 +11,9 @@ class Timetable {
   String subject;
   String note;
 
+  static var undoList = <Map<int, Timetable>>[];
+  static var redoList = <Map<int, Timetable>>[];
+
   Timetable({
     this.id,
     this.subject = "",
@@ -28,9 +31,6 @@ class Timetable {
 }
 
 class TimetableProvider extends SqlProvider<Timetable> {
-  @override
-  int schemaVersion() => 1;
-
   @override
   String tableName() => tableTimetable;
 

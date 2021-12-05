@@ -14,9 +14,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:submon/browser.dart';
+import 'package:submon/components/hidable_progress_indicator.dart';
+import 'package:submon/twitter_sign_in.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
-import 'package:twitter_login/twitter_login.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key, this.initialCred, this.reAuth = false})
@@ -45,19 +46,14 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PlatformScaffold(
-        appBar: PlatformAppBar(
+    return Scaffold(
+        appBar: AppBar(
           title: const Text('ログイン / 新規登録'),
         ),
         body: SafeArea(
           child: Stack(
             children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                height: loading ? 5 : 0,
-                curve: Curves.easeOutQuint,
-                child: const LinearProgressIndicator(),
-              ),
+              HidableLinearProgressIndicator(show: loading),
               Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
@@ -69,15 +65,15 @@ class _SignInPageState extends State<SignInPage> {
                                 .bodyText1!
                                 .color)),
                     Row(
-                      children: [
-                        PlatformTextButton(
-                          child: const Text("利用規約",
+                      children: const [
+                        TextButton(
+                          child: Text("利用規約",
                               style: TextStyle(color: Colors.blueAccent)),
                           onPressed: openTermsOfUse,
                         ),
-                        const SizedBox(width: 16),
-                        PlatformTextButton(
-                          child: const Text("プライバシーポリシー",
+                        SizedBox(width: 16),
+                        TextButton(
+                          child: Text("プライバシーポリシー",
                               style: TextStyle(color: Colors.blueAccent)),
                           onPressed: openPrivacyPolicy,
                         ),
@@ -300,40 +296,57 @@ class _SignInPageState extends State<SignInPage> {
 
   // sign in with twitter
   Future<UserCredential?> signInWithTwitter() async {
-    // await TwitterSignIn(
-    //   apiKey: dotenv.env["TWITTER_API_KEY"]!,
-    //   apiSecret: dotenv.env["TWITTER_API_SECRET"]!,
-    //   redirectUri: "submon://",
-    // ).signIn();
-    //
-    // return null;
-    final twitterLogin = TwitterLogin(
-        apiKey: dotenv.env["TWITTER_API_KEY"]!,
-        apiSecretKey: dotenv.env["TWITTER_API_SECRET"]!,
-        redirectURI: "submon://");
+    var authResult = await TwitterSignIn(
+      apiKey: dotenv.env["TWITTER_API_KEY"]!,
+      apiSecret: dotenv.env["TWITTER_API_SECRET"]!,
+      redirectUri: "submon://",
+    ).signIn();
 
-    final authResult = await twitterLogin.login();
+    print(authResult);
 
-    if (authResult.status == TwitterLoginStatus.loggedIn) {
-      final cred = TwitterAuthProvider.credential(
-        accessToken: authResult.authToken!,
-        secret: authResult.authTokenSecret!,
-      );
+    final cred = TwitterAuthProvider.credential(
+      accessToken: authResult!.accessToken,
+      secret: authResult.accessTokenSecret,
+    );
 
-      try {
-        if (widget.reAuth) {
-          return await FirebaseAuth.instance.currentUser!
-              .reauthenticateWithCredential(cred);
-        } else {
-          return await FirebaseAuth.instance.signInWithCredential(cred);
-        }
-      } on FirebaseAuthException catch (e) {
-        handleCredentialError(e);
+    try {
+      if (widget.reAuth) {
+        return await FirebaseAuth.instance.currentUser!
+            .reauthenticateWithCredential(cred);
+      } else {
+        return await FirebaseAuth.instance.signInWithCredential(cred);
       }
-    } else if (authResult.status == TwitterLoginStatus.error) {
-      showSnackBar(context, "エラーが発生しました");
+    } on FirebaseAuthException catch (e) {
+      handleCredentialError(e);
     }
-    return null;
+
+    // final twitterLogin = TwitterLogin(
+    //     apiKey: dotenv.env["TWITTER_API_KEY"]!,
+    //     apiSecretKey: dotenv.env["TWITTER_API_SECRET"]!,
+    //     redirectURI: "submon://");
+    //
+    // final authResult = await twitterLogin.login();
+    //
+    // if (authResult.status == TwitterLoginStatus.loggedIn) {
+    //   final cred = TwitterAuthProvider.credential(
+    //     accessToken: authResult.authToken!,
+    //     secret: authResult.authTokenSecret!,
+    //   );
+    //
+    //   try {
+    //     if (widget.reAuth) {
+    //       return await FirebaseAuth.instance.currentUser!
+    //           .reauthenticateWithCredential(cred);
+    //     } else {
+    //       return await FirebaseAuth.instance.signInWithCredential(cred);
+    //     }
+    //   } on FirebaseAuthException catch (e) {
+    //     handleCredentialError(e);
+    //   }
+    // } else if (authResult.status == TwitterLoginStatus.error) {
+    //   showSnackBar(context, "エラーが発生しました");
+    // }
+    // return null;
   }
 
   void completeLogin(UserCredential? result) async {

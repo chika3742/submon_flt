@@ -1,29 +1,31 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:submon/components/open_modal_animation.dart';
+import 'package:submon/events.dart';
 import 'package:submon/local_db/shared_prefs.dart';
+import 'package:submon/local_db/timetable.dart' as db;
+import 'package:submon/pages/timetable_edit_page.dart';
 import 'package:submon/utils/ui.dart';
 
-import 'timetable_subject_select_page.dart';
+import '../pages/timetable_subject_select_page.dart';
 
 class Timetable extends StatefulWidget {
   const Timetable({
     Key? key,
     this.edit = false,
-    this.table,
-    this.onClose,
   }) : super(key: key);
 
   final bool edit;
-  final Map<int, dynamic>? table;
-  final Function(int, dynamic)? onClose;
 
   @override
-  State<Timetable> createState() => _TimetableState();
+  State<Timetable> createState() => TimetableState();
 }
 
-class _TimetableState extends State<Timetable> {
+class TimetableState extends State<Timetable> {
   int? timetableHour;
+  late Map<int, db.Timetable> table = {};
 
   @override
   void initState() {
@@ -31,6 +33,17 @@ class _TimetableState extends State<Timetable> {
     SharedPrefs.use((prefs) {
       setState(() {
         timetableHour = prefs.timetableHour;
+      });
+    });
+    getTable();
+  }
+
+  void getTable() {
+    db.TimetableProvider().use((provider) {
+      provider.getList().then((value) {
+        setState(() {
+          table = Map.fromIterables(value.map((e) => e.id!), value);
+        });
       });
     });
   }
@@ -46,7 +59,7 @@ class _TimetableState extends State<Timetable> {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: _buildRows(context),
+              children: _buildRows(),
             ),
           ),
         ),
@@ -83,7 +96,7 @@ class _TimetableState extends State<Timetable> {
     return widgets;
   }
 
-  List<Widget> _buildRows(BuildContext context) {
+  List<Widget> _buildRows() {
     var widgets = <Widget>[];
 
     if (timetableHour == null) return widgets;
@@ -108,18 +121,15 @@ class _TimetableState extends State<Timetable> {
       ));
 
       // 時間割
-      var weekday = DateTime.now().weekday;
       for (var index = 1; index <= timetableHour!; index++) {
         var key = GlobalKey();
-        var cell = widget.table?[getWholeIndex(youbi, index)];
+        var cell = table[getWholeIndex(youbi, index)];
         columnItems.add(Padding(
           padding: const EdgeInsets.all(3.0),
           child: GestureDetector(
             onTap: !widget.edit
                 ? () {
-                    if (widget.table != null &&
-                        widget.table!
-                            .containsKey(getWholeIndex(youbi, index))) {
+                    if (true) {
                       // void showSheet() {
                       //   showRoundedBottomSheet(
                       //       context: context,
@@ -138,14 +148,14 @@ class _TimetableState extends State<Timetable> {
                       //             SizedBox(width: 16),
                       //             FloatingActionButton(
                       //               child: Icon(Icons.edit),
-                      //               onPressed: () {
-                      //                 var ctrler = TextEditingController(text: cell.memo);
+                //               onPressed: () {
+                      //                 var controller = TextEditingController(text: cell.memo);
                       //                 showRoundedBottomSheet(
                       //                     context: context,
                       //                     title: "${cell.name} (${getWeekdayString(youbi)}曜$index限) メモ編集",
                       //                     children: [
-                      //                       TextFormField(
-                      //                         controller: ctrler,
+                //                       TextFormField(
+                      //                         controller: controller,
                       //                         decoration: InputDecoration(
                       //                           border: OutlineInputBorder(),
                       //                           labelText: "メモ",
@@ -157,15 +167,15 @@ class _TimetableState extends State<Timetable> {
                       //                           padding: const EdgeInsets.symmetric(vertical: 16.0),
                       //                           child: FloatingActionButton(
                       //                             child: Icon(Icons.check),
-                      //                             onPressed: () async {
-                      //                               MyHomePageState.timetable![(index - 1) * 6 + youbi]!.memo = ctrler.text;
+                //                             onPressed: () async {
+                      //                               MyHomePageState.timetable![(index - 1) * 6 + youbi]!.memo = controller.text;
                       //
                       //                               Navigator.pop(context);
                       //                               Navigator.pop(context);
                       //                               showSheet();
                       //
-                      //                               getCollection(Collection.timetable).doc("table").update({
-                      //                                 "${(index - 1) * 6 + youbi}.memo": ctrler.text
+                //                               getCollection(Collection.timetable).doc("table").update({
+                      //                                 "${(index - 1) * 6 + youbi}.memo": controller.text
                       //                               });
                       //                             },
                       //                           ),
@@ -186,55 +196,117 @@ class _TimetableState extends State<Timetable> {
                 : null,
             onLongPress: cell != null
                 ? () {
-                    createNewSubmission(context, youbi, cell.name);
+                    createNewSubmission(context, youbi, cell.subject);
                     Feedback.forLongPress(context);
                   }
                 : null,
-            child: OpenContainer<dynamic>(
-              tappable: widget.edit,
-              closedColor: Colors.green,
-              onClosed: (result) {
-                widget.onClose!(getWholeIndex(youbi, index), result);
-              },
-              closedShape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5)),
-              closedBuilder: (_, __) => Material(
-                color: weekday == youbi + 1 && !widget.edit
-                    ? Colors.orange
-                    : Colors.green,
-                borderRadius: BorderRadius.circular(5),
-                child: Container(
-                  key: key,
-                  padding: const EdgeInsets.all(8.0),
-                  height: 44,
-                  alignment: Alignment.center,
-                  child: Text(
-                    widget.table != null &&
-                            widget.table!
-                                .containsKey(getWholeIndex(youbi, index))
-                        ? widget.table![getWholeIndex(youbi, index)].name
-                        : "---",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                    ),
+            child: widget.edit
+                ? OpenContainer<dynamic>(
+                    // tappable: widget.edit,
+                    routeSettings:
+                        const RouteSettings(name: "/timetable/edit/select"),
+                    closedColor: Colors.green,
+                    onClosed: (result) {
+                      onSubjectSelected(result, youbi, index);
+                    },
+                    closedShape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5)),
+                    closedBuilder: (_, __) =>
+                        _buildTimetableCell(key, youbi, index),
+                    openBuilder: (context, callback) =>
+                        TimetableSubjectSelectPage(youbi, index),
+                  )
+                : OpenModalAnimatedContainer(
+                    context: context,
+                    tappable: cell != null,
+                    width: 500,
+                    height: 200,
+                    closedBuilder: (context) {
+                      return _buildTimetableCell(key, youbi, index);
+                    },
+                    openBuilder: (context) {
+                      return _NoteView(
+                          cell: cell!,
+                          weekday: youbi,
+                          index: index,
+                          createSubmission: createNewSubmission);
+                    },
                   ),
-                ),
-              ),
-              openBuilder: (context, callback) =>
-                  TimetableSubjectSelectPage(index, youbi),
-            ),
           ),
         ));
       }
 
-      widgets.add(IntrinsicWidth(
-        child: Column(
-          children: columnItems,
+      widgets.add(AnimatedSize(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutQuint,
+        child: IntrinsicWidth(
+          child: Column(
+            children: columnItems,
+          ),
         ),
       ));
     }
     return widgets;
+  }
+
+  Widget _buildTimetableCell(GlobalKey containerKey, int youbi, int index) {
+    var weekday = DateTime.now().weekday;
+    return Material(
+      color:
+          weekday == youbi + 1 && !widget.edit ? Colors.orange : Colors.green,
+      borderRadius: BorderRadius.circular(5),
+      child: Container(
+        key: containerKey,
+        padding: const EdgeInsets.all(8.0),
+        height: 44,
+        constraints: const BoxConstraints(minWidth: 50),
+        alignment: Alignment.center,
+        child: Text(
+          table.containsKey(getWholeIndex(youbi, index))
+              ? table[getWholeIndex(youbi, index)]!.subject
+              : "",
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void onSubjectSelected(dynamic result, int weekday, int index) {
+    updateUndoList();
+    if (result == FieldValue.unselect) {
+      table.remove(getWholeIndex(weekday, index));
+      db.TimetableProvider().use((provider) async {
+        await provider.delete(getWholeIndex(weekday, index));
+      });
+    } else if (result != null) {
+      table[getWholeIndex(weekday, index)] = db.Timetable(subject: result);
+
+      SharedPrefs.use((prefs) {
+        var history = prefs.timetableHistory;
+        if (history.contains(result)) {
+          history.remove(result);
+        }
+        history.insert(0, result);
+        if (history.length > 10) {
+          history = history.getRange(0, 10).toList();
+        }
+        prefs.timetableHistory = history;
+      });
+
+      db.TimetableProvider().use((provider) async {
+        await provider.insert(
+            db.Timetable(id: getWholeIndex(weekday, index), subject: result));
+      });
+    }
+  }
+
+  void updateUndoList() {
+    db.Timetable.undoList.insert(0, Map.from(table));
+    db.Timetable.redoList.clear();
+    eventBus.fire(UndoRedoUpdatedEvent());
   }
 
   int getWholeIndex(int youbi, int index) {
@@ -258,6 +330,133 @@ class _TimetableState extends State<Timetable> {
       "initialTitle": name,
       "initialDeadline": deadline,
     });
-    // TODO: これらの値の受け入れ実装
+  }
+}
+
+class _NoteView extends StatefulWidget {
+  const _NoteView(
+      {Key? key,
+      required this.cell,
+      required this.weekday,
+      required this.index,
+      required this.createSubmission})
+      : super(key: key);
+
+  final db.Timetable cell;
+  final int weekday;
+  final int index;
+  final Function(BuildContext context, int youbi, String name) createSubmission;
+
+  @override
+  _NoteViewState createState() => _NoteViewState();
+}
+
+class _NoteViewState extends State<_NoteView> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: Theme.of(context).canvasColor),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Material(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    splashRadius: 24,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("${widget.cell.subject} メモ",
+                          style: const TextStyle(fontSize: 18)),
+                      Text(
+                          "${getWeekdayString(widget.weekday)}曜日 ${widget.index}時間目",
+                          style: Theme.of(context).textTheme.caption),
+                    ],
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    splashRadius: 24,
+                    onPressed: () async {
+                      var controller =
+                          TextEditingController(text: widget.cell.note);
+                      var result = await showRoundedBottomSheet(
+                          context: context,
+                          title:
+                              "${widget.cell.subject} (${getWeekdayString(widget.weekday)}曜 ${widget.index}限) メモ編集",
+                          children: [
+                            TextFormField(
+                              controller: controller,
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: "メモ",
+                                suffixIcon: IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  onPressed: () {
+                                    controller.clear();
+                                  },
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: IconButton(
+                                  icon: const Icon(Icons.check),
+                                  splashRadius: 24,
+                                  onPressed: () async {
+                                    Navigator.pop(context, controller.text);
+                                  },
+                                ),
+                              ),
+                            )
+                          ]);
+                      if (result != null) {
+                        setState(() {
+                          widget.cell.note = result;
+                        });
+                        db.TimetableProvider().use((provider) {
+                          provider.update(widget.cell);
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 16.0, horizontal: 16.0),
+                child: Text(widget.cell.note.isNotEmpty
+                    ? widget.cell.note
+                    : "メモはありません"),
+              ),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: OutlinedButton(
+                  child: const Text("この時間割から提出物作成"),
+                  onPressed: () {
+                    widget.createSubmission(
+                        context, widget.weekday, widget.cell.subject);
+                  },
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

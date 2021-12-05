@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:event_bus/event_bus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,12 +5,15 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:submon/components/hidable_progress_indicator.dart';
 import 'package:submon/events.dart';
+import 'package:submon/firestore/firestore.dart';
 import 'package:submon/local_db/shared_prefs.dart';
 import 'package:submon/pages/home_tabs/tab_memorize_card.dart';
 import 'package:submon/pages/home_tabs/tab_others.dart';
 import 'package:submon/pages/home_tabs/tab_submissions.dart';
 import 'package:submon/pages/home_tabs/tab_timetable.dart';
+import 'package:submon/utils/firestore.dart';
 import 'package:submon/utils/ui.dart';
 
 import '../fade_through_page_route.dart';
@@ -28,77 +30,91 @@ class _HomePageState extends State<HomePage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
   final _eventBus = EventBus();
   var tabIndex = 0;
+  var _loading = false;
 
   List<BottomNavigationBarItem> _bottomNavigationItems() => const [
-    BottomNavigationBarItem(
-      icon: Icon(Icons.home),
-      label: "提出物",
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.table_chart_outlined),
-      label: "時間割表",
-    ),
-    BottomNavigationBarItem(
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: "提出物",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.table_chart_outlined),
+          label: "時間割表",
+        ),
+        BottomNavigationBarItem(
       icon: Icon(Icons.school),
-      label: "暗記カード",
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.more_horiz),
-      label: "その他",
-    ),
-  ];
+          label: "暗記カード",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.more_horiz),
+          label: "その他",
+        ),
+      ];
 
   List<Widget> pages = [];
+
+  List<List<ActionItem>> actions = [];
+
+  final timetableKey = GlobalKey<TabTimetableState>();
 
   @override
   void initState() {
     super.initState();
     initDynamicLinks();
+    fetchData();
     pages = [
       TabSubmissions(_eventBus),
-      TabTimetable(),
+      TabTimetable(key: timetableKey),
       const TabMemorizeCard(),
       const TabOthers(),
+    ];
+    actions = [
+      [],
+      [
+        ActionItem(Icons.edit, "編集", () async {
+          await Navigator.pushNamed(context, "/timetable/edit");
+          timetableKey.currentState?.setState(() {
+            timetableKey.currentState?.tableKey.currentState?.getTable();
+          });
+        })
+      ],
+      [],
+      [],
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    if (Platform.isIOS || Platform.isMacOS) {
-      return CupertinoPageScaffold(
-        navigationBar: CupertinoNavigationBar(
-            middle: Text(_bottomNavigationItems()[tabIndex].label!)),
-        child: CupertinoTabScaffold(
-          tabBar: CupertinoTabBar(
-            items: _bottomNavigationItems(),
-            currentIndex: tabIndex,
-            onTap: onBottomNavTap,
-          ),
-          tabBuilder: (ctx, index) {
-            return SafeArea(child: pages[index]);
-          },
-        ),
-      );
-    } else {
       return Scaffold(
         appBar: AppBar(
-          title: Text(_bottomNavigationItems()[tabIndex].label!),
-        ),
-        body: SafeArea(
-          child: Navigator(
-            key: _navigatorKey,
-            onGenerateRoute: (settings) {
-              return FadeThroughPageRoute(pages.first);
-            },
+        title: Text(_bottomNavigationItems()[tabIndex].label!),
+        actions: actions[tabIndex]
+            .map((e) => IconButton(
+                  icon: Icon(e.icon),
+                  onPressed: e.onPressed,
+                  splashRadius: 24,
+                ))
+            .toList(),
+      ),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Navigator(
+              key: _navigatorKey,
+              onGenerateRoute: (settings) {
+                return FadeThroughPageRoute(pages.first);
+              },
+            ),
           ),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: tabIndex,
-          items: _bottomNavigationItems(),
-          onTap: onBottomNavTap,
-        ),
-      );
-    }
+          HidableLinearProgressIndicator(show: _loading),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: tabIndex,
+        items: _bottomNavigationItems(),
+        onTap: onBottomNavTap,
+      ),
+    );
   }
 
   void onBottomNavTap(int index) {
@@ -171,4 +187,30 @@ class _HomePageState extends State<HomePage> {
     }
     Navigator.pop(context);
   }
+
+  void fetchData() async {
+    if (userDoc == null) return;
+    setState(() {
+      _loading = true;
+    });
+
+    var result = await FirestoreProvider.fetchData();
+
+    if (result) {
+      _navigatorKey.currentState
+          ?.pushReplacement(FadeThroughPageRoute(pages[tabIndex]));
+    }
+
+    setState(() {
+      _loading = false;
+    });
+  }
+}
+
+class ActionItem {
+  ActionItem(this.icon, this.title, this.onPressed);
+
+  final IconData icon;
+  final String title;
+  final void Function()? onPressed;
 }
