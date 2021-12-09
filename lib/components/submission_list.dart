@@ -4,13 +4,14 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/components/submission_list_item.dart';
+import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/db/submission.dart';
 import 'package:submon/events.dart';
-import 'package:submon/local_db/shared_prefs.dart';
-import 'package:submon/local_db/submission.dart';
 import 'package:submon/utils/ui.dart';
 
 class SubmissionList extends StatefulWidget {
-  const SubmissionList(this.eventBus, {Key? key, this.done = false}) : super(key: key);
+  const SubmissionList(this.eventBus, {Key? key, this.done = false})
+      : super(key: key);
 
   final EventBus? eventBus;
   final bool done;

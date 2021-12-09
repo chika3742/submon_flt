@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
-import 'package:submon/local_db/shared_prefs.dart';
+import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/pages/sign_in_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';

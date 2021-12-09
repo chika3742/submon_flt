@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:submon/components/timetable.dart';
+import 'package:submon/db/timetable.dart' as db;
 import 'package:submon/events.dart';
-import 'package:submon/local_db/timetable.dart' as db;
 
 class TimetableEditPage extends StatefulWidget {
   const TimetableEditPage({Key? key}) : super(key: key);

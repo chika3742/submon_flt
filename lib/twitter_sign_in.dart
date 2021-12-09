@@ -1,32 +1,51 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:submon/browser.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:submon/utils/ui.dart';
 
 class TwitterSignIn {
-  final String? apiKey;
-  final String? apiSecret;
-  final String? redirectUri;
+  final String apiKey;
+  final String apiSecret;
+  final String redirectUri;
+  final BuildContext context;
 
-  TwitterSignIn({this.apiKey, this.apiSecret, this.redirectUri});
+  TwitterSignIn(
+      {required this.apiKey,
+      required this.apiSecret,
+      required this.redirectUri,
+      required this.context});
 
   Future<TwitterAuthResult?> signIn() async {
-    var reqToken = await _getRequestToken();
-    launch("https://api.twitter.com/oauth/authorize?oauth_token=" +
-        reqToken!.oauthToken);
+    var modalShown = true;
+    showLoadingModal(context);
+    try {
+      var reqToken = await _getRequestToken();
 
-    var authResult = await waitForUri();
+      Navigator.of(context, rootNavigator: true).pop(); // pop modal loading
+      modalShown = false;
 
-    var result = await getAccessToken(authResult);
+      openCustomTabs("https://api.twitter.com/oauth/authorize?oauth_token=" +
+          reqToken!.oauthToken);
 
-    verifyToken(result!);
+      var authResult = await waitForUri();
 
-    return result;
+      var result = await getAccessToken(authResult);
+
+      return result;
+    } on SocketException catch (e) {
+      return TwitterAuthResult(errorMessage: "エラーが発生しました。インターネット接続をご確認ください。");
+    } catch (e) {
+      return TwitterAuthResult(errorMessage: "エラーが発生しました。");
+    } finally {
+      if (modalShown) Navigator.of(context, rootNavigator: true).pop();
+    }
   }
 
   Future<RequestTokenResult?> _getRequestToken() async {
@@ -81,38 +100,9 @@ class TwitterSignIn {
 
     var query = Uri.splitQueryString(result.body);
     return TwitterAuthResult(
-        query["oauth_token"]!, query["oauth_token_secret"]!);
-  }
-
-  Future<void> verifyToken(TwitterAuthResult auth) async {
-    var baseUri = Uri(
-        scheme: "https",
-        host: "api.twitter.com",
-        path: "/1.1/account/verify_credentials.json");
-    var params = {
-      "oauth_consumer_key": apiKey,
-      "oauth_token": auth.accessToken,
-      "oauth_nonce": _generateNonce(11),
-      "oauth_signature_method": "HMAC-SHA1",
-      "oauth_timestamp":
-          (DateTime.now().millisecondsSinceEpoch / 1000).toStringAsFixed(0),
-      "oauth_version": "1.0"
-    };
-
-    var signature =
-        "GET&${Uri.encodeComponent(baseUri.toString())}&${Uri.encodeComponent(_joinParamsWithAmpersand(params))}";
-
-    params["oauth_signature"] =
-        _generateSignature("$apiSecret&${auth.accessTokenSecret}", signature);
-
-    var headers = {
-      "User-Agent": "Submon/1.0",
-    };
-
-    var result = await http.get(baseUri.replace(queryParameters: params),
-        headers: headers);
-
-    print(result.body);
+      accessToken: query["oauth_token"]!,
+      accessTokenSecret: query["oauth_token_secret"]!,
+    );
   }
 
   String _joinParamsWithAmpersand(Map<String, String?> map) {
@@ -184,10 +174,12 @@ class AuthResult {
 }
 
 class TwitterAuthResult {
-  TwitterAuthResult(this.accessToken, this.accessTokenSecret);
+  TwitterAuthResult(
+      {this.accessToken, this.accessTokenSecret, this.errorMessage});
 
-  final String accessToken;
-  final String accessTokenSecret;
+  final String? accessToken;
+  final String? accessTokenSecret;
+  final String? errorMessage;
 
   @override
   String toString() {

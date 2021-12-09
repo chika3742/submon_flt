@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 class SimpleListTile extends StatelessWidget {
-  const SimpleListTile({Key? key, required this.title, this.onTap})
+  const SimpleListTile(
+      {Key? key, required this.title, this.onTap, this.leadingIcon})
       : super(key: key);
 
   final String? title;
+  final Widget? leadingIcon;
   final Function()? onTap;
 
   @override
@@ -13,6 +15,7 @@ class SimpleListTile extends StatelessWidget {
     return ListTile(
       title: Text(title!),
       onTap: onTap,
+      leading: leadingIcon,
     );
   }
 }

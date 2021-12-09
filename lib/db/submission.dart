@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import "package:intl/intl.dart";
 import 'package:sqflite/sqflite.dart';
+import 'package:submon/db/sql_provider.dart';
 import 'package:submon/firestore/firestore.dart';
-import 'package:submon/local_db/sql_provider.dart';
 
 const tableSubmission = "submission";
 

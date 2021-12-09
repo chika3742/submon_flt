@@ -1,5 +1,5 @@
 import 'package:sqflite_common/sqlite_api.dart';
-import 'package:submon/local_db/sql_provider.dart';
+import 'package:submon/db/sql_provider.dart';
 
 const tableTimetable = "timetable";
 const colId = "id";

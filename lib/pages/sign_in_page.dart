@@ -189,9 +189,6 @@ class _SignInPageState extends State<SignInPage> {
                             style: TextStyle(color: Colors.white)),
                         onPressed: !loading && !widget.reAuth
                             ? () async {
-                                setState(() {
-                                  loading = true;
-                                });
                                 var result = await signInWithTwitter();
 
                                 completeLogin(result);
@@ -216,8 +213,8 @@ class _SignInPageState extends State<SignInPage> {
                           "現在、ライブラリの不具合のためAndroidにおけるAppleログインの実装を見送っております。",
                           style: TextStyle(fontSize: 14)),
                     const SizedBox(height: 8),
-                    const Text(
-                        "現在、ライブラリの不具合のためTwitterログインは利用できません。以前までTwitterログインをご利用になられていた方は恐れ入りますが、しばらくの間は以前のアプリをご利用ください。"),
+                    // const Text(
+                    //     "現在、ライブラリの不具合のためTwitterログインは利用できません。以前までTwitterログインをご利用になられていた方は恐れ入りますが、しばらくの間は以前のアプリをご利用ください。"),
                   ],
                 ),
               ),
@@ -300,13 +297,21 @@ class _SignInPageState extends State<SignInPage> {
       apiKey: dotenv.env["TWITTER_API_KEY"]!,
       apiSecret: dotenv.env["TWITTER_API_SECRET"]!,
       redirectUri: "submon://",
+      context: context,
     ).signIn();
 
-    print(authResult);
+    if (authResult?.errorMessage != null) {
+      showSnackBar(context, authResult!.errorMessage!);
+      return null;
+    }
+
+    setState(() {
+      loading = true;
+    });
 
     final cred = TwitterAuthProvider.credential(
-      accessToken: authResult!.accessToken,
-      secret: authResult.accessTokenSecret,
+      accessToken: authResult!.accessToken!,
+      secret: authResult.accessTokenSecret!,
     );
 
     try {
@@ -319,34 +324,6 @@ class _SignInPageState extends State<SignInPage> {
     } on FirebaseAuthException catch (e) {
       handleCredentialError(e);
     }
-
-    // final twitterLogin = TwitterLogin(
-    //     apiKey: dotenv.env["TWITTER_API_KEY"]!,
-    //     apiSecretKey: dotenv.env["TWITTER_API_SECRET"]!,
-    //     redirectURI: "submon://");
-    //
-    // final authResult = await twitterLogin.login();
-    //
-    // if (authResult.status == TwitterLoginStatus.loggedIn) {
-    //   final cred = TwitterAuthProvider.credential(
-    //     accessToken: authResult.authToken!,
-    //     secret: authResult.authTokenSecret!,
-    //   );
-    //
-    //   try {
-    //     if (widget.reAuth) {
-    //       return await FirebaseAuth.instance.currentUser!
-    //           .reauthenticateWithCredential(cred);
-    //     } else {
-    //       return await FirebaseAuth.instance.signInWithCredential(cred);
-    //     }
-    //   } on FirebaseAuthException catch (e) {
-    //     handleCredentialError(e);
-    //   }
-    // } else if (authResult.status == TwitterLoginStatus.error) {
-    //   showSnackBar(context, "エラーが発生しました");
-    // }
-    // return null;
   }
 
   void completeLogin(UserCredential? result) async {

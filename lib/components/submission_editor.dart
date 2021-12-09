@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:submon/local_db/submission.dart';
+import 'package:submon/db/submission.dart';
 
 class SubmissionEditor extends StatefulWidget {
   const SubmissionEditor(

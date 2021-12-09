@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:submon/browser.dart';
-import 'package:submon/local_db/shared_prefs.dart';
+import 'package:submon/db/shared_prefs.dart';
 
 class SettingGeneral extends StatefulWidget {
   const SettingGeneral({Key? key}) : super(key: key);

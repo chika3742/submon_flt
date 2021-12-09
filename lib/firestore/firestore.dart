@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/db/sql_provider.dart';
+import 'package:submon/db/submission.dart';
+import 'package:submon/db/timetable.dart';
 import 'package:submon/events.dart';
-import 'package:submon/local_db/shared_prefs.dart';
-import 'package:submon/local_db/sql_provider.dart';
-import 'package:submon/local_db/submission.dart';
-import 'package:submon/local_db/timetable.dart';
 import 'package:submon/utils/firestore.dart';
 
 class FirestoreProvider {
