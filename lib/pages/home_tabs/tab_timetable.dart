@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:submon/components/timetable.dart';
-import 'package:submon/local_db/shared_prefs.dart';
-import 'package:submon/local_db/timetable.dart' as db;
+import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/db/timetable.dart' as db;
 
 class TabTimetable extends StatefulWidget {
   const TabTimetable({Key? key}) : super(key: key);

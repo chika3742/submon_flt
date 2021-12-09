@@ -1,7 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/components/formatted_date_remaining.dart';
-import 'package:submon/local_db/submission.dart';
+import 'package:submon/db/submission.dart';
 import 'package:submon/pages/submission_detail_page.dart';
 import 'package:submon/utils/ui.dart';
 

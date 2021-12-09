@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:submon/components/formatted_date_remaining.dart';
-import 'package:submon/local_db/submission.dart';
+import 'package:submon/db/submission.dart';
 
 class SubmissionDetailPage extends StatefulWidget {
   const SubmissionDetailPage(this.submissionId, {Key? key}) : super(key: key);

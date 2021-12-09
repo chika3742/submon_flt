@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:submon/components/list_tile.dart';
-import 'package:submon/local_db/shared_prefs.dart';
+import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/pages/timetable_edit_page.dart';
 import 'package:submon/shared_axis_page_route.dart';
 import 'package:submon/utils/ui.dart';
@@ -30,8 +30,33 @@ class _TimetableSubjectSelectPageState
       ),
       floatingActionButton: _showFab
           ? FloatingActionButton(
-              child: const Icon(Icons.add),
-              onPressed: () {},
+        child: const Icon(Icons.add),
+              onPressed: () {
+                var controller = TextEditingController();
+                showRoundedBottomSheet(
+                    context: context,
+                    title: "教科作成",
+                    children: [
+                      TextFormField(
+                        controller: controller,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          label: Text('教科名'),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Spacer(),
+                          IconButton(
+                            icon: const Icon(Icons.check),
+                            splashRadius: 24,
+                            onPressed: () {},
+                          )
+                        ],
+                      ),
+                    ]);
+              },
             )
           : null,
       body: WillPopScope(
@@ -100,6 +125,7 @@ class _CategoryPageState extends State<_CategoryPage> {
         children: [
           SimpleListTile(
               title: "選択を解除する",
+              leadingIcon: const Icon(Icons.clear),
               onTap: () {
                 Navigator.of(context, rootNavigator: true)
                     .pop(FieldValue.unselect);
@@ -135,18 +161,22 @@ class _ListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: ListView(
-        children: [
-          CategoryListTile(category.toJPString()),
-          ..._getSubjects().map((e) {
-            return SimpleListTile(
-                title: e,
-                onTap: () {
-                  Navigator.of(context, rootNavigator: true).pop(e);
-                });
-          }).toList()
-        ],
-      ),
+      child: _getSubjects().isNotEmpty
+          ? ListView(
+              children: [
+                CategoryListTile(category.toJPString()),
+                ..._getSubjects().map((e) {
+                  return SimpleListTile(
+                      title: e,
+                      onTap: () {
+                        Navigator.of(context, rootNavigator: true).pop(e);
+                      });
+                }).toList()
+              ],
+            )
+          : const Center(
+              child: Text('教科がありません'),
+            ),
     );
   }
 
