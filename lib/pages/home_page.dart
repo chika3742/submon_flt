@@ -1,18 +1,18 @@
 
-import 'package:event_bus/event_bus.dart';
+import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submon/components/hidable_progress_indicator.dart';
+import 'package:submon/db/firestore.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
-import 'package:submon/firestore/firestore.dart';
 import 'package:submon/pages/home_tabs/tab_memorize_card.dart';
 import 'package:submon/pages/home_tabs/tab_others.dart';
 import 'package:submon/pages/home_tabs/tab_submissions.dart';
 import 'package:submon/pages/home_tabs/tab_timetable.dart';
+import 'package:submon/pages/submission_create_page.dart';
 import 'package:submon/utils/firestore.dart';
 import 'package:submon/utils/ui.dart';
 
@@ -28,7 +28,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
-  final _eventBus = EventBus();
   var tabIndex = 0;
   var _loading = false;
 
@@ -63,7 +62,7 @@ class _HomePageState extends State<HomePage> {
     initDynamicLinks();
     fetchData();
     pages = [
-      TabSubmissions(_eventBus),
+      const TabSubmissions(),
       TabTimetable(key: timetableKey),
       const TabMemorizeCard(),
       const TabOthers(),
@@ -109,6 +108,24 @@ class _HomePageState extends State<HomePage> {
           HidableLinearProgressIndicator(show: _loading),
         ],
       ),
+      floatingActionButton: tabIndex == 0
+          ? OpenContainer<int>(
+              useRootNavigator: true,
+              closedElevation: 8,
+              closedShape: const CircleBorder(),
+              closedColor: Theme.of(context).canvasColor,
+              closedBuilder: (context, callback) => FloatingActionButton(
+                child: const Icon(Icons.add),
+                onPressed: callback,
+              ),
+              openBuilder: (context, callback) {
+                return const SubmissionCreatePage();
+              },
+              onClosed: (result) {
+                if (result != null) eventBus.fire(SubmissionInserted(result));
+              },
+            )
+          : null,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: tabIndex,
         items: _bottomNavigationItems(),
@@ -119,7 +136,7 @@ class _HomePageState extends State<HomePage> {
 
   void onBottomNavTap(int index) {
     if (tabIndex == index) {
-      _eventBus.fire(BottomNavDoubleClickEvent(index));
+      eventBus.fire(BottomNavDoubleClickEvent(index));
       return;
     }
     setState(() {
@@ -133,8 +150,8 @@ class _HomePageState extends State<HomePage> {
     FirebaseDynamicLinks.instance.getInitialLink().then((linkData) {
       if (linkData != null) handleDynamicLink(linkData.link);
     });
-    FirebaseDynamicLinks.instance.onLink(onSuccess: (linkData) async {
-      if (linkData != null) handleDynamicLink(linkData.link);
+    FirebaseDynamicLinks.instance.onLink.listen((linkData) async {
+      handleDynamicLink(linkData.link);
     });
   }
 

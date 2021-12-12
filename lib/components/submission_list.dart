@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/components/submission_list_item.dart';
 import 'package:submon/db/shared_prefs.dart';
@@ -10,10 +9,8 @@ import 'package:submon/events.dart';
 import 'package:submon/utils/ui.dart';
 
 class SubmissionList extends StatefulWidget {
-  const SubmissionList(this.eventBus, {Key? key, this.done = false})
-      : super(key: key);
+  const SubmissionList({Key? key, this.done = false}) : super(key: key);
 
-  final EventBus? eventBus;
   final bool done;
 
   @override
@@ -49,13 +46,15 @@ class _SubmissionListState extends State<SubmissionList> {
       });
     });
 
-    _stream1 = widget.eventBus?.on<BottomNavDoubleClickEvent>().listen((event) {
+    _stream1 = eventBus.on<BottomNavDoubleClickEvent>().listen((event) {
       if (event.index == 0) {
-        _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOutQuint);
+        _scrollController.animateTo(0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutQuint);
       }
     });
 
-    _stream2 = widget.eventBus?.on<SubmissionInserted>().listen((event) {
+    _stream2 = eventBus.on<SubmissionInserted>().listen((event) {
       SubmissionProvider().use((provider) async {
         if (!provider.db.isOpen) return;
         var data = await provider.get(event.id);
@@ -128,27 +127,29 @@ class _SubmissionListState extends State<SubmissionList> {
       });
     });
 
-    if (!widget.done && _enableSE == true)
+    if (!widget.done && _enableSE == true) {
       _audioCache.play("audio/decision28.mp3");
+    }
     showSnackBar(context, !widget.done ? "完了にしました" : "完了を外しました", action: SnackBarAction(
       label: "元に戻す",
       textColor: Colors.pinkAccent,
       onPressed: () {
         try {
-          setState(() {
-            index = items!.length <= index ? items!.length : index;
-            items!.insert(index, item);
-            _listKey.currentState?.insertItem(index);
-          });
-        } catch (e) {
-          print(e);
-        }
-        SubmissionProvider().use((provider) {
+              setState(() {
+                var actualIndex =
+                    items!.length <= index ? items!.length : index;
+                items!.insert(actualIndex, item);
+                _listKey.currentState?.insertItem(actualIndex);
+              });
+            } catch (e) {
+              print(e);
+            }
+            SubmissionProvider().use((provider) {
               item.done = !item.done;
               provider.update(item);
             });
-      },
-    ));
+          },
+        ));
   }
 
   void delete(int index) {
@@ -169,13 +170,14 @@ class _SubmissionListState extends State<SubmissionList> {
       textColor: Colors.pinkAccent,
       onPressed: () {
         setState(() {
-          items!.insert(index, item);
-          _listKey.currentState?.insertItem(index);
-          SubmissionProvider().use((provider) {
+              var actualIndex = items!.length <= index ? items!.length : index;
+              items!.insert(actualIndex, item);
+              _listKey.currentState?.insertItem(actualIndex);
+              SubmissionProvider().use((provider) {
                 provider.insert(item);
               });
-        });
-      },
+            });
+          },
     ));
   }
 }

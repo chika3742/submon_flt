@@ -21,3 +21,7 @@ class UndoRedoUpdatedEvent {
 class SubmissionFetched {
   SubmissionFetched();
 }
+
+class SubjectInserted {
+  SubjectInserted();
+}

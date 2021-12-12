@@ -14,8 +14,10 @@ class FirestoreProvider {
 
   static FirestoreProvider get submission => FirestoreProvider("submission");
 
-  Future<void> set(String docId, dynamic data) async {
-    await userDoc!.collection(collectionId).doc(docId).set(data);
+  static FirestoreProvider get timetable => FirestoreProvider("timetable");
+
+  Future<void> set(String docId, dynamic data, [SetOptions? setOptions]) async {
+    await userDoc!.collection(collectionId).doc(docId).set(data, setOptions);
     await updateTimestamp();
   }
 
@@ -24,7 +26,7 @@ class FirestoreProvider {
     await updateTimestamp();
   }
 
-  Future<void> updateTimestamp() async {
+  static Future<void> updateTimestamp() async {
     final timestamp = Timestamp.now();
     SharedPrefs.use((prefs) {
       prefs.firestoreLastChanged = timestamp.toDate();
@@ -66,16 +68,49 @@ class FirestoreProvider {
 
     if (changed == true) {
       final submissionSnapshot = await userDoc!.collection("submission").get();
-      final timetableSnapshot = await userDoc!.collection("timetable").get();
+      final timetableDataSnapshot =
+          await userDoc!.collection("timetable").doc("data").get();
+      final configSnapshot = await userDoc!.get();
+
       await SubmissionProvider().use((provider) async {
         await provider
             .setAll(submissionSnapshot.docs.map((e) => e.data()).toList());
         eventBus.fire(SubmissionFetched());
       });
 
-      await TimetableProvider().use((provider) async {});
+      if (timetableDataSnapshot.exists) {
+        await TimetableProvider().use((provider) async {
+          await provider.setAll(timetableDataSnapshot
+              .data()!
+              .values
+              .map((e) => Map.castFrom<dynamic, dynamic, String, dynamic>(e))
+              .toList());
+        });
+      }
+
+      if (configSnapshot.exists) {
+        var configData =
+            ConfigData.fromMap(configSnapshot.data() as Map<String, dynamic>);
+        if (configData.lastChanged != null) {
+          SharedPrefs.use((prefs) {
+            prefs.firestoreLastChanged = configData.lastChanged!.toDate();
+          });
+        }
+      }
     }
 
     return changed == true;
+  }
+}
+
+class ConfigData {
+  ConfigData({this.lastChanged, this.schemaVersion});
+
+  Timestamp? lastChanged;
+  int? schemaVersion;
+
+  static ConfigData fromMap(Map<String, dynamic> map) {
+    return ConfigData(
+        lastChanged: map["lastChanged"], schemaVersion: map["schemaVersion"]);
   }
 }

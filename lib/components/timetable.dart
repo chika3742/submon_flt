@@ -127,74 +127,7 @@ class TimetableState extends State<Timetable> {
         columnItems.add(Padding(
           padding: const EdgeInsets.all(3.0),
           child: GestureDetector(
-            onTap: !widget.edit
-                ? () {
-                    if (true) {
-                      // void showSheet() {
-                      //   showRoundedBottomSheet(
-                      //       context: context,
-                      //       title: "${cell.name} (${getWeekdayString(youbi)}曜$index限) メモ",
-                      //       children: [
-                      //         Opacity(opacity: cell.memo == "" ? 0.8 : 1, child: Text(cell.memo == "" ? "メモはありません" : cell.memo, style: TextStyle(fontSize: 16))),
-                      //         Row(
-                      //           children: [
-                      //             Spacer(),
-                      //             OutlinedButton(
-                      //               onPressed: () {
-                      //                 createNewSubmission(context, youbi, cell.name);
-                      //               },
-                      //               child: const Text("この科目から提出物作成"),
-                      //             ),
-                      //             SizedBox(width: 16),
-                      //             FloatingActionButton(
-                      //               child: Icon(Icons.edit),
-                //               onPressed: () {
-                      //                 var controller = TextEditingController(text: cell.memo);
-                      //                 showRoundedBottomSheet(
-                      //                     context: context,
-                      //                     title: "${cell.name} (${getWeekdayString(youbi)}曜$index限) メモ編集",
-                      //                     children: [
-                //                       TextFormField(
-                      //                         controller: controller,
-                      //                         decoration: InputDecoration(
-                      //                           border: OutlineInputBorder(),
-                      //                           labelText: "メモ",
-                      //                         ),
-                      //                       ),
-                      //                       Align(
-                      //                         alignment: Alignment.bottomRight,
-                      //                         child: Padding(
-                      //                           padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      //                           child: FloatingActionButton(
-                      //                             child: Icon(Icons.check),
-                //                             onPressed: () async {
-                      //                               MyHomePageState.timetable![(index - 1) * 6 + youbi]!.memo = controller.text;
-                      //
-                      //                               Navigator.pop(context);
-                      //                               Navigator.pop(context);
-                      //                               showSheet();
-                      //
-                //                               getCollection(Collection.timetable).doc("table").update({
-                      //                                 "${(index - 1) * 6 + youbi}.memo": controller.text
-                      //                               });
-                      //                             },
-                      //                           ),
-                      //                         ),
-                      //                       )
-                      //                     ]
-                      //                 );
-                      //               },
-                      //             ),
-                      //           ],
-                      //         )
-                      //       ]
-                      //   );
-                      // }
-                      // showSheet();
-                    }
-                  }
-                : null,
-            onLongPress: cell != null
+            onLongPress: cell != null && !widget.edit
                 ? () {
                     createNewSubmission(context, youbi, cell.subject);
                     Feedback.forLongPress(context);
@@ -207,7 +140,8 @@ class TimetableState extends State<Timetable> {
                         const RouteSettings(name: "/timetable/edit/select"),
                     closedColor: Colors.green,
                     onClosed: (result) {
-                      onSubjectSelected(result, youbi, index);
+                      if (result != null)
+                        onSubjectSelected(result, youbi, index);
                     },
                     closedShape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5)),
@@ -395,7 +329,7 @@ class _NoteViewState extends State<_NoteView> {
                           context: context,
                           title:
                               "${widget.cell.subject} (${getWeekdayString(widget.weekday)}曜 ${widget.index}限) メモ編集",
-                          children: [
+                          child: Column(children: [
                             TextFormField(
                               controller: controller,
                               decoration: InputDecoration(
@@ -422,7 +356,7 @@ class _NoteViewState extends State<_NoteView> {
                                 ),
                               ),
                             )
-                          ]);
+                          ]));
                       if (result != null) {
                         setState(() {
                           widget.cell.note = result;

@@ -12,9 +12,9 @@ class _DoneSubmissionsPageState extends State<DoneSubmissionsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('完了済みの提出物'),
-      ),
-      body: const SubmissionList(null, done: true));
+        appBar: AppBar(
+          title: const Text('完了済みの提出物'),
+        ),
+        body: const SubmissionList(done: true));
   }
 }

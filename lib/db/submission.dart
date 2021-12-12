@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import "package:intl/intl.dart";
 import 'package:sqflite/sqflite.dart';
+import 'package:submon/db/firestore.dart';
 import 'package:submon/db/sql_provider.dart';
-import 'package:submon/firestore/firestore.dart';
 
 const tableSubmission = "submission";
 
@@ -84,21 +84,23 @@ class SubmissionProvider extends SqlProvider<Submission> {
   }
 
   @override
-  Future<int> delete(int id) {
+  void setFirestore(Submission data) {
+    FirestoreProvider.submission.set(data.id.toString(), objToMap(data));
+  }
+
+  @override
+  void deleteFirestore(int id) {
     FirestoreProvider.submission.delete(id.toString());
-    return super.delete(id);
   }
 
   @override
-  Future<Submission> insert(Submission data) {
-    FirestoreProvider.submission.set(data.id.toString(), objToMap(data));
-    return super.insert(data);
+  void deleteAllFirestore() {
+    // TODO: implement deleteAllFirestore
   }
 
   @override
-  Future<int> update(Submission data) {
-    FirestoreProvider.submission.set(data.id.toString(), objToMap(data));
-    return super.update(data);
+  void setAllFirestore(List<Map<String, dynamic>> list) {
+    // TODO: implement setAllFirestore
   }
 
   @override

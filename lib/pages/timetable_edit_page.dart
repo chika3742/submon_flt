@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:submon/components/timetable.dart';
 import 'package:submon/db/timetable.dart' as db;
 import 'package:submon/events.dart';
@@ -101,15 +100,9 @@ class _TimetableEditPageState extends State<TimetableEditPage> {
 
   void updateLocalDb() {
     db.TimetableProvider().use((provider) async {
-      await provider.deleteAll();
-      await Future.forEach(_tableKey.currentState!.table.entries,
-          (MapEntry<int, db.Timetable> element) async {
-        await provider.insert(db.Timetable(
-          id: element.key,
-          subject: element.value.subject,
-          note: element.value.note,
-        ));
-      });
+      await provider.setAll(_tableKey.currentState!.table.values
+          .map((e) => db.TimetableProvider.objToMapStatic(e))
+          .toList());
     });
   }
 }
