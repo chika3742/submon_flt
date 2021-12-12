@@ -628,13 +628,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.3"
-  twitter_login:
-    dependency: "direct main"
-    description:
-      name: twitter_login
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.0.1"
   typed_data:
     dependency: transitive
     description:

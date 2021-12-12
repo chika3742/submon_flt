@@ -73,14 +73,14 @@ class FirestoreProvider {
       final configSnapshot = await userDoc!.get();
 
       await SubmissionProvider().use((provider) async {
-        await provider
-            .setAll(submissionSnapshot.docs.map((e) => e.data()).toList());
+        await provider.setAllLocalOnly(
+            submissionSnapshot.docs.map((e) => e.data()).toList());
         eventBus.fire(SubmissionFetched());
       });
 
       if (timetableDataSnapshot.exists) {
         await TimetableProvider().use((provider) async {
-          await provider.setAll(timetableDataSnapshot
+          await provider.setAllLocalOnly(timetableDataSnapshot
               .data()!
               .values
               .map((e) => Map.castFrom<dynamic, dynamic, String, dynamic>(e))

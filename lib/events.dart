@@ -22,6 +22,6 @@ class SubmissionFetched {
   SubmissionFetched();
 }
 
-class SubjectInserted {
-  SubjectInserted();
+class TimetableCustomSubjectInserted {
+  TimetableCustomSubjectInserted();
 }

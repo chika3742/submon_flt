@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sqflite_common/sqlite_api.dart';
 import 'package:submon/db/firestore.dart';
 import 'package:submon/db/sql_provider.dart';
 
@@ -44,9 +43,6 @@ class TimetableProvider extends SqlProvider<Timetable> {
       SqlField(colNote, DataType.string),
     ];
   }
-
-  @override
-  void migrate(Database db, int oldVersion, int newVersion) {}
 
   @override
   Timetable mapToObj(Map map) {
