@@ -15,11 +15,8 @@ abstract class SqlProvider<T> {
   /// Gets name of table.
   String tableName();
 
-  /// migrating process
-  void migrate(Database db, int oldVersion, int newVersion);
-
   /// Converts from map to database object.
-  T mapToObj(Map map);
+  T mapToObj(Map<String, dynamic> map);
 
   /// Converts from database object to map.
   Map<String, Object?> objToMap(T data);
@@ -96,8 +93,7 @@ abstract class SqlProvider<T> {
     await db.execute("delete from ${tableName()}");
   }
 
-  Future<void> setAll(List<Map<String, dynamic>> list) async {
-    setAllFirestore(list);
+  Future<void> setAllLocalOnly(List<Map<String, dynamic>> list) async {
     await deleteAll();
     await Future.forEach<Map<String, dynamic>>(list, (element) async {
       await db.insert(tableName(), objToMap(mapToObj(element)),
@@ -120,6 +116,13 @@ abstract class SqlProvider<T> {
   }
 
   Future close() => db.close();
+
+  Future<void> migrate(Database db, int oldVersion, int newVersion) async {
+    // MIGRATE FIRESTORE TOO
+    if (oldVersion == 0) {
+      oldVersion++;
+    }
+  }
 }
 
 class SqlField {

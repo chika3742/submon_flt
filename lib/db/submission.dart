@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import "package:intl/intl.dart";
-import 'package:sqflite/sqflite.dart';
 import 'package:submon/db/firestore.dart';
 import 'package:submon/db/sql_provider.dart';
 
@@ -94,17 +93,10 @@ class SubmissionProvider extends SqlProvider<Submission> {
   }
 
   @override
-  void deleteAllFirestore() {
-    // TODO: implement deleteAllFirestore
-  }
+  void deleteAllFirestore() {}
 
   @override
-  void setAllFirestore(List<Map<String, dynamic>> list) {
-    // TODO: implement setAllFirestore
-  }
-
-  @override
-  void migrate(Database db, int oldVersion, int newVersion) {}
+  void setAllFirestore(List<Map<String, dynamic>> list) {}
 }
 
 enum Repeat {

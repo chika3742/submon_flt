@@ -40,7 +40,6 @@ dependencies:
   flutter_svg: ^1.0.0
   shared_preferences: ^2.0.9
   google_sign_in: ^5.2.1
-  twitter_login: ^4.0.1
   sign_in_with_apple: ^3.2.0
   crypto: ^3.0.1
   flutter_dotenv: ^5.0.2
