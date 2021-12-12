@@ -30,7 +30,7 @@ class CategoryListTile extends StatelessWidget {
     return Padding(
       child: Text(
         title,
-        style: const TextStyle(color: Colors.pink),
+        style: TextStyle(color: Theme.of(context).colorScheme.secondary),
       ),
       padding: const EdgeInsets.only(left: 16, top: 16, right: 16, bottom: 4),
     );

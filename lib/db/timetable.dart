@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sqflite_common/sqlite_api.dart';
+import 'package:submon/db/firestore.dart';
 import 'package:submon/db/sql_provider.dart';
 
 const tableTimetable = "timetable";
@@ -57,10 +59,39 @@ class TimetableProvider extends SqlProvider<Timetable> {
 
   @override
   Map<String, Object?> objToMap(Timetable data) {
+    return objToMapStatic(data);
+  }
+
+  static Map<String, Object?> objToMapStatic(Timetable data) {
     return {
       colId: data.id,
       colSubject: data.subject,
       colNote: data.note,
     };
+  }
+
+  @override
+  void setFirestore(Timetable data) {
+    FirestoreProvider.timetable.set(
+        "data", {data.id.toString(): objToMap(data)}, SetOptions(merge: true));
+  }
+
+  @override
+  void deleteFirestore(int id) {
+    FirestoreProvider.timetable.set(
+        "data", {id.toString(): FieldValue.delete()}, SetOptions(merge: true));
+  }
+
+  @override
+  void deleteAllFirestore() {
+    FirestoreProvider.timetable.delete("data");
+  }
+
+  @override
+  void setAllFirestore(List<Map<String, dynamic>> list) {
+    FirestoreProvider.timetable.set(
+        "data",
+        Map.fromIterables(
+            list.map((e) => e["id"].toString()), list.map((e) => e)));
   }
 }

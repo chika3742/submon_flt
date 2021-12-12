@@ -76,29 +76,42 @@ abstract class SqlProvider<T> {
   Future<T> insert(T data) async {
     (data as dynamic).id = await db.insert(tableName(), objToMap(data),
         conflictAlgorithm: ConflictAlgorithm.replace);
+    setFirestore(data);
     return data;
   }
 
-  Future<int> delete(int id) async {
-    return await db.delete(tableName(), where: "id = ?", whereArgs: [id]);
-  }
-
   Future<int> update(T data) async {
+    setFirestore(data);
     return await db.update(tableName(), objToMap(data),
         where: "id = ?", whereArgs: [(data as dynamic).id]);
   }
 
+  Future<int> delete(int id) async {
+    deleteFirestore(id);
+    return await db.delete(tableName(), where: "id = ?", whereArgs: [id]);
+  }
+
   Future<void> deleteAll() async {
+    deleteAllFirestore();
     await db.execute("delete from ${tableName()}");
   }
 
   Future<void> setAll(List<Map<String, dynamic>> list) async {
+    setAllFirestore(list);
     await deleteAll();
     await Future.forEach<Map<String, dynamic>>(list, (element) async {
       await db.insert(tableName(), objToMap(mapToObj(element)),
           conflictAlgorithm: ConflictAlgorithm.replace);
     });
   }
+
+  void setFirestore(T data);
+
+  void deleteFirestore(int id);
+
+  void deleteAllFirestore();
+
+  void setAllFirestore(List<Map<String, dynamic>> list);
 
   use(dynamic Function(SqlProvider<T> provider) fn) async {
     await open();

@@ -39,6 +39,7 @@ void showSnackBar(BuildContext context, String text,
     content: Text(text),
     duration: duration,
     action: action,
+    dismissDirection: DismissDirection.horizontal,
   ));
 }
 
@@ -58,7 +59,7 @@ Future<T?> showSimpleDialog<T>(
           actions: [
             if (showCancel)
               PlatformTextButton(
-                child: const Text("Cancel"),
+                child: const Text("キャンセル"),
                 onPressed: () {
                   onCancelPressed?.call();
                   Navigator.pop(context);
@@ -159,7 +160,7 @@ class SelectSheetAction {
 Future<dynamic> showRoundedBottomSheet({
   BuildContext? context,
   String? title,
-  List<Widget>? children,
+  Widget? child,
 }) {
   return showModalBottomSheet(
     context: context!,
@@ -186,10 +187,7 @@ Future<dynamic> showRoundedBottomSheet({
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: children!,
-              ),
+              child: child,
             )
           ],
         ),

@@ -1,0 +1,3 @@
+class TimetableCustomSubject {
+  int? id;
+}

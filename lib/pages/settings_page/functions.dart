@@ -1,8 +1,7 @@
-import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:settings_ui/settings_ui.dart';
+import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/pages/sign_in_page.dart';
 import 'package:submon/utils/ui.dart';
@@ -33,94 +32,82 @@ class _SettingFunctionsState extends State<SettingFunctions> {
   Widget build(BuildContext context) {
     var auth = FirebaseAuth.instance;
     var displayName = auth.currentUser?.displayName;
-    return SettingsList(
-      contentPadding: !Platform.isIOS && !Platform.isMacOS
-          ? const EdgeInsets.only(top: 16)
-          : null,
-      backgroundColor: Theme.of(context).canvasColor,
-      sections: [
-        SettingsSection(
-          title: "アカウント",
-          tiles: [
-            SettingsTile(
-              title: auth.currentUser != null ? "ログアウト" : "ログイン / 新規登録",
-              onPressed: (context) async {
-                if (auth.currentUser == null) {
-                  await pushPage(context, const SignInPage());
+    return SettingsListView(
+      categories: [
+        SettingsCategory(title: "アカウント", tiles: [
+          SettingsTile(
+            title: auth.currentUser != null ? "ログアウト" : "ログイン / 新規登録",
+            onTap: () async {
+              if (auth.currentUser == null) {
+                await pushPage(context, const SignInPage());
+                setState(() {});
+              } else {
+                showSimpleDialog(context, "確認", "ログアウトしますか？",
+                    onOKPressed: () async {
+                  await auth.signOut();
                   setState(() {});
-                } else {
-                  showSimpleDialog(context, "確認", "ログアウトしますか？",
-                      onOKPressed: () async {
-                    await auth.signOut();
-                    setState(() {});
-                    showSnackBar(context, "ログアウトしました");
-                  }, showCancel: true);
-                }
+                  showSnackBar(context, "ログアウトしました");
+                }, showCancel: true);
+              }
+            },
+          ),
+          if (auth.currentUser != null)
+            SettingsTile(
+              title: emailChangeable() ? "メールアドレスの変更" : "メールアドレス",
+              subtitle: auth.currentUser!.email,
+              onTap: emailChangeable()
+                  ? () async {
+                      await Navigator.pushNamed(
+                          context, "/account/changeEmail");
+                      setState(() {});
+                    }
+                  : null,
+            ),
+          if (auth.currentUser != null && passwordChangeable() && _pwEnabled)
+            SettingsTile(
+              title: "パスワードの変更",
+              onTap: () {
+                _changePassword();
               },
             ),
-            if (auth.currentUser != null)
-              SettingsTile(
-                title: emailChangeable() ? "メールアドレスの変更" : "メールアドレス",
-                subtitle: auth.currentUser!.email,
-                onPressed: emailChangeable()
-                    ? (context) async {
-                        await Navigator.pushNamed(
-                            context, "/account/changeEmail");
-                        setState(() {});
-                      }
-                    : null,
-              ),
-            if (auth.currentUser != null && passwordChangeable() && _pwEnabled)
-              SettingsTile(
-                title: "パスワードの変更",
-                onPressed: (context) {
-                  _changePassword();
-                },
-              ),
-            if (auth.currentUser != null)
-              SettingsTile(
-                title: "ユーザー名の変更",
-                subtitle: displayName != null && displayName.isNotEmpty
-                    ? displayName
-                    : "未設定",
-                onPressed: (context) async {
-                  await Navigator.pushNamed(
-                      context, "/account/changeDisplayName");
-                  setState(() {});
-                },
-              ),
-            if (auth.currentUser != null)
-              SettingsTile(
-                title: "アカウントの削除",
-                titleTextStyle: const TextStyle(color: Colors.red),
-                onPressed: (context) async {
-                  await Navigator.pushNamed(context, "/account/delete");
-                  setState(() {});
-                },
-              ),
-          ],
-        ),
-        SettingsSection(
-          title: "その他の機能",
-          titlePadding:
-              const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 8),
-          tiles: [
-            if (_enableSE != null)
-              SettingsTile.switchTile(
-                title: "SEを有効にする",
-                subtitle: "一部操作時にサウンドを再生します",
-                switchValue: _enableSE,
-                onToggle: (value) {
-                  SharedPrefs.use((prefs) {
-                    prefs.enableSE = value;
-                  });
-                  setState(() {
-                    _enableSE = value;
-                  });
-                },
-              ),
-          ],
-        ),
+          if (auth.currentUser != null)
+            SettingsTile(
+              title: "ユーザー名の変更",
+              subtitle: displayName != null && displayName.isNotEmpty
+                  ? displayName
+                  : "未設定",
+              onTap: () async {
+                await Navigator.pushNamed(
+                    context, "/account/changeDisplayName");
+                setState(() {});
+              },
+            ),
+          if (auth.currentUser != null)
+            SettingsTile(
+              title: "アカウントの削除",
+              titleTextStyle: const TextStyle(color: Colors.red),
+              onTap: () async {
+                await Navigator.pushNamed(context, "/account/delete");
+                setState(() {});
+              },
+            ),
+        ]),
+        SettingsCategory(title: "その他の機能", tiles: [
+          if (_enableSE != null)
+            SwitchSettingsTile(
+              title: "SEを有効にする",
+              subtitle: "一部操作時にサウンドを再生します",
+              value: _enableSE!,
+              onChanged: (value) {
+                SharedPrefs.use((prefs) {
+                  prefs.enableSE = value;
+                });
+                setState(() {
+                  _enableSE = value;
+                });
+              },
+            ),
+        ])
       ],
     );
   }

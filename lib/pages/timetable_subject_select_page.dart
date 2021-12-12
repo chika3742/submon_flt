@@ -30,32 +30,13 @@ class _TimetableSubjectSelectPageState
       ),
       floatingActionButton: _showFab
           ? FloatingActionButton(
-        child: const Icon(Icons.add),
+            child: const Icon(Icons.add),
               onPressed: () {
-                var controller = TextEditingController();
                 showRoundedBottomSheet(
-                    context: context,
-                    title: "教科作成",
-                    children: [
-                      TextFormField(
-                        controller: controller,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          label: Text('教科名'),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Spacer(),
-                          IconButton(
-                            icon: const Icon(Icons.check),
-                            splashRadius: 24,
-                            onPressed: () {},
-                          )
-                        ],
-                      ),
-                    ]);
+                  context: context,
+                  title: "教科作成",
+                  child: const CreateSubjectBottomSheet(),
+                );
               },
             )
           : null,
@@ -92,6 +73,57 @@ class _TimetableSubjectSelectPageState
           },
         ),
       ),
+    );
+  }
+}
+
+class CreateSubjectBottomSheet extends StatefulWidget {
+  const CreateSubjectBottomSheet({Key? key}) : super(key: key);
+
+  @override
+  _CreateSubjectBottomSheetState createState() =>
+      _CreateSubjectBottomSheetState();
+}
+
+class _CreateSubjectBottomSheetState extends State<CreateSubjectBottomSheet> {
+  final _controller = TextEditingController();
+  String? _fieldError;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TextFormField(
+          controller: _controller,
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(),
+            label: const Text('教科名'),
+            errorText: _fieldError,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            const Spacer(),
+            IconButton(
+              icon: const Icon(Icons.check),
+              splashRadius: 24,
+              onPressed: () {
+                if (_controller.text.isEmpty) {
+                  setState(() {
+                    _fieldError = "入力してください";
+                  });
+                } else {
+                  setState(() {
+                    _fieldError = null;
+                  });
+                  Navigator.pop(context, _controller.text);
+                }
+              },
+            )
+          ],
+        ),
+      ],
     );
   }
 }
