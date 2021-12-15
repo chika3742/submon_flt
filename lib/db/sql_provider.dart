@@ -39,10 +39,12 @@ abstract class SqlProvider<T> {
           createSql += "integer ";
           break;
       }
-      if (!element.isPrimaryKey) {
+      if (element.isPrimaryKey) {
+        createSql += "primary key autoincrement, ";
+      } else if (element.isNonNull) {
         createSql += "not null, ";
       } else {
-        createSql += "primary key autoincrement, ";
+        createSql += ", ";
       }
     });
 
@@ -77,6 +79,12 @@ abstract class SqlProvider<T> {
     return data;
   }
 
+  Future<T> insertLocalOnly(T data) async {
+    (data as dynamic).id = await db.insert(tableName(), objToMap(data),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    return data;
+  }
+
   Future<int> update(T data) async {
     setFirestore(data);
     return await db.update(tableName(), objToMap(data),
@@ -90,6 +98,10 @@ abstract class SqlProvider<T> {
 
   Future<void> deleteAll() async {
     deleteAllFirestore();
+    await db.execute("delete from ${tableName()}");
+  }
+
+  Future<void> deleteAllLocalOnly() async {
     await db.execute("delete from ${tableName()}");
   }
 
@@ -109,10 +121,10 @@ abstract class SqlProvider<T> {
 
   void setAllFirestore(List<Map<String, dynamic>> list);
 
-  use(dynamic Function(SqlProvider<T> provider) fn) async {
+  Future<void> use(dynamic Function(SqlProvider<T> provider) fn) async {
     await open();
     await fn(this);
-    await close();
+    // await close();
   }
 
   Future close() => db.close();
@@ -126,11 +138,13 @@ abstract class SqlProvider<T> {
 }
 
 class SqlField {
-  SqlField(this.fieldName, this.type, {this.isPrimaryKey = false});
+  SqlField(this.fieldName, this.type,
+      {this.isPrimaryKey = false, this.isNonNull = true});
 
   final String fieldName;
   final DataType type;
   final bool isPrimaryKey;
+  final bool isNonNull;
 }
 
 enum DataType { string, integer, bool }

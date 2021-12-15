@@ -1,4 +1,5 @@
 import 'package:event_bus/event_bus.dart';
+import 'package:submon/db/timetable_custom_subject.dart';
 
 final eventBus = EventBus();
 
@@ -23,5 +24,7 @@ class SubmissionFetched {
 }
 
 class TimetableCustomSubjectInserted {
-  TimetableCustomSubjectInserted();
+  TimetableCustomSubject data;
+
+  TimetableCustomSubjectInserted(this.data);
 }

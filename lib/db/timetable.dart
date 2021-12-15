@@ -1,14 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submon/db/firestore.dart';
+import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/sql_provider.dart';
 
 const tableTimetable = "timetable";
 const colId = "id";
+const colTableId = "tableId";
+const colCellId = "cellId";
 const colSubject = "subject";
 const colNote = "note";
 
 class Timetable {
   int? id;
+  int? tableId;
+  int cellId;
   String subject;
   String note;
 
@@ -17,6 +23,8 @@ class Timetable {
 
   Timetable({
     this.id,
+    this.tableId,
+    required this.cellId,
     this.subject = "",
     this.note = "",
   });
@@ -25,6 +33,7 @@ class Timetable {
   String toString() {
     return {
       "id": id,
+      "tableId": tableId,
       "subject": subject,
       "note": note,
     }.toString();
@@ -32,6 +41,8 @@ class Timetable {
 }
 
 class TimetableProvider extends SqlProvider<Timetable> {
+  late String currentTableId;
+
   @override
   String tableName() => tableTimetable;
 
@@ -39,6 +50,8 @@ class TimetableProvider extends SqlProvider<Timetable> {
   List<SqlField> columns() {
     return [
       SqlField(colId, DataType.integer, isPrimaryKey: true),
+      SqlField(colTableId, DataType.integer, isNonNull: false),
+      SqlField(colCellId, DataType.integer),
       SqlField(colSubject, DataType.string),
       SqlField(colNote, DataType.string),
     ];
@@ -48,9 +61,17 @@ class TimetableProvider extends SqlProvider<Timetable> {
   Timetable mapToObj(Map map) {
     return Timetable(
       id: map[colId],
+      tableId: map[colTableId],
+      cellId: map[colCellId],
       subject: map[colSubject],
       note: map[colNote],
     );
+  }
+
+  @override
+  Future<Timetable> insert(Timetable data) {
+    if (currentTableId != "main") data.tableId = int.parse(currentTableId);
+    return super.insert(data);
   }
 
   @override
@@ -61,6 +82,8 @@ class TimetableProvider extends SqlProvider<Timetable> {
   static Map<String, Object?> objToMapStatic(Timetable data) {
     return {
       colId: data.id,
+      colTableId: data.tableId,
+      colCellId: data.cellId,
       colSubject: data.subject,
       colNote: data.note,
     };
@@ -69,25 +92,53 @@ class TimetableProvider extends SqlProvider<Timetable> {
   @override
   void setFirestore(Timetable data) {
     FirestoreProvider.timetable.set(
-        "data", {data.id.toString(): objToMap(data)}, SetOptions(merge: true));
+        currentTableId,
+        {
+          "cells": {data.id.toString(): objToMap(data)}
+        },
+        SetOptions(merge: true));
+  }
+
+  @override
+  Future<void> deleteAll() async {
+    deleteAllFirestore();
+    if (currentTableId != "main") {
+      await db.execute(
+          "delete from ${tableName()} where $colTableId = $currentTableId");
+    } else {
+      await db.execute("delete from ${tableName()} where $colTableId is null");
+    }
   }
 
   @override
   void deleteFirestore(int id) {
     FirestoreProvider.timetable.set(
-        "data", {id.toString(): FieldValue.delete()}, SetOptions(merge: true));
+        currentTableId,
+        {
+          "cells": {id.toString(): FieldValue.delete()}
+        },
+        SetOptions(merge: true));
   }
 
   @override
   void deleteAllFirestore() {
-    FirestoreProvider.timetable.delete("data");
+    FirestoreProvider.timetable.set(currentTableId,
+        {"cells": FieldValue.delete()}, SetOptions(merge: true));
   }
 
   @override
   void setAllFirestore(List<Map<String, dynamic>> list) {
-    FirestoreProvider.timetable.set(
-        "data",
-        Map.fromIterables(
-            list.map((e) => e["id"].toString()), list.map((e) => e)));
+    FirestoreProvider.timetable.set(currentTableId, {
+      "cells": Map.fromIterables(
+          list.map((e) => e["id"].toString()), list.map((e) => e))
+    });
+  }
+
+  @override
+  Future<void> use(Function(SqlProvider<Timetable> provider) fn) async {
+    var pref = await SharedPreferences.getInstance();
+    var id = SharedPrefs(pref).currentTimetableId;
+    currentTableId = id;
+    return await super.use(fn);
   }
 }

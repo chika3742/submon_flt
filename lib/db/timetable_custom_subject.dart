@@ -47,14 +47,13 @@ class TimetableCustomSubjectProvider
 
   @override
   void setFirestore(data) {
-    FirestoreProvider.timetable.set("customSubject",
-        {data.id.toString(): objToMap(data)}, SetOptions(merge: true));
+    FirestoreProvider.timetableCustomSubject
+        .set(data.id.toString(), objToMap(data), SetOptions(merge: true));
   }
 
   @override
   void deleteFirestore(int id) {
-    FirestoreProvider.timetable.set("customSubject",
-        {id.toString(): FieldValue.delete()}, SetOptions(merge: true));
+    FirestoreProvider.timetableCustomSubject.delete(id.toString());
   }
 
   @override

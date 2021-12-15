@@ -1,6 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:submon/components/list_tile.dart';
 import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/db/timetable_custom_subject.dart';
+import 'package:submon/events.dart';
 import 'package:submon/pages/timetable_edit_page.dart';
 import 'package:submon/shared_axis_page_route.dart';
 import 'package:submon/utils/ui.dart';
@@ -30,7 +35,7 @@ class _TimetableSubjectSelectPageState
       ),
       floatingActionButton: _showFab
           ? FloatingActionButton(
-            child: const Icon(Icons.add),
+              child: const Icon(Icons.add),
               onPressed: () {
                 showRoundedBottomSheet(
                   context: context,
@@ -117,7 +122,12 @@ class _CreateSubjectBottomSheetState extends State<CreateSubjectBottomSheet> {
                   setState(() {
                     _fieldError = null;
                   });
-                  Navigator.pop(context, _controller.text);
+                  TimetableCustomSubjectProvider().use((provider) async {
+                    var data = await provider.insert(
+                        TimetableCustomSubject(title: _controller.text));
+                    eventBus.fire(TimetableCustomSubjectInserted(data));
+                    Navigator.pop(context);
+                  });
                 }
               },
             )
@@ -139,6 +149,7 @@ class _CategoryPage extends StatefulWidget {
 
 class _CategoryPageState extends State<_CategoryPage> {
   var _historyList = <String>[];
+  var animatedListKey = GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
@@ -147,6 +158,11 @@ class _CategoryPageState extends State<_CategoryPage> {
       setState(() {
         _historyList = prefs.timetableHistory;
       });
+      var i = 0;
+      for (var _ in _historyList) {
+        animatedListKey.currentState?.insertItem(i, duration: Duration.zero);
+        i++;
+      }
     });
   }
 
@@ -163,11 +179,20 @@ class _CategoryPageState extends State<_CategoryPage> {
                     .pop(FieldValue.unselect);
               }),
           if (_historyList.isNotEmpty) const CategoryListTile("最近選択した科目"),
-          ..._historyList.map((e) => SimpleListTile(
-              title: e,
-              onTap: () {
-                Navigator.of(context, rootNavigator: true).pop(e);
-              })),
+          AnimatedList(
+            key: animatedListKey,
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemBuilder: (context, pos, anim) {
+              var item = _historyList[pos];
+              return SizeTransition(
+                sizeFactor: Tween(begin: 0.0, end: 1.0)
+                    .chain(CurveTween(curve: Curves.fastOutSlowIn))
+                    .animate(anim),
+                child: buildHistoryItem(item, pos),
+              );
+            },
+          ),
           const CategoryListTile("カテゴリー"),
           ..._Category.values
               .map((e) => SimpleListTile(
@@ -183,53 +208,41 @@ class _CategoryPageState extends State<_CategoryPage> {
       ),
     );
   }
+
+  Widget buildHistoryItem(String item, int pos) {
+    return Slidable(
+      key: ValueKey(item),
+      child: SimpleListTile(
+        title: item,
+        onTap: () {
+          Navigator.of(context, rootNavigator: true).pop(item);
+        },
+      ),
+      endActionPane: createDeleteActionPane((context) {
+        SharedPrefs.use((prefs) {
+          prefs.timetableHistory = prefs.timetableHistory..remove(item);
+          _historyList = prefs.timetableHistory;
+          animatedListKey.currentState?.removeItem(pos, (context, animation) {
+            return SizeTransition(
+              sizeFactor: Tween(begin: 0.0, end: 1.0)
+                  .chain(CurveTween(curve: Curves.fastOutSlowIn.flipped))
+                  .animate(animation),
+              child: buildHistoryItem(item, pos),
+            );
+          });
+        });
+      }),
+    );
+  }
 }
 
-class _ListPage extends StatelessWidget {
+class _ListPage extends StatefulWidget {
   const _ListPage(this.category, {Key? key}) : super(key: key);
 
   final _Category category;
 
   @override
-  Widget build(BuildContext context) {
-    return Material(
-      child: _getSubjects().isNotEmpty
-          ? ListView(
-              children: [
-                CategoryListTile(category.toJPString()),
-                ..._getSubjects().map((e) {
-                  return SimpleListTile(
-                      title: e,
-                      onTap: () {
-                        Navigator.of(context, rootNavigator: true).pop(e);
-                      });
-                }).toList()
-              ],
-            )
-          : const Center(
-              child: Text('教科がありません'),
-            ),
-    );
-  }
-
-  List<String> _getSubjects() {
-    switch (category) {
-      case _Category.japanese:
-        return japanese;
-      case _Category.math:
-        return math;
-      case _Category.science:
-        return science;
-      case _Category.social:
-        return social;
-      case _Category.english:
-        return english;
-      case _Category.others:
-        return others;
-      case _Category.custom:
-        return [];
-    }
-  }
+  State<_ListPage> createState() => _ListPageState();
 
   static var japanese = [
     "国語",
@@ -394,6 +407,149 @@ class _ListPage extends StatelessWidget {
     "外国語1",
     "外国語2",
   ];
+}
+
+class _ListPageState extends State<_ListPage> {
+  final _animatedListKey = GlobalKey<AnimatedListState>();
+  StreamSubscription? insertedSubscription;
+  List<String> subjects = [];
+  List<TimetableCustomSubject> customSubjects = [];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.category != _Category.custom) {
+      subjects = _getSubjects();
+    } else {
+      TimetableCustomSubjectProvider().use((provider) async {
+        final list = await provider.getList();
+        setState(() {
+          customSubjects = list;
+        });
+        var i = 0;
+        for (var _ in customSubjects) {
+          _animatedListKey.currentState?.insertItem(i);
+          i++;
+        }
+      });
+
+      insertedSubscription =
+          eventBus.on<TimetableCustomSubjectInserted>().listen((event) {
+        setState(() {
+          customSubjects.add(event.data);
+        });
+        _animatedListKey.currentState?.insertItem(customSubjects.length - 1);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    insertedSubscription?.cancel();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+        child: Stack(
+      children: [
+        _buildListView(),
+        if (customSubjects.isEmpty && subjects.isEmpty)
+          const Center(
+            child: Text('教科がありません'),
+          ),
+      ],
+    ));
+  }
+
+  Widget _buildListView() {
+    if (widget.category != _Category.custom) {
+      return ListView(
+        children: [
+          CategoryListTile(widget.category.toJPString()),
+          ...subjects.map((e) {
+            return SimpleListTile(
+                title: e,
+                onTap: () {
+                  Navigator.of(context, rootNavigator: true).pop(e);
+                });
+          }).toList()
+        ],
+      );
+    } else {
+      return AnimatedOpacity(
+        opacity: customSubjects.isNotEmpty ? 1 : 0,
+        duration: const Duration(milliseconds: 300),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CategoryListTile(widget.category.toJPString()),
+            AnimatedList(
+              key: _animatedListKey,
+              shrinkWrap: true,
+              initialItemCount: customSubjects.length,
+              itemBuilder: (context, pos, anim) {
+                var item = customSubjects[pos];
+                return SizeTransition(
+                  sizeFactor: Tween(begin: 0.0, end: 1.0)
+                      .chain(CurveTween(curve: Curves.fastOutSlowIn))
+                      .animate(anim),
+                  child: _buildItem(item, pos),
+                );
+              },
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  Widget _buildItem(TimetableCustomSubject item, int index) {
+    return Slidable(
+      key: ValueKey(item.id),
+      child: SimpleListTile(
+          title: item.title,
+          onTap: () {
+            Navigator.of(context, rootNavigator: true).pop(item.title);
+          }),
+      endActionPane: createDeleteActionPane((ctx) {
+        TimetableCustomSubjectProvider().use((provider) async {
+          await provider.delete(item.id!);
+        });
+        setState(() {
+          customSubjects.removeWhere((element) => element.id == item.id);
+        });
+        _animatedListKey.currentState?.removeItem(index, (context, animation) {
+          return SizeTransition(
+            sizeFactor: Tween(begin: 0.0, end: 1.0)
+                .chain(CurveTween(curve: Curves.fastOutSlowIn.flipped))
+                .animate(animation),
+            child: _buildItem(item, index),
+          );
+        });
+      }),
+    );
+  }
+
+  List<String> _getSubjects() {
+    switch (widget.category) {
+      case _Category.japanese:
+        return _ListPage.japanese;
+      case _Category.math:
+        return _ListPage.math;
+      case _Category.science:
+        return _ListPage.science;
+      case _Category.social:
+        return _ListPage.social;
+      case _Category.english:
+        return _ListPage.english;
+      case _Category.others:
+        return _ListPage.others;
+      case _Category.custom:
+        return [];
+    }
+  }
 }
 
 enum _Category { japanese, math, science, social, english, others, custom }

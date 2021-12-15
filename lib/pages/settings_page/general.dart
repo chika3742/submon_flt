@@ -5,14 +5,14 @@ import 'package:submon/browser.dart';
 import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/shared_prefs.dart';
 
-class SettingGeneral extends StatefulWidget {
-  const SettingGeneral({Key? key}) : super(key: key);
+class GeneralSettingsPage extends StatefulWidget {
+  const GeneralSettingsPage({Key? key}) : super(key: key);
 
   @override
-  _SettingGeneralState createState() => _SettingGeneralState();
+  _GeneralSettingsPageState createState() => _GeneralSettingsPageState();
 }
 
-class _SettingGeneralState extends State<SettingGeneral> {
+class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
   String _version = "取得中";
   bool? _analyticsEnabled;
 

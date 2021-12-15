@@ -41,13 +41,17 @@ class SettingsTile extends AbstractSettingsTile {
       {this.title,
       this.titleTextStyle,
       this.subtitle,
+      this.enabled = true,
       this.leading,
+      this.trailing,
       this.onTap});
 
   final String? title;
   final TextStyle? titleTextStyle;
   final String? subtitle;
+  final bool enabled;
   final Widget? leading;
+  final Widget? trailing;
   final void Function()? onTap;
 
   @override
@@ -55,7 +59,9 @@ class SettingsTile extends AbstractSettingsTile {
     return ListTile(
       title: title != null ? Text(title!, style: titleTextStyle) : null,
       subtitle: subtitle != null ? Text(subtitle!) : null,
+      enabled: enabled,
       leading: leading,
+      trailing: trailing,
       onTap: onTap,
     );
   }
@@ -79,6 +85,33 @@ class SwitchSettingsTile extends AbstractSettingsTile {
       title: title != null ? Text(title!) : null,
       subtitle: subtitle != null ? Text(subtitle!) : null,
       value: value,
+      onChanged: onChanged,
+    );
+  }
+}
+
+class RadioSettingsTile extends AbstractSettingsTile {
+  RadioSettingsTile({
+    this.title,
+    this.subtitle,
+    required this.value,
+    required this.groupValue,
+    required this.onChanged,
+  });
+
+  final String? title;
+  final String? subtitle;
+  final Object value;
+  final Object groupValue;
+  final void Function(Object?) onChanged;
+
+  @override
+  Widget buildWidget() {
+    return RadioListTile(
+      title: title != null ? Text(title!) : null,
+      subtitle: subtitle != null ? Text(subtitle!) : null,
+      value: value,
+      groupValue: groupValue,
       onChanged: onChanged,
     );
   }
