@@ -1,6 +1,6 @@
-
 import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
           label: "時間割表",
         ),
         BottomNavigationBarItem(
-      icon: Icon(Icons.school),
+          icon: Icon(Icons.school),
           label: "暗記カード",
         ),
         BottomNavigationBarItem(
@@ -70,12 +70,19 @@ class _HomePageState extends State<HomePage> {
     actions = [
       [],
       [
+        ActionItem(Icons.settings, "設定", () async {
+          await Navigator.pushNamed(context, "/settings/timetable");
+          timetableKey.currentState?.getPref();
+          var state = timetableKey.currentState?.tableKey.currentState;
+          state?.getPref();
+          state?.getTable();
+        }),
         ActionItem(Icons.edit, "編集", () async {
           await Navigator.pushNamed(context, "/timetable/edit");
           timetableKey.currentState?.setState(() {
             timetableKey.currentState?.tableKey.currentState?.getTable();
           });
-        })
+        }),
       ],
       [],
       [],
@@ -84,8 +91,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
+    return Scaffold(
+      appBar: AppBar(
         title: Text(_bottomNavigationItems()[tabIndex].label!),
         actions: actions[tabIndex]
             .map((e) => IconButton(
@@ -211,11 +218,16 @@ class _HomePageState extends State<HomePage> {
       _loading = true;
     });
 
-    var result = await FirestoreProvider.fetchData();
+    try {
+      var result = await FirestoreProvider.fetchData();
 
-    if (result) {
-      _navigatorKey.currentState
-          ?.pushReplacement(FadeThroughPageRoute(pages[tabIndex]));
+      if (result) {
+        _navigatorKey.currentState
+            ?.pushReplacement(FadeThroughPageRoute(pages[tabIndex]));
+      }
+    } catch (e, stackTrace) {
+      showSnackBar(context, "エラーが発生しました");
+      FirebaseCrashlytics.instance.recordError(e, stackTrace);
     }
 
     setState(() {

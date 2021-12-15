@@ -4,6 +4,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 String getWeekdayString(int weekday) {
   var weekdays = ["月", "火", "水", "木", "金", "土", "日"];
@@ -30,6 +31,22 @@ Color getRemainingDateColor(int remainingDate) {
   } else {
     return Colors.green;
   }
+}
+
+ActionPane createDeleteActionPane(
+    void Function(BuildContext context) onPressed) {
+  return ActionPane(
+    motion: const BehindMotion(),
+    extentRatio: 0.2,
+    children: [
+      SlidableAction(
+        onPressed: onPressed,
+        icon: Icons.delete,
+        backgroundColor: Colors.redAccent,
+        foregroundColor: Colors.white,
+      )
+    ],
+  );
 }
 
 void showSnackBar(BuildContext context, String text,

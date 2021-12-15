@@ -345,7 +345,7 @@ class _SignInPageState extends State<SignInPage> {
           }
         }
         showSnackBar(context, "ログインしました");
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       } catch (e) {
         FirebaseCrashlytics.instance.recordError(e, (e as dynamic).stackTrace);
         showSnackBar(context, "エラーが発生しました");

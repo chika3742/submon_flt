@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class SettingCustomize extends StatefulWidget {
-  const SettingCustomize({Key? key}) : super(key: key);
+class CustomizeSettingsPage extends StatefulWidget {
+  const CustomizeSettingsPage({Key? key}) : super(key: key);
 
   @override
-  _SettingCustomizeState createState() => _SettingCustomizeState();
+  _CustomizeSettingsPageState createState() => _CustomizeSettingsPageState();
 }
 
-class _SettingCustomizeState extends State<SettingCustomize> {
+class _CustomizeSettingsPageState extends State<CustomizeSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return const Center(

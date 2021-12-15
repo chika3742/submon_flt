@@ -7,14 +7,14 @@ import 'package:submon/pages/sign_in_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
-class SettingFunctions extends StatefulWidget {
-  const SettingFunctions({Key? key}) : super(key: key);
+class FunctionsSettingsPage extends StatefulWidget {
+  const FunctionsSettingsPage({Key? key}) : super(key: key);
 
   @override
-  _SettingFunctionsState createState() => _SettingFunctionsState();
+  _FunctionsSettingsPageState createState() => _FunctionsSettingsPageState();
 }
 
-class _SettingFunctionsState extends State<SettingFunctions> {
+class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
   bool _pwEnabled = true;
   bool? _enableSE;
 
@@ -45,7 +45,8 @@ class _SettingFunctionsState extends State<SettingFunctions> {
                 showSimpleDialog(context, "確認", "ログアウトしますか？",
                     onOKPressed: () async {
                   await auth.signOut();
-                  setState(() {});
+                  Navigator.pop(context);
+                  Navigator.pushReplacementNamed(context, "welcome");
                   showSnackBar(context, "ログアウトしました");
                 }, showCancel: true);
               }
@@ -107,6 +108,12 @@ class _SettingFunctionsState extends State<SettingFunctions> {
                 });
               },
             ),
+          SettingsTile(
+            title: "時間割表設定",
+            onTap: () {
+              Navigator.pushNamed(context, "/settings/timetable");
+            },
+          )
         ])
       ],
     );

@@ -4,6 +4,8 @@ import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/sql_provider.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/db/timetable.dart';
+import 'package:submon/db/timetable_custom_subject.dart';
+import 'package:submon/db/timetable_table.dart';
 import 'package:submon/events.dart';
 import 'package:submon/utils/firestore.dart';
 
@@ -16,13 +18,16 @@ class FirestoreProvider {
 
   static FirestoreProvider get timetable => FirestoreProvider("timetable");
 
+  static FirestoreProvider get timetableCustomSubject =>
+      FirestoreProvider("timetableCustomSubject");
+
   Future<void> set(String docId, dynamic data, [SetOptions? setOptions]) async {
-    await userDoc!.collection(collectionId).doc(docId).set(data, setOptions);
+    await userDoc?.collection(collectionId).doc(docId).set(data, setOptions);
     await updateTimestamp();
   }
 
   Future<void> delete(String docId) async {
-    await userDoc!.collection(collectionId).doc(docId).delete();
+    await userDoc?.collection(collectionId).doc(docId).delete();
     await updateTimestamp();
   }
 
@@ -34,18 +39,16 @@ class FirestoreProvider {
     await userDoc?.set({"lastChanged": timestamp}, SetOptions(merge: true));
   }
 
-  static Future<bool?> checkTimestamp() async {
+  static Future<bool> checkTimestamp() async {
     final data = (await userDoc!.get()).data() as dynamic;
     if (data != null && data["lastChanged"] != null) {
       var prefs = SharedPrefs(await SharedPreferences.getInstance());
-      print(
-          "${(data["lastChanged"] as Timestamp).toDate()} vs ${prefs.firestoreLastChanged}");
       return (data["lastChanged"] as Timestamp)
               .toDate()
               .compareTo(prefs.firestoreLastChanged) >
           0;
     } else {
-      return null;
+      return true;
     }
   }
 
@@ -54,22 +57,23 @@ class FirestoreProvider {
     var snapshot = await userDoc!.get();
 
     if (snapshot.data() == null) {
-      await userDoc!.set({"schemaVersion": schemaVer}, SetOptions(merge: true));
+      await userDoc?.set({"schemaVersion": schemaVer}, SetOptions(merge: true));
     } else {
       var schemaVersion = (snapshot.data() as dynamic)["schemaVersion"];
-      print(schemaVersion);
     }
   }
 
-  static Future<bool> fetchData() async {
+  static Future<bool> fetchData({bool force = false}) async {
     await FirestoreProvider.checkMigration();
 
-    var changed = await FirestoreProvider.checkTimestamp();
+    var changed = !force ? await FirestoreProvider.checkTimestamp() : true;
 
     if (changed == true) {
       final submissionSnapshot = await userDoc!.collection("submission").get();
       final timetableDataSnapshot =
-          await userDoc!.collection("timetable").doc("data").get();
+          await userDoc!.collection("timetable").get();
+      final timetableCustomSubjectsSnapshot =
+          await userDoc!.collection("timetableCustomSubject").get();
       final configSnapshot = await userDoc!.get();
 
       await SubmissionProvider().use((provider) async {
@@ -78,15 +82,31 @@ class FirestoreProvider {
         eventBus.fire(SubmissionFetched());
       });
 
-      if (timetableDataSnapshot.exists) {
-        await TimetableProvider().use((provider) async {
-          await provider.setAllLocalOnly(timetableDataSnapshot
-              .data()!
-              .values
-              .map((e) => Map.castFrom<dynamic, dynamic, String, dynamic>(e))
-              .toList());
-        });
-      }
+      var timetableTables = timetableDataSnapshot.docs
+          .where((e) => e.id != "main")
+          .map((e) => {
+                "id": int.parse(e.id),
+                "title": e.data()["title"],
+              })
+          .toList();
+
+      await TimetableTableProvider().use((provider) async {
+        await provider.setAllLocalOnly(timetableTables);
+      });
+
+      await TimetableProvider().use((provider) async {
+        await provider.deleteAllLocalOnly();
+        for (var e in timetableDataSnapshot.docs) {
+          for (var value in ((e.data()["cells"] as Map?) ?? {}).values) {
+            await provider.insertLocalOnly(provider.mapToObj(value));
+          }
+        }
+      });
+
+      await TimetableCustomSubjectProvider().use((provider) async {
+        await provider.setAllLocalOnly(
+            timetableCustomSubjectsSnapshot.docs.map((e) => e.data()).toList());
+      });
 
       if (configSnapshot.exists) {
         var configData =

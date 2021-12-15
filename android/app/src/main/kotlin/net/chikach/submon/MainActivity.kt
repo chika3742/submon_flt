@@ -1,11 +1,18 @@
 package net.chikach.submon
 
+import android.app.NotificationChannelGroup
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.app.NotificationChannelCompat
+import androidx.core.app.NotificationChannelGroupCompat
+import androidx.core.app.NotificationManagerCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -77,6 +84,25 @@ class MainActivity : FlutterActivity() {
                 }
             }
         }
+
+        val notificationMgr = NotificationManagerCompat.from(context)
+        notificationMgr.createNotificationChannelGroup(
+            NotificationChannelGroupCompat.Builder("main")
+                .setName("メイン")
+                .build()
+        )
+        notificationMgr.createNotificationChannel(
+            NotificationChannelCompat.Builder("reminder", NotificationManager.IMPORTANCE_HIGH)
+                .setName("リマインダー通知")
+                .setGroup("main")
+                .build()
+        )
+        notificationMgr.createNotificationChannel(
+            NotificationChannelCompat.Builder("timetable", NotificationManager.IMPORTANCE_DEFAULT)
+                .setName("時間割通知")
+                .setGroup("main")
+                .build()
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -22,6 +22,12 @@ class SharedPrefs {
   set linkSignInEmail(String? value) =>
       pref!.setString("LINK_SIGN_IN_EMAIL", value!);
 
+  String get currentTimetableId =>
+      pref!.getString("CURRENT_TIMETABLE_ID") ?? "main";
+
+  set currentTimetableId(String value) =>
+      pref!.setString("CURRENT_TIMETABLE_ID", value);
+
   List<String> get timetableHistory =>
       pref!.getStringList("TIMETABLE_HISTORY") ?? [];
 

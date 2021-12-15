@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submon/components/open_modal_animation.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/timetable.dart' as db;
@@ -30,20 +31,32 @@ class TimetableState extends State<Timetable> {
   @override
   void initState() {
     super.initState();
+    getPref();
+    getTable();
+  }
+
+  void getPref() {
     SharedPrefs.use((prefs) {
       setState(() {
         timetableHour = prefs.timetableHour;
       });
     });
-    getTable();
   }
 
   void getTable() {
-    db.TimetableProvider().use((provider) {
-      provider.getList().then((value) {
-        setState(() {
-          table = Map.fromIterables(value.map((e) => e.id!), value);
-        });
+    db.TimetableProvider().use((provider) async {
+      var pref = await SharedPreferences.getInstance();
+      var sp = SharedPrefs(pref);
+      List<db.Timetable> list;
+      if (sp.currentTimetableId != "main") {
+        list = await provider.getList(
+            where: "${db.colTableId} = ?", whereArgs: [sp.currentTimetableId]);
+      } else {
+        list = await provider.getList(where: "${db.colTableId} is null");
+      }
+
+      setState(() {
+        table = Map.fromIterables(list.map((e) => e.cellId), list);
       });
     });
   }
@@ -140,8 +153,9 @@ class TimetableState extends State<Timetable> {
                         const RouteSettings(name: "/timetable/edit/select"),
                     closedColor: Colors.green,
                     onClosed: (result) {
-                      if (result != null)
+                      if (result != null) {
                         onSubjectSelected(result, youbi, index);
+                      }
                     },
                     closedShape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5)),
@@ -216,7 +230,8 @@ class TimetableState extends State<Timetable> {
         await provider.delete(getWholeIndex(weekday, index));
       });
     } else if (result != null) {
-      table[getWholeIndex(weekday, index)] = db.Timetable(subject: result);
+      table[getWholeIndex(weekday, index)] =
+          db.Timetable(cellId: getWholeIndex(weekday, index), subject: result);
 
       SharedPrefs.use((prefs) {
         var history = prefs.timetableHistory;
@@ -231,8 +246,8 @@ class TimetableState extends State<Timetable> {
       });
 
       db.TimetableProvider().use((provider) async {
-        await provider.insert(
-            db.Timetable(id: getWholeIndex(weekday, index), subject: result));
+        await provider.insert(db.Timetable(
+            cellId: getWholeIndex(weekday, index), subject: result));
       });
     }
   }
@@ -361,8 +376,8 @@ class _NoteViewState extends State<_NoteView> {
                         setState(() {
                           widget.cell.note = result;
                         });
-                        db.TimetableProvider().use((provider) {
-                          provider.update(widget.cell);
+                        db.TimetableProvider().use((provider) async {
+                          await provider.update(widget.cell);
                         });
                       }
                     },
