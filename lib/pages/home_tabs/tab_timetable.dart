@@ -101,27 +101,30 @@ class TabTimetableState extends State<TabTimetable> {
               Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 4.0, horizontal: 32),
-                child: DropdownButton<String>(
-                  value: tableId,
-                  items: [
-                    const DropdownMenuItem(
-                      value: "main",
-                      child: Text('メイン'),
-                    ),
-                    ...tables.map((e) => DropdownMenuItem(
-                          value: e.id.toString(),
-                          child: Text(e.title),
-                        )),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      tableId = value!;
-                    });
-                    SharedPrefs.use((prefs) {
-                      prefs.currentTimetableId = value!;
-                      tableKey.currentState?.getTable();
-                    });
-                  },
+                child: SizedBox(
+                  child: DropdownButton<String>(
+                    value: tableId,
+                    enableFeedback: true,
+                    items: [
+                      const DropdownMenuItem(
+                        value: "main",
+                        child: Text('メイン'),
+                      ),
+                      ...tables.map((e) => DropdownMenuItem(
+                            value: e.id.toString(),
+                            child: Text(e.title),
+                          )),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        tableId = value!;
+                      });
+                      SharedPrefs.use((prefs) {
+                        prefs.currentTimetableId = value!;
+                        tableKey.currentState?.getTable();
+                      });
+                    },
+                  ),
                 ),
               ),
               Timetable(

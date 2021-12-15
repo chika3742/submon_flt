@@ -100,6 +100,7 @@ class _CreateSubjectBottomSheetState extends State<CreateSubjectBottomSheet> {
       children: [
         TextFormField(
           controller: _controller,
+          autofocus: true,
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
             label: const Text('教科名'),
