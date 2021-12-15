@@ -44,8 +44,9 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
         });
       });
     }
-    if (widget.initialTitle != null)
+    if (widget.initialTitle != null) {
       _titleController.text = widget.initialTitle!;
+    }
     if (widget.initialDeadline != null) _date = widget.initialDeadline!;
   }
 

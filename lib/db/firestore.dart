@@ -26,6 +26,10 @@ class FirestoreProvider {
     await updateTimestamp();
   }
 
+  Future<bool?> exists(String docId) async {
+    return (await userDoc?.collection(collectionId).doc(docId).get())?.exists;
+  }
+
   Future<void> delete(String docId) async {
     await userDoc?.collection(collectionId).doc(docId).delete();
     await updateTimestamp();

@@ -59,28 +59,45 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
           ...tables.map((e) => SettingsTile(
               title: e.title,
               leading: const Icon(Icons.table_chart),
-              trailing: IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () {
-                  showSimpleDialog(context, "確認",
-                      "${e.title}\n\n時間割表を削除しますか？\n※一度削除すると元に戻せません",
-                      showCancel: true, onOKPressed: () {
-                    TimetableTableProvider().use((provider) async {
-                      await provider.delete(e.id!);
-                      var pref = await SharedPreferences.getInstance();
-                      var sp = SharedPrefs(pref);
-                      if (sp.currentTimetableId == e.id.toString())
-                        sp.currentTimetableId = "main";
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () async {
+                      await showRoundedBottomSheet(
+                          context: context,
+                          title: "時間割表名の編集",
+                          child: CreateTableBottomSheet(
+                              id: e.id, initialText: e.title));
                       getTables();
-                    });
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      showSimpleDialog(context, "確認",
+                          "${e.title}\n\n時間割表を削除しますか？\n※一度削除すると元に戻せません",
+                          showCancel: true, onOKPressed: () {
+                        TimetableTableProvider().use((provider) async {
+                          await provider.delete(e.id!);
+                          var pref = await SharedPreferences.getInstance();
+                          var sp = SharedPrefs(pref);
+                          if (sp.currentTimetableId == e.id.toString()) {
+                            sp.currentTimetableId = "main";
+                          }
+                          getTables();
+                        });
 
-                    TimetableProvider().use((provider) async {
-                      provider.db.execute(
-                          "delete from ${provider.tableName()} where id = ?",
-                          [e.id]);
-                    });
-                  });
-                },
+                        TimetableProvider().use((provider) async {
+                          provider.db.execute(
+                              "delete from ${provider.tableName()} where id = ?",
+                              [e.id]);
+                        });
+                      });
+                    },
+                  ),
+                ],
               ))),
         ]),
         if (hours != null)
@@ -139,7 +156,11 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
 }
 
 class CreateTableBottomSheet extends StatefulWidget {
-  const CreateTableBottomSheet({Key? key}) : super(key: key);
+  const CreateTableBottomSheet({Key? key, this.id, this.initialText})
+      : super(key: key);
+
+  final int? id;
+  final String? initialText;
 
   @override
   _CreateTableBottomSheetState createState() => _CreateTableBottomSheetState();
@@ -150,11 +171,18 @@ class _CreateTableBottomSheetState extends State<CreateTableBottomSheet> {
   String? _fieldError;
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.initialText != null) _controller.text = widget.initialText!;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         TextFormField(
           controller: _controller,
+          autofocus: true,
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
             label: const Text('時間割表名'),
@@ -178,8 +206,8 @@ class _CreateTableBottomSheetState extends State<CreateTableBottomSheet> {
                     _fieldError = null;
                   });
                   TimetableTableProvider().use((provider) async {
-                    var data = await provider
-                        .insert(TimetableTable(title: _controller.text));
+                    await provider.insert(
+                        TimetableTable(id: widget.id, title: _controller.text));
                     Navigator.pop(context);
                   });
                 }

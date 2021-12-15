@@ -90,13 +90,15 @@ class TimetableProvider extends SqlProvider<Timetable> {
   }
 
   @override
-  void setFirestore(Timetable data) {
-    FirestoreProvider.timetable.set(
-        currentTableId,
-        {
-          "cells": {data.id.toString(): objToMap(data)}
-        },
-        SetOptions(merge: true));
+  void setFirestore(Timetable data) async {
+    if (await FirestoreProvider.timetable.exists(currentTableId) == true) {
+      FirestoreProvider.timetable.set(
+          currentTableId,
+          {
+            "cells": {data.id.toString(): objToMap(data)}
+          },
+          SetOptions(merge: true));
+    }
   }
 
   @override
