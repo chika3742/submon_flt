@@ -30,7 +30,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
 
   void getTables() {
     TimetableTableProvider().use((provider) async {
-      tables = await provider.getList();
+      tables = await provider.getAll();
       setState(() {});
     });
   }
@@ -40,18 +40,6 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
     return SettingsListView(
       categories: [
         SettingsCategory(title: "マルチ時間割表", tiles: [
-          SettingsTile(
-            title: "追加",
-            leading: const Icon(Icons.add),
-            onTap: () async {
-              await showRoundedBottomSheet(
-                context: context,
-                title: "時間割表作成",
-                child: const CreateTableBottomSheet(),
-              );
-              getTables();
-            },
-          ),
           SettingsTile(
             title: "メイン",
             leading: const Icon(Icons.table_chart),
@@ -99,38 +87,19 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
                   ),
                 ],
               ))),
+          SettingsTile(
+            title: "追加",
+            leading: const Icon(Icons.add),
+            onTap: () async {
+              await showRoundedBottomSheet(
+                context: context,
+                title: "時間割表作成",
+                child: const CreateTableBottomSheet(),
+              );
+              getTables();
+            },
+          ),
         ]),
-        if (hours != null)
-          SettingsCategory(title: "表示する時限数", tiles: [
-            RadioSettingsTile(
-                title: "5時間目",
-                value: 5,
-                groupValue: hours!,
-                onChanged: (value) {
-                  updateHours(value as int);
-                }),
-            RadioSettingsTile(
-                title: "6時間目",
-                value: 6,
-                groupValue: hours!,
-                onChanged: (value) {
-                  updateHours(value as int);
-                }),
-            RadioSettingsTile(
-                title: "7時間目",
-                value: 7,
-                groupValue: hours!,
-                onChanged: (value) {
-                  updateHours(value as int);
-                }),
-            RadioSettingsTile(
-                title: "8時間目",
-                value: 8,
-                groupValue: hours!,
-                onChanged: (value) {
-                  updateHours(value as int);
-                }),
-          ]),
         SettingsCategory(title: "時間割通知", tiles: [
           SettingsTile(
             subtitle: "毎朝、当日の時間割を通知します。(時間割が入っている曜日のみ)",
@@ -138,9 +107,43 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
           SettingsTile(
               title: "通知時刻",
               subtitle: "12:55",
-              leading: const Icon(Icons.schedule)),
-          SettingsTile(title: "設定解除", leading: const Icon(Icons.clear)),
+              leading: const Icon(Icons.schedule),
+              trailing: IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: () {},
+              )),
         ]),
+        if (hours != null)
+          SettingsCategory(title: "表示する時限数", tiles: [
+            RadioSettingsTile(
+                title: "5 時間目",
+                value: 5,
+                groupValue: hours!,
+                onChanged: (value) {
+                  updateHours(value as int);
+                }),
+            RadioSettingsTile(
+                title: "6 時間目",
+                value: 6,
+                groupValue: hours!,
+                onChanged: (value) {
+                  updateHours(value as int);
+                }),
+            RadioSettingsTile(
+                title: "7 時間目",
+                value: 7,
+                groupValue: hours!,
+                onChanged: (value) {
+                  updateHours(value as int);
+                }),
+            RadioSettingsTile(
+                title: "8 時間目",
+                value: 8,
+                groupValue: hours!,
+                onChanged: (value) {
+                  updateHours(value as int);
+                }),
+          ]),
       ],
     );
   }

@@ -8,6 +8,7 @@ import 'package:submon/components/hidable_progress_indicator.dart';
 import 'package:submon/db/firestore.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
+import 'package:submon/method_channel/notification.dart';
 import 'package:submon/pages/home_tabs/tab_memorize_card.dart';
 import 'package:submon/pages/home_tabs/tab_others.dart';
 import 'package:submon/pages/home_tabs/tab_submissions.dart';
@@ -60,6 +61,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     initDynamicLinks();
+    initNativeActions();
     fetchData();
     pages = [
       const TabSubmissions(),
@@ -210,6 +212,30 @@ class _HomePageState extends State<HomePage> {
       handleAuthError(e, context);
     }
     Navigator.pop(context);
+  }
+
+  void initNativeActions() {
+    void createNew() {
+      Navigator.of(context).pushNamed("/submission/create", arguments: {});
+    }
+
+    NotificationMethodChannel.getPendingAction().then((action) {
+      if (action != null) {
+        switch (action) {
+          case PendingAction.createNew:
+            createNew();
+            break;
+        }
+      }
+    });
+
+    NotificationMethodChannel.mc.setMethodCallHandler((call) async {
+      switch (call.method) {
+        case "action.createNew":
+          createNew();
+          break;
+      }
+    });
   }
 
   void fetchData() async {

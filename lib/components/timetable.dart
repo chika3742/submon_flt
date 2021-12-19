@@ -49,10 +49,10 @@ class TimetableState extends State<Timetable> {
       var sp = SharedPrefs(pref);
       List<db.Timetable> list;
       if (sp.currentTimetableId != "main") {
-        list = await provider.getList(
+        list = await provider.getAll(
             where: "${db.colTableId} = ?", whereArgs: [sp.currentTimetableId]);
       } else {
-        list = await provider.getList(where: "${db.colTableId} is null");
+        list = await provider.getAll(where: "${db.colTableId} is null");
       }
 
       setState(() {

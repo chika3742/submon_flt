@@ -266,20 +266,20 @@ class _SignInPageState extends State<SignInPage> {
     final rawNonce = generateNonce();
     final nonce = sha256ofString(rawNonce);
 
-    final appleCredential = await SignInWithApple.getAppleIDCredential(
-      scopes: [
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ],
-      nonce: nonce,
-    );
-
-    final cred = OAuthProvider("apple.com").credential(
-      idToken: appleCredential.identityToken,
-      rawNonce: rawNonce,
-    );
-
     try {
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: nonce,
+      );
+
+      final cred = OAuthProvider("apple.com").credential(
+        idToken: appleCredential.identityToken,
+        rawNonce: rawNonce,
+      );
+
       if (widget.reAuth) {
         return await FirebaseAuth.instance.currentUser!
             .reauthenticateWithCredential(cred);
@@ -288,7 +288,12 @@ class _SignInPageState extends State<SignInPage> {
       }
     } on FirebaseAuthException catch (e) {
       handleCredentialError(e);
+    } catch (e, stackTrace) {
+      print(e);
+      print(stackTrace);
+      showSnackBar(context, "エラーが発生しました");
     }
+    return null;
   }
 
   // sign in with twitter
@@ -305,12 +310,16 @@ class _SignInPageState extends State<SignInPage> {
       return null;
     }
 
+    if (authResult == null) {
+      return null;
+    }
+
     setState(() {
       loading = true;
     });
 
     final cred = TwitterAuthProvider.credential(
-      accessToken: authResult!.accessToken!,
+      accessToken: authResult.accessToken!,
       secret: authResult.accessTokenSecret!,
     );
 

@@ -48,7 +48,7 @@ class TabTimetableState extends State<TabTimetable> {
       });
     });
     TimetableTableProvider().use((provider) async {
-      tables = await provider.getList();
+      tables = await provider.getAll();
       if (!tables.any((element) => element.id.toString() == tableId))
         tableId = "main";
       setState(() {});
