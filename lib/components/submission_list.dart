@@ -35,9 +35,9 @@ class _SubmissionListState extends State<SubmissionList> {
 
     SubmissionProvider().use((provider) async {
       if (!widget.done) {
-        items = await provider.getList(where: "$colDone = 0");
+        items = await provider.getAll(where: "$colDone = 0");
       } else {
-        items = await provider.getList(where: "$colDone = 1");
+        items = await provider.getAll(where: "$colDone = 1");
       }
       setState(() {
         items?.asMap().forEach((index, element) async {

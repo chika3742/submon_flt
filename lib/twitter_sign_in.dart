@@ -31,17 +31,32 @@ class TwitterSignIn {
       Navigator.of(context, rootNavigator: true).pop(); // pop modal loading
       modalShown = false;
 
-      openCustomTabs("https://api.twitter.com/oauth/authorize?oauth_token=" +
-          reqToken!.oauthToken);
+      AuthResult authResult;
+      final url = "https://api.twitter.com/oauth/authorize?oauth_token=" +
+          reqToken!.oauthToken;
 
-      var authResult = await waitForUri();
+      if (Platform.isAndroid) {
+        openCustomTabs(url);
+        authResult = await waitForUri();
+      } else {
+        var brResult = await openCustomTabs(url);
+        if (brResult != null) {
+          var query = Uri.parse(brResult).queryParameters;
+          authResult =
+              AuthResult(query["oauth_token"]!, query["oauth_verifier"]!);
+        } else {
+          return null;
+        }
+      }
 
       var result = await getAccessToken(authResult);
 
       return result;
-    } on SocketException catch (e) {
+    } on SocketException {
       return TwitterAuthResult(errorMessage: "エラーが発生しました。インターネット接続をご確認ください。");
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint(e.toString());
+      debugPrint(stackTrace.toString());
       return TwitterAuthResult(errorMessage: "エラーが発生しました。");
     } finally {
       if (modalShown) Navigator.of(context, rootNavigator: true).pop();
@@ -111,14 +126,6 @@ class TwitterSignIn {
       result += "$key=${Uri.encodeComponent(value!)}&";
     });
     return result.substring(0, result.length - 1);
-  }
-
-  String _generateAuthorizationHeader(Map<String, String?> map) {
-    var result = "OAuth ";
-    map.forEach((key, value) {
-      result += '$key="${Uri.encodeComponent(value!)}", ';
-    });
-    return result.substring(0, result.length - 2);
   }
 
   String _generateNonce([int length = 32]) {

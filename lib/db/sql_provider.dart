@@ -66,7 +66,7 @@ abstract class SqlProvider<T> {
   }
 
   /// Obtains item list.
-  Future<List<T>> getList({String? where, List<dynamic>? whereArgs}) async {
+  Future<List<T>> getAll({String? where, List<dynamic>? whereArgs}) async {
     var maps = await db.query(tableName(),
         columns: _getColumnNameList(), where: where, whereArgs: whereArgs);
     return maps.map((e) => mapToObj(e)).toList();

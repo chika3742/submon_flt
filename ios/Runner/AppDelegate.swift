@@ -1,68 +1,134 @@
 import UIKit
 import Flutter
+import AuthenticationServices
 
+let mainChannel = "submon/main"
+let notifChannel = "submon/notification"
+
+@available(iOS 13.0, *)
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
+    
     var binaryMessenger : FlutterBinaryMessenger? = nil
+    var controller : FlutterViewController? = nil
+    
+    var session : ASWebAuthenticationSession? = nil
     
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
-        binaryMessenger = controller.binaryMessenger
-        let mainMethodChannel = FlutterMethodChannel(name: "submon/main", binaryMessenger: controller.binaryMessenger)
-        let ntfcMethodChannel = FlutterMethodChannel(name: "submon/notification", binaryMessenger: controller.binaryMessenger)
-
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { (granted, _) in
-          if granted {
-              UNUserNotificationCenter.current().delegate = self
-          }
+        controller = window?.rootViewController as? FlutterViewController
+        binaryMessenger = controller!.binaryMessenger
+        let mainMethodChannel = FlutterMethodChannel(name: mainChannel, binaryMessenger: controller!.binaryMessenger)
+        let notifMethodChannel = FlutterMethodChannel(name: notifChannel, binaryMessenger: controller!.binaryMessenger)
+        
+        let notifCenter = UNUserNotificationCenter.current()
+        
+        notifCenter.requestAuthorization(options: [.alert, .sound, .badge]) { (granted, _) in
+            if granted {
+                notifCenter.delegate = self
+            }
         }
-
+        
+        let createAction = UNNotificationAction(identifier: "create_new", title: "新規作成", options: [.foreground])
+        
+        let category = UNNotificationCategory(identifier: "reminder", actions: [createAction], intentIdentifiers: [], options: [])
+        
+        notifCenter.setNotificationCategories([category])
+        
         mainMethodChannel.setMethodCallHandler({
-          (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-          switch call.method {
-              case "openWebPage":
-                  let next = controller.storyboard?.instantiateViewController(withIdentifier: "WebViewController") as! WebViewController
-                  let args = call.arguments as! Dictionary<String, String>
-                  next.url = args["url"]
-                  next.title = args["title"]
-                  controller.present(next, animated: true, completion: nil)
-                  result(nil)
-              default:
-                  break
-              }
+            (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
+            let args = call.arguments as! Dictionary<String, String>
+            switch call.method {
+            case "openWebPage":
+                let next = self.controller!.storyboard?.instantiateViewController(withIdentifier: "WebViewController") as! WebViewController
+                next.url = args["url"]
+                next.title = args["title"]
+                self.controller!.present(next, animated: true, completion: nil)
+                result(nil)
+                break
+            case "openCustomTabs":
+                self.session = ASWebAuthenticationSession(url: URL(string: args["url"]!)!, callbackURLScheme: "submon") { (url, error) in
+                    result(url?.absoluteString)
+                }
+                self.session!.presentationContextProvider = self
+                self.session!.start()
+                break
+            default:
+                result(FlutterMethodNotImplemented)
+                break
+            }
         })
         
-        ntfcMethodChannel.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
-            let args = call.arguments as! Dictionary<String, Any>
+        notifMethodChannel.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
+            let args = call.arguments as? Dictionary<String, Any> ?? [:]
             
             switch call.method {
-            case "registerAt":
+            case "isGranted":
+                UNUserNotificationCenter.current().getNotificationSettings { settings in
+                    result(settings.authorizationStatus == UNAuthorizationStatus.authorized)
+                }
+                break
+            case "registerReminder":
                 let content = UNMutableNotificationContent()
                 content.title = args["title"] as! String
                 content.body = args["body"] as! String
+                content.sound = .defaultCritical
+                content.categoryIdentifier = "reminder"
                 
-                let date = Date(timeIntervalSince1970: TimeInterval(args["timeSinceEpoch"] as! Int))
-                let dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
+                let trigger: UNCalendarNotificationTrigger
                 
-                let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
+                var dateComponents = DateComponents()
+                dateComponents.calendar = Calendar.current
                 
-                let request = UNNotificationRequest.init(identifier: (args["id"] as! String?) ?? UUID().uuidString, content: content, trigger: trigger)
+                dateComponents.hour = args["hour"] as? Int
+                dateComponents.minute = args["minute"] as? Int
+                
+                trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+                
+                let request = UNNotificationRequest.init(identifier: "reminder", content: content, trigger: trigger)
                 
                 UNUserNotificationCenter.current().add(request)
+                result(nil)
                 break;
+            case "unregisterReminder":
+                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["reminder"])
+                result(nil)
+                break
             default:
+                
                 break;
             }
         }
-
+        
         GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
+    
     override func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.sound, .alert])
+        completionHandler([.badge, .sound, .alert])
+    }
+    
+    override func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        if binaryMessenger != nil {
+            switch (response.actionIdentifier) {
+            case "create_new":
+                let notifMethodChannel = FlutterMethodChannel(name: notifChannel, binaryMessenger: binaryMessenger!)
+                notifMethodChannel.invokeMethod("action.createNew", arguments: nil)
+                break
+            default:
+                break
+            }
+        }
+        completionHandler()
+    }
+}
+
+@available(iOS 13.0, *)
+extension AppDelegate : ASWebAuthenticationPresentationContextProviding {
+    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+        return controller!.view!.window!
     }
 }

@@ -423,7 +423,7 @@ class _ListPageState extends State<_ListPage> {
       subjects = _getSubjects();
     } else {
       TimetableCustomSubjectProvider().use((provider) async {
-        final list = await provider.getList();
+        final list = await provider.getAll();
         setState(() {
           customSubjects = list;
         });

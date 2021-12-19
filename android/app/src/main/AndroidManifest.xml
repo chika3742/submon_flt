@@ -3,6 +3,7 @@
     package="net.chikach.submon">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <queries>
         <intent>
@@ -15,11 +16,6 @@
     <application
         android:icon="@mipmap/ic_launcher"
         android:label="submon">
-        <receiver
-            android:name=".NotificationAlarmBroadcastReceiver"
-            android:enabled="true"
-            android:exported="false" />
-
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
@@ -63,9 +59,17 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".WebPageActivity"
             android:theme="@style/Theme.AppCompat.DayNight" />
+
+
+        <receiver
+            android:name=".ReminderNotificationBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
         <!--
  Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java

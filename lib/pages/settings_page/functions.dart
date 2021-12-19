@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/method_channel/notification.dart';
 import 'package:submon/pages/sign_in_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
@@ -17,6 +18,7 @@ class FunctionsSettingsPage extends StatefulWidget {
 class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
   bool _pwEnabled = true;
   bool? _enableSE;
+  TimeOfDay? _reminderTime;
 
   @override
   void initState() {
@@ -24,6 +26,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
     SharedPrefs.use((prefs) {
       setState(() {
         _enableSE = prefs.enableSE;
+        _reminderTime = prefs.reminderTime;
       });
     });
   }
@@ -34,6 +37,51 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
     var displayName = auth.currentUser?.displayName;
     return SettingsListView(
       categories: [
+        SettingsCategory(
+          title: "リマインダー通知",
+          tiles: [
+            SettingsTile(
+                subtitle: "設定した時刻にリマインダー通知をします。期限が近づいた提出物がある場合、その一覧を通知します。"),
+            SettingsTile(
+              title: "通知時刻",
+              subtitle: _reminderTime != null
+                  ? _reminderTime!.format(context)
+                  : "タップして設定",
+              leading: const Icon(Icons.schedule),
+              trailing: IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  SharedPrefs.use((prefs) {
+                    prefs.reminderTime = null;
+                  });
+                  setState(() {
+                    _reminderTime = null;
+                  });
+                  NotificationMethodChannel.unregisterReminder();
+                },
+              ),
+              onTap: () async {
+                if (await NotificationMethodChannel.isGranted() == false) {
+                  showSnackBar(context, "通知の表示が許可されていません。本体設定から許可してください。");
+                } else {
+                  var result = await showTimePicker(
+                    context: context,
+                    initialTime: _reminderTime ?? TimeOfDay.now(),
+                  );
+                  if (result != null) {
+                    SharedPrefs.use((prefs) {
+                      prefs.reminderTime = result;
+                    });
+                    setState(() {
+                      _reminderTime = result;
+                    });
+                    NotificationMethodChannel.registerReminder();
+                  }
+                }
+              },
+            ),
+          ],
+        ),
         SettingsCategory(title: "アカウント", tiles: [
           SettingsTile(
             title: auth.currentUser != null ? "ログアウト" : "ログイン / 新規登録",

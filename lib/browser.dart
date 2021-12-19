@@ -19,7 +19,7 @@ void _openWebPage(String title, String url) {
   mc.invokeMethod("openWebPage", {"title": title, "url": url});
 }
 
-void openCustomTabs(String url) {
+Future<String?> openCustomTabs(String url) async {
   var mc = const MethodChannel(channel);
-  mc.invokeMethod("openCustomTabs", {"url": url});
+  return await mc.invokeMethod<String>("openCustomTabs", {"url": url});
 }
