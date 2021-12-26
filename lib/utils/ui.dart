@@ -178,9 +178,11 @@ Future<dynamic> showRoundedBottomSheet({
   BuildContext? context,
   String? title,
   Widget? child,
+  bool useRootNavigator = false,
 }) {
   return showModalBottomSheet(
     context: context!,
+    useRootNavigator: useRootNavigator,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(

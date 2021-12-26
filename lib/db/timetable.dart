@@ -75,6 +75,20 @@ class TimetableProvider extends SqlProvider<Timetable> {
   }
 
   @override
+  Future<int> delete(int id) async {
+    if (currentTableId != "main") {
+      await db.delete(tableName(),
+          where: "$colCellId = ? and $colTableId = ?",
+          whereArgs: [id, currentTableId]);
+    } else {
+      await db.delete(tableName(),
+          where: "$colCellId = ? and $colTableId is null", whereArgs: [id]);
+    }
+
+    return id;
+  }
+
+  @override
   Map<String, Object?> objToMap(Timetable data) {
     return objToMapStatic(data);
   }

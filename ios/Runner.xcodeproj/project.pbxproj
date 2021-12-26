@@ -13,10 +13,83 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		C738C30027775A1E007AB417 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = C738C2FF27775A1E007AB417 /* Database.swift */; };
+		C738C30127775A1E007AB417 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = C738C2FF27775A1E007AB417 /* Database.swift */; };
 		C75C9B3F2747E5270064F08D /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75C9B3E2747E5260064F08D /* WebViewController.swift */; };
+		C77654AF2777717F0046C4A6 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C77654A2277771130046C4A6 /* SQLite.framework */; };
+		C77654B02777717F0046C4A6 /* SQLite.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C77654A2277771130046C4A6 /* SQLite.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C77654B12777722C0046C4A6 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C77654A2277771130046C4A6 /* SQLite.framework */; };
+		C77654B22777722C0046C4A6 /* SQLite.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C77654A2277771130046C4A6 /* SQLite.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C77654B4277772310046C4A6 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C795EEBC2775966D00BBE527 /* WidgetKit.framework */; };
+		C77654B5277772310046C4A6 /* WidgetKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C795EEBC2775966D00BBE527 /* WidgetKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C795EEEE2775983200BBE527 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C795EEBE2775966D00BBE527 /* SwiftUI.framework */; };
+		C795EEF12775983200BBE527 /* SubmissionListWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C795EEF02775983200BBE527 /* SubmissionListWidget.swift */; };
+		C795EEF42775983300BBE527 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C795EEF32775983300BBE527 /* Assets.xcassets */; };
+		C795EEF62775983300BBE527 /* SubmissionListWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = C795EEF22775983200BBE527 /* SubmissionListWidget.intentdefinition */; };
+		C795EEF72775983300BBE527 /* SubmissionListWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = C795EEF22775983200BBE527 /* SubmissionListWidget.intentdefinition */; };
+		C795EEFA2775983300BBE527 /* SubmissionListWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = C795EEEC2775983200BBE527 /* SubmissionListWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		C7AA489927454DC6009C440D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7AA489827454DC6009C440D /* GoogleService-Info.plist */; };
 		C7F285B127697B670067BB87 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = C7F285B027697B670067BB87 /* GeneratedPluginRegistrant.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C77654A1277771130046C4A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7765497277771130046C4A6 /* SQLite.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EE247AD31C3F04ED00AE3E12;
+			remoteInfo = "SQLite iOS";
+		};
+		C77654A3277771130046C4A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7765497277771130046C4A6 /* SQLite.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EE247ADD1C3F04ED00AE3E12;
+			remoteInfo = "SQLiteTests iOS";
+		};
+		C77654A5277771130046C4A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7765497277771130046C4A6 /* SQLite.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EE247B3C1C3F3ED000AE3E12;
+			remoteInfo = "SQLite Mac";
+		};
+		C77654A7277771130046C4A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7765497277771130046C4A6 /* SQLite.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EE247B451C3F3ED000AE3E12;
+			remoteInfo = "SQLiteTests Mac";
+		};
+		C77654A9277771130046C4A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7765497277771130046C4A6 /* SQLite.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 03A65E5A1C6BB0F50062603F;
+			remoteInfo = "SQLite tvOS";
+		};
+		C77654AB277771130046C4A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7765497277771130046C4A6 /* SQLite.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 03A65E631C6BB0F60062603F;
+			remoteInfo = "SQLiteTests tvOS";
+		};
+		C77654AD277771130046C4A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7765497277771130046C4A6 /* SQLite.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A121AC451CA35C79005A31D1;
+			remoteInfo = "SQLite watchOS";
+		};
+		C795EEF82775983300BBE527 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C795EEEB2775983200BBE527;
+			remoteInfo = SubmissionListWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		9705A1C41CF9048500538489 /* Embed Frameworks */ = {
@@ -25,8 +98,32 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				C77654B02777717F0046C4A6 /* SQLite.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C77654B32777722C0046C4A6 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				C77654B22777722C0046C4A6 /* SQLite.framework in Embed Frameworks */,
+				C77654B5277772310046C4A6 /* WidgetKit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C795EECC2775966E00BBE527 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				C795EEFA2775983300BBE527 /* SubmissionListWidgetExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -47,7 +144,18 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		97E94D576667F7765A46BDC0 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		A74C1E6C866CD2B1ABCBA5BE /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
+		C738C2FF27775A1E007AB417 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
+		C759CFCA2775AE600026B907 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
+		C759CFCB2775AFF90026B907 /* SubmissionListWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SubmissionListWidgetExtension.entitlements; sourceTree = "<group>"; };
 		C75C9B3E2747E5260064F08D /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
+		C7765497277771130046C4A6 /* SQLite.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SQLite.xcodeproj; path = ../../../Documents/SQLite.swift/SQLite.xcodeproj; sourceTree = "<group>"; };
+		C795EEBC2775966D00BBE527 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		C795EEBE2775966D00BBE527 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		C795EEEC2775983200BBE527 /* SubmissionListWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SubmissionListWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C795EEF02775983200BBE527 /* SubmissionListWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmissionListWidget.swift; sourceTree = "<group>"; };
+		C795EEF22775983200BBE527 /* SubmissionListWidget.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = SubmissionListWidget.intentdefinition; sourceTree = "<group>"; };
+		C795EEF32775983300BBE527 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C795EEF52775983300BBE527 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C7AA489827454DC6009C440D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C7F285B027697B670067BB87 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		E80F03FBC2FF8BB2D315ACA0 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
@@ -58,7 +166,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C77654AF2777717F0046C4A6 /* SQLite.framework in Frameworks */,
 				51F10D054A3DEFC559CCC83A /* Pods_Runner.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C795EEE92775983200BBE527 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C795EEEE2775983200BBE527 /* SwiftUI.framework in Frameworks */,
+				C77654B12777722C0046C4A6 /* SQLite.framework in Frameworks */,
+				C77654B4277772310046C4A6 /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,6 +198,8 @@
 			isa = PBXGroup;
 			children = (
 				49074BA7ED1EC24BE6498B7A /* Pods_Runner.framework */,
+				C795EEBC2775966D00BBE527 /* WidgetKit.framework */,
+				C795EEBE2775966D00BBE527 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -97,9 +218,12 @@
 		97C146E51CF9000F007C117D = {
 			isa = PBXGroup;
 			children = (
+				C7765497277771130046C4A6 /* SQLite.xcodeproj */,
+				C759CFCB2775AFF90026B907 /* SubmissionListWidgetExtension.entitlements */,
 				C7AA489827454DC6009C440D /* GoogleService-Info.plist */,
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
+				C795EEEF2775983200BBE527 /* SubmissionListWidget */,
 				97C146EF1CF9000F007C117D /* Products */,
 				89B65C9A6B0D9DFEF36FE4BE /* Pods */,
 				9715EB56F668F6F66ADCA14F /* Frameworks */,
@@ -110,6 +234,7 @@
 			isa = PBXGroup;
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
+				C795EEEC2775983200BBE527 /* SubmissionListWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -117,6 +242,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				C759CFCA2775AE600026B907 /* Runner.entitlements */,
 				C7F285B027697B670067BB87 /* GeneratedPluginRegistrant.m */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
@@ -128,6 +254,32 @@
 				C75C9B3E2747E5260064F08D /* WebViewController.swift */,
 			);
 			path = Runner;
+			sourceTree = "<group>";
+		};
+		C7765498277771130046C4A6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C77654A2277771130046C4A6 /* SQLite.framework */,
+				C77654A4277771130046C4A6 /* SQLiteTests iOS.xctest */,
+				C77654A6277771130046C4A6 /* SQLite.framework */,
+				C77654A8277771130046C4A6 /* SQLiteTests Mac.xctest */,
+				C77654AA277771130046C4A6 /* SQLite.framework */,
+				C77654AC277771130046C4A6 /* SQLiteTests tvOS.xctest */,
+				C77654AE277771130046C4A6 /* SQLite.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C795EEEF2775983200BBE527 /* SubmissionListWidget */ = {
+			isa = PBXGroup;
+			children = (
+				C795EEF02775983200BBE527 /* SubmissionListWidget.swift */,
+				C795EEF22775983200BBE527 /* SubmissionListWidget.intentdefinition */,
+				C795EEF32775983300BBE527 /* Assets.xcassets */,
+				C795EEF52775983300BBE527 /* Info.plist */,
+				C738C2FF27775A1E007AB417 /* Database.swift */,
+			);
+			path = SubmissionListWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -147,15 +299,35 @@
 				6CAE849DE11C5F80B19FABD1 /* [CP] Embed Pods Frameworks */,
 				C7AA489A2745542C009C440D /* ShellScript */,
 				295514FFDFA58154E4EB99B3 /* [CP] Copy Pods Resources */,
+				C795EECC2775966E00BBE527 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				C795EEF92775983300BBE527 /* PBXTargetDependency */,
 			);
 			name = Runner;
 			productName = Runner;
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
 			productType = "com.apple.product-type.application";
+		};
+		C795EEEB2775983200BBE527 /* SubmissionListWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C795EEFB2775983300BBE527 /* Build configuration list for PBXNativeTarget "SubmissionListWidgetExtension" */;
+			buildPhases = (
+				C795EEE82775983200BBE527 /* Sources */,
+				C795EEE92775983200BBE527 /* Frameworks */,
+				C795EEEA2775983200BBE527 /* Resources */,
+				C77654B32777722C0046C4A6 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SubmissionListWidgetExtension;
+			productName = SubmissionListWidgetExtension;
+			productReference = C795EEEC2775983200BBE527 /* SubmissionListWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -163,12 +335,16 @@
 		97C146E61CF9000F007C117D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 1320;
 				LastUpgradeCheck = 1300;
 				ORGANIZATIONNAME = "";
 				TargetAttributes = {
 					97C146ED1CF9000F007C117D = {
 						CreatedOnToolsVersion = 7.3.1;
 						LastSwiftMigration = 1100;
+					};
+					C795EEEB2775983200BBE527 = {
+						CreatedOnToolsVersion = 13.2.1;
 					};
 				};
 			};
@@ -183,12 +359,71 @@
 			mainGroup = 97C146E51CF9000F007C117D;
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = C7765498277771130046C4A6 /* Products */;
+					ProjectRef = C7765497277771130046C4A6 /* SQLite.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
+				C795EEEB2775983200BBE527 /* SubmissionListWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		C77654A2277771130046C4A6 /* SQLite.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SQLite.framework;
+			remoteRef = C77654A1277771130046C4A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C77654A4277771130046C4A6 /* SQLiteTests iOS.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "SQLiteTests iOS.xctest";
+			remoteRef = C77654A3277771130046C4A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C77654A6277771130046C4A6 /* SQLite.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SQLite.framework;
+			remoteRef = C77654A5277771130046C4A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C77654A8277771130046C4A6 /* SQLiteTests Mac.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "SQLiteTests Mac.xctest";
+			remoteRef = C77654A7277771130046C4A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C77654AA277771130046C4A6 /* SQLite.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SQLite.framework;
+			remoteRef = C77654A9277771130046C4A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C77654AC277771130046C4A6 /* SQLiteTests tvOS.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "SQLiteTests tvOS.xctest";
+			remoteRef = C77654AB277771130046C4A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C77654AE277771130046C4A6 /* SQLite.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SQLite.framework;
+			remoteRef = C77654AD277771130046C4A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		97C146EC1CF9000F007C117D /* Resources */ = {
@@ -200,6 +435,14 @@
 				C7AA489927454DC6009C440D /* GoogleService-Info.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C795EEEA2775983200BBE527 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C795EEF42775983300BBE527 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -316,11 +559,31 @@
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				C75C9B3F2747E5270064F08D /* WebViewController.swift in Sources */,
+				C795EEF72775983300BBE527 /* SubmissionListWidget.intentdefinition in Sources */,
+				C738C30027775A1E007AB417 /* Database.swift in Sources */,
 				C7F285B127697B670067BB87 /* GeneratedPluginRegistrant.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C795EEE82775983200BBE527 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C738C30127775A1E007AB417 /* Database.swift in Sources */,
+				C795EEF62775983300BBE527 /* SubmissionListWidget.intentdefinition in Sources */,
+				C795EEF12775983200BBE527 /* SubmissionListWidget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C795EEF92775983300BBE527 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C795EEEB2775983200BBE527 /* SubmissionListWidgetExtension */;
+			targetProxy = C795EEF82775983300BBE527 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		97C146FA1CF9000F007C117D /* Main.storyboard */ = {
@@ -396,8 +659,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = B66Z929S96;
 				ENABLE_BITCODE = NO;
@@ -465,7 +730,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -527,8 +792,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = B66Z929S96;
 				ENABLE_BITCODE = NO;
@@ -552,8 +819,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = B66Z929S96;
 				ENABLE_BITCODE = NO;
@@ -571,6 +840,121 @@
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
+		};
+		C795EEFC2775983300BBE527 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = SubmissionListWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B66Z929S96;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SubmissionListWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SubmissionListWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = net.chikach.submon.SubmissionListWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C795EEFD2775983300BBE527 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = SubmissionListWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B66Z929S96;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SubmissionListWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SubmissionListWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = net.chikach.submon.SubmissionListWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		C795EEFE2775983300BBE527 /* Profile */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = SubmissionListWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B66Z929S96;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SubmissionListWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SubmissionListWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = net.chikach.submon.SubmissionListWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Profile;
 		};
 /* End XCBuildConfiguration section */
 
@@ -591,6 +975,16 @@
 				97C147061CF9000F007C117D /* Debug */,
 				97C147071CF9000F007C117D /* Release */,
 				249021D4217E4FDB00AE95B9 /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C795EEFB2775983300BBE527 /* Build configuration list for PBXNativeTarget "SubmissionListWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C795EEFC2775983300BBE527 /* Debug */,
+				C795EEFD2775983300BBE527 /* Release */,
+				C795EEFE2775983300BBE527 /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

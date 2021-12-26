@@ -117,30 +117,44 @@ class _HomePageState extends State<HomePage> {
           HidableLinearProgressIndicator(show: _loading),
         ],
       ),
-      floatingActionButton: tabIndex == 0
-          ? OpenContainer<int>(
-              useRootNavigator: true,
-              closedElevation: 8,
-              closedShape: const CircleBorder(),
-              closedColor: Theme.of(context).canvasColor,
-              closedBuilder: (context, callback) => FloatingActionButton(
-                child: const Icon(Icons.add),
-                onPressed: callback,
-              ),
-              openBuilder: (context, callback) {
-                return const SubmissionCreatePage();
-              },
-              onClosed: (result) {
-                if (result != null) eventBus.fire(SubmissionInserted(result));
-              },
-            )
-          : null,
+      floatingActionButton: _buildFloatingActionButton(),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: tabIndex,
         items: _bottomNavigationItems(),
         onTap: onBottomNavTap,
       ),
     );
+  }
+
+  Widget? _buildFloatingActionButton() {
+    switch (tabIndex) {
+      case 0:
+        return OpenContainer<int>(
+          useRootNavigator: true,
+          closedElevation: 8,
+          closedShape: const CircleBorder(),
+          closedColor: Theme.of(context).canvasColor,
+          closedBuilder: (context, callback) => FloatingActionButton(
+            child: const Icon(Icons.add),
+            onPressed: callback,
+          ),
+          openBuilder: (context, callback) {
+            return const SubmissionCreatePage();
+          },
+          onClosed: (result) {
+            if (result != null) eventBus.fire(SubmissionInserted(result));
+          },
+        );
+      case 2:
+        return FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () {
+            eventBus.fire(MemorizeCardAddButtonPressed());
+          },
+        );
+      default:
+        return null;
+    }
   }
 
   void onBottomNavTap(int index) {

@@ -1,6 +1,7 @@
 import UIKit
 import Flutter
 import AuthenticationServices
+import SafariServices
 
 let mainChannel = "submon/main"
 let notifChannel = "submon/notification"
@@ -42,9 +43,9 @@ let notifChannel = "submon/notification"
             let args = call.arguments as! Dictionary<String, String>
             switch call.method {
             case "openWebPage":
-                let next = self.controller!.storyboard?.instantiateViewController(withIdentifier: "WebViewController") as! WebViewController
-                next.url = args["url"]
-                next.title = args["title"]
+//                let next = self.controller!.storyboard?.instantiateViewController(withIdentifier: "WebViewController") as! WebViewController
+                let next = SFSafariViewController(url: URL.init(string: args["url"]!)!)
+                next.modalPresentationStyle = .pageSheet
                 self.controller!.present(next, animated: true, completion: nil)
                 result(nil)
                 break

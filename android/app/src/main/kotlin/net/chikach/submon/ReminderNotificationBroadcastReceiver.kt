@@ -49,14 +49,14 @@ class ReminderNotificationBroadcastReceiver : BroadcastReceiver() {
         else UUID.randomUUID().hashCode()
         NotificationManagerCompat.from(context).notify(id, notif)
 
-//        Utils.registerReminderNotification(
-//            context,
-//            title,
-//            content,
-//            intent.getIntExtra("REPEAT_HOUR", 0),
-//            intent.getIntExtra("REPEAT_MINUTE", 0),
-//            true
-//        )
+        Utils.registerReminderNotification(
+            context,
+            title,
+            content,
+            intent.getIntExtra("REPEAT_HOUR", 0),
+            intent.getIntExtra("REPEAT_MINUTE", 0),
+            true
+        )
     }
 
 }
