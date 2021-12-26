@@ -38,11 +38,15 @@ object Utils {
         intent.putExtra("REPEAT_HOUR", hour)
             .putExtra("REPEAT_MINUTE", minute)
 
-        context.sendBroadcast(intent)
+//        context.sendBroadcast(intent)
 
-//        AlarmManagerCompat.setExactAndAllowWhileIdle(am, AlarmManager.RTC_WAKEUP, time,
-//            PendingIntent.getBroadcast(context, REMINDER_REQUEST_CODE,
-//                intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+        AlarmManagerCompat.setExactAndAllowWhileIdle(
+            am, AlarmManager.RTC_WAKEUP, time,
+            PendingIntent.getBroadcast(
+                context, REMINDER_REQUEST_CODE,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+        )
     }
 
     fun cancelReminderNotification(context: Context) {

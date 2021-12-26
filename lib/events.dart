@@ -28,3 +28,7 @@ class TimetableCustomSubjectInserted {
 
   TimetableCustomSubjectInserted(this.data);
 }
+
+class MemorizeCardAddButtonPressed {
+  MemorizeCardAddButtonPressed();
+}

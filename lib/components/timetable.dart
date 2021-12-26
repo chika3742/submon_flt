@@ -154,7 +154,10 @@ class TimetableState extends State<Timetable> {
                     closedColor: Colors.green,
                     onClosed: (result) {
                       if (result != null) {
-                        onSubjectSelected(result, youbi, index);
+                        Future.delayed(const Duration(milliseconds: 300))
+                            .then((value) {
+                          onSubjectSelected(result, youbi, index);
+                        });
                       }
                     },
                     closedShape: RoundedRectangleBorder(
@@ -347,6 +350,7 @@ class _NoteViewState extends State<_NoteView> {
                           child: Column(children: [
                             TextFormField(
                               controller: controller,
+                              autofocus: true,
                               decoration: InputDecoration(
                                 border: const OutlineInputBorder(),
                                 labelText: "メモ",
