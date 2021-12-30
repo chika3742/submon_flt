@@ -3,23 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/submission.dart';
+import 'package:submon/method_channel/channels.dart';
 
 class NotificationMethodChannel {
-  static const mc = MethodChannel("submon/notification");
+  static const mc = MethodChannel(Channels.notification);
 
   static Future<bool?> isGranted() {
     return mc.invokeMethod<bool>("isGranted");
-  }
-
-  static Future<PendingAction?> getPendingAction() async {
-    var pa = await mc.invokeMethod<String>("getPendingAction");
-    if (pa != null) {
-      try {
-        return PendingAction.values.firstWhere((element) => element.name == pa);
-      } on StateError {
-        return null;
-      }
-    }
   }
 
   /// Registers reminder notification.
@@ -81,5 +71,3 @@ extension DateTimeExt on DateTime {
     return newDT;
   }
 }
-
-enum PendingAction { createNew }

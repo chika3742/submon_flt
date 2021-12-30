@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:submon/browser.dart';
+import 'package:submon/method_channel/channels.dart';
 import 'package:submon/utils/ui.dart';
 
 class TwitterSignIn {
@@ -146,7 +147,7 @@ class TwitterSignIn {
 
   Future<AuthResult> waitForUri() async {
     var completer = Completer<AuthResult>();
-    const MethodChannel(channel).setMethodCallHandler((call) async {
+    const MethodChannel(Channels.main).setMethodCallHandler((call) async {
       if (call.method == "onUriData") {
         var query = Uri.splitQueryString(call.arguments);
         completer.complete(
