@@ -35,28 +35,34 @@ val chromiumBrowserPackages = listOf(
 const val REMINDER_CHANNEL = "reminder"
 const val TIMETABLE_CHANNEL = "timetable"
 
+const val METHOD_CHANNEL_MAIN = "submon/main"
+const val METHOD_CHANNEL_NOTIFICATION = "submon/notification"
+const val METHOD_CHANNEL_ACTIONS = "submon/actions"
+
 class MainActivity : FlutterActivity() {
-    private val mainChannel = "submon/main"
-    private val notificationChannel = "submon/notification"
     lateinit var mainMethodChannel: MethodChannel
     var pendingAction: String? = null
+    var pendingActionArgument: Int? = null
+
+    companion object {
+        const val EXTRA_FLUTTER_ACTION = "FLUTTER_ACTION"
+        const val EXTRA_FLUTTER_ACTION_ARGUMENT_ID = "FLUTTER_ACTION_ARGUMENT_ID"
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        if (intent.hasExtra("FLUTTER_ACTION")) {
-            val notificationMethodChannel =
-                MethodChannel(flutterEngine.dartExecutor.binaryMessenger, notificationChannel)
+        if (intent.hasExtra(EXTRA_FLUTTER_ACTION)) {
+            val mc =
+                MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_ACTIONS)
 
-            pendingAction = Action.values()[intent.getIntExtra("FLUTTER_ACTION", -1)].name
-            when (intent.getIntExtra("FLUTTER_ACTION", -1)) {
-                Action.createNew.ordinal -> {
-                    notificationMethodChannel.invokeMethod("action.createNew", null)
-                }
-            }
+            pendingAction = intent.getStringExtra(EXTRA_FLUTTER_ACTION)
+            pendingActionArgument = intent.getIntExtra(EXTRA_FLUTTER_ACTION_ARGUMENT_ID, -1)
+            mc.invokeMethod(pendingAction!!, pendingActionArgument)
         }
 
-        mainMethodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, mainChannel)
+        mainMethodChannel =
+            MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_MAIN)
         mainMethodChannel.setMethodCallHandler { call, result ->
             when (call.method) {
                 "openWebPage" -> {
@@ -107,14 +113,11 @@ class MainActivity : FlutterActivity() {
         }
 
         val notificationMethodChannel =
-            MethodChannel(flutterEngine.dartExecutor.binaryMessenger, notificationChannel)
+            MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_NOTIFICATION)
         notificationMethodChannel.setMethodCallHandler { call, result ->
             when (call.method) {
                 "isGranted" -> {
                     result.success(true)
-                }
-                "getPendingAction" -> {
-                    result.success(pendingAction)
                 }
                 "registerReminder" -> {
                     Utils.registerReminderNotification(
@@ -135,6 +138,20 @@ class MainActivity : FlutterActivity() {
                 }
                 else -> {
                     result.notImplemented()
+                }
+            }
+        }
+
+        val amc = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_ACTIONS)
+        amc.setMethodCallHandler { call, result ->
+            when (call.method) {
+                "getPendingAction" -> {
+                    result.success(pendingAction)
+                    pendingAction = null
+                }
+                "getPendingActionArgument" -> {
+                    result.success(pendingActionArgument)
+                    pendingActionArgument = null
                 }
             }
         }
@@ -173,15 +190,15 @@ class MainActivity : FlutterActivity() {
         super.onNewIntent(intent)
         if (intent.data != null) mainMethodChannel.invokeMethod("onUriData", intent.data!!.query)
 
-        if (intent.hasExtra("FLUTTER_ACTION") && flutterEngine != null) {
-            val notificationMethodChannel =
-                MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, notificationChannel)
-
-            when (intent.getIntExtra("FLUTTER_ACTION", -1)) {
-                Action.createNew.ordinal -> {
-                    notificationMethodChannel.invokeMethod("action.createNew", null)
-                }
-            }
+        Log.d("onnewintent", "called")
+        if (intent.hasExtra(EXTRA_FLUTTER_ACTION) && flutterEngine != null) {
+            val mc =
+                MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, METHOD_CHANNEL_ACTIONS)
+            mc.invokeMethod(
+                intent.getStringExtra(EXTRA_FLUTTER_ACTION)!!, intent.getIntExtra(
+                    EXTRA_FLUTTER_ACTION_ARGUMENT_ID, -1
+                )
+            )
         }
     }
 

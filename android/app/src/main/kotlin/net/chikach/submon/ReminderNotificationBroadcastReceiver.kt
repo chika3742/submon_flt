@@ -36,7 +36,10 @@ class ReminderNotificationBroadcastReceiver : BroadcastReceiver() {
                             context,
                             MainActivity::class.java
                         ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            .putExtra("FLUTTER_ACTION", Action.createNew.ordinal),
+                            .putExtra(
+                                MainActivity.EXTRA_FLUTTER_ACTION,
+                                Action.openCreateNewPage.name
+                            ),
                         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
                 )

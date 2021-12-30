@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
-
-const channel = "submon/main";
+import 'package:submon/method_channel/channels.dart';
 
 void openTermsOfUse() {
   _openWebPage("利用規約", "https://www.chikach.net/nonav/submon-terms/");
@@ -15,11 +14,11 @@ void openChangelog() {
 }
 
 void _openWebPage(String title, String url) {
-  var mc = const MethodChannel(channel);
+  var mc = const MethodChannel(Channels.main);
   mc.invokeMethod("openWebPage", {"title": title, "url": url});
 }
 
 Future<String?> openCustomTabs(String url) async {
-  var mc = const MethodChannel(channel);
+  var mc = const MethodChannel(Channels.main);
   return await mc.invokeMethod<String>("openCustomTabs", {"url": url});
 }

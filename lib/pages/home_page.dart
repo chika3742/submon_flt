@@ -3,11 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submon/components/hidable_progress_indicator.dart';
 import 'package:submon/db/firestore.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
+import 'package:submon/method_channel/actions.dart';
+import 'package:submon/method_channel/channels.dart';
 import 'package:submon/method_channel/notification.dart';
 import 'package:submon/pages/home_tabs/tab_memorize_card.dart';
 import 'package:submon/pages/home_tabs/tab_others.dart';
@@ -61,7 +64,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     initDynamicLinks();
-    initNativeActions();
+    initMethodCallHandler();
     fetchData();
     pages = [
       const TabSubmissions(),
@@ -228,30 +231,6 @@ class _HomePageState extends State<HomePage> {
     Navigator.pop(context);
   }
 
-  void initNativeActions() {
-    void createNew() {
-      Navigator.of(context).pushNamed("/submission/create", arguments: {});
-    }
-
-    NotificationMethodChannel.getPendingAction().then((action) {
-      if (action != null) {
-        switch (action) {
-          case PendingAction.createNew:
-            createNew();
-            break;
-        }
-      }
-    });
-
-    NotificationMethodChannel.mc.setMethodCallHandler((call) async {
-      switch (call.method) {
-        case "action.createNew":
-          createNew();
-          break;
-      }
-    });
-  }
-
   void fetchData() async {
     if (userDoc == null) return;
     setState(() {
@@ -272,6 +251,47 @@ class _HomePageState extends State<HomePage> {
 
     setState(() {
       _loading = false;
+    });
+  }
+
+  void initMethodCallHandler() {
+    void createNew() {
+      Navigator.of(context, rootNavigator: true)
+          .pushNamed("/submission/create", arguments: {});
+    }
+
+    void openSubmissionDetailPage(int id) {
+      Navigator.of(context, rootNavigator: true)
+          .pushNamed("/submission/detail", arguments: {"id": id});
+    }
+
+    getPendingAction().then((action) {
+      if (action != null) {
+        switch (action.actionName) {
+          case "openCreateNewPage":
+            createNew();
+            break;
+          case "openSubmissionDetailPage":
+            openSubmissionDetailPage(action.argument!);
+            break;
+        }
+      }
+    });
+
+    const MethodChannel(Channels.actions).setMethodCallHandler((call) async {
+      switch (call.method) {
+        case "resetNotifications":
+          NotificationMethodChannel.registerReminder();
+          break;
+        case "openCreateNewPage":
+          createNew();
+          break;
+        case "openSubmissionDetailPage":
+          openSubmissionDetailPage(call.arguments);
+          break;
+        default:
+          return UnimplementedError();
+      }
     });
   }
 }
