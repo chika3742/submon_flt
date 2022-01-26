@@ -1,14 +1,13 @@
+import 'dart:async';
+
 import 'package:animations/animations.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submon/components/hidable_progress_indicator.dart';
 import 'package:submon/db/firestore.dart';
-import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
+import 'package:submon/main.dart';
 import 'package:submon/method_channel/actions.dart';
 import 'package:submon/method_channel/channels.dart';
 import 'package:submon/method_channel/notification.dart';
@@ -21,7 +20,6 @@ import 'package:submon/utils/firestore.dart';
 import 'package:submon/utils/ui.dart';
 
 import '../fade_through_page_route.dart';
-import '../utils/utils.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -32,6 +30,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
+  StreamSubscription? linkListener;
   var tabIndex = 0;
   var _loading = false;
 
@@ -60,10 +59,19 @@ class _HomePageState extends State<HomePage> {
 
   final timetableKey = GlobalKey<TabTimetableState>();
 
+  final _scaffoldKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
-    initDynamicLinks();
+
+    MyApp.globalKey = _scaffoldKey;
+
+    linkListener = eventBus.on<SignedInWithLink>().listen((_) {
+      Navigator.of(context, rootNavigator: true)
+          .popUntil((route) => !route.settings.name!.startsWith("/signIn"));
+    });
+
     initMethodCallHandler();
     fetchData();
     pages = [
@@ -95,8 +103,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void dispose() {
+    linkListener?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(_bottomNavigationItems()[tabIndex].label!),
         actions: actions[tabIndex]
@@ -172,65 +187,6 @@ class _HomePageState extends State<HomePage> {
         ?.pushReplacement(FadeThroughPageRoute(pages[index]));
   }
 
-  void initDynamicLinks() {
-    FirebaseDynamicLinks.instance.getInitialLink().then((linkData) {
-      if (linkData != null) handleDynamicLink(linkData.link);
-    });
-    FirebaseDynamicLinks.instance.onLink.listen((linkData) async {
-      handleDynamicLink(linkData.link);
-    });
-  }
-
-  void handleDynamicLink(Uri url) async {
-    var auth = FirebaseAuth.instance;
-    var code = url.queryParameters["oobCode"];
-    if (code == null) return;
-
-    showLoadingModal(context);
-
-    ActionCodeInfo codeInfo;
-    try {
-      codeInfo = await auth.checkActionCode(code);
-    } on FirebaseAuthException catch (e) {
-      Navigator.of(context).pop();
-      switch (e.code) {
-        case "invalid-action-code":
-        case "firebase_auth/invalid-action-code":
-          showSnackBar(context, "このリンクは無効です。期限が切れたか、形式が正しくありません。");
-          break;
-        default:
-          handleAuthError(e, context);
-          break;
-      }
-      return;
-    }
-
-    try {
-      if (auth.isSignInWithEmailLink(url.toString())) {
-        final pref = SharedPrefs(await SharedPreferences.getInstance());
-        final email = pref.linkSignInEmail;
-        if (email != null) {
-          var result = await auth.signInWithEmailLink(
-              email: email, emailLink: url.toString());
-          Navigator.of(context)
-              .pushNamed("/signIn", arguments: {"initialCred": result});
-        } else {
-          showSimpleDialog(
-              context, "エラー", "メールアドレスが保存されていません。再度この端末でメールを送信してください。");
-        }
-      } else if (codeInfo.operation ==
-          ActionCodeInfoOperation.verifyAndChangeEmail) {
-        await auth.applyActionCode(code);
-        await auth.signOut();
-        showSnackBar(context, "メールアドレスの変更が完了しました。再度ログインが必要となります。");
-        Navigator.pushNamed(context, "/signIn");
-      }
-    } on FirebaseAuthException catch (e) {
-      handleAuthError(e, context);
-    }
-    Navigator.pop(context);
-  }
-
   void fetchData() async {
     if (userDoc == null) return;
     setState(() {
@@ -255,9 +211,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   void initMethodCallHandler() {
-    void createNew() {
-      Navigator.of(context, rootNavigator: true)
+    void createNew() async {
+      var insertedId = await Navigator.of(context, rootNavigator: true)
           .pushNamed("/submission/create", arguments: {});
+      if (insertedId != null)
+        eventBus.fire(SubmissionInserted(insertedId as int));
     }
 
     void openSubmissionDetailPage(int id) {

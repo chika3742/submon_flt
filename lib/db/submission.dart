@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import "package:intl/intl.dart";
 import 'package:submon/db/firestore.dart';
 import 'package:submon/db/sql_provider.dart';
+import 'package:submon/method_channel/main.dart';
 import 'package:submon/method_channel/notification.dart';
 
 const tableSubmission = "submission";
@@ -84,15 +85,22 @@ class SubmissionProvider extends SqlProvider<Submission> {
   }
 
   @override
+  Future<Submission> insert(Submission data) {
+    return super.insert(data);
+  }
+
+  @override
   void setFirestore(Submission data) {
     FirestoreProvider.submission.set(data.id.toString(), objToMap(data));
     NotificationMethodChannel.registerReminder();
+    updateWidgets();
   }
 
   @override
   void deleteFirestore(int id) {
     FirestoreProvider.submission.delete(id.toString());
     NotificationMethodChannel.registerReminder();
+    updateWidgets();
   }
 
   @override

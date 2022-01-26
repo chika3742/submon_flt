@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/events.dart';
+import 'package:submon/main.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({Key? key}) : super(key: key);
@@ -11,10 +15,31 @@ class WelcomePage extends StatefulWidget {
 
 class _WelcomePageState extends State<WelcomePage> {
   var _disableStatistics = false;
+  StreamSubscription? linkListener;
+  final _scaffoldKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+
+    MyApp.globalKey = _scaffoldKey;
+
+    linkListener = eventBus.on<SignedInWithLink>().listen((_) {
+      Navigator.of(context).popUntil(ModalRoute.withName("welcome"));
+      Navigator.of(context).pushReplacementNamed("/");
+    });
+  }
+
+  @override
+  void dispose() {
+    linkListener?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: const Text('ようこそ'),
         ),
@@ -26,7 +51,7 @@ class _WelcomePageState extends State<WelcomePage> {
                 const SizedBox(height: 32),
                 const Text('Submon',
                     style:
-                        TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+                    TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 const Text('簡単に提出物を一括管理', style: TextStyle(fontSize: 15)),
                 const SizedBox(height: 200),
@@ -41,7 +66,7 @@ class _WelcomePageState extends State<WelcomePage> {
                             fontWeight: FontWeight.bold)),
                     onPressed: () async {
                       var result =
-                          await Navigator.pushNamed(context, "/signIn");
+                      await Navigator.pushNamed(context, "/signIn");
                       if (result == true) {
                         Navigator.pushReplacementNamed(context, "/");
                       }

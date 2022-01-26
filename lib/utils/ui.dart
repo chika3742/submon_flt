@@ -51,6 +51,7 @@ ActionPane createDeleteActionPane(
 
 void showSnackBar(BuildContext context, String text,
     {Duration duration = const Duration(seconds: 5), SnackBarAction? action}) {
+  ScaffoldMessenger.maybeOf(context)?.hideCurrentSnackBar();
   ScaffoldMessenger.maybeOf(context)?.showSnackBar(SnackBar(
     behavior: SnackBarBehavior.floating,
     content: Text(text),

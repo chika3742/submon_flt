@@ -9,29 +9,35 @@
 /* Begin PBXBuildFile section */
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
-		79D74209406879E928A3BB71 /* Pods_SubmissionListWidgetExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24F8780DF9A715AD4EA339EB /* Pods_SubmissionListWidgetExtension.framework */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		9FEC70D669B39EDA21B28813 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54DE1AA03065D56C55E4F359 /* Pods_Runner.framework */; };
-		C7452CD7277956CE00F96574 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C795EEBC2775966D00BBE527 /* WidgetKit.framework */; };
-		C7452CD8277956CE00F96574 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C795EEBE2775966D00BBE527 /* SwiftUI.framework */; };
-		C7452CDB277956CE00F96574 /* SubmissionListWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7452CDA277956CE00F96574 /* SubmissionListWidget.swift */; };
-		C7452CDE277956CF00F96574 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7452CDD277956CF00F96574 /* Assets.xcassets */; };
-		C7452CE0277956CF00F96574 /* SubmissionListWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = C7452CDC277956CE00F96574 /* SubmissionListWidget.intentdefinition */; };
-		C7452CE1277956CF00F96574 /* SubmissionListWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = C7452CDC277956CE00F96574 /* SubmissionListWidget.intentdefinition */; };
-		C7452CE4277956CF00F96574 /* SubmissionListWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = C7452CD6277956CE00F96574 /* SubmissionListWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C7448BB0277F0F2A0053FE44 /* Info-Release.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7448BAE277F0F2A0053FE44 /* Info-Release.plist */; };
+		C7448BB1277F0F2A0053FE44 /* Info-Debug.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7448BAF277F0F2A0053FE44 /* Info-Debug.plist */; };
+		C79CBA59277E7C0E00D62ECE /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C795EEBC2775966D00BBE527 /* WidgetKit.framework */; };
+		C79CBA5A277E7C0E00D62ECE /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C795EEBE2775966D00BBE527 /* SwiftUI.framework */; };
+		C79CBA5D277E7C0E00D62ECE /* Widgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79CBA5C277E7C0E00D62ECE /* Widgets.swift */; };
+		C79CBA60277E7C0F00D62ECE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C79CBA5F277E7C0F00D62ECE /* Assets.xcassets */; };
+		C79CBA62277E7C0F00D62ECE /* Widgets.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = C79CBA5E277E7C0E00D62ECE /* Widgets.intentdefinition */; };
+		C79CBA63277E7C0F00D62ECE /* Widgets.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = C79CBA5E277E7C0E00D62ECE /* Widgets.intentdefinition */; };
+		C79CBA66277E7C0F00D62ECE /* WidgetsExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = C79CBA58277E7C0E00D62ECE /* WidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C79CBA6C277E7C4F00D62ECE /* SubmissionListWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79CBA6B277E7C4F00D62ECE /* SubmissionListWidget.swift */; };
+		C79CBA73277E87DD00D62ECE /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = C79CBA72277E87DD00D62ECE /* FirebaseAnalytics */; };
+		C79CBA75277E87DD00D62ECE /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C79CBA74277E87DD00D62ECE /* FirebaseAuth */; };
+		C79CBA79277E880700D62ECE /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = C79CBA78277E880700D62ECE /* FirebaseFirestore */; };
 		C7AA489927454DC6009C440D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7AA489827454DC6009C440D /* GoogleService-Info.plist */; };
+		C7E5AEBA277ED5B9009058C9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7AA489827454DC6009C440D /* GoogleService-Info.plist */; };
 		C7F285B127697B670067BB87 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = C7F285B027697B670067BB87 /* GeneratedPluginRegistrant.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		C7452CE2277956CF00F96574 /* PBXContainerItemProxy */ = {
+		C79CBA64277E7C0F00D62ECE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = C7452CD5277956CE00F96574;
-			remoteInfo = SubmissionListWidgetExtension;
+			remoteGlobalIDString = C79CBA57277E7C0E00D62ECE;
+			remoteInfo = WidgetsExtension;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -52,7 +58,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				C7452CE4277956CF00F96574 /* SubmissionListWidgetExtension.appex in Embed App Extensions */,
+				C79CBA66277E7C0F00D62ECE /* WidgetsExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -74,21 +80,25 @@
 		97C146FB1CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		97E94D576667F7765A46BDC0 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		A74C1E6C866CD2B1ABCBA5BE /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		C724018D277C61DB00904765 /* FirebaseAuth.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FirebaseAuth.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7240197277C61EE00904765 /* FirebaseCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C7452CD6277956CE00F96574 /* SubmissionListWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SubmissionListWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		C7452CDA277956CE00F96574 /* SubmissionListWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmissionListWidget.swift; sourceTree = "<group>"; };
-		C7452CDC277956CE00F96574 /* SubmissionListWidget.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = SubmissionListWidget.intentdefinition; sourceTree = "<group>"; };
-		C7452CDD277956CF00F96574 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		C7452CDF277956CF00F96574 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C7448BAE277F0F2A0053FE44 /* Info-Release.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-Release.plist"; sourceTree = "<group>"; };
+		C7448BAF277F0F2A0053FE44 /* Info-Debug.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-Debug.plist"; sourceTree = "<group>"; };
 		C759CFCA2775AE600026B907 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		C759CFCB2775AFF90026B907 /* SubmissionListWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SubmissionListWidgetExtension.entitlements; sourceTree = "<group>"; };
 		C795EEBC2775966D00BBE527 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		C795EEBE2775966D00BBE527 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		C79CBA52277E719F00D62ECE /* DoTimeListWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DoTimeListWidgetExtension.entitlements; sourceTree = "<group>"; };
+		C79CBA58277E7C0E00D62ECE /* WidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C79CBA5C277E7C0E00D62ECE /* Widgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Widgets.swift; sourceTree = "<group>"; };
+		C79CBA5E277E7C0E00D62ECE /* Widgets.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = Widgets.intentdefinition; sourceTree = "<group>"; };
+		C79CBA5F277E7C0F00D62ECE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C79CBA61277E7C0F00D62ECE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C79CBA6B277E7C4F00D62ECE /* SubmissionListWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmissionListWidget.swift; sourceTree = "<group>"; };
 		C7AA489827454DC6009C440D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		C7E5AEBB277ED825009058C9 /* WidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WidgetsExtension.entitlements; sourceTree = "<group>"; };
 		C7F285B027697B670067BB87 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		DEB1C5AD33F8294D1BDF9B44 /* Pods-SubmissionListWidgetExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubmissionListWidgetExtension.release.xcconfig"; path = "Target Support Files/Pods-SubmissionListWidgetExtension/Pods-SubmissionListWidgetExtension.release.xcconfig"; sourceTree = "<group>"; };
 		E5EFBF37F7BBFB6B9779674E /* Pods-SubmissionListWidgetExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubmissionListWidgetExtension.debug.xcconfig"; path = "Target Support Files/Pods-SubmissionListWidgetExtension/Pods-SubmissionListWidgetExtension.debug.xcconfig"; sourceTree = "<group>"; };
@@ -104,13 +114,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C7452CD3277956CE00F96574 /* Frameworks */ = {
+		C79CBA55277E7C0E00D62ECE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C7452CD8277956CE00F96574 /* SwiftUI.framework in Frameworks */,
-				C7452CD7277956CE00F96574 /* WidgetKit.framework in Frameworks */,
-				79D74209406879E928A3BB71 /* Pods_SubmissionListWidgetExtension.framework in Frameworks */,
+				C79CBA5A277E7C0E00D62ECE /* SwiftUI.framework in Frameworks */,
+				C79CBA75277E87DD00D62ECE /* FirebaseAuth in Frameworks */,
+				C79CBA59277E7C0E00D62ECE /* WidgetKit.framework in Frameworks */,
+				C79CBA73277E87DD00D62ECE /* FirebaseAnalytics in Frameworks */,
+				C79CBA79277E880700D62ECE /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,11 +169,13 @@
 		97C146E51CF9000F007C117D = {
 			isa = PBXGroup;
 			children = (
+				C7E5AEBB277ED825009058C9 /* WidgetsExtension.entitlements */,
+				C79CBA52277E719F00D62ECE /* DoTimeListWidgetExtension.entitlements */,
 				C759CFCB2775AFF90026B907 /* SubmissionListWidgetExtension.entitlements */,
 				C7AA489827454DC6009C440D /* GoogleService-Info.plist */,
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
-				C7452CD9277956CE00F96574 /* SubmissionListWidget */,
+				C79CBA5B277E7C0E00D62ECE /* Widgets */,
 				97C146EF1CF9000F007C117D /* Products */,
 				89B65C9A6B0D9DFEF36FE4BE /* Pods */,
 				9715EB56F668F6F66ADCA14F /* Frameworks */,
@@ -172,7 +186,7 @@
 			isa = PBXGroup;
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
-				C7452CD6277956CE00F96574 /* SubmissionListWidgetExtension.appex */,
+				C79CBA58277E7C0E00D62ECE /* WidgetsExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -180,12 +194,13 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				C7448BAF277F0F2A0053FE44 /* Info-Debug.plist */,
+				C7448BAE277F0F2A0053FE44 /* Info-Release.plist */,
 				C759CFCA2775AE600026B907 /* Runner.entitlements */,
 				C7F285B027697B670067BB87 /* GeneratedPluginRegistrant.m */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
-				97C147021CF9000F007C117D /* Info.plist */,
 				1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
@@ -193,15 +208,16 @@
 			path = Runner;
 			sourceTree = "<group>";
 		};
-		C7452CD9277956CE00F96574 /* SubmissionListWidget */ = {
+		C79CBA5B277E7C0E00D62ECE /* Widgets */ = {
 			isa = PBXGroup;
 			children = (
-				C7452CDA277956CE00F96574 /* SubmissionListWidget.swift */,
-				C7452CDC277956CE00F96574 /* SubmissionListWidget.intentdefinition */,
-				C7452CDD277956CF00F96574 /* Assets.xcassets */,
-				C7452CDF277956CF00F96574 /* Info.plist */,
+				C79CBA5C277E7C0E00D62ECE /* Widgets.swift */,
+				C79CBA5E277E7C0E00D62ECE /* Widgets.intentdefinition */,
+				C79CBA5F277E7C0F00D62ECE /* Assets.xcassets */,
+				C79CBA61277E7C0F00D62ECE /* Info.plist */,
+				C79CBA6B277E7C4F00D62ECE /* SubmissionListWidget.swift */,
 			);
-			path = SubmissionListWidget;
+			path = Widgets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -226,29 +242,33 @@
 			buildRules = (
 			);
 			dependencies = (
-				C7452CE3277956CF00F96574 /* PBXTargetDependency */,
+				C79CBA65277E7C0F00D62ECE /* PBXTargetDependency */,
 			);
 			name = Runner;
 			productName = Runner;
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
 			productType = "com.apple.product-type.application";
 		};
-		C7452CD5277956CE00F96574 /* SubmissionListWidgetExtension */ = {
+		C79CBA57277E7C0E00D62ECE /* WidgetsExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C7452CE5277956CF00F96574 /* Build configuration list for PBXNativeTarget "SubmissionListWidgetExtension" */;
+			buildConfigurationList = C79CBA67277E7C0F00D62ECE /* Build configuration list for PBXNativeTarget "WidgetsExtension" */;
 			buildPhases = (
-				3DB076AA2A935208C3CD1E27 /* [CP] Check Pods Manifest.lock */,
-				C7452CD2277956CE00F96574 /* Sources */,
-				C7452CD3277956CE00F96574 /* Frameworks */,
-				C7452CD4277956CE00F96574 /* Resources */,
+				C79CBA54277E7C0E00D62ECE /* Sources */,
+				C79CBA55277E7C0E00D62ECE /* Frameworks */,
+				C79CBA56277E7C0E00D62ECE /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = SubmissionListWidgetExtension;
-			productName = SubmissionListWidgetExtension;
-			productReference = C7452CD6277956CE00F96574 /* SubmissionListWidgetExtension.appex */;
+			name = WidgetsExtension;
+			packageProductDependencies = (
+				C79CBA72277E87DD00D62ECE /* FirebaseAnalytics */,
+				C79CBA74277E87DD00D62ECE /* FirebaseAuth */,
+				C79CBA78277E880700D62ECE /* FirebaseFirestore */,
+			);
+			productName = WidgetsExtension;
+			productReference = C79CBA58277E7C0E00D62ECE /* WidgetsExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -265,7 +285,7 @@
 						CreatedOnToolsVersion = 7.3.1;
 						LastSwiftMigration = 1100;
 					};
-					C7452CD5277956CE00F96574 = {
+					C79CBA57277E7C0E00D62ECE = {
 						CreatedOnToolsVersion = 13.2.1;
 					};
 				};
@@ -279,12 +299,15 @@
 				Base,
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
+			packageReferences = (
+				C79CBA71277E87DD00D62ECE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
-				C7452CD5277956CE00F96574 /* SubmissionListWidgetExtension */,
+				C79CBA57277E7C0E00D62ECE /* WidgetsExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -296,17 +319,20 @@
 			files = (
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
+				C7448BB1277F0F2A0053FE44 /* Info-Debug.plist in Resources */,
+				C7448BB0277F0F2A0053FE44 /* Info-Release.plist in Resources */,
 				C7AA489927454DC6009C440D /* GoogleService-Info.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C7452CD4277956CE00F96574 /* Resources */ = {
+		C79CBA56277E7C0E00D62ECE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C7452CDE277956CF00F96574 /* Assets.xcassets in Resources */,
+				C79CBA60277E7C0F00D62ECE /* Assets.xcassets in Resources */,
+				C7E5AEBA277ED5B9009058C9 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -343,28 +369,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
-		};
-		3DB076AA2A935208C3CD1E27 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SubmissionListWidgetExtension-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
 		};
 		7F781D135B6B452987EC95E5 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -444,27 +448,28 @@
 			buildActionMask = 2147483647;
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
-				C7452CE1277956CF00F96574 /* SubmissionListWidget.intentdefinition in Sources */,
+				C79CBA63277E7C0F00D62ECE /* Widgets.intentdefinition in Sources */,
 				C7F285B127697B670067BB87 /* GeneratedPluginRegistrant.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C7452CD2277956CE00F96574 /* Sources */ = {
+		C79CBA54277E7C0E00D62ECE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C7452CE0277956CF00F96574 /* SubmissionListWidget.intentdefinition in Sources */,
-				C7452CDB277956CE00F96574 /* SubmissionListWidget.swift in Sources */,
+				C79CBA62277E7C0F00D62ECE /* Widgets.intentdefinition in Sources */,
+				C79CBA6C277E7C4F00D62ECE /* SubmissionListWidget.swift in Sources */,
+				C79CBA5D277E7C0E00D62ECE /* Widgets.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		C7452CE3277956CF00F96574 /* PBXTargetDependency */ = {
+		C79CBA65277E7C0F00D62ECE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = C7452CD5277956CE00F96574 /* SubmissionListWidgetExtension */;
-			targetProxy = C7452CE2277956CF00F96574 /* PBXContainerItemProxy */;
+			target = C79CBA57277E7C0E00D62ECE /* WidgetsExtension */;
+			targetProxy = C79CBA64277E7C0F00D62ECE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -531,9 +536,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"\"-Xlinker -interposable\"",
-				);
+				OTHER_LDFLAGS = "\"-Xlinker -interposable\"";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -552,7 +555,7 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = B66Z929S96;
 				ENABLE_BITCODE = NO;
-				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_FILE = "Runner/Info-Debug.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -617,9 +620,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = (
-					"\"-Xlinker -interposable\"",
-				);
+				OTHER_LDFLAGS = "\"-Xlinker -interposable\"";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -668,9 +669,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"\"-Xlinker -interposable\"",
-				);
+				OTHER_LDFLAGS = "\"-Xlinker -interposable\"";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -691,7 +690,7 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = B66Z929S96;
 				ENABLE_BITCODE = NO;
-				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_FILE = "Runner/Info-$(CONFIGURATION).plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -718,7 +717,7 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = B66Z929S96;
 				ENABLE_BITCODE = NO;
-				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_FILE = "Runner/Info-$(CONFIGURATION).plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -733,9 +732,8 @@
 			};
 			name = Release;
 		};
-		C7452CE6277956CF00F96574 /* Debug */ = {
+		C79CBA68277E7C0F00D62ECE /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E5EFBF37F7BBFB6B9779674E /* Pods-SubmissionListWidgetExtension.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
@@ -745,16 +743,16 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = SubmissionListWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = WidgetsExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = B66Z929S96;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = SubmissionListWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = SubmissionListWidget;
+				INFOPLIST_FILE = Widgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Widgets;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -763,8 +761,8 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				ONLY_ACTIVE_ARCH = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = net.chikach.submon.SubmissionListWidget;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = net.chikach.submon.Widgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -775,9 +773,8 @@
 			};
 			name = Debug;
 		};
-		C7452CE7277956CF00F96574 /* Release */ = {
+		C79CBA69277E7C0F00D62ECE /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DEB1C5AD33F8294D1BDF9B44 /* Pods-SubmissionListWidgetExtension.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
@@ -787,16 +784,16 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = SubmissionListWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = WidgetsExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = B66Z929S96;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = SubmissionListWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = SubmissionListWidget;
+				INFOPLIST_FILE = Widgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Widgets;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -804,7 +801,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = net.chikach.submon.SubmissionListWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = net.chikach.submon.Widgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -813,9 +810,8 @@
 			};
 			name = Release;
 		};
-		C7452CE8277956CF00F96574 /* Profile */ = {
+		C79CBA6A277E7C0F00D62ECE /* Profile */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 241A4FD809B97BC54F244970 /* Pods-SubmissionListWidgetExtension.profile.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
@@ -825,16 +821,16 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = SubmissionListWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = WidgetsExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = B66Z929S96;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = SubmissionListWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = SubmissionListWidget;
+				INFOPLIST_FILE = Widgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Widgets;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -842,7 +838,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = net.chikach.submon.SubmissionListWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = net.chikach.submon.Widgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -874,17 +870,46 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C7452CE5277956CF00F96574 /* Build configuration list for PBXNativeTarget "SubmissionListWidgetExtension" */ = {
+		C79CBA67277E7C0F00D62ECE /* Build configuration list for PBXNativeTarget "WidgetsExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C7452CE6277956CF00F96574 /* Debug */,
-				C7452CE7277956CF00F96574 /* Release */,
-				C7452CE8277956CF00F96574 /* Profile */,
+				C79CBA68277E7C0F00D62ECE /* Debug */,
+				C79CBA69277E7C0F00D62ECE /* Release */,
+				C79CBA6A277E7C0F00D62ECE /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C79CBA71277E87DD00D62ECE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C79CBA72277E87DD00D62ECE /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C79CBA71277E87DD00D62ECE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		C79CBA74277E87DD00D62ECE /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C79CBA71277E87DD00D62ECE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		C79CBA78277E880700D62ECE /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C79CBA71277E87DD00D62ECE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 97C146E61CF9000F007C117D /* Project object */;
 }

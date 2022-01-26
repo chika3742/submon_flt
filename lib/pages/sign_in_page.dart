@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -6,8 +7,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,6 +16,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:submon/browser.dart';
 import 'package:submon/components/hidable_progress_indicator.dart';
+import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/method_channel/main.dart';
 import 'package:submon/twitter_sign_in.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
@@ -36,9 +39,6 @@ class _SignInPageState extends State<SignInPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.initialCred != null) {
-      completeLogin(widget.initialCred);
-    }
     if (widget.reAuth) {
       reAuth();
     }
@@ -90,15 +90,11 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                         label: const Text("メールアドレスでログイン",
                             style: TextStyle(color: Colors.white)),
-                        onPressed: !loading && !widget.reAuth
-                            ? () async {
-                                setState(() {
-                                  loading = true;
-                                });
-                                var result = await Navigator.pushNamed(
-                                    context, "/signIn/email") as dynamic;
-
-                                completeLogin(result);
+                        onPressed: (!loading && !widget.reAuth)
+                            ? () {
+                                wrapSignIn(() async =>
+                                    await Navigator.pushNamed<dynamic>(
+                                        context, "/signIn/email"));
                               }
                             : null,
                       ),
@@ -119,35 +115,30 @@ class _SignInPageState extends State<SignInPage> {
                               style: TextStyle(color: Colors.white)),
                           onPressed: !loading && !widget.reAuth
                               ? () {
-                                  showPlatformDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return PlatformAlertDialog(
-                                          title: const Text("注意"),
-                                          content: const Text(
-                                              "現在、Android版ではAppleログインをご利用いただけません。"
-                                              "そのため、Android端末にデータ移行することができません。続行しますか？"),
-                                          actions: [
-                                            PlatformTextButton(
-                                                child: const Text("Cancel"),
-                                                onPressed: () {
-                                                  Navigator.pop(context);
+                            showPlatformDialog(
+                                context: context,
+                                builder: (context) {
+                                  return PlatformAlertDialog(
+                                    title: const Text("注意"),
+                                    content: const Text(
+                                        "現在、Android版ではAppleログインをご利用いただけません。"
+                                            "そのため、Android端末にデータ移行することができません。続行しますか？"),
+                                    actions: [
+                                      PlatformTextButton(
+                                          child: const Text("Cancel"),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          }),
+                                      PlatformTextButton(
+                                          child: const Text("OK"),
+                                          onPressed: () async {
+                                            Navigator.pop(context);
+                                                  wrapSignIn(signInWithApple);
                                                 }),
-                                            PlatformTextButton(
-                                                child: const Text("OK"),
-                                                onPressed: () async {
-                                                  Navigator.pop(context);
-                                                  setState(() {
-                                                    loading = true;
-                                                  });
-                                                  var result =
-                                                      await signInWithApple();
-                                                  completeLogin(result);
-                                                }),
-                                          ],
-                                        );
-                                      });
-                                }
+                                    ],
+                                  );
+                                });
+                          }
                               : null,
                         ),
                       ),
@@ -164,12 +155,8 @@ class _SignInPageState extends State<SignInPage> {
                         label: const Text("Googleでログイン",
                             style: TextStyle(color: Colors.black)),
                         onPressed: !loading && !widget.reAuth
-                            ? () async {
-                                setState(() {
-                                  loading = true;
-                                });
-                                var result = await signInWithGoogle();
-                                completeLogin(result);
+                            ? () {
+                                wrapSignIn(signInWithGoogle);
                               }
                             : null,
                       ),
@@ -189,9 +176,12 @@ class _SignInPageState extends State<SignInPage> {
                             style: TextStyle(color: Colors.white)),
                         onPressed: !loading && !widget.reAuth
                             ? () async {
-                                var result = await signInWithTwitter();
+                          var result = await signInWithTwitter();
 
-                                completeLogin(result);
+                                if (result != null) {
+                                  await completeLogin(result, context);
+                                  Navigator.pop(context);
+                                }
                               }
                             : null,
                       ),
@@ -200,8 +190,8 @@ class _SignInPageState extends State<SignInPage> {
                     if (Platform.isIOS)
                       Text(
                           "「Googleでログイン」もしくは「Twitterでログイン」をタップすると、「あなたに関する情報を共有することを許可します」"
-                          "という内容のダイアログが表示されます。\nここでいう「情報」はログインのみに使用する情報ですので、"
-                          "ログインする場合は「続ける」をタップしてください。",
+                              "という内容のダイアログが表示されます。\nここでいう「情報」はログインのみに使用する情報ですので、"
+                              "ログインする場合は「続ける」をタップしてください。",
                           style: TextStyle(
                               fontSize: 14,
                               color: Theme.of(context)
@@ -223,18 +213,36 @@ class _SignInPageState extends State<SignInPage> {
         ));
   }
 
+  void wrapSignIn(Future<UserCredential?> Function() signInFunc) async {
+    setState(() {
+      loading = true;
+    });
+
+    var result = await signInFunc();
+
+    if (result != null) {
+      await completeLogin(result, context);
+      Navigator.pop(context, true);
+    }
+
+    setState(() {
+      loading = false;
+    });
+  }
+
   Future<UserCredential?> signInWithGoogle() async {
     var googleSignIn = GoogleSignIn();
     await googleSignIn.signOut();
-    final googleUser = await googleSignIn.signIn();
-    if (googleUser == null) return null;
-
-    final googleAuth = await googleUser.authentication;
-
-    final cred = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
 
     try {
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) return null;
+
+      final googleAuth = await googleUser.authentication;
+
+      final cred = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+
       if (widget.reAuth) {
         return await FirebaseAuth.instance.currentUser!
             .reauthenticateWithCredential(cred);
@@ -243,7 +251,12 @@ class _SignInPageState extends State<SignInPage> {
       }
     } on FirebaseAuthException catch (e) {
       handleCredentialError(e);
+    } on PlatformException catch (e, stackTrace) {
+      print(e);
+      print(stackTrace);
+      showSnackBar(context, "エラーが発生しました。(${e.message})");
     }
+    return null;
   }
 
   // sign in with apple
@@ -332,37 +345,7 @@ class _SignInPageState extends State<SignInPage> {
       }
     } on FirebaseAuthException catch (e) {
       handleCredentialError(e);
-    }
-  }
-
-  void completeLogin(UserCredential? result) async {
-    if (result?.user != null) {
-      try {
-        var doc = FirebaseFirestore.instance
-            .collection("users")
-            .doc(result!.user!.uid);
-        var snapshot = await doc.get();
-        if (!snapshot.exists) {
-          // TODO: initialize firestore DB
-        } else {
-          if (snapshot.data()?["deleted"] == true) {
-            showSimpleDialog(context, "エラー", "このアカウントは既に削除されています。再度作成してください。",
-                onOKPressed: () {
-              FirebaseAuth.instance.currentUser!.delete();
-              // TODO: 初期画面表示
-            });
-          }
-        }
-        showSnackBar(context, "ログインしました");
-        Navigator.pop(context, true);
-      } catch (e) {
-        FirebaseCrashlytics.instance.recordError(e, (e as dynamic).stackTrace);
-        showSnackBar(context, "エラーが発生しました");
-      }
-    } else {
-      setState(() {
-        loading = false;
-      });
+      return null;
     }
   }
 
@@ -384,7 +367,7 @@ class _SignInPageState extends State<SignInPage> {
     await Future.delayed(const Duration(milliseconds: 300));
     showLoadingModal(context);
     var provider = (await FirebaseAuth.instance.fetchSignInMethodsForEmail(
-            FirebaseAuth.instance.currentUser!.email!))
+        FirebaseAuth.instance.currentUser!.email!))
         .first;
     Navigator.pop(context); // Close Loading modal
     if (provider == EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {
@@ -438,5 +421,35 @@ class _SignInPageState extends State<SignInPage> {
         Navigator.pop(context);
       }
     }
+  }
+}
+
+Future<void> completeLogin(UserCredential result, BuildContext context) async {
+  try {
+    var doc =
+        FirebaseFirestore.instance.collection("users").doc(result.user!.uid);
+    var snapshot = await doc.get();
+    if (!snapshot.exists) {
+// TODO: initialize firestore DB
+    } else {
+      if (snapshot.data()?["deleted"] == true) {
+        showSimpleDialog(context, "エラー", "このアカウントは既に削除されています。再度作成してください。",
+            onOKPressed: () async {
+          await FirebaseAuth.instance.currentUser!.delete();
+          Navigator.of(context, rootNavigator: true)
+              .popUntil(ModalRoute.withName("/"));
+          Navigator.of(context, rootNavigator: true)
+              .pushReplacementNamed("/welcome");
+        });
+      }
+    }
+    updateWidgets();
+    SharedPrefs.use((prefs) {
+      prefs.firestoreLastChanged = null;
+    });
+    showSnackBar(context, "ログインしました");
+  } catch (e) {
+    FirebaseCrashlytics.instance.recordError(e, (e as dynamic).stackTrace);
+    showSnackBar(context, "エラーが発生しました");
   }
 }

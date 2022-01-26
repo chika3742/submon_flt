@@ -87,17 +87,17 @@ class TimetableState extends State<Timetable> {
     // 左上の空欄
     widgets.add(Container(
       height: 45,
+      width: 30,
       decoration: const BoxDecoration(
           border: Border(right: BorderSide(), bottom: BorderSide())),
-      padding: const EdgeInsets.all(8),
-      child: const Opacity(
-          opacity: 0, child: Text("0", style: TextStyle(fontSize: 22))),
     ));
+
     // 時限番号
     for (var n = 1; n <= timetableHour!; n++) {
       widgets.add(Container(
           padding: const EdgeInsets.all(8),
           height: 50,
+          width: 30,
           alignment: Alignment.center,
           decoration: const BoxDecoration(border: Border(right: BorderSide())),
           child: Text(
