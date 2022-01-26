@@ -44,8 +44,9 @@ class SharedPrefs {
   DateTime get firestoreLastChanged => DateTime.fromMicrosecondsSinceEpoch(
       pref!.getInt("FIRESTORE_LAST_CHANGED") ?? 0);
 
-  set firestoreLastChanged(DateTime value) =>
-      pref!.setInt("FIRESTORE_LAST_CHANGED", value.microsecondsSinceEpoch);
+  set firestoreLastChanged(DateTime? value) => value != null
+      ? pref!.setInt("FIRESTORE_LAST_CHANGED", value.microsecondsSinceEpoch)
+      : pref!.remove("FIRESTORE_LAST_CHANGED");
 
   TimeOfDay? get reminderTime {
     final hour = pref!.getInt("REMINDER_TIME_HOUR");

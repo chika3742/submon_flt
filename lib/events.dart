@@ -3,6 +3,8 @@ import 'package:submon/db/timetable_custom_subject.dart';
 
 final eventBus = EventBus();
 
+class SignedInWithLink {}
+
 class BottomNavDoubleClickEvent {
   int index;
 

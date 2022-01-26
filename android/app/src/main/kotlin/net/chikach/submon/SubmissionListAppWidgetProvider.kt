@@ -5,10 +5,16 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
+import android.os.Binder
 import android.os.Build
 import android.util.Log
+import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.*
+import java.io.Serializable
 import java.util.*
 
 class SubmissionListAppWidgetProvider : AppWidgetProvider() {
@@ -37,6 +43,14 @@ class SubmissionListAppWidgetProvider : AppWidgetProvider() {
                     R.id.listView,
                     Intent(context, AppWidgetSubmissionListService::class.java)
                 )
+                if (FirebaseAuth.getInstance().currentUser != null) {
+                    setEmptyView(R.id.listView, R.id.emptyText)
+                    setViewVisibility(R.id.notSignedInText, View.GONE)
+                    setViewVisibility(R.id.emptyTextParent, View.VISIBLE)
+                } else {
+                    setViewVisibility(R.id.notSignedInText, View.VISIBLE)
+                    setViewVisibility(R.id.emptyTextParent, View.GONE)
+                }
 
                 setOnClickPendingIntent(
                     R.id.addBtn, PendingIntent.getActivity(
@@ -61,29 +75,51 @@ class SubmissionListAppWidgetProvider : AppWidgetProvider() {
             }
 
             appWidgetManager?.updateAppWidget(widgetId, views)
+            appWidgetManager?.notifyAppWidgetViewDataChanged(widgetId, R.id.listView)
         }
     }
 }
 
 class AppWidgetSubmissionListService : RemoteViewsService() {
+    val coroutineScope = CoroutineScope(Dispatchers.Default)
+
     override fun onGetViewFactory(intent: Intent?): RemoteViewsFactory {
-        return Factory(
-            this, listOf(
-                mapOf("id" to 0, "title" to "title1", "date" to "1/13 (月)"),
-                mapOf("id" to 1, "title" to "title2", "date" to "1/14 (火)"),
-                mapOf("id" to 1, "title" to "title2", "date" to "1/14 (火)"),
-                mapOf("id" to 1, "title" to "title2", "date" to "1/14 (火)"),
-                mapOf("id" to 1, "title" to "title2", "date" to "1/14 (火)"),
-            )
-        )
+        return Factory(this)
     }
 
-    inner class Factory(val context: Context, private val list: List<Map<String, Any>>) :
+    inner class Factory(private val context: Context) :
         RemoteViewsFactory {
-        override fun onCreate() {}
+        private var list: List<SubmissionData> = listOf()
+
+        override fun onCreate() {
+        }
 
         override fun onDataSetChanged() {
-
+            val user = FirebaseAuth.getInstance().currentUser
+            if (user != null) {
+                val deferred = CompletableDeferred<Unit>()
+                FirebaseFirestore.getInstance().collection("users/${user.uid}/submission")
+                    .whereEqualTo("done", 0)
+                    .get()
+                    .addOnSuccessListener { snapshot ->
+                        val list = snapshot.documents.map {
+                            SubmissionData(
+                                it["id"] as Long,
+                                it["title"] as String,
+                                it["date"] as String
+                            )
+                        }
+                        this.list = list
+                        deferred.complete(Unit)
+                    }
+                    .addOnFailureListener {
+                        Log.e("AppWidget", "Failed to get firestore", it)
+                        deferred.complete(Unit)
+                    }
+                runBlocking {
+                    deferred.await()
+                }
+            }
         }
 
         override fun onDestroy() {}
@@ -93,13 +129,13 @@ class AppWidgetSubmissionListService : RemoteViewsService() {
         override fun getViewAt(position: Int): RemoteViews {
             val views =
                 RemoteViews(context.packageName, R.layout.appwidget_submission_list_item).apply {
-                    setTextViewText(R.id.dateTextView, list[position]["date"] as String)
-                    setTextViewText(R.id.titleTextView, list[position]["title"] as String)
+                    setTextViewText(R.id.dateTextView, list[position].date)
+                    setTextViewText(R.id.titleTextView, list[position].title)
                     setOnClickFillInIntent(
                         R.id.listItemLayout, Intent()
                             .putExtra(
                                 MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENT_ID,
-                                list[position]["id"] as Int
+                                list[position].id.toInt()
                             )
                     )
                 }
@@ -118,3 +154,5 @@ class AppWidgetSubmissionListService : RemoteViewsService() {
         override fun hasStableIds(): Boolean = false
     }
 }
+
+class SubmissionData(val id: Long, val title: String, val date: String) : Serializable

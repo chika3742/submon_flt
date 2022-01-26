@@ -7,9 +7,10 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:submon/browser.dart';
 import 'package:submon/method_channel/channels.dart';
 import 'package:submon/utils/ui.dart';
+
+import 'method_channel/main.dart';
 
 class TwitterSignIn {
   final String apiKey;

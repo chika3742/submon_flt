@@ -1,10 +1,14 @@
 package net.chikach.submon
 
 import android.app.NotificationManager
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.os.PersistableBundle
 import android.util.Log
 import android.widget.Toast
@@ -12,6 +16,9 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationChannelGroupCompat
 import androidx.core.app.NotificationManagerCompat
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -105,6 +112,23 @@ class MainActivity : FlutterActivity() {
                     }
                     ctIntent.launchUrl(this, Uri.parse(call.argument("url")))
                     result.success(null)
+                }
+                "updateWidgets" -> {
+                    Handler(mainLooper).postDelayed({
+                        val aws = getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager
+                        val widgetIds = aws.getAppWidgetIds(
+                            ComponentName(
+                                this,
+                                SubmissionListAppWidgetProvider::class.java
+                            )
+                        )
+
+                        sendBroadcast(
+                            Intent(this, SubmissionListAppWidgetProvider::class.java)
+                                .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
+                                .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
+                        )
+                    }, 2000)
                 }
                 else -> {
                     result.notImplemented()

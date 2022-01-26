@@ -2,9 +2,12 @@ import UIKit
 import Flutter
 import AuthenticationServices
 import SafariServices
+import Firebase
+import WidgetKit
 
 let mainChannel = "submon/main"
 let notifChannel = "submon/notification"
+let actionsChannel = "submon/actions"
 
 @available(iOS 13.0, *)
 @UIApplicationMain
@@ -19,6 +22,13 @@ let notifChannel = "submon/notification"
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        FirebaseApp.configure()
+        do {
+            try Auth.auth().useUserAccessGroup("B66Z929S96.net.chikach.submon")
+        } catch let error as NSError {
+            print(error)
+        }
+        
         controller = window?.rootViewController as? FlutterViewController
         binaryMessenger = controller!.binaryMessenger
         let mainMethodChannel = FlutterMethodChannel(name: mainChannel, binaryMessenger: controller!.binaryMessenger)
@@ -40,21 +50,25 @@ let notifChannel = "submon/notification"
         
         mainMethodChannel.setMethodCallHandler({
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-            let args = call.arguments as! Dictionary<String, String>
+            let args = call.arguments as? Dictionary<String, String>
             switch call.method {
             case "openWebPage":
-//                let next = self.controller!.storyboard?.instantiateViewController(withIdentifier: "WebViewController") as! WebViewController
-                let next = SFSafariViewController(url: URL.init(string: args["url"]!)!)
+                let next = SFSafariViewController(url: URL.init(string: args!["url"]!)!)
                 next.modalPresentationStyle = .pageSheet
                 self.controller!.present(next, animated: true, completion: nil)
                 result(nil)
                 break
             case "openCustomTabs":
-                self.session = ASWebAuthenticationSession(url: URL(string: args["url"]!)!, callbackURLScheme: "submon") { (url, error) in
+                self.session = ASWebAuthenticationSession(url: URL(string: args!["url"]!)!, callbackURLScheme: "submon") { (url, error) in
                     result(url?.absoluteString)
                 }
                 self.session!.presentationContextProvider = self
                 self.session!.start()
+                break
+            case "updateWidgets":
+                if #available(iOS 14.0, *) {
+                    WidgetCenter.shared.reloadAllTimelines()
+                }
                 break
             default:
                 result(FlutterMethodNotImplemented)
@@ -107,6 +121,17 @@ let notifChannel = "submon/notification"
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
+    override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        switch (url.host) {
+        case "createNew":
+            let notifMethodChannel = FlutterMethodChannel(name: actionsChannel, binaryMessenger: binaryMessenger!)
+            notifMethodChannel.invokeMethod("openCreateNewPage", arguments: nil)
+            break
+        default: break
+        }
+        return true
+    }
+    
     
     override func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.badge, .sound, .alert])
@@ -116,8 +141,8 @@ let notifChannel = "submon/notification"
         if binaryMessenger != nil {
             switch (response.actionIdentifier) {
             case "create_new":
-                let notifMethodChannel = FlutterMethodChannel(name: notifChannel, binaryMessenger: binaryMessenger!)
-                notifMethodChannel.invokeMethod("action.createNew", arguments: nil)
+                let notifMethodChannel = FlutterMethodChannel(name: actionsChannel, binaryMessenger: binaryMessenger!)
+                notifMethodChannel.invokeMethod("openCreateNewPage", arguments: nil)
                 break
             default:
                 break
@@ -125,6 +150,7 @@ let notifChannel = "submon/notification"
         }
         completionHandler()
     }
+    
 }
 
 @available(iOS 13.0, *)
