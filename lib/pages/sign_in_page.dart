@@ -176,11 +176,11 @@ class _SignInPageState extends State<SignInPage> {
                             style: TextStyle(color: Colors.white)),
                         onPressed: !loading && !widget.reAuth
                             ? () async {
-                          var result = await signInWithTwitter();
+                                var result = await signInWithTwitter();
 
                                 if (result != null) {
                                   await completeLogin(result, context);
-                                  Navigator.pop(context);
+                                  Navigator.pop(context, true);
                                 }
                               }
                             : null,
@@ -345,6 +345,9 @@ class _SignInPageState extends State<SignInPage> {
       }
     } on FirebaseAuthException catch (e) {
       handleCredentialError(e);
+      setState(() {
+        loading = true;
+      });
       return null;
     }
   }

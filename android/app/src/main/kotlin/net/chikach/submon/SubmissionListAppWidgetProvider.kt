@@ -1,23 +1,33 @@
 package net.chikach.submon
 
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
+import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.os.Binder
+import android.net.Uri
 import android.os.Build
+import android.text.format.DateFormat
 import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
+import com.google.android.gms.tasks.Tasks
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import java.io.Serializable
 import java.util.*
 
 class SubmissionListAppWidgetProvider : AppWidgetProvider() {
+    @SuppressLint("WrongConstant")
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager?,
@@ -30,13 +40,12 @@ class SubmissionListAppWidgetProvider : AppWidgetProvider() {
                 else PendingIntent.FLAG_UPDATE_CURRENT
 
                 setPendingIntentTemplate(
-                    R.id.listView, PendingIntent.getActivity(
+                    R.id.listView, PendingIntent.getBroadcast(
                         context,
-                        UUID.randomUUID().hashCode(), Intent(context, MainActivity::class.java)
-                            .putExtra(
-                                MainActivity.EXTRA_FLUTTER_ACTION,
-                                Action.openSubmissionDetailPage.name
-                            ), flags
+                        UUID.randomUUID().hashCode(), Intent(
+                            context,
+                            ListItemActionBroadcastReceiver::class.java
+                        ), flags
                     )
                 )
                 setRemoteAdapter(
@@ -129,15 +138,33 @@ class AppWidgetSubmissionListService : RemoteViewsService() {
         override fun getViewAt(position: Int): RemoteViews {
             val views =
                 RemoteViews(context.packageName, R.layout.appwidget_submission_list_item).apply {
-                    setTextViewText(R.id.dateTextView, list[position].date)
+                    val date = DateFormat.format(
+                        "M/d (E)",
+                        DateFormat.getDateFormat(context).parse(list[position].date)
+                    )
+                    setTextViewText(R.id.dateTextView, date)
                     setTextViewText(R.id.titleTextView, list[position].title)
                     setOnClickFillInIntent(
                         R.id.listItemLayout, Intent()
+                            .setAction(ListItemActionBroadcastReceiver.ACTION_LIST_ITEM_CLICK)
                             .putExtra(
                                 MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENT_ID,
                                 list[position].id.toInt()
                             )
                     )
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        setCompoundButtonChecked(R.id.listCheckBox, false)
+                        setOnCheckedChangeResponse(
+                            R.id.listCheckBox, RemoteViews.RemoteResponse.fromFillInIntent(
+                                Intent(context, ListItemActionBroadcastReceiver::class.java)
+                                    .setAction(ListItemActionBroadcastReceiver.ACTION_CHECK_BOX_CHANGE)
+                                    .putExtra(
+                                        ListItemActionBroadcastReceiver.EXTRA_SUBMISSION_ID,
+                                        list[position].id
+                                    )
+                            )
+                        )
+                    }
                 }
 
             return views
@@ -156,3 +183,66 @@ class AppWidgetSubmissionListService : RemoteViewsService() {
 }
 
 class SubmissionData(val id: Long, val title: String, val date: String) : Serializable
+
+class ListItemActionBroadcastReceiver : BroadcastReceiver() {
+    companion object {
+        const val ACTION_LIST_ITEM_CLICK = "net.chikach.submon.action.LIST_ITEM_CLICK"
+        const val ACTION_CHECK_BOX_CHANGE = "net.chikach.submon.action.CHECK_BOX_CHANGE"
+
+        const val EXTRA_SUBMISSION_ID = "net.chikach.submon.extra.SUBMISSION_ID"
+    }
+
+    override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action == ACTION_LIST_ITEM_CLICK) {
+            Log.d(
+                "appwidget",
+                intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1).toString()
+            )
+            val intent1 = Intent(context, MainActivity::class.java)
+                .putExtra(
+                    MainActivity.EXTRA_FLUTTER_ACTION,
+                    Action.openSubmissionDetailPage.name
+                )
+                .putExtra(
+                    MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENT_ID,
+                    intent.getIntExtra(MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENT_ID, -1)
+                )
+                .putExtra(
+                    AppWidgetManager.EXTRA_APPWIDGET_ID,
+                    intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1)
+                )
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent1.data = Uri.parse(intent1.toUri(Intent.URI_INTENT_SCHEME))
+            context.startActivity(intent1)
+        } else if (intent.action == ACTION_CHECK_BOX_CHANGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (intent.getBooleanExtra(RemoteViews.EXTRA_CHECKED, false)) {
+                val submissionId = intent.getLongExtra(EXTRA_SUBMISSION_ID, -1)
+                val user = FirebaseAuth.getInstance().currentUser
+
+                if (submissionId != -1L && user != null) {
+                    val db = FirebaseFirestore.getInstance()
+                    Tasks.whenAll(
+                        listOf(
+                            db.document("users/${user.uid}/submission/${submissionId}")
+                                .update("done", 1),
+                            db.document("users/${user.uid}")
+                                .update("lastChanged", Timestamp.now())
+                        )
+                    ).addOnSuccessListener {
+                        // update widgets
+                        val aws =
+                            context.getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager
+                        val widgetIds = aws.getAppWidgetIds(
+                            ComponentName(
+                                context,
+                                SubmissionListAppWidgetProvider::class.java
+                            )
+                        )
+
+                        aws.notifyAppWidgetViewDataChanged(widgetIds, R.id.listView)
+                    }
+                }
+            }
+        }
+    }
+}

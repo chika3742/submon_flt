@@ -2,23 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/listItemLayout"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
+    android:layout_height="48dp"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
+    <CheckBox
+        android:id="@+id/listCheckBox"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:focusable="false" />
+
     <TextView
         android:id="@+id/dateTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_weight="1"
         android:text="TextView"
+        android:textStyle="bold"
         android:textColor="#0077ff"
         android:textSize="16sp" />
 
     <TextView
         android:id="@+id/titleTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"

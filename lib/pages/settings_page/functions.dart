@@ -1,13 +1,11 @@
 import 'dart:async';
 
-import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:googleapis/calendar/v3.dart' as calendar;
-import 'package:googleapis_auth/auth_io.dart';
 import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/method_channel/notification.dart';
 import 'package:submon/pages/sign_in_page.dart';
@@ -20,9 +18,6 @@ class FunctionsSettingsPage extends StatefulWidget {
   @override
   _FunctionsSettingsPageState createState() => _FunctionsSettingsPageState();
 }
-
-var _scopes = [calendar.CalendarApi.calendarEventsScope];
-var googleSignIn = GoogleSignIn(scopes: _scopes);
 
 class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
   bool _pwEnabled = true;
@@ -139,7 +134,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
               }
             },
           ),
-          if (auth.currentUser != null)
+          if (auth.currentUser != null && auth.currentUser!.email != "")
             SettingsTile(
               title: emailChangeable() ? "メールアドレスの変更" : "メールアドレス",
               subtitle: auth.currentUser!.email,
@@ -191,11 +186,14 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                       : "カレンダー連携を解除します。")
                   : "連携状態を確認しています...${_signInStateCheckDelayed ? " (この処理に時間がかかっている場合は、アプリ再起動をお試しください。)" : ""}",
               enabled: _signedInAndScopeGranted != null,
+              trailing: _signedInAndScopeGranted == null
+                  ? const CircularProgressIndicator()
+                  : null,
               onTap: () async {
                 if (_signedInAndScopeGranted == false) {
                   dynamic result;
                   if (googleSignIn.currentUser != null) {
-                    result = await googleSignIn.requestScopes(_scopes);
+                    result = await googleSignIn.requestScopes(calendarScopes);
                   } else {
                     result = await googleSignIn.signIn();
                   }
@@ -286,74 +284,12 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
   }
 
   Future<void> _checkSignedInAndScopeGranted() async {
-    Future<bool> canAccessCalendar() async {
-      try {
-        var client = await googleSignIn.authenticatedClient();
-        await calendar.CalendarApi(client!)
-            .events
-            .list("primary", maxResults: 1);
-        return true;
-      } on AccessDeniedException catch (e, stackTrace) {
-        if (e.message.contains("invalid_token")) {
-          await googleSignIn.disconnect();
-          return await canAccessCalendar();
-        }
-
-        debugPrint(e.toString());
-        debugPrint(stackTrace.toString());
-        return false;
-      }
-    }
-
     void setSignedInAndScopeGranted(bool value) {
       setState(() {
         _signedInAndScopeGranted = value;
       });
     }
 
-    if (googleSignIn.currentUser == null) {
-      _accountListener = googleSignIn.onCurrentUserChanged.listen((user) async {
-        setSignedInAndScopeGranted(await canAccessCalendar());
-        _accountListener?.cancel();
-      });
-      googleSignIn.signInSilently();
-    } else {
-      setSignedInAndScopeGranted(await canAccessCalendar());
-    }
-
-    // calendar.CalendarApi((await googleSignIn.authenticatedClient())!).calendars.get("primary").then((cal) {
-    //   setState(() {
-    //     _signedInAndScopeGranted = true;
-    //   });
-    // }).onError((error, stackTrace) {
-    //   debugPrint(error.toString());
-    //   debugPrintStack(stackTrace: stackTrace);
-    //   setState(() {
-    //     _signedInAndScopeGranted = false;
-    //   });
-    // });
-
-    // if (user != null) {
-    //   await user.clearAuthCache();
-    //   var auth = await user.authentication;
-    //   try {
-    //     var tokenInfo = await Oauth2Api(http.Client()).tokeninfo(accessToken: auth.accessToken);
-    //     print(tokenInfo.scope);
-    //     setState(() {
-    //       var scopes = tokenInfo.scope?.split(" ");
-    //       _signedInAndScopeGranted = _scopes.every((e) => scopes?.contains(e) == true);
-    //     });
-    //   } on DetailedApiRequestError catch (e, stacktrace) {
-    //     debugPrint(e.toString());
-    //     debugPrintStack(stackTrace: stacktrace);
-    //     setState(() {
-    //       _signedInAndScopeGranted = false;
-    //     });
-    //   }
-    // } else {
-    //   setState(() {
-    //     _signedInAndScopeGranted = false;
-    //   });
-    // }
+    setSignedInAndScopeGranted(await canAccessCalendar());
   }
 }

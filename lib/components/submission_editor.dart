@@ -1,6 +1,11 @@
+import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:googleapis/calendar/v3.dart' as c;
 import 'package:intl/intl.dart';
 import 'package:submon/db/submission.dart';
+import 'package:submon/main.dart';
+import 'package:submon/utils/ui.dart';
+import 'package:submon/utils/utils.dart';
 
 class SubmissionEditor extends StatefulWidget {
   const SubmissionEditor(
@@ -22,6 +27,8 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
   late DateTime _date;
   Color _color = Colors.white;
   bool _addTime = false;
+  bool _syncWithGoogleCalendar = false;
+  bool? _googleCalendarEnabled;
 
   _SubmissionEditorState() {
     var date = DateTime.now().add(const Duration(days: 1));
@@ -48,6 +55,12 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
       _titleController.text = widget.initialTitle!;
     }
     if (widget.initialDeadline != null) _date = widget.initialDeadline!;
+
+    canAccessCalendar().then((value) {
+      setState(() {
+        _googleCalendarEnabled = value;
+      });
+    });
   }
 
   @override
@@ -121,11 +134,63 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                   maxLines: null,
                   minLines: 2,
                   decoration: const InputDecoration(
-                    label: Text("詳細"),
-                    border: OutlineInputBorder()
-                  ),
+                      label: Text("詳細"), border: OutlineInputBorder()),
                 ),
               ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Checkbox(
+                    value: _syncWithGoogleCalendar,
+                    onChanged: _googleCalendarEnabled == true
+                        ? (value) {
+                            setState(() {
+                              _syncWithGoogleCalendar = value!;
+                            });
+                          }
+                        : null,
+                  ),
+                  GestureDetector(
+                    child: Opacity(
+                      opacity: _googleCalendarEnabled == true ? 1 : 0.6,
+                      child: Text(
+                        widget.submissionId == null
+                            ? "Google カレンダーに追加する"
+                            : "Google カレンダーの予定も更新する",
+                        style: TextStyle(
+                          color: _googleCalendarEnabled == true
+                              ? null
+                              : Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .color!
+                                  .withAlpha(170),
+                        ),
+                      ),
+                    ),
+                    onTap: _googleCalendarEnabled == true
+                        ? () {
+                            setState(() {
+                              _syncWithGoogleCalendar =
+                                  !_syncWithGoogleCalendar;
+                            });
+                          }
+                        : null,
+                  ),
+                  const SizedBox(width: 8),
+                  if (_googleCalendarEnabled == null)
+                    const SizedBox(
+                      height: 25,
+                      width: 25,
+                      child: CircularProgressIndicator(),
+                    ),
+                ],
+              ),
+              if (widget.submissionId != null)
+                OutlinedButton(
+                  child: const Text('Googleカレンダーから削除'),
+                  onPressed: () {},
+                )
             ],
           ),
         ),
@@ -180,6 +245,8 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
 
   void save() {
     SubmissionProvider().use((provider) async {
+      var client = await googleSignIn.authenticatedClient();
+      var api = client != null ? c.CalendarApi(client).events : null;
       Submission data;
       if (widget.submissionId != null) {
         data = (await provider.get(widget.submissionId!))!;
@@ -191,19 +258,66 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
       data.date = _date;
       data.color = _color;
 
+      // google calendar event entry
+      var eventRequest = c.Event(
+        summary: "Submon: ${data.title}",
+        description: data.detail,
+        start: c.EventDateTime(
+          date: DateTime(data.date!.year, data.date!.month, data.date!.day),
+        ),
+        end: c.EventDateTime(
+          date: DateTime(data.date!.year, data.date!.month, data.date!.day + 1),
+        ),
+      );
+
       dynamic result;
       if (widget.submissionId != null) {
         await provider.update(data);
         result = true;
+
+        // update google calendar event
+        if (_syncWithGoogleCalendar && api != null) {
+          api.getEventForSubmissionId(widget.submissionId!).then((event) {
+            if (event != null) {
+              api.patch(eventRequest, "primary", event.id!);
+            } else {
+              showSnackBar(
+                MyApp.globalKey.currentContext!,
+                "Googleカレンダーに登録された予定が見つかりません。作成しますか？",
+                action: SnackBarAction(
+                    label: "作成する",
+                    onPressed: () {
+                      api.insert(
+                          eventRequest
+                            ..extendedProperties = c.EventExtendedProperties(
+                              private: {
+                                "submission_id": widget.submissionId.toString(),
+                              },
+                            ),
+                          "primary");
+                    }),
+              );
+            }
+          });
+        }
       } else {
         result = (await provider.insert(data)).id;
-      }
 
-      // TODO: サーバー送信処理
+        // insert google calendar event
+        if (_syncWithGoogleCalendar) {
+          api?.insert(
+              eventRequest
+                ..extendedProperties = c.EventExtendedProperties(
+                  private: {
+                    "submission_id": result.toString(),
+                  },
+                ),
+              "primary");
+        }
+      }
 
       Navigator.of(context, rootNavigator: true).maybePop<dynamic>(result);
     });
-
   }
 }
 
