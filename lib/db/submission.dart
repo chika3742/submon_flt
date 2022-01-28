@@ -1,9 +1,13 @@
+import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:googleapis/calendar/v3.dart' as c;
 import "package:intl/intl.dart";
 import 'package:submon/db/firestore.dart';
 import 'package:submon/db/sql_provider.dart';
+import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/method_channel/notification.dart';
+import 'package:submon/utils/utils.dart';
 
 const tableSubmission = "submission";
 
@@ -46,15 +50,15 @@ class SubmissionProvider extends SqlProvider<Submission> {
 
   @override
   List<SqlField> columns() => [
-        SqlField(colId, DataType.integer, isPrimaryKey: true),
-        SqlField(colDate, DataType.string),
-        SqlField(colTitle, DataType.string),
-        SqlField(colDetail, DataType.string),
-        SqlField(colDone, DataType.bool),
-        SqlField(colImportant, DataType.bool),
-        SqlField(colColor, DataType.integer),
-        SqlField(colRepeat, DataType.integer),
-      ];
+    SqlField(colId, DataType.integer, isPrimaryKey: true),
+    SqlField(colDate, DataType.string),
+    SqlField(colTitle, DataType.string),
+    SqlField(colDetail, DataType.string),
+    SqlField(colDone, DataType.bool),
+    SqlField(colImportant, DataType.bool),
+    SqlField(colColor, DataType.integer),
+    SqlField(colRepeat, DataType.integer),
+  ];
 
   @override
   Submission mapToObj(Map map) {
@@ -85,6 +89,28 @@ class SubmissionProvider extends SqlProvider<Submission> {
   }
 
   @override
+  Future<List<Submission>> getAll(
+      {String? where, List? whereArgs, bool sortDescending = false}) async {
+    var list = await super.getAll(where: where, whereArgs: whereArgs);
+    list.sort((a, b) {
+      if (a.date!.isAfter(b.date!)) {
+        if (!sortDescending) {
+          return 1;
+        } else {
+          return 0;
+        }
+      } else {
+        if (!sortDescending) {
+          return 0;
+        } else {
+          return 1;
+        }
+      }
+    });
+    return list;
+  }
+
+  @override
   Future<Submission> insert(Submission data) {
     return super.insert(data);
   }
@@ -101,6 +127,17 @@ class SubmissionProvider extends SqlProvider<Submission> {
     FirestoreProvider.submission.delete(id.toString());
     NotificationMethodChannel.registerReminder();
     updateWidgets();
+
+    googleSignIn.authenticatedClient().then((client) async {
+      if (client != null) {
+        var api = c.CalendarApi(client).events;
+
+        var event = await api.getEventForSubmissionId(id);
+        if (event != null) {
+          api.delete("primary", event.id!);
+        }
+      }
+    });
   }
 
   @override

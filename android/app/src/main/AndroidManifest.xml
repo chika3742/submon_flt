@@ -95,6 +95,10 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".ListItemActionBroadcastReceiver"
+            android:exported="true" />
+
         <service
             android:name=".AppWidgetSubmissionListService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />

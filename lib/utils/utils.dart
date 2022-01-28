@@ -1,9 +1,12 @@
 import 'dart:io';
 
+import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:googleapis/calendar/v3.dart' as calendar;
+import 'package:googleapis_auth/auth_io.dart';
+import 'package:submon/main.dart';
 import 'package:submon/utils/ui.dart';
 
 Future<dynamic> pushPage(BuildContext context, Widget page) async {
@@ -46,4 +49,34 @@ void handleAuthError(FirebaseAuthException e, BuildContext context) {
           duration: const Duration(minutes: 1));
   }
   debugPrint(e.message);
+}
+
+Future<bool> canAccessCalendar() async {
+  try {
+    var client = await googleSignIn.authenticatedClient();
+    if (client == null) return false;
+
+    await calendar.CalendarApi(client).events.list("primary", maxResults: 1);
+    return true;
+  } on AccessDeniedException catch (e, stackTrace) {
+    if (e.message.contains("invalid_token")) {
+      await googleSignIn.disconnect();
+      return await canAccessCalendar();
+    }
+
+    debugPrint(e.toString());
+    debugPrint(stackTrace.toString());
+    return false;
+  }
+}
+
+extension SubmissionExtension on calendar.EventsResource {
+  Future<calendar.Event?> getEventForSubmissionId(int submissionId) async {
+    var events = await list("primary",
+        maxResults: 1,
+        privateExtendedProperty: ["submission_id=$submissionId"]);
+    if (events.items == null || events.items!.isEmpty) return null;
+
+    return events.items!.first;
+  }
 }

@@ -28,9 +28,6 @@ apply plugin: 'com.google.firebase.crashlytics'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    Properties properties = new Properties()
-    properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
     compileSdkVersion 32
 
     compileOptions {
@@ -41,9 +38,9 @@ android {
     signingConfigs {
         release {
             storeFile file('/Users/chika/Documents/android-app-keys.jks')
-            storePassword properties.getProperty("RELEASE_STORE_PASSWORD")
-            keyAlias properties.getProperty("RELEASE_KEY_ALIAS")
-            keyPassword properties.getProperty("RELEASE_KEY_ALIAS_PASSWORD")
+            storePassword localProperties.getProperty("RELEASE_STORE_PASSWORD")
+            keyAlias localProperties.getProperty("RELEASE_KEY_ALIAS")
+            keyPassword localProperties.getProperty("RELEASE_KEY_ALIAS_PASSWORD")
         }
     }
 
@@ -81,9 +78,9 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9'
-    implementation 'androidx.appcompat:appcompat:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
     implementation "androidx.browser:browser:1.4.0"
 
     implementation platform('com.google.firebase:firebase-bom:29.0.3')
