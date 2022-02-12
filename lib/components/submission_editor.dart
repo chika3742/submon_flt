@@ -87,9 +87,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                   const SizedBox(width: 16),
                   TappableCard(
                     child: const Icon(Icons.palette),
-                    onTap: () {
-
-                    },
+                    onTap: showColorPickerDialog,
                   ),
                 ],
               ),
@@ -186,11 +184,6 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                     ),
                 ],
               ),
-              if (widget.submissionId != null)
-                OutlinedButton(
-                  child: const Text('Googleカレンダーから削除'),
-                  onPressed: () {},
-                )
             ],
           ),
         ),
@@ -237,10 +230,28 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
         }
       } else {
         setState(() {
-          _date = DateTime(dateResult.year, dateResult.month, dateResult.day, _date.hour, _date.minute);
+          _date = DateTime(dateResult.year, dateResult.month, dateResult.day,
+              _date.hour, _date.minute);
         });
       }
     }
+  }
+
+  void showColorPickerDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ColorPickerDialog(
+          initialColor: _color,
+        );
+      },
+    ).then((color) {
+      if (color != null) {
+        setState(() {
+          _color = color;
+        });
+      }
+    });
   }
 
   void save() {

@@ -121,9 +121,11 @@ class _TabMemorizeCardState extends State<TabMemorizeCard>
             ListTile(
               title: const Text('カメラ入力でカード追加'),
               leading: const Icon(Icons.camera_alt),
-              onTap: () {
-                Navigator.of(context, rootNavigator: true)
+              onTap: () async {
+                eventBus.fire(SubmissionDetailPageOpened(true));
+                await Navigator.of(context, rootNavigator: true)
                     .pushNamed("/memorize/camera");
+                eventBus.fire(SubmissionDetailPageOpened(false));
               },
             ),
             ListTile(

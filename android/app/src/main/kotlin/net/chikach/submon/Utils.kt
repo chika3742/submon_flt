@@ -4,9 +4,15 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.icu.text.SimpleDateFormat
+import android.text.format.DateFormat
+import android.util.Log
 import androidx.core.app.AlarmManagerCompat
 import io.flutter.embedding.android.FlutterActivity
 import java.util.*
+import kotlin.math.floor
+import kotlin.math.round
 
 object Utils {
     private const val REMINDER_REQUEST_CODE = 3304
@@ -59,5 +65,32 @@ object Utils {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         am.cancel(pendingIntent)
+    }
+
+    fun getDateDiff(dateString: String, context: Context): Long {
+        val date = SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.JAPAN).parse(dateString)!!
+        return date.time - System.currentTimeMillis()
+    }
+
+    fun getDateDiffString(dateString: String, context: Context): String {
+        val diff = getDateDiff(dateString, context)
+        val diffHours = diff / (60L * 60 * 1000) % 24
+        val diffDays = diff / (24L * 60 * 60 * 1000)
+        val diffWeeks = diff / (7L * 24 * 60 * 60 * 1000)
+        val diffMonths = diff / (30L * 24 * 60 * 60 * 1000)
+        return when {
+            diffMonths > 0 -> "${diffMonths}ヶ月"
+            diffWeeks > 0 -> "${diffWeeks}週間"
+            diffDays > 0 -> "${diffDays}日"
+            else -> "${diffHours}時間"
+        }
+    }
+
+    fun getDateDiffColor(dateDiff: Long): Int {
+        return when {
+            dateDiff < 0 -> Color.parseColor("#F44336")
+            dateDiff < 2 * 24 * 60 * 60 * 1000 -> Color.parseColor("#FF9800")
+            else -> Color.parseColor("#4CAF50")
+        }
     }
 }

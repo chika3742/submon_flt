@@ -213,6 +213,12 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                 }
               })
         ]),
+        SettingsCategory(title: "LMS連携", tiles: [
+          SettingsTile(
+              title: "Canvas LMSと連携",
+              subtitle: "大学等の学習管理システムから提出物を取得し、自動的に追加します。",
+              onTap: () async {})
+        ]),
         SettingsCategory(title: "その他の機能", tiles: [
           if (_enableSE != null)
             SwitchSettingsTile(
