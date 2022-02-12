@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:googleapis/calendar/v3.dart' as c;
@@ -89,9 +90,9 @@ class SubmissionProvider extends SqlProvider<Submission> {
   }
 
   @override
-  Future<List<Submission>> getAll(
-      {String? where, List? whereArgs, bool sortDescending = false}) async {
+  Future<List<Submission>> getAll({String? where, List? whereArgs, bool sortDescending = false}) async {
     var list = await super.getAll(where: where, whereArgs: whereArgs);
+    // sort by date
     list.sort((a, b) {
       if (a.date!.isAfter(b.date!)) {
         if (!sortDescending) {
@@ -107,6 +108,16 @@ class SubmissionProvider extends SqlProvider<Submission> {
         }
       }
     });
+    // sort by Star
+    list.sort((a, b) {
+      if (a.important == true && b.important == false) {
+        return -1;
+      } else if (a.important == false && b.important == true) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
     return list;
   }
 
@@ -117,7 +128,8 @@ class SubmissionProvider extends SqlProvider<Submission> {
 
   @override
   void setFirestore(Submission data) {
-    FirestoreProvider.submission.set(data.id.toString(), objToMap(data));
+    FirestoreProvider.submission
+        .set(data.id.toString(), objToMap(data), SetOptions(merge: true));
     NotificationMethodChannel.registerReminder();
     updateWidgets();
   }

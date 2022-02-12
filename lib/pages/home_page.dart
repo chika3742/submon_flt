@@ -4,6 +4,7 @@ import 'package:animations/animations.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:submon/components/hidable_progress_indicator.dart';
 import 'package:submon/db/firestore.dart';
 import 'package:submon/events.dart';
@@ -18,6 +19,7 @@ import 'package:submon/pages/home_tabs/tab_timetable.dart';
 import 'package:submon/pages/submission_create_page.dart';
 import 'package:submon/utils/firestore.dart';
 import 'package:submon/utils/ui.dart';
+import 'package:submon/utils/utils.dart';
 
 import '../fade_through_page_route.dart';
 
@@ -33,6 +35,9 @@ class _HomePageState extends State<HomePage> {
   StreamSubscription? linkListener;
   var tabIndex = 0;
   var _loading = false;
+  var _hideAd = false;
+
+  BannerAd? bannerAd;
 
   List<BottomNavigationBarItem> _bottomNavigationItems() => const [
         BottomNavigationBarItem(
@@ -72,6 +77,28 @@ class _HomePageState extends State<HomePage> {
           .popUntil((route) => !route.settings.name!.startsWith("/signIn"));
     });
 
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+              MediaQuery.of(context).size.width.truncate())
+          .then((adSize) {
+        setState(() {
+          bannerAd = BannerAd(
+            adUnitId: getAdUnitId(AdUnit.homeBottomBanner)!,
+            size: adSize!,
+            request: const AdRequest(),
+            listener: const BannerAdListener(),
+          );
+          bannerAd!.load();
+        });
+      });
+    });
+
+    eventBus.on<SubmissionDetailPageOpened>().listen((event) {
+      setState(() {
+        _hideAd = event.opened;
+      });
+    });
+
     initMethodCallHandler();
     fetchData();
     pages = [
@@ -105,6 +132,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     linkListener?.cancel();
+    bannerAd?.dispose();
     super.dispose();
   }
 
@@ -136,10 +164,28 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       floatingActionButton: _buildFloatingActionButton(),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: tabIndex,
-        items: _bottomNavigationItems(),
-        onTap: onBottomNavTap,
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (bannerAd != null)
+            Visibility(
+              visible: !_hideAd,
+              child: Container(
+                alignment: Alignment.center,
+                width: bannerAd!.size.width.toDouble(),
+                height: bannerAd!.size.height.toDouble(),
+                child: AdWidget(
+                  ad: bannerAd!,
+                ),
+              ),
+            ),
+          BottomNavigationBar(
+            currentIndex: tabIndex,
+            items: _bottomNavigationItems(),
+            onTap: onBottomNavTap,
+          ),
+        ],
       ),
     );
   }
@@ -154,13 +200,22 @@ class _HomePageState extends State<HomePage> {
           closedColor: Theme.of(context).canvasColor,
           closedBuilder: (context, callback) => FloatingActionButton(
             child: const Icon(Icons.add),
-            onPressed: callback,
+            onPressed: () {
+              callback();
+              setState(() {
+                _hideAd = true;
+              });
+            },
           ),
           openBuilder: (context, callback) {
             return const SubmissionCreatePage();
           },
           onClosed: (result) {
             if (result != null) eventBus.fire(SubmissionInserted(result));
+
+            setState(() {
+              _hideAd = false;
+            });
           },
         );
       case 2:
@@ -214,8 +269,9 @@ class _HomePageState extends State<HomePage> {
     void createNew() async {
       var insertedId = await Navigator.of(context, rootNavigator: true)
           .pushNamed("/submission/create", arguments: {});
-      if (insertedId != null)
+      if (insertedId != null) {
         eventBus.fire(SubmissionInserted(insertedId as int));
+      }
     }
 
     void openSubmissionDetailPage(int id) {

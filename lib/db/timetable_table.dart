@@ -6,10 +6,11 @@ const colId = "id";
 const colTitle = "title";
 
 class TimetableTable {
+  /// null means main
   int? id;
-  String title;
+  String? title;
 
-  TimetableTable({this.id, required this.title});
+  TimetableTable({this.id, this.title});
 }
 
 class TimetableTableProvider extends SqlProvider<TimetableTable> {

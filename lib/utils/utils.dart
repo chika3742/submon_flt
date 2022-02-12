@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:submon/main.dart';
@@ -79,4 +81,32 @@ extension SubmissionExtension on calendar.EventsResource {
 
     return events.items!.first;
   }
+}
+
+enum AdUnit {
+  homeBottomBanner,
+}
+
+String? getAdUnitId(AdUnit adUnit) {
+  var adUnitIds = {
+    AdUnit.homeBottomBanner: {
+      "debug": {
+        "iOS": dotenv.get("AD_UNIT_DEBUG_BANNER_IOS"),
+        "Android": dotenv.get("AD_UNIT_DEBUG_BANNER_ANDROID"),
+      },
+      "release": {
+        "iOS": dotenv.get("AD_UNIT_HOME_IOS"),
+        "Android": dotenv.get("AD_UNIT_HOME_ANDROID"),
+      }
+    }
+  };
+  String platform;
+  if (Platform.isIOS) {
+    platform = "iOS";
+  } else if (Platform.isAndroid) {
+    platform = "Android";
+  } else {
+    return null;
+  }
+  return adUnitIds[adUnit]?[kReleaseMode ? "release" : "debug"]?[platform];
 }

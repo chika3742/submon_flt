@@ -23,6 +23,9 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import net.chikach.submon.Utils.getDateDiff
+import net.chikach.submon.Utils.getDateDiffColor
+import net.chikach.submon.Utils.getDateDiffString
 import java.io.Serializable
 import java.util.*
 
@@ -117,7 +120,7 @@ class AppWidgetSubmissionListService : RemoteViewsService() {
                                 it["title"] as String,
                                 it["date"] as String
                             )
-                        }
+                        }.sortedBy { DateFormat.getDateFormat(context).parse(it.date) }
                         this.list = list
                         deferred.complete(Unit)
                     }
@@ -138,11 +141,12 @@ class AppWidgetSubmissionListService : RemoteViewsService() {
         override fun getViewAt(position: Int): RemoteViews {
             val views =
                 RemoteViews(context.packageName, R.layout.appwidget_submission_list_item).apply {
-                    val date = DateFormat.format(
-                        "M/d (E)",
-                        DateFormat.getDateFormat(context).parse(list[position].date)
-                    )
+                    val date = getDateDiffString(list[position].date, context)
                     setTextViewText(R.id.dateTextView, date)
+                    setTextColor(
+                        R.id.dateTextView,
+                        getDateDiffColor(getDateDiff(list[position].date, context))
+                    )
                     setTextViewText(R.id.titleTextView, list[position].title)
                     setOnClickFillInIntent(
                         R.id.listItemLayout, Intent()

@@ -49,8 +49,9 @@ class TabTimetableState extends State<TabTimetable> {
     });
     TimetableTableProvider().use((provider) async {
       tables = await provider.getAll();
-      if (!tables.any((element) => element.id.toString() == tableId))
+      if (!tables.any((element) => element.id.toString() == tableId)) {
         tableId = "main";
+      }
       setState(() {});
     });
   }
@@ -111,8 +112,8 @@ class TabTimetableState extends State<TabTimetable> {
                         child: Text('メイン'),
                       ),
                       ...tables.map((e) => DropdownMenuItem(
-                            value: e.id.toString(),
-                            child: Text(e.title),
+                        value: e.id.toString(),
+                            child: Text(e.title!),
                           )),
                     ],
                     onChanged: (value) {

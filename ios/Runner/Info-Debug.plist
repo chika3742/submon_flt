@@ -88,5 +88,7 @@
 	<array>
 		<string>_dartobservatory._tcp.</string>
 	</array>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-3855326482023688~8960053111</string>
 </dict>
 </plist>

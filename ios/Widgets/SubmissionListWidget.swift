@@ -94,6 +94,11 @@ struct SubmissionListWidgetEntryView : View {
     @Environment(\.widgetFamily) var family
 //    var family: WidgetFamily = .systemLarge
     var entry: Provider.Entry
+    var dateFormatter: DateFormatter {
+        let df = DateFormatter()
+        df.dateFormat = "M/d (E)"
+        return df
+    }
     
     @ViewBuilder
     var body: some View {
@@ -149,7 +154,7 @@ struct SubmissionListWidgetEntryView : View {
                             VStack {
                                 HStack {
                                     if family != .systemSmall {
-                                        Text(item.date)
+                                        Text(dateFormatter.string(from: dateFormatter.date(from: item.date)!))
                                             .font(.subheadline)
                                     }
                                     Text(item.title)

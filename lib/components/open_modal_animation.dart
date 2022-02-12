@@ -176,7 +176,7 @@ class _OpenModalAnimationRoute<T> extends ModalRoute<T> {
         curve: Curves.fastOutSlowIn,
         reverseCurve: Curves.fastOutSlowIn.flipped);
 
-    final closeOpacityTween = Tween(begin: 1.0, end: 0.0);
+    // final closeOpacityTween = Tween(begin: 1.0, end: 0.0);
     final openOpacityTween = Tween(begin: 0.0, end: 1.0);
 
     return Align(

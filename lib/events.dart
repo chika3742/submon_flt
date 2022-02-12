@@ -34,3 +34,9 @@ class TimetableCustomSubjectInserted {
 class MemorizeCardAddButtonPressed {
   MemorizeCardAddButtonPressed();
 }
+
+class SubmissionDetailPageOpened {
+  bool opened;
+
+  SubmissionDetailPageOpened(this.opened);
+}
