@@ -13,8 +13,13 @@
     <queries>
         <intent>
             <action android:name="android.intent.action.VIEW" />
-
             <data android:scheme="https" />
+        </intent>
+    </queries>
+
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
         </intent>
     </queries>
 
@@ -102,6 +107,16 @@
         <service
             android:name=".AppWidgetSubmissionListService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
 
         <!--
  Don't delete the meta-data below.

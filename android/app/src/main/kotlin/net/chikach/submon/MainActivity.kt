@@ -1,27 +1,33 @@
 package net.chikach.submon
 
+import android.app.Activity
 import android.app.NotificationManager
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
+import android.graphics.Matrix
 import android.net.Uri
-import android.os.Bundle
+import android.os.Build
 import android.os.Handler
-import android.os.PersistableBundle
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationChannelGroupCompat
 import androidx.core.app.NotificationManagerCompat
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
+import androidx.core.content.FileProvider
+import androidx.core.graphics.scale
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import java.io.File
+import java.io.FileOutputStream
 
 val chromiumBrowserPackages = listOf(
     "com.android.chrome",
@@ -46,10 +52,15 @@ const val METHOD_CHANNEL_MAIN = "submon/main"
 const val METHOD_CHANNEL_NOTIFICATION = "submon/notification"
 const val METHOD_CHANNEL_ACTIONS = "submon/actions"
 
+const val REQUEST_CODE_TAKE_PICTURE = 1
+
 class MainActivity : FlutterActivity() {
     lateinit var mainMethodChannel: MethodChannel
     var pendingAction: String? = null
     var pendingActionArgument: Int? = null
+
+    var takePictureResult: MethodChannel.Result? = null
+    var pictureFile: File? = null
 
     companion object {
         const val EXTRA_FLUTTER_ACTION = "FLUTTER_ACTION"
@@ -72,6 +83,7 @@ class MainActivity : FlutterActivity() {
             MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_MAIN)
         mainMethodChannel.setMethodCallHandler { call, result ->
             when (call.method) {
+                // Opens web page with WebActivity
                 "openWebPage" -> {
                     val title = call.argument<String>("title")
                     val url = call.argument<String>("url")
@@ -82,6 +94,7 @@ class MainActivity : FlutterActivity() {
                     )
                     result.success(null)
                 }
+                // Opens Custom Tabs
                 "openCustomTabs" -> {
                     val ctIntent = CustomTabsIntent.Builder().build()
                     val pm = packageManager
@@ -113,6 +126,7 @@ class MainActivity : FlutterActivity() {
                     ctIntent.launchUrl(this, Uri.parse(call.argument("url")))
                     result.success(null)
                 }
+                // Updates App Widgets
                 "updateWidgets" -> {
                     Handler(mainLooper).postDelayed({
                         val aws = getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager
@@ -129,6 +143,16 @@ class MainActivity : FlutterActivity() {
                                 .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
                         )
                     }, 2000)
+                }
+                "takePictureNative" -> {
+                    takePictureResult = result
+                    pictureFile = File(cacheDir, "${System.currentTimeMillis()}.jpg")
+                    pictureFile!!.createNewFile()
+                    val uri =
+                        FileProvider.getUriForFile(this, "$packageName.fileprovider", pictureFile!!)
+                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+                    startActivityForResult(intent, REQUEST_CODE_TAKE_PICTURE)
                 }
                 else -> {
                     result.notImplemented()
@@ -205,8 +229,30 @@ class MainActivity : FlutterActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 10) {
-            Log.d("result", data.toString())
+        when (requestCode) {
+            REQUEST_CODE_TAKE_PICTURE -> {
+                if (resultCode == Activity.RESULT_OK && pictureFile != null) {
+                    var bmp = BitmapFactory.decodeFile(pictureFile!!.path)
+                    val mat = Matrix()
+                    mat.postRotate(90F)
+                    var width = bmp.width
+                    var height = bmp.height
+                    if (width > height) {
+                        width = (bmp.height * (16.0 / 9)).toInt()
+                    } else {
+                        height = (bmp.width * (16.0 / 9)).toInt()
+                    }
+                    bmp = Bitmap.createBitmap(bmp, 0, 0, width, height, mat, true)
+                    val stream = FileOutputStream(pictureFile!!)
+                    bmp.compress(Bitmap.CompressFormat.JPEG, 80, stream)
+                    stream.close()
+                    takePictureResult?.success(pictureFile!!.path)
+                    bmp.recycle()
+                } else {
+                    takePictureResult?.success(null)
+                }
+                takePictureResult = null
+            }
         }
     }
 
