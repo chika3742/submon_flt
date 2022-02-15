@@ -73,7 +73,9 @@ Future<T?> showSimpleDialog<T>(
       builder: (context) {
         return PlatformAlertDialog(
           title: Text(title),
-          content: Text(message, style: const TextStyle(fontSize: 16)),
+          content: SingleChildScrollView(
+            child: Text(message, style: const TextStyle(fontSize: 16)),
+          ),
           actions: [
             if (showCancel)
               PlatformTextButton(

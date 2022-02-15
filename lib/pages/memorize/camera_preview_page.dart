@@ -1,9 +1,16 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:camera/camera.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
+import 'package:submon/method_channel/main.dart';
 import 'package:submon/utils/card_side_builder.dart';
+import 'package:submon/utils/text_recognized_candidate_painter.dart';
 import 'package:submon/utils/ui.dart';
 
 import '../../main.dart';
@@ -16,16 +23,30 @@ class CameraPreviewPage extends StatefulWidget {
 }
 
 class _CameraPreviewPageState extends State<CameraPreviewPage>
-    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
+    with WidgetsBindingObserver, TickerProviderStateMixin {
   CameraController? _controller;
-  AnimationController? _animationController;
-  CurvedAnimation? _animation;
-  XFile? _file;
+  AnimationController? _switchAnimationController;
+  Animation<int>? _switchAnimation;
+  AnimationController? _radarAnimationController;
+  Animation<RelativeRect>? _radarAnimation;
+  AnimationController? _focusAnimationController;
+  ui.Image? _image;
+  String? _imagePath;
+  List<TextElement>? _recognizingResult;
   bool _taking = false;
+  bool _recognizingText = false;
   CardSide _currentCardSide = CardSide.front;
-  bool _pickingMode = false;
-  bool _editMode = false;
+  bool _isPickingMode = false;
+  bool _hideResultPanel = false;
+  bool _isEditMode = false;
+  bool _autoInsertSpace = false;
+  Offset _focusPoint = Offset.zero;
+  bool _isFocusing = false;
+  Timer? _focusTimer;
+
   final _panelKey = GlobalKey();
+  final _cameraPreviewKey = GlobalKey();
+  final _imageKey = GlobalKey();
   final _editingController = TextEditingController();
   final _builder = CardSideBuilder();
 
@@ -33,17 +54,29 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
   void initState() {
     WidgetsBinding.instance?.addObserver(this);
     initCamera();
-    _animationController = AnimationController(
+    _switchAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    _animation = CurvedAnimation(
-      parent: Tween(begin: 0.0, end: 1.0).animate(_animationController!),
+    _switchAnimation = IntTween(begin: 100, end: 300).animate(CurvedAnimation(
+      parent: _switchAnimationController!,
       curve: Curves.easeOutQuint,
       reverseCurve: Curves.easeInQuint,
-    )..addListener(() {
+    ))
+      ..addListener(() {
         setState(() {});
       });
+
+    _radarAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    );
+
+    _focusAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+
     super.initState();
   }
 
@@ -51,11 +84,31 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
   void dispose() {
     WidgetsBinding.instance?.removeObserver(this);
     _controller?.dispose();
+    if (_imagePath != null) {
+      File(_imagePath!).delete();
+      _imagePath = null;
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    var begin =
+        RelativeRect.fromLTRB(-4, 0, MediaQuery.of(context).size.width, 0);
+    var end =
+        RelativeRect.fromLTRB(MediaQuery.of(context).size.width, 0, -4, 0);
+    _radarAnimation ??= TweenSequence([
+      TweenSequenceItem(
+          tween: RelativeRectTween(begin: begin, end: end)
+              .chain(CurveTween(curve: Curves.easeOutSine)),
+          weight: 1),
+      TweenSequenceItem(tween: ConstantTween(end), weight: 0.5),
+      TweenSequenceItem(
+          tween: RelativeRectTween(begin: end, end: begin)
+              .chain(CurveTween(curve: Curves.easeOutSine)),
+          weight: 1),
+      TweenSequenceItem(tween: ConstantTween(begin), weight: 0.5),
+    ]).animate(_radarAnimationController!);
     if (_controller == null || !_controller!.value.isInitialized) {
       return Scaffold(
         appBar: AppBar(
@@ -74,51 +127,219 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
             IconButton(
                 icon: const Icon(Icons.info),
                 onPressed: showAboutTextRecognizing),
-            if (_pickingMode && !_editMode)
+            if (_isPickingMode && !_isEditMode)
               IconButton(
                 icon: const Icon(Icons.delete),
-                onPressed: () {
-                  setState(() {
-                    _builder.clear(_currentCardSide);
-                  });
+                onPressed: _builder.get(_currentCardSide).isNotEmpty
+                    ? () {
+                        setState(() {
+                          _builder.clear(_currentCardSide);
+                        });
+                      }
+                    : null,
+              ),
+            if (_isPickingMode && !_isEditMode)
+              PopupMenuButton(
+                itemBuilder: (ctx) {
+                  return [
+                    PopupMenuItem(
+                      child: CheckboxListTile(
+                        title: const Text("単語の後にスペースを挿入"),
+                        value: _autoInsertSpace,
+                        onChanged: (v) {
+                          setState(() {
+                            _autoInsertSpace = v!;
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
+                    PopupMenuItem(
+                      child: ListTile(
+                        title: const Text("スペースを挿入"),
+                        onTap: () {
+                          setState(() {
+                            _builder.append(_currentCardSide, TextElement(" "));
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
+                  ];
+                },
+              ),
+            if (!_isPickingMode)
+              PopupMenuButton(
+                itemBuilder: (context) {
+                  return [
+                    PopupMenuItem(
+                        child: ListTile(
+                      title: const Text('端末のUIを利用して撮影'),
+                      onTap: !_taking
+                          ? () async {
+                              Navigator.pop(context);
+                              var result = await takePictureNative();
+                              if (result != null) {
+                                setState(() {
+                                  _isPickingMode = true;
+                                });
+                                recognizeText(XFile(result));
+                              }
+                            }
+                          : null,
+                    ))
+                  ];
                 },
               )
           ],
         ),
         body: WillPopScope(
           onWillPop: () async {
-            if (_pickingMode) {
+            if (_isEditMode) {
               setState(() {
-                _pickingMode = false;
-                _editMode = false;
-                _taking = false;
-                _controller?.resumePreview();
+                _isEditMode = false;
               });
+              return false;
+            }
+            if (_isPickingMode) {
+              back();
               return false;
             }
             return true;
           },
           child: Stack(
             children: [
-              CameraPreview(
-                _controller!,
+              // Preview
+              GestureDetector(
+                key: _cameraPreviewKey,
+                onTapUp: (details) async {
+                  _focusTimer?.cancel();
+
+                  var size = _cameraPreviewKey.currentContext!.size!;
+                  _controller?.setFocusMode(FocusMode.locked);
+                  _controller?.setFocusPoint(details.localPosition
+                      .scale(1 / size.width, 1 / size.height));
+
+                  _focusTimer = Timer(const Duration(seconds: 5), () {
+                    _controller?.setFocusMode(FocusMode.auto);
+                  });
+
+                  setState(() {
+                    _isFocusing = true;
+                    _focusPoint = details.localPosition;
+                  });
+                  await _focusAnimationController?.forward();
+                  _focusAnimationController?.reset();
+                  setState(() {
+                    _isFocusing = false;
+                  });
+                },
+                child: CameraPreview(
+                  _controller!,
+                ),
               ),
+
+              // focus indicator
+              if (_isFocusing)
+                Positioned(
+                  left: _focusPoint.dx - 20,
+                  top: _focusPoint.dy - 20,
+                  child: ScaleTransition(
+                    scale: TweenSequence([
+                      TweenSequenceItem(
+                          tween: Tween(begin: 1.5, end: 1.0)
+                              .chain(CurveTween(curve: Curves.easeOutQuint)),
+                          weight: 1),
+                      TweenSequenceItem(tween: ConstantTween(1.0), weight: 1),
+                    ]).animate(_focusAnimationController!),
+                    child: FadeTransition(
+                      opacity: TweenSequence([
+                        TweenSequenceItem(
+                            tween: Tween(begin: 0.0, end: 1.0), weight: 1.0),
+                        TweenSequenceItem(
+                            tween: ConstantTween(1.0), weight: 2.0),
+                        TweenSequenceItem(
+                            tween: Tween(begin: 1.0, end: 0.0), weight: 1.0),
+                      ]).animate(_focusAnimationController!),
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+              // image preview
+              if (_image != null && _imagePath != null)
+                SizedBox.expand(
+                  child: GestureDetector(
+                    onPanUpdate: (details) =>
+                        onSelectText(details.localPosition),
+                    onTapDown: (details) {
+                      onSelectText(details.localPosition);
+                      setState(() {
+                        _hideResultPanel = true;
+                      });
+                    },
+                    onPanStart: (details) => setState(() {
+                      _hideResultPanel = true;
+                    }),
+                    onPanEnd: (e) {
+                      setState(() {
+                        _hideResultPanel = false;
+                      });
+                    },
+                    onTapUp: (details) {
+                      setState(() {
+                        _hideResultPanel = false;
+                      });
+                    },
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Image.file(File(_imagePath!),
+                            key: _imageKey, alignment: Alignment.topCenter),
+                        CustomPaint(
+                          painter: TextRecognizedCandidatePainter(
+                              _recognizingResult,
+                              Size(_image!.width.toDouble(),
+                                  _image!.height.toDouble()),
+                              _currentCardSide == CardSide.front
+                                  ? _builder.front
+                                  : _builder.back),
+                          isComplex: true,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+              // result panel
               AnimatedSlide(
-                duration: const Duration(milliseconds: 300),
+                key: const ValueKey(0),
+                duration: const Duration(milliseconds: 500),
                 curve: Curves.easeOutQuint,
-                offset: Offset(0, _pickingMode ? 0 : -1),
+                offset: Offset(
+                    0,
+                    (_isPickingMode && !_hideResultPanel) || _isEditMode
+                        ? 0
+                        : -1),
                 child: IntrinsicHeight(
                   key: _panelKey,
                   child: Flex(
                     direction: Axis.horizontal,
                     children: [
                       Flexible(
-                        flex: 400 - (100 + (_animation!.value * 100).toInt()),
+                        flex: 400 - _switchAnimation!.value,
                         child: _buildSideResultView(
                             CardSide.front, _builder.toStringFront()),
                       ),
                       Flexible(
-                        flex: 100 + (_animation!.value * 400).toInt(),
+                        flex: _switchAnimation!.value,
                         child: _buildSideResultView(
                             CardSide.back, _builder.toStringBack()),
                       ),
@@ -126,7 +347,39 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
                   ),
                 ),
               ),
-              if (!_pickingMode)
+
+              // loading display
+              SizedBox.expand(
+                child: IgnorePointer(
+                  ignoring: !_recognizingText,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOutQuint,
+                    opacity: _recognizingText ? 1 : 0,
+                    child: Stack(
+                      children: [
+                        Container(
+                          color: Colors.black.withAlpha(180),
+                        ),
+                        PositionedTransition(
+                          rect: _radarAnimation!,
+                          child: Container(
+                            color: Colors.white,
+                          ),
+                        ),
+                        const Center(
+                          child: Text('テキストを探しています…',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // take picture button
+              if (!_isPickingMode)
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Align(
@@ -147,7 +400,7 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
   Widget _buildSideResultView(CardSide side, String sideText) {
     // view of text or text form field
     Widget buildResultView() {
-      if (_editMode && side == _currentCardSide) {
+      if (_isEditMode && side == _currentCardSide) {
         return TextFormField(
           controller: _editingController,
           autofocus: true,
@@ -160,9 +413,9 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
           onFieldSubmitted: (str) {
             setState(() {
               _builder.clear(side);
-              _builder.append(side, WordFragment(str));
+              _builder.append(side, TextElement(str));
               _editingController.clear();
-              _editMode = false;
+              _isEditMode = false;
             });
           },
         );
@@ -178,15 +431,15 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
 
     // view of inside card
     Widget buildInCard() {
-      if (_editMode && side != _currentCardSide) {
+      if (_isEditMode && side != _currentCardSide) {
         return InkWell(
           onTap: () {
             setState(() {
               _builder.clear(_currentCardSide);
               _builder.append(
-                  _currentCardSide, WordFragment(_editingController.text));
+                  _currentCardSide, TextElement(_editingController.text));
               _editingController.clear();
-              _editMode = false;
+              _isEditMode = false;
             });
           },
           child: const Center(child: Icon(Icons.check, size: 28)),
@@ -198,17 +451,17 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
             if (_currentCardSide != side) {
               setState(() {
                 if (side == CardSide.front) {
-                  _animationController!.reverse();
+                  _switchAnimationController!.reverse();
                   _currentCardSide = CardSide.front;
                 } else {
-                  _animationController!.forward();
+                  _switchAnimationController!.forward();
                   _currentCardSide = CardSide.back;
                 }
               });
             } else {
               setState(() {
                 _editingController.text = sideText;
-                _editMode = true;
+                _isEditMode = true;
               });
             }
           },
@@ -241,7 +494,7 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
 
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 300),
-      opacity: side == _currentCardSide || _editMode ? 1.0 : 0.8,
+      opacity: side == _currentCardSide || _isEditMode ? 1.0 : 0.8,
       child: Card(
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
@@ -259,7 +512,7 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
     setState(() {
       _taking = true;
     });
-    var timer = Timer(const Duration(seconds: 5), () async {
+    var timer = Timer(const Duration(seconds: 10), () async {
       showSnackBar(
           context,
           "撮影がタイムアウトしました。アプリを再起動し、再度お試しください。\n"
@@ -273,12 +526,11 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
       initCamera();
     });
     try {
-      _file = await _controller!.takePicture();
-      _controller!.pausePreview();
+      var imageFile = await _controller!.takePicture();
       setState(() {
-        _pickingMode = true;
+        _isPickingMode = true;
       });
-      recognizeText();
+      recognizeText(imageFile);
     } catch (e) {
       showSnackBar(context, "エラーが発生しました");
     } finally {
@@ -289,21 +541,100 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
     }
   }
 
-  void recognizeText() async {
-    var result = await FirebaseFunctions.instanceFor(region: "asia-northeast1")
-        .httpsCallable("recognizeText")({});
+  void recognizeText(XFile imageFile) async {
+    setState(() {
+      _recognizingText = true;
+      _imagePath = imageFile.path;
+    });
+    _radarAnimationController?.repeat();
 
-    print(result.data);
+    var newFile = await FlutterExifRotation.rotateImage(path: imageFile.path);
+    var imageBytes = await newFile.readAsBytes();
+
+    var decodedImage = await decodeImageFromList(imageBytes);
+
+    setState(() {
+      _image = decodedImage;
+    });
+
+    var functions = FirebaseFunctions.instanceFor(region: "asia-northeast1");
+
+    var result = await functions.httpsCallable("recognizeText")({
+      "image": {
+        "content": base64Encode(imageBytes),
+      },
+      "features": [
+        {
+          "type": "DOCUMENT_TEXT_DETECTION",
+        }
+      ],
+      "imageContext": {
+        "languageHints": ["ja", "en"],
+      }
+    });
+
+    setState(() {
+      _recognizingText = false;
+      _recognizingResult = (result.data as List<dynamic>)
+          .map((e) => TextElement.fromMap(Map.from(e)))
+          .toList();
+
+      if (_recognizingResult!.isEmpty) {
+        showSimpleDialog(context, "エラー", "テキストが見つかりませんでした。", allowCancel: false,
+            onOKPressed: () {
+          back();
+        });
+      }
+
+      Timer(const Duration(milliseconds: 300), () {
+        _radarAnimationController!.reset();
+      });
+    });
+  }
+
+  void onSelectText(Offset pos) {
+    for (var element in _recognizingResult!) {
+      var scale = _image!.width / _imageKey.currentContext!.size!.width;
+      if (isInsideQuadrangle(element.vertices!, pos.scale(scale, scale))) {
+        setState(() {
+          if (!_builder.get(_currentCardSide).contains(element)) {
+            _builder.append(_currentCardSide, element);
+            if (_autoInsertSpace) {
+              _builder.append(_currentCardSide, TextElement(" "));
+            }
+          }
+        });
+      }
+    }
+  }
+
+  void back() {
+    if (_imagePath != null) {
+      File(_imagePath!).delete();
+      _imagePath = null;
+    }
+    setState(() {
+      _isPickingMode = false;
+      _isEditMode = false;
+      _taking = false;
+      _image = null;
+      _recognizingResult = null;
+      _builder.clearAll();
+      _currentCardSide = CardSide.front;
+    });
+    _switchAnimationController?.reset();
   }
 
   void showAboutTextRecognizing() {
     showSimpleDialog(
         context,
-        "プライバシーポリシー",
+        "プライバシーポリシーとお知らせ",
         "是非最後までお読みください。\n\n本機能では、Google LLC(以下「Google」) の提供する Cloud Vision API を利用してOCR(文字認識)を行っています。\n\n"
             "このAPIでは、画像をGoogleに送信することで、Googleのサーバーで画像処理をして認識された文字を取得しています。\n\n"
             "送信された画像はGoogleのサーバーのメモリ内でのみ処理され、処理後はすぐに削除されます。画像がGoogleサーバーに蓄積されることはありません。ご安心ください。\n\n"
-            "また、本アプリで撮影した画像は上記の目的以外には使用しません。");
+            "また、本アプリで撮影した画像は上記の目的以外には使用しません。\n\n"
+            "【お知らせ】\n"
+            "現在、一部端末(例: Google Pixel 6)において、アプリ内カメラでシャッターボタンを押しても写真が撮れない不具合が存在します。申し訳ございませんが、右上の3点から「端末のUIを利用して撮影」をご利用ください。");
   }
 
   @override
@@ -319,9 +650,10 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
   }
 
   void initCamera() async {
-    _controller =
-        CameraController(cameras[0], ResolutionPreset.max, enableAudio: false);
+    _controller = CameraController(cameras[0], ResolutionPreset.veryHigh,
+        enableAudio: false);
     await _controller!.initialize();
+    _controller!.lockCaptureOrientation(DeviceOrientation.portraitUp);
     if (mounted) {
       setState(() {});
     }

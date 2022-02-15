@@ -1,15 +1,23 @@
-import 'package:flutter/material.dart';
 import 'package:submon/pages/memorize/camera_preview_page.dart';
+import 'package:submon/utils/text_recognized_candidate_painter.dart';
 
 class CardSideBuilder {
-  List<WordFragment> front = [];
-  List<WordFragment> back = [];
+  Set<TextElement> front = {};
+  Set<TextElement> back = {};
 
-  void append(CardSide side, WordFragment fragment) {
+  void append(CardSide side, TextElement fragment) {
     if (side == CardSide.front) {
       front.add(fragment);
     } else {
       back.add(fragment);
+    }
+  }
+
+  Set<TextElement> get(CardSide side) {
+    if (side == CardSide.front) {
+      return front;
+    } else {
+      return back;
     }
   }
 
@@ -21,6 +29,11 @@ class CardSideBuilder {
     }
   }
 
+  void clearAll() {
+    front.clear();
+    back.clear();
+  }
+
   String toStringFront() {
     return front.map((e) => e.text).join();
   }
@@ -28,15 +41,4 @@ class CardSideBuilder {
   String toStringBack() {
     return back.map((e) => e.text).join();
   }
-}
-
-class WordFragment {
-  RRect? vertices;
-  String text;
-
-  WordFragment(this.text, {this.vertices});
-}
-
-class Space extends WordFragment {
-  Space() : super(" ");
 }
