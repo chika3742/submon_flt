@@ -9,10 +9,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
 import android.graphics.Matrix
 import android.net.Uri
-import android.os.Build
 import android.os.Handler
 import android.provider.MediaStore
 import android.util.Log
@@ -22,7 +20,7 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationChannelGroupCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.FileProvider
-import androidx.core.graphics.scale
+import androidx.exifinterface.media.ExifInterface
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -233,16 +231,41 @@ class MainActivity : FlutterActivity() {
             REQUEST_CODE_TAKE_PICTURE -> {
                 if (resultCode == Activity.RESULT_OK && pictureFile != null) {
                     var bmp = BitmapFactory.decodeFile(pictureFile!!.path)
-                    val mat = Matrix()
-                    mat.postRotate(90F)
                     var width = bmp.width
                     var height = bmp.height
-                    if (width > height) {
-                        width = (bmp.height * (16.0 / 9)).toInt()
+                    val matrix = Matrix()
+//                    val exifInterface = ExifInterface(pictureFile!!.path)
+//                    when (exifInterface.getAttribute(ExifInterface.TAG_ORIENTATION)) {
+//                        "1" -> {
+//                            matrix.postRotate(90F)
+//                        }
+//                        "6" -> {
+//                            matrix.postRotate(0F)
+//                        }
+//                        "3" -> {
+//                            matrix.postRotate(90F)
+//                        }
+//                        "8" -> {
+//                            matrix.postRotate(270F)
+//                        }
+//                    }
+                    Log.d("bitmap size", "${width}x${height}")
+                    if (height > width) {
+                        if (width > (height * (9 / 16.0)).toInt()) {
+                            width = (height * (9 / 16.0)).toInt()
+                        } else {
+                            height = (width * (16.0 / 9)).toInt()
+                        }
                     } else {
-                        height = (bmp.width * (16.0 / 9)).toInt()
+                        if (width > (height * (16.0 / 9)).toInt()) {
+                            width = (height * (16.0 / 9)).toInt()
+                        } else {
+                            height = (width * (9 / 16.0)).toInt()
+                        }
+                        matrix.postRotate(90F)
                     }
-                    bmp = Bitmap.createBitmap(bmp, 0, 0, width, height, mat, true)
+                    Log.d("bitmap final size", "${width}x${height}")
+                    bmp = Bitmap.createBitmap(bmp, 0, 0, width, height, matrix, false)
                     val stream = FileOutputStream(pictureFile!!)
                     bmp.compress(Bitmap.CompressFormat.JPEG, 80, stream)
                     stream.close()
@@ -260,7 +283,6 @@ class MainActivity : FlutterActivity() {
         super.onNewIntent(intent)
         if (intent.data != null) mainMethodChannel.invokeMethod("onUriData", intent.data!!.query)
 
-        Log.d("onnewintent", "called")
         if (intent.hasExtra(EXTRA_FLUTTER_ACTION) && flutterEngine != null) {
             val mc =
                 MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, METHOD_CHANNEL_ACTIONS)

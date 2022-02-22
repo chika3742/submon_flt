@@ -74,7 +74,7 @@ class _SubmissionListState extends State<SubmissionList> {
     });
 
     SharedPrefs.use((prefs) {
-      _enableSE = prefs.enableSE;
+      _enableSE = prefs.isSEEnabled;
     });
 
     _audioCache.load("audio/decision28.mp3");

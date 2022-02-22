@@ -62,11 +62,16 @@ void showSnackBar(BuildContext context, String text,
 }
 
 Future<T?> showSimpleDialog<T>(
-    BuildContext context, String title, String message,
-    {Function? onOKPressed,
-    Function? onCancelPressed,
-    bool allowCancel = true,
-    bool showCancel = false}) {
+  BuildContext context,
+  String title,
+  String message, {
+  Function? onOKPressed,
+  Function? onCancelPressed,
+  String okText = "OK",
+  String cancelText = "キャンセル",
+  bool allowCancel = true,
+  bool showCancel = false,
+}) {
   return showPlatformDialog<T>(
       context: context,
       barrierDismissible: allowCancel,
@@ -79,17 +84,17 @@ Future<T?> showSimpleDialog<T>(
           actions: [
             if (showCancel)
               PlatformTextButton(
-                child: const Text("キャンセル"),
+                child: Text(cancelText),
                 onPressed: () {
                   onCancelPressed?.call();
-                  Navigator.pop(context);
+                  Navigator.pop(context, false);
                 },
               ),
             PlatformTextButton(
-              child: const Text("OK"),
+              child: Text(okText),
               onPressed: () {
                 onOKPressed?.call();
-                Navigator.pop(context);
+                Navigator.pop(context, true);
               },
             ),
           ],

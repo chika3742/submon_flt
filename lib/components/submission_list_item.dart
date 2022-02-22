@@ -1,10 +1,7 @@
-import 'dart:async';
-
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/components/formatted_date_remaining.dart';
 import 'package:submon/db/submission.dart';
-import 'package:submon/events.dart';
 import 'package:submon/pages/submission_detail_page.dart';
 import 'package:submon/utils/ui.dart';
 
@@ -171,7 +168,6 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
                   ],
                 ),
                 onTap: () {
-                  eventBus.fire(SubmissionDetailPageOpened(true));
                   callback();
                 },
               ),
@@ -184,9 +180,6 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
                   _item = value!;
                 });
               });
-            });
-            Timer(const Duration(milliseconds: 300), () {
-              eventBus.fire(SubmissionDetailPageOpened(false));
             });
           },
           openBuilder: (context, cb) => SubmissionDetailPage(widget.item.id!),

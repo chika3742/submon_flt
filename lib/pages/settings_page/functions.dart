@@ -25,6 +25,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
   TimeOfDay? _reminderTime;
   Timer? _signInStateCheckTimer;
   bool _signInStateCheckDelayed = false;
+  bool? _deviceCameraUIShouldBeUsed;
 
   bool? _signedInAndScopeGranted;
   StreamSubscription? _accountListener;
@@ -34,8 +35,9 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
     super.initState();
     SharedPrefs.use((prefs) {
       setState(() {
-        _enableSE = prefs.enableSE;
+        _enableSE = prefs.isSEEnabled;
         _reminderTime = prefs.reminderTime;
+        _deviceCameraUIShouldBeUsed = prefs.deviceCameraUIShouldBeUsed;
       });
     });
 
@@ -215,8 +217,9 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
         ]),
         SettingsCategory(title: "LMS連携", tiles: [
           SettingsTile(
-              title: "Canvas LMSと連携",
+              title: "Canvas LMSと連携 (実装予定)",
               subtitle: "大学等の学習管理システムから提出物を取得し、自動的に追加します。",
+              enabled: false,
               onTap: () async {})
         ]),
         SettingsCategory(title: "その他の機能", tiles: [
@@ -227,7 +230,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
               value: _enableSE!,
               onChanged: (value) {
                 SharedPrefs.use((prefs) {
-                  prefs.enableSE = value;
+                  prefs.isSEEnabled = value;
                 });
                 setState(() {
                   _enableSE = value;
@@ -239,7 +242,21 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
             onTap: () {
               Navigator.pushNamed(context, "/settings/timetable");
             },
-          )
+          ),
+          if (_deviceCameraUIShouldBeUsed != null)
+            CheckBoxSettingsTile(
+              title: "端末側の撮影UIを使用",
+              subtitle: "暗記カードのカメラ入力時、端末側の撮影画面を使用して撮影します。",
+              value: _deviceCameraUIShouldBeUsed!,
+              onChanged: (value) {
+                SharedPrefs.use((prefs) {
+                  prefs.deviceCameraUIShouldBeUsed = value!;
+                });
+                setState(() {
+                  _deviceCameraUIShouldBeUsed = value!;
+                });
+              },
+            ),
         ])
       ],
     );

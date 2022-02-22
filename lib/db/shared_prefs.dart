@@ -6,41 +6,72 @@ class SharedPrefs {
 
   SharedPrefs(this.pref);
 
-  bool get analyticsEnabled => pref!.getBool("ANALYTICS_ENABLED") ?? true;
+  // bool
 
-  set analyticsEnabled(bool value) => pref!.setBool("ANALYTICS_ENABLED", value);
+  // IS_ANALYTICS_ENABLED
+  bool get isAnalyticsEnabled => pref!.getBool("IS_ANALYTICS_ENABLED") ?? true;
 
-  bool get enableSE => pref!.getBool("ENABLE_SE") ?? true;
+  set isAnalyticsEnabled(bool value) =>
+      pref!.setBool("IS_ANALYTICS_ENABLED", value);
 
-  set enableSE(bool value) => pref!.setBool("ENABLE_SE", value);
+  // IS_SE_ENABLED
+  bool get isSEEnabled => pref!.getBool("IS_SE_ENABLED") ?? true;
 
-  bool get timetableBanner1Flag =>
-      pref!.getBool("TIMETABLE_BANNER_1_FLAG") ?? false;
+  set isSEEnabled(bool value) => pref!.setBool("IS_SE_ENABLED", value);
 
-  set timetableBanner1Flag(bool value) =>
-      pref!.setBool("TIMETABLE_BANNER_1_FLAG", value);
+  // DEVICE_CAMERA_UI_SHOULD_BE_USED
+  bool get deviceCameraUIShouldBeUsed =>
+      pref!.getBool("DEVICE_CAMERA_UI_SHOULD_BE_USED") ?? false;
 
-  String? get linkSignInEmail => pref!.getString("LINK_SIGN_IN_EMAIL");
+  set deviceCameraUIShouldBeUsed(bool value) =>
+      pref!.setBool("DEVICE_CAMERA_UI_SHOULD_BE_USED", value);
 
-  set linkSignInEmail(String? value) =>
-      pref!.setString("LINK_SIGN_IN_EMAIL", value!);
+  // IS_TIMETABLE_BANNER_1_DISPLAYED
+  bool get isTimetableBanner1Displayed =>
+      pref!.getBool("IS_TIMETABLE_BANNER_1_DISPLAYED") ?? false;
 
+  set isTimetableBanner1Displayed(bool value) =>
+      pref!.setBool("IS_TIMETABLE_BANNER_1_DISPLAYED", value);
+
+  // IS_CAMERA_PRIVACY_POLICY_DISPLAYED
+  bool get isCameraPrivacyPolicyDisplayed =>
+      pref!.getBool("IS_CAMERA_PRIVACY_POLICY_DISPLAYED") ?? false;
+
+  set isCameraPrivacyPolicyDisplayed(bool value) =>
+      pref!.setBool("IS_CAMERA_PRIVACY_POLICY_DISPLAYED", value);
+
+  // String
+
+  // EMAIL_FOR_URL_SIGN_IN
+  String? get emailForUrlLogin => pref!.getString("EMAIL_FOR_URL_SIGN_IN");
+
+  set emailForUrlLogin(String? value) =>
+      pref!.setString("EMAIL_FOR_URL_SIGN_IN", value!);
+
+  // CURRENT_TIMETABLE_ID
   String get currentTimetableId =>
       pref!.getString("CURRENT_TIMETABLE_ID") ?? "main";
 
   set currentTimetableId(String value) =>
       pref!.setString("CURRENT_TIMETABLE_ID", value);
 
+  // string list
+
+  // TIMETABLE_HISTORY
   List<String> get timetableHistory =>
       pref!.getStringList("TIMETABLE_HISTORY") ?? [];
 
   set timetableHistory(List<String> value) =>
       pref!.setStringList("TIMETABLE_HISTORY", value);
 
+  // int
+
+  // TIMETABLE_HOUR
   int? get timetableHour => pref!.getInt("TIMETABLE_HOUR") ?? 6;
 
   set timetableHour(int? value) => pref!.setInt("TIMETABLE_HOUR", value!);
 
+  // FIRESTORE_LAST_CHANGED
   DateTime get firestoreLastChanged => DateTime.fromMicrosecondsSinceEpoch(
       pref!.getInt("FIRESTORE_LAST_CHANGED") ?? 0);
 
@@ -48,6 +79,7 @@ class SharedPrefs {
       ? pref!.setInt("FIRESTORE_LAST_CHANGED", value.microsecondsSinceEpoch)
       : pref!.remove("FIRESTORE_LAST_CHANGED");
 
+  // REMINDER_TIME_HOUR
   TimeOfDay? get reminderTime {
     final hour = pref!.getInt("REMINDER_TIME_HOUR");
     final minute = pref!.getInt("REMINDER_TIME_MINUTE");
