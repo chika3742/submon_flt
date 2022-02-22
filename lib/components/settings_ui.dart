@@ -90,6 +90,29 @@ class SwitchSettingsTile extends AbstractSettingsTile {
   }
 }
 
+class CheckBoxSettingsTile extends AbstractSettingsTile {
+  CheckBoxSettingsTile(
+      {this.title,
+      this.subtitle,
+      required this.value,
+      required this.onChanged});
+
+  final String? title;
+  final String? subtitle;
+  final bool value;
+  final void Function(bool?) onChanged;
+
+  @override
+  Widget buildWidget() {
+    return CheckboxListTile(
+      title: title != null ? Text(title!) : null,
+      subtitle: subtitle != null ? Text(subtitle!) : null,
+      value: value,
+      onChanged: onChanged,
+    );
+  }
+}
+
 class RadioSettingsTile extends AbstractSettingsTile {
   RadioSettingsTile({
     this.title,

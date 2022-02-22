@@ -50,7 +50,7 @@ void handleDynamicLink(Uri url) async {
   try {
     if (auth.isSignInWithEmailLink(url.toString())) {
       final pref = SharedPrefs(await SharedPreferences.getInstance());
-      final email = pref.linkSignInEmail;
+      final email = pref.emailForUrlLogin;
       if (email != null) {
         var result = await auth.signInWithEmailLink(
             email: email, emailLink: url.toString());

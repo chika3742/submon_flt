@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class TextRecognizedCandidatePainter extends CustomPainter {
@@ -83,81 +81,4 @@ class TextElement {
   String toString() {
     return "text: $text , vertices: $vertices";
   }
-}
-
-enum TripletOrientation {
-  collinear,
-  clockwise,
-  counterClockwise,
-}
-
-bool _onSegment(Offset p, Offset q, Offset r) {
-  if (q.dx <= max(p.dx, r.dx) &&
-      q.dx >= min(p.dx, r.dx) &&
-      q.dy <= max(p.dy, r.dy) &&
-      q.dy >= min(p.dy, r.dy)) {
-    return true;
-  }
-  return false;
-}
-
-TripletOrientation _orientation(Offset p, Offset q, Offset r) {
-  double val = (q.dy - p.dy) * (r.dx - q.dx) - (q.dx - p.dx) * (r.dy - q.dy);
-  if (val == 0) {
-    return TripletOrientation.collinear;
-  }
-  return val > 0
-      ? TripletOrientation.clockwise
-      : TripletOrientation.counterClockwise;
-}
-
-bool doIntersect(Offset p1, Offset q1, Offset p2, Offset q2) {
-  TripletOrientation o1 = _orientation(p1, q1, p2);
-  TripletOrientation o2 = _orientation(p1, q1, q2);
-  TripletOrientation o3 = _orientation(p2, q2, p1);
-  TripletOrientation o4 = _orientation(p2, q2, q1);
-
-  if (o1 != o2 && o3 != o4) {
-    return true;
-  }
-
-  if (o1 == TripletOrientation.collinear && _onSegment(p1, p2, q1)) {
-    return true;
-  }
-
-  if (o2 == TripletOrientation.collinear && _onSegment(p1, q2, q1)) {
-    return true;
-  }
-
-  if (o3 == TripletOrientation.collinear && _onSegment(p2, p1, q2)) {
-    return true;
-  }
-
-  if (o4 == TripletOrientation.collinear && _onSegment(p2, q1, q2)) {
-    return true;
-  }
-
-  return false;
-}
-
-bool isInsideQuadrangle(List<Offset> vertices, Offset p) {
-  var extreme = Offset(10000.0, p.dy);
-
-  var count = 0;
-  var i = 0;
-
-  do {
-    var next = (i + 1) % 4;
-    if (doIntersect(vertices[i], vertices[next], p, extreme)) {
-      if (_orientation(vertices[i], p, vertices[next]) ==
-          TripletOrientation.collinear) {
-        return _onSegment(vertices[i], p, vertices[next]);
-      }
-      count++;
-    }
-
-    i = next;
-  } while (i != 0);
-
-  return count % 2 == 1;
 }

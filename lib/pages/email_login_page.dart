@@ -315,7 +315,7 @@ class EmailLoginPageState extends State<EmailLoginPage>
             actionCodeSettings("https://chikach.net/submon-signin/"));
 
     SharedPrefs.use((prefs) {
-      prefs.linkSignInEmail = emailController.text;
+      prefs.emailForUrlLogin = emailController.text;
     });
 
     Navigator.pop(context);

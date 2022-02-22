@@ -1,5 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
+import 'package:submon/pages/memorize/camera_preview_page.dart';
 import 'package:submon/utils/ui.dart';
 
 class TabMemorizeCard extends StatefulWidget {
@@ -12,6 +17,7 @@ class TabMemorizeCard extends StatefulWidget {
 class _TabMemorizeCardState extends State<TabMemorizeCard>
     with SingleTickerProviderStateMixin {
   AnimationController? _animController;
+  StreamSubscription? _streamSubscription;
 
   final ends = [0.7, 0.8, 0.9, 1.0];
 
@@ -24,9 +30,16 @@ class _TabMemorizeCardState extends State<TabMemorizeCard>
 
     _animController?.forward();
 
-    eventBus.on<MemorizeCardAddButtonPressed>().listen((event) {
+    _streamSubscription =
+        eventBus.on<MemorizeCardAddButtonPressed>().listen((event) {
       showMemorizeCardAddSheet();
     });
+  }
+
+  @override
+  void dispose() {
+    _streamSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -50,16 +63,15 @@ class _TabMemorizeCardState extends State<TabMemorizeCard>
     );
   }
 
-  Widget _buildMemorizeItem(
-      String imageAsset, String title, int index, void Function() onTap) {
+  Widget _buildMemorizeItem(String imageAsset, String title, int index, void Function() onTap) {
     return SlideTransition(
         position: Tween(
-                begin: Offset(-0.5 - index.toDouble() * 0.3, 0),
-                end: const Offset(0, 0))
+            begin: Offset(-0.5 - index.toDouble() * 0.3, 0),
+            end: const Offset(0, 0))
             .animate(CurvedAnimation(
-                parent: _animController!,
-                curve:
-                    Interval(0, ends[index - 1], curve: Curves.easeOutQuint))),
+            parent: _animController!,
+            curve:
+            Interval(0, ends[index - 1], curve: Curves.easeOutQuint))),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
@@ -109,30 +121,47 @@ class _TabMemorizeCardState extends State<TabMemorizeCard>
 
   void showMemorizeCardAddSheet() {
     showRoundedBottomSheet(
-        context: context,
-        useRootNavigator: true,
-        title: "追加",
-        child: Column(
-          children: [
-            ListTile(
-              title: Text('手入力でカード追加'),
-              leading: Icon(Icons.add),
-            ),
-            ListTile(
-              title: const Text('カメラ入力でカード追加'),
-              leading: const Icon(Icons.camera_alt),
-              onTap: () async {
-                eventBus.fire(SubmissionDetailPageOpened(true));
-                await Navigator.of(context, rootNavigator: true)
-                    .pushNamed("/memorize/camera");
-                eventBus.fire(SubmissionDetailPageOpened(false));
-              },
-            ),
-            ListTile(
-              title: Text('フォルダーの追加'),
-              leading: Icon(Icons.folder),
-            ),
-          ],
-        ));
+      context: context,
+      useRootNavigator: true,
+      title: "追加",
+      child: Column(
+        children: [
+          ListTile(
+            title: Text('手入力でカード追加'),
+            leading: Icon(Icons.add),
+          ),
+          ListTile(
+            title: const Text('カメラ入力でカード追加'),
+            leading: const Icon(Icons.camera_alt),
+            onTap: () async {
+              var pref = SharedPrefs(await SharedPreferences.getInstance());
+              if (!pref.isCameraPrivacyPolicyDisplayed) {
+                var dialogResult = await showSimpleDialog(
+                  context,
+                  policyDialogTitle,
+                  policyDialogContent,
+                  allowCancel: false,
+                  showCancel: true,
+                  okText: "同意する",
+                  cancelText: "同意しない",
+                );
+                if (dialogResult != true) {
+                  return;
+                }
+                pref.isCameraPrivacyPolicyDisplayed = true;
+              }
+              eventBus.fire(SubmissionDetailPageOpened(true));
+              await Navigator.of(context, rootNavigator: true)
+                  .pushNamed("/memorize/camera");
+              eventBus.fire(SubmissionDetailPageOpened(false));
+            },
+          ),
+          ListTile(
+            title: Text('フォルダーの追加'),
+            leading: Icon(Icons.folder),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -111,13 +111,19 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
             subtitle: "毎朝、当日の時間割を通知します。(時間割が入っている曜日のみ)",
           ),
           SettingsTile(
-              title: "通知時刻",
-              subtitle: "12:55",
-              leading: const Icon(Icons.schedule),
-              trailing: IconButton(
-                icon: const Icon(Icons.clear),
-                onPressed: () {},
-              )),
+            title: "通知時刻",
+            subtitle: "12:55",
+            leading: const Icon(Icons.schedule),
+            trailing: IconButton(
+              icon: const Icon(Icons.clear),
+              onPressed: () {},
+            ),
+          ),
+          SettingsTile(
+            title: "通知する時間割表",
+            subtitle: "メイン",
+            leading: const Icon(Icons.table_chart_outlined),
+          ),
         ]),
         if (hours != null)
           SettingsCategory(title: "表示する時限数", tiles: [

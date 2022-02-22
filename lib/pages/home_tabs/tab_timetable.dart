@@ -43,7 +43,7 @@ class TabTimetableState extends State<TabTimetable> {
   void getPref() {
     SharedPrefs.use((prefs) {
       setState(() {
-        timetableBanner1Flag = prefs.timetableBanner1Flag;
+        timetableBanner1Flag = prefs.isTimetableBanner1Displayed;
         tableId = prefs.currentTimetableId;
       });
     });
@@ -89,7 +89,7 @@ class TabTimetableState extends State<TabTimetable> {
                           child: const Text("閉じる"),
                           onPressed: () {
                             SharedPrefs.use((prefs) {
-                              prefs.timetableBanner1Flag = true;
+                              prefs.isTimetableBanner1Displayed = true;
                               setState(() {
                                 timetableBanner1Flag = true;
                               });

@@ -25,7 +25,7 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
       });
     });
     SharedPrefs.use((prefs) {
-      _analyticsEnabled = prefs.analyticsEnabled;
+      _analyticsEnabled = prefs.isAnalyticsEnabled;
     });
   }
 
@@ -54,7 +54,7 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
                   _analyticsEnabled = value;
                 });
                 SharedPrefs.use((prefs) {
-                  prefs.analyticsEnabled = value;
+                  prefs.isAnalyticsEnabled = value;
                 });
                 FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(value);
               },

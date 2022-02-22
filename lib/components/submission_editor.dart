@@ -87,6 +87,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                   const SizedBox(width: 16),
                   TappableCard(
                     child: const Icon(Icons.palette),
+                    color: _color.withOpacity(0.3),
                     onTap: showColorPickerDialog,
                   ),
                 ],
@@ -162,7 +163,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                                   .textTheme
                                   .bodyText1!
                                   .color!
-                                  .withAlpha(170),
+                                  .withOpacity(0.7),
                         ),
                       ),
                     ),

@@ -112,7 +112,7 @@ class _WelcomePageState extends State<WelcomePage> {
                         FirebaseAnalytics.instance
                             .setAnalyticsCollectionEnabled(!value!);
                         SharedPrefs.use((prefs) {
-                          prefs.analyticsEnabled = !value;
+                          prefs.isAnalyticsEnabled = !value;
                         });
                         setState(() {
                           _disableStatistics = value;
@@ -120,14 +120,17 @@ class _WelcomePageState extends State<WelcomePage> {
                       },
                     ),
                     Flexible(
-                        child: Text('アプリの改善に利用する使用状況データ(匿名)の収集を拒否する',
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1!
-                                    .color!
-                                    .withAlpha(150)))),
+                      child: Text(
+                        'アプリの改善に利用する使用状況データ(匿名)の収集を拒否する',
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodyText1!
+                                .color!
+                                .withOpacity(0.7)),
+                      ),
+                    ),
                   ],
                 )
               ],
