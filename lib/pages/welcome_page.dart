@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
 import 'package:submon/main.dart';
+import 'package:submon/utils/ui.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({Key? key}) : super(key: key);
@@ -22,7 +23,7 @@ class _WelcomePageState extends State<WelcomePage> {
   void initState() {
     super.initState();
 
-    MyApp.globalKey = _scaffoldKey;
+    Application.globalKey = _scaffoldKey;
 
     linkListener = eventBus.on<SignedInWithLink>().listen((_) {
       Navigator.of(context).popUntil(ModalRoute.withName("welcome"));
@@ -85,10 +86,13 @@ class _WelcomePageState extends State<WelcomePage> {
                             fontSize: 16,
                             fontWeight: FontWeight.bold)),
                     onPressed: () async {
-                      // var result = await Navigator.pushNamed(context, "/signIn");
-                      // if (result == true) {
-                      //   Navigator.pushReplacementNamed(context, "/");
-                      // }
+                      showSimpleDialog(
+                          context,
+                          "オフラインモード利用上の注意",
+                          "オフラインモード利用時、以下の機能はご利用いただけません。\n\n"
+                              "・ホーム画面のウィジェット\n"
+                              "・リマインダー通知 (Androidでは利用可能)\n"
+                              "・時間割通知 (Androidでは利用可能)");
                     },
                     style: ElevatedButton.styleFrom(primary: Colors.grey),
                   ),

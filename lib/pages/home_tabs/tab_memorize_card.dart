@@ -157,11 +157,35 @@ class _TabMemorizeCardState extends State<TabMemorizeCard>
             },
           ),
           ListTile(
-            title: Text('フォルダーの追加'),
-            leading: Icon(Icons.folder),
+            title: const Text('フォルダーの追加'),
+            leading: const Icon(Icons.folder),
+            onTap: () {
+              Navigator.of(context, rootNavigator: true).pop();
+              _showCreateFolderBottomSheet();
+            },
           ),
         ],
       ),
     );
+  }
+
+  void _showFolderSelectBottomSheet(void Function(int id) onSelected) {}
+
+  void _showCreateFolderBottomSheet() {
+    showRoundedBottomSheet(
+        context: context,
+        title: "フォルダー作成",
+        useRootNavigator: true,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("暗記カードのフォルダーを作成します。"),
+            const SizedBox(height: 16),
+            TextFormFieldBottomSheet(
+              formLabel: "フォルダー名",
+              onDone: (text) {},
+            ),
+          ],
+        ));
   }
 }

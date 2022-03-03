@@ -11,10 +11,15 @@ import java.util.*
 
 class ReminderNotificationBroadcastReceiver : BroadcastReceiver() {
 
+    companion object {
+        const val EXTRA_NOTIFICATION_TITLE = "notificationTitle"
+        const val EXTRA_NOTIFICATION_BODY = "notificationBody"
+    }
+
     override fun onReceive(context: Context, intent: Intent) {
-        val title = intent.getStringExtra("NOTIFICATION_TITLE")!!
-        val content = intent.getStringExtra("NOTIFICATION_TEXT")!!
-        val notif = NotificationCompat.Builder(context, REMINDER_CHANNEL)
+        val title = intent.getStringExtra(EXTRA_NOTIFICATION_TITLE)!!
+        val content = intent.getStringExtra(EXTRA_NOTIFICATION_BODY)!!
+        val notification = NotificationCompat.Builder(context, REMINDER_CHANNEL)
             .setContentTitle(title)
             .setContentIntent(
                 PendingIntent.getActivity(
@@ -47,19 +52,12 @@ class ReminderNotificationBroadcastReceiver : BroadcastReceiver() {
             .setColor(Color.parseColor("#DC6F3D"))
             .setSmallIcon(R.drawable.ic_stat_submon_icon)
             .build()
-        val id = if (intent.hasExtra("NOTIFICATION_ID")) intent.getStringExtra("NOTIFICATION_ID")
-            .hashCode()
-        else UUID.randomUUID().hashCode()
-        NotificationManagerCompat.from(context).notify(id, notif)
 
-        Utils.registerReminderNotification(
-            context,
-            title,
-            content,
-            intent.getIntExtra("REPEAT_HOUR", 0),
-            intent.getIntExtra("REPEAT_MINUTE", 0),
-            true
-        )
+        // notify
+        NotificationManagerCompat.from(context).notify(UUID.randomUUID().hashCode(), notification)
+
+        // re-register
+        Notifications.registerReminderNotification(context, true)
     }
 
 }

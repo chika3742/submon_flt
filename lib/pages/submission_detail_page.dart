@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:intl/intl.dart';
+import 'package:submon/components/dotime_detail_card.dart';
 import 'package:submon/components/formatted_date_remaining.dart';
 import 'package:submon/db/submission.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -51,42 +52,48 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
           )
         ],
       ),
-      body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (item != null) Padding(
+      body: SingleChildScrollView(
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          if (item != null)
+            Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Text(item!.title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              child: Text(item!.title,
+                  style: const TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.bold)),
             ),
-            const Divider(thickness: 2, indent: 32),
+          const Divider(thickness: 2, indent: 32, endIndent: 32),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                const Spacer(),
+                const Icon(Icons.event_available),
+                const SizedBox(width: 8),
+                if (item != null)
+                  Text(DateFormat("MM/dd (E)", 'ja_JP').format(item!.date!),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                const Spacer(),
+                const Icon(Icons.schedule),
+                const SizedBox(width: 8),
+                if (item != null)
+                  FormattedDateRemaining(item!.date!.difference(DateTime.now()),
+                      numberSize: 24),
+              ],
+            ),
+          ),
+          if (item != null)
             Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  const Spacer(),
-                  const Icon(Icons.event_available),
-                  const SizedBox(width: 8),
-                  if (item != null) Text(DateFormat("MM/dd (E)", 'ja_JP').format(item!.date!), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  const Spacer(),
-                  const Icon(Icons.schedule),
-                  const SizedBox(width: 8),
-                  if (item != null) FormattedDateRemaining(item!.date!.difference(DateTime.now()), numberSize: 24),
-                ],
-              ),
-            ),
-            if (item != null) Padding(
               padding:
-                const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
-            // child: Text(item!.detail, style: const TextStyle(fontSize: 16, height: 1.3)),
-            child: SizedBox(
-              height: 200,
+                  const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+              // child: Text(item!.detail, style: const TextStyle(fontSize: 16, height: 1.3)),
               child: Linkify(
                 onOpen: (link) async {
                   if (await canLaunch(link.url)) {
@@ -99,8 +106,18 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
                 style: const TextStyle(fontSize: 16, height: 1.7),
               ),
             ),
-          )
-          ]
+          const Divider(thickness: 2, indent: 32, endIndent: 32),
+          const Align(
+            alignment: Alignment.center,
+            child: Text('DoTime',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          ),
+          DoTimeDetailCard(submissionId: 0, doTimeId: 0),
+          DoTimeDetailCard(submissionId: 0, doTimeId: 0),
+          DoTimeDetailCard(submissionId: 0, doTimeId: 0),
+          DoTimeDetailCard(submissionId: 0, doTimeId: 0),
+          DoTimeDetailCard(submissionId: 0, doTimeId: 0),
+        ]),
       ),
     );
   }

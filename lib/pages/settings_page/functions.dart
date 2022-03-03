@@ -1,16 +1,19 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:submon/components/settings_ui.dart';
+import 'package:submon/db/firestore.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
-import 'package:submon/method_channel/notification.dart';
 import 'package:submon/pages/sign_in_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
+import 'package:time_picker_widget/time_picker_widget.dart';
 
 class FunctionsSettingsPage extends StatefulWidget {
   const FunctionsSettingsPage({Key? key}) : super(key: key);
@@ -23,6 +26,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
   bool _pwEnabled = true;
   bool? _enableSE;
   TimeOfDay? _reminderTime;
+  bool _loadingReminderTime = true;
   Timer? _signInStateCheckTimer;
   bool _signInStateCheckDelayed = false;
   bool? _deviceCameraUIShouldBeUsed;
@@ -36,8 +40,22 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
     SharedPrefs.use((prefs) {
       setState(() {
         _enableSE = prefs.isSEEnabled;
-        _reminderTime = prefs.reminderTime;
-        _deviceCameraUIShouldBeUsed = prefs.deviceCameraUIShouldBeUsed;
+        _deviceCameraUIShouldBeUsed =
+            Platform.isAndroid ? prefs.deviceCameraUIShouldBeUsed : null;
+      });
+    });
+
+    FirestoreProvider.fetchReminderNotificationTime().then((value) {
+      setState(() {
+        _reminderTime = value;
+      });
+    }).catchError((e, stack) {
+      showSnackBar(context, "リマインダー通知時刻の取得に失敗しました");
+      debugPrint(e.toString());
+      debugPrintStack(stackTrace: stack);
+    }).whenComplete(() {
+      setState(() {
+        _loadingReminderTime = false;
       });
     });
 
@@ -78,38 +96,51 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                 subtitle: "設定した時刻にリマインダー通知をします。期限が近づいた提出物がある場合、その一覧を通知します。"),
             SettingsTile(
               title: "通知時刻",
+              enabled: !_loadingReminderTime,
               subtitle: _reminderTime != null
                   ? _reminderTime!.format(context)
                   : "タップして設定",
               leading: const Icon(Icons.schedule),
-              trailing: IconButton(
-                icon: const Icon(Icons.clear),
-                onPressed: () {
-                  SharedPrefs.use((prefs) {
-                    prefs.reminderTime = null;
-                  });
-                  setState(() {
-                    _reminderTime = null;
-                  });
-                  NotificationMethodChannel.unregisterReminder();
-                },
-              ),
+              trailing: _buildReminderTimeTrailing(),
               onTap: () async {
-                if (await NotificationMethodChannel.isGranted() == false) {
+                var messaging = FirebaseMessaging.instance;
+                var requestPermissionResult =
+                    await messaging.requestPermission();
+                if (requestPermissionResult.authorizationStatus !=
+                    AuthorizationStatus.authorized) {
                   showSnackBar(context, "通知の表示が許可されていません。本体設定から許可してください。");
                 } else {
-                  var result = await showTimePicker(
+                  messaging.getToken().then((token) {
+                    FirestoreProvider.saveNotificationToken(token);
+                  });
+                  var result = await showCustomTimePicker(
                     context: context,
-                    initialTime: _reminderTime ?? TimeOfDay.now(),
+                    initialTime:
+                        _reminderTime ?? const TimeOfDay(hour: 0, minute: 0),
+                    selectableTimePredicate: (time) {
+                      return time != null && time.minute % 15 == 0;
+                    },
+                    onFailValidation: (context) {
+                      showSimpleDialog(context, "エラー", "15分おきに設定可能です");
+                    },
                   );
                   if (result != null) {
-                    SharedPrefs.use((prefs) {
-                      prefs.reminderTime = result;
-                    });
+                    // NotificationMethodChannel.registerReminder();
                     setState(() {
-                      _reminderTime = result;
+                      _loadingReminderTime = true;
                     });
-                    NotificationMethodChannel.registerReminder();
+                    try {
+                      await FirestoreProvider.setReminderNotificationTime(
+                          result);
+                      setState(() {
+                        _reminderTime = result;
+                      });
+                    } catch (e) {
+                      showSnackBar(context, "設定に失敗しました");
+                    }
+                    setState(() {
+                      _loadingReminderTime = false;
+                    });
                   }
                 }
               },
@@ -260,6 +291,30 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
         ])
       ],
     );
+  }
+
+  Widget? _buildReminderTimeTrailing() {
+    if (_loadingReminderTime) {
+      return const CircularProgressIndicator();
+    }
+
+    if (_reminderTime != null) {
+      return IconButton(
+        icon: const Icon(Icons.clear),
+        onPressed: () {
+          SharedPrefs.use((prefs) {
+            prefs.reminderTime = null;
+          });
+          setState(() {
+            _reminderTime = null;
+          });
+          // NotificationMethodChannel.unregisterReminder();
+          FirestoreProvider.setReminderNotificationTime(null);
+        },
+      );
+    }
+
+    return null;
   }
 
   void _changePassword() async {

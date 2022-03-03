@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,8 +22,12 @@ class SharedPrefs {
   set isSEEnabled(bool value) => pref!.setBool("IS_SE_ENABLED", value);
 
   // DEVICE_CAMERA_UI_SHOULD_BE_USED
-  bool get deviceCameraUIShouldBeUsed =>
-      pref!.getBool("DEVICE_CAMERA_UI_SHOULD_BE_USED") ?? false;
+  bool get deviceCameraUIShouldBeUsed {
+    if (Platform.isAndroid) {
+      return pref!.getBool("DEVICE_CAMERA_UI_SHOULD_BE_USED") ?? false;
+    }
+    return false;
+  }
 
   set deviceCameraUIShouldBeUsed(bool value) =>
       pref!.setBool("DEVICE_CAMERA_UI_SHOULD_BE_USED", value);
@@ -79,7 +85,7 @@ class SharedPrefs {
       ? pref!.setInt("FIRESTORE_LAST_CHANGED", value.microsecondsSinceEpoch)
       : pref!.remove("FIRESTORE_LAST_CHANGED");
 
-  // REMINDER_TIME_HOUR
+  // REMINDER_TIME_
   TimeOfDay? get reminderTime {
     final hour = pref!.getInt("REMINDER_TIME_HOUR");
     final minute = pref!.getInt("REMINDER_TIME_MINUTE");
@@ -97,6 +103,27 @@ class SharedPrefs {
     } else {
       pref!.remove("REMINDER_TIME_HOUR");
       pref!.remove("REMINDER_TIME_MINUTE");
+    }
+  }
+
+  // TIMETABLE_NOTIFICATION_TIME_
+  TimeOfDay? get timetableNotificationTime {
+    final hour = pref!.getInt("TIMETABLE_NOTIFICATION_TIME_HOUR");
+    final minute = pref!.getInt("TIMETABLE_NOTIFICATION_TIME_MINUTE");
+    if (hour == null || minute == null) {
+      return null;
+    } else {
+      return TimeOfDay(hour: hour, minute: minute);
+    }
+  }
+
+  set timetableNotificationTime(TimeOfDay? value) {
+    if (value != null) {
+      pref!.setInt("TIMETABLE_NOTIFICATION_TIME_HOUR", value.hour);
+      pref!.setInt("TIMETABLE_NOTIFICATION_TIME_MINUTE", value.minute);
+    } else {
+      pref!.remove("TIMETABLE_NOTIFICATION_TIME_HOUR");
+      pref!.remove("TIMETABLE_NOTIFICATION_TIME_MINUTE");
     }
   }
 

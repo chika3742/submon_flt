@@ -70,7 +70,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    MyApp.globalKey = _scaffoldKey;
+    Application.globalKey = _scaffoldKey;
 
     linkListener = eventBus.on<SignedInWithLink>().listen((_) {
       Navigator.of(context, rootNavigator: true)

@@ -223,6 +223,72 @@ Future<dynamic> showRoundedBottomSheet({
   );
 }
 
+class TextFormFieldBottomSheet extends StatefulWidget {
+  const TextFormFieldBottomSheet(
+      {Key? key, required this.formLabel, this.initialText, this.onDone})
+      : super(key: key);
+
+  final String formLabel;
+  final String? initialText;
+  final void Function(String text)? onDone;
+
+  @override
+  _TextFormFieldBottomSheetState createState() =>
+      _TextFormFieldBottomSheetState();
+}
+
+class _TextFormFieldBottomSheetState extends State<TextFormFieldBottomSheet> {
+  final _controller = TextEditingController();
+  String? _fieldError;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialText != null) _controller.text = widget.initialText!;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TextFormField(
+          controller: _controller,
+          autofocus: true,
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(),
+            label: Text(widget.formLabel),
+            errorText: _fieldError,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            const Spacer(),
+            IconButton(
+              icon: const Icon(Icons.check),
+              splashRadius: 24,
+              onPressed: () {
+                if (_controller.text.isEmpty) {
+                  setState(() {
+                    _fieldError = "入力してください";
+                  });
+                } else {
+                  setState(() {
+                    _fieldError = null;
+                  });
+
+                  widget.onDone?.call(_controller.text);
+                }
+              },
+            )
+          ],
+        ),
+        SizedBox(height: MediaQuery.of(context).viewInsets.bottom)
+      ],
+    );
+  }
+}
+
 // color picker
 class ColorPickerDialog extends StatefulWidget {
   const ColorPickerDialog({Key? key, required this.initialColor})
