@@ -294,7 +294,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
               api.patch(eventRequest, "primary", event.id!);
             } else {
               showSnackBar(
-                MyApp.globalKey.currentContext!,
+                Application.globalKey.currentContext!,
                 "Googleカレンダーに登録された予定が見つかりません。作成しますか？",
                 action: SnackBarAction(
                     label: "作成する",

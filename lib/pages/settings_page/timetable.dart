@@ -100,7 +100,16 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
               await showRoundedBottomSheet(
                 context: context,
                 title: "時間割表作成",
-                child: const CreateTableBottomSheet(),
+                child: TextFormFieldBottomSheet(
+                  formLabel: "時間割表名",
+                  onDone: (text) async {
+                    await TimetableTableProvider().use((provider) async {
+                      await provider.insert(TimetableTable(title: text));
+                      Navigator.pop(context);
+                    });
+                    showSnackBar(context, "時間割表を追加しました");
+                  },
+                ),
               );
               getTables();
             },
@@ -191,7 +200,17 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
     await showRoundedBottomSheet(
       context: context,
       title: "時間割表名の編集",
-      child: CreateTableBottomSheet(id: table.id, initialText: table.title),
+      child: TextFormFieldBottomSheet(
+        formLabel: "時間割表名",
+        initialText: table.title,
+        onDone: (text) {
+          TimetableTableProvider().use((provider) async {
+            await provider.insert(TimetableTable(id: table.id, title: text));
+            Navigator.pop(context);
+          });
+          showSnackBar(context, "時間割表名を変更しました");
+        },
+      ),
     );
     getTables();
   }
@@ -227,73 +246,5 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
     setState(() {
       hours = value;
     });
-  }
-}
-
-class CreateTableBottomSheet extends StatefulWidget {
-  const CreateTableBottomSheet({Key? key, this.id, this.initialText})
-      : super(key: key);
-
-  final int? id;
-  final String? initialText;
-
-  @override
-  _CreateTableBottomSheetState createState() => _CreateTableBottomSheetState();
-}
-
-class _CreateTableBottomSheetState extends State<CreateTableBottomSheet> {
-  final _controller = TextEditingController();
-  String? _fieldError;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.initialText != null) _controller.text = widget.initialText!;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TextFormField(
-          controller: _controller,
-          autofocus: true,
-          decoration: InputDecoration(
-            border: const OutlineInputBorder(),
-            label: const Text('時間割表名'),
-            errorText: _fieldError,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            const Spacer(),
-            IconButton(
-              icon: const Icon(Icons.check),
-              splashRadius: 24,
-              onPressed: () {
-                if (_controller.text.isEmpty) {
-                  setState(() {
-                    _fieldError = "入力してください";
-                  });
-                } else {
-                  setState(() {
-                    _fieldError = null;
-                  });
-                  TimetableTableProvider().use((provider) async {
-                    await provider.insert(
-                        TimetableTable(id: widget.id, title: _controller.text));
-                    Navigator.pop(context);
-                  });
-
-                  showSnackBar(context, "時間割表名を変更しました");
-                }
-              },
-            )
-          ],
-        ),
-        SizedBox(height: MediaQuery.of(context).viewInsets.bottom)
-      ],
-    );
   }
 }

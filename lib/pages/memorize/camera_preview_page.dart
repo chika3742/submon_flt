@@ -8,6 +8,8 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/utils/card_side_builder.dart';
@@ -18,13 +20,14 @@ import 'package:submon/utils/ui.dart';
 import '../../main.dart';
 
 const policyDialogTitle = "プライバシーポリシーとお知らせ";
-const policyDialogContent =
-    "是非最後までお読みください。\n\n本機能では、Google LLC(以下「Google」) の提供する Cloud Vision API を利用してOCR(文字認識)を行っています。\n"
+const policyDialogContent = "是非最後までお読みください。\n\n"
+    "本機能では、Google LLC(以下「Google」) の提供する Cloud Vision API を利用してOCR(文字認識)を行っています。\n"
     "このAPIでは、画像をGoogleに送信することで、Googleのサーバーで画像処理をして認識された文字を取得しています。\n\n"
     "送信された画像はGoogleのサーバーのメモリ内でのみ処理され、処理後はすぐに削除されます。画像がGoogleサーバーに蓄積されることはありません。ご安心ください。\n\n"
     "また、本アプリで撮影した画像は上記の目的以外には使用しません。\n\n"
     "【お知らせ】\n"
-    "現在、一部端末(例: Google Pixel 6)において、アプリ内カメラでシャッターボタンを押しても写真が撮れない不具合が存在します。申し訳ございませんが、右上の3点から「端末のUIを利用して撮影」をご利用ください。";
+    "現在、一部端末(例: Google Pixel 6)において、アプリ内カメラでシャッターボタンを押しても一定の確率で写真が撮れない不具合が存在します。申し訳ございませんが、機能設定から「端末側の撮影UIを使用」をオンにしてご利用ください。(※iOSでは表示されません)";
+const tempImgDirName = "tempImg";
 
 class CameraPreviewPage extends StatefulWidget {
   const CameraPreviewPage({Key? key}) : super(key: key);
@@ -560,11 +563,21 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
   void recognizeText(XFile imageFile) async {
     setState(() {
       _recognizingText = true;
-      _imagePath = imageFile.path;
     });
     _radarAnimationController?.repeat();
 
-    var newFile = await FlutterExifRotation.rotateImage(path: imageFile.path);
+    var tempDirPath =
+        p.join((await getTemporaryDirectory()).path, tempImgDirName);
+    await Directory(tempDirPath).create(recursive: true);
+    var newPath = (await File(imageFile.path)
+            .rename(p.join(tempDirPath, p.basename(imageFile.path))))
+        .path;
+
+    setState(() {
+      _imagePath = newPath;
+    });
+
+    var newFile = await FlutterExifRotation.rotateImage(path: newPath);
     var imageBytes = await newFile.readAsBytes();
 
     var decodedImage = await decodeImageFromList(imageBytes);

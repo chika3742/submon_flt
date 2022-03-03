@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/sql_provider.dart';
@@ -54,6 +55,46 @@ class FirestoreProvider {
     } else {
       return true;
     }
+  }
+
+  static Future<void> saveNotificationToken(String? token) async {
+    if (userDoc != null && token != null) {
+      await userDoc!.firestore.runTransaction((transaction) async {
+        var data = (await transaction.get(userDoc!)).data() as dynamic;
+        if (data == null ||
+            data["notificationTokens"] == null ||
+            !(data["notificationTokens"] as List).contains(token)) {
+          await userDoc!.set({
+            "notificationTokens": FieldValue.arrayUnion([token])
+          }, SetOptions(merge: true));
+        }
+      });
+    }
+  }
+
+  /// If [time] is null, unregisters.
+  static Future<void> setReminderNotificationTime(TimeOfDay? time) async {
+    if (userDoc != null) {
+      String? timeString;
+      if (time != null) {
+        timeString = "${time.hour}:${time.minute}";
+      }
+      await userDoc!.set(
+          {"reminderNotificationTime": timeString}, SetOptions(merge: true));
+    }
+  }
+
+  static Future<TimeOfDay?> fetchReminderNotificationTime() async {
+    if (userDoc != null) {
+      var timeString = ((await userDoc!.get()).data()
+          as dynamic)["reminderNotificationTime"] as String?;
+      if (timeString != null) {
+        var split = timeString.split(":");
+        return TimeOfDay(
+            hour: int.parse(split[0]), minute: int.parse(split[1]));
+      }
+    }
+    return null;
   }
 
   static Future<void> checkMigration() async {

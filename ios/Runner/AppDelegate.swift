@@ -97,8 +97,8 @@ let actionsChannel = "submon/actions"
                 var dateComponents = DateComponents()
                 dateComponents.calendar = Calendar.current
                 
-                dateComponents.hour = args["hour"] as? Int
-                dateComponents.minute = args["minute"] as? Int
+                dateComponents.hour = args["notificationHour"] as? Int
+                dateComponents.minute = args["notificationMinute"] as? Int
                 
                 trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
                 

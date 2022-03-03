@@ -20,9 +20,9 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationChannelGroupCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.FileProvider
-import androidx.exifinterface.media.ExifInterface
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
 import java.io.FileOutputStream
@@ -83,74 +83,18 @@ class MainActivity : FlutterActivity() {
             when (call.method) {
                 // Opens web page with WebActivity
                 "openWebPage" -> {
-                    val title = call.argument<String>("title")
-                    val url = call.argument<String>("url")
-                    startActivity(
-                        Intent(this, WebPageActivity::class.java)
-                            .putExtra("title", title)
-                            .putExtra("url", url)
-                    )
-                    result.success(null)
+                    openWebPage(call, result)
                 }
                 // Opens Custom Tabs
                 "openCustomTabs" -> {
-                    val ctIntent = CustomTabsIntent.Builder().build()
-                    val pm = packageManager
-                    if (!chromiumBrowserPackages.contains(
-                            pm.resolveActivity(
-                                Intent("android.intent.action.VIEW", Uri.parse("http://")),
-                                PackageManager.MATCH_DEFAULT_ONLY
-                            )?.activityInfo?.packageName
-                        )
-                    ) {
-                        val `package` = chromiumBrowserPackages.firstOrNull {
-                            try {
-                                pm.getApplicationEnabledSetting(it) == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT
-                            } catch (e: IllegalArgumentException) {
-                                false
-                            }
-                        }
-                        if (`package` != null) {
-                            ctIntent.intent.setPackage(`package`)
-                        } else {
-                            Toast.makeText(
-                                this,
-                                "Google Chromeもしくは、それ以外のChromium系ブラウザーをインストールする必要があります",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@setMethodCallHandler
-                        }
-                    }
-                    ctIntent.launchUrl(this, Uri.parse(call.argument("url")))
-                    result.success(null)
+                    openCustomTabs(call, result)
                 }
                 // Updates App Widgets
                 "updateWidgets" -> {
-                    Handler(mainLooper).postDelayed({
-                        val aws = getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager
-                        val widgetIds = aws.getAppWidgetIds(
-                            ComponentName(
-                                this,
-                                SubmissionListAppWidgetProvider::class.java
-                            )
-                        )
-
-                        sendBroadcast(
-                            Intent(this, SubmissionListAppWidgetProvider::class.java)
-                                .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
-                                .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
-                        )
-                    }, 2000)
+                    updateWidgets()
                 }
                 "takePictureNative" -> {
-                    takePictureResult = result
-                    pictureFile = File(cacheDir, "${System.currentTimeMillis()}.jpg")
-                    pictureFile!!.createNewFile()
-                    val uri =
-                        FileProvider.getUriForFile(this, "$packageName.fileprovider", pictureFile!!)
-                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
-                    startActivityForResult(intent, REQUEST_CODE_TAKE_PICTURE)
+                    takePictureNative(result)
                 }
                 else -> {
                     result.notImplemented()
@@ -166,17 +110,13 @@ class MainActivity : FlutterActivity() {
                     result.success(true)
                 }
                 "registerReminder" -> {
-                    Utils.registerReminderNotification(
+                    Notifications.registerReminderNotification(
                         this,
-                        call.argument("title")!!,
-                        call.argument("body")!!,
-                        call.argument("hour")!!,
-                        call.argument("minute")!!,
                     )
                     result.success(null)
                 }
                 "unregisterReminder" -> {
-                    Utils.cancelReminderNotification(this)
+                    Notifications.cancelReminderNotification(this)
                     result.success(null)
                 }
                 "registerTimetable" -> {
@@ -223,6 +163,80 @@ class MainActivity : FlutterActivity() {
                 .setGroup("main")
                 .build()
         )
+    }
+
+    // Method channel: main
+
+    private fun openWebPage(call: MethodCall, result: MethodChannel.Result) {
+        val title = call.argument<String>("title")
+        val url = call.argument<String>("url")
+        startActivity(
+            Intent(this, WebPageActivity::class.java)
+                .putExtra("title", title)
+                .putExtra("url", url)
+        )
+        result.success(null)
+    }
+
+    private fun openCustomTabs(call: MethodCall, result: MethodChannel.Result) {
+        val ctIntent = CustomTabsIntent.Builder().build()
+        val pm = packageManager
+        if (!chromiumBrowserPackages.contains(
+                pm.resolveActivity(
+                    Intent("android.intent.action.VIEW", Uri.parse("http://")),
+                    PackageManager.MATCH_DEFAULT_ONLY
+                )?.activityInfo?.packageName
+            )
+        ) {
+            val `package` = chromiumBrowserPackages.firstOrNull {
+                try {
+                    pm.getApplicationEnabledSetting(it) == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT
+                } catch (e: IllegalArgumentException) {
+                    false
+                }
+            }
+            if (`package` != null) {
+                ctIntent.intent.setPackage(`package`)
+            } else {
+                Toast.makeText(
+                    this,
+                    "Google Chromeもしくは、それ以外のChromium系ブラウザーをインストールする必要があります",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
+        }
+        ctIntent.launchUrl(this, Uri.parse(call.argument("url")))
+        result.success(null)
+    }
+
+    private fun updateWidgets() {
+        Handler(mainLooper).postDelayed({
+            val aws = getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager
+            val widgetIds = aws.getAppWidgetIds(
+                ComponentName(
+                    this,
+                    SubmissionListAppWidgetProvider::class.java
+                )
+            )
+
+            sendBroadcast(
+                Intent(this, SubmissionListAppWidgetProvider::class.java)
+                    .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
+                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
+            )
+        }, 2000)
+    }
+
+    private fun takePictureNative(result: MethodChannel.Result) {
+        takePictureResult = result
+        pictureFile = File(cacheDir, "${System.currentTimeMillis()}.jpg")
+        pictureFile!!.createNewFile()
+        val uri =
+            FileProvider.getUriForFile(this, "$packageName.fileprovider", pictureFile!!)
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+        startActivityForResult(intent, REQUEST_CODE_TAKE_PICTURE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

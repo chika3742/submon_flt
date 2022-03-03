@@ -61,6 +61,8 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>カメラで暗記カードを作成するために利用します。</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>表示する広告を適切に選択するために使用します。</string>
 	<key>UILaunchStoryboardName</key>
@@ -73,8 +75,6 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSCameraUsageDescription</key>
-	<string>カメラで暗記カードを作成するために利用します。</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,56 +15,64 @@ class NotificationMethodChannel {
   }
 
   /// Registers reminder notification.
-  ///
-  /// [hour] and [minute] used for repeating notification daily.
   static void registerReminder() async {
     await unregisterReminder();
-    var pref = await SharedPreferences.getInstance();
-    var sp = SharedPrefs(pref);
-    if (sp.reminderTime != null) {
-      var prov = SubmissionProvider();
-      await prov.open();
+    var pref = SharedPrefs(await SharedPreferences.getInstance());
+    if (pref.reminderTime != null) {
+      var args = {};
+      // iOS only
+      if (Platform.isIOS) {
+        await SubmissionProvider().use((provider) async {
+          var notificationTime = DateTime.now().applied(pref.reminderTime!);
+          var submissions =
+              (await provider.getAll(where: "$colDone = 0")).where((element) {
+            var diff = element.date!.difference(notificationTime);
+            return !diff.isNegative && diff.inDays < 2;
+          });
 
-      var notifyTime = DateTime.now().applied(sp.reminderTime!);
+          String title;
+          String body;
 
-      String title;
-      String body;
+          if (submissions.isEmpty) {
+            title = "リマインダー通知";
+            body = "提出物リストを見るのを忘れていませんか？未完了の提出物をチェックしましょう！";
+          } else {
+            title = "期限が近い提出物があります！";
+            body = "${submissions.map((e) => e.title).join(", ")}の期限は2日を切っています";
+          }
 
-      var submissions =
-          await prov.getAll(where: "$colDone = ?", whereArgs: [0]);
-      var nearList = submissions.where((e) =>
-          !e.date!.difference(notifyTime).isNegative &&
-          e.date!.difference(notifyTime).inDays < 2);
-
-      // TODO: テキストのカスタム
-      // TODO: 期限が近いとして扱う日数のカスタム
-
-      if (nearList.isEmpty) {
-        title = "リマインダー通知";
-        body = "提出物リストを見るのを忘れていませんか？未完了の提出物をチェックしましょう！";
-      } else {
-        title = "期限が近い提出物があります";
-        body = "${nearList.map((e) => e.title).join(", ")} の期限は2日以内です";
+          args = {
+            "title": title,
+            "body": body,
+            "notificationHour": notificationTime.hour,
+            "notificationMinute": notificationTime.minute
+          };
+        });
       }
-
-      mc.invokeMethod("registerReminder", {
-        "title": title,
-        "body": body,
-        "hour": sp.reminderTime!.hour,
-        "minute": sp.reminderTime!.minute,
-      });
+      mc.invokeMethod("registerReminder", args);
     }
   }
 
+  /// Unregisters reminder notification.
   static Future<void> unregisterReminder() async {
     await mc.invokeMethod("unregisterReminder");
   }
 
-  static const chReminder = "reminder";
-  static const chTimetable = "timetable";
+  /// Registers reminder notification.
+  static void registerTimetableNotification() async {
+    await unregisterReminder();
+    mc.invokeMethod("registerTimetableNotification", {});
+  }
+
+  /// Unregisters reminder notification.
+  static Future<void> unregisterTimetableNotification() async {
+    await mc.invokeMethod("unregisterTimetableNotification");
+  }
 }
 
 extension DateTimeExt on DateTime {
+  /// Applies [TimeOfDay] to [DateTime].
+  /// If applied [DateTime] is before current time, adds 1 day.
   DateTime applied(TimeOfDay timeOfDay) {
     var newDT = DateTime(year, month, day, timeOfDay.hour, timeOfDay.minute);
     if (newDT.isBefore(DateTime.now())) {

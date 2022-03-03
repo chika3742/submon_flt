@@ -22,7 +22,7 @@ StreamSubscription initDynamicLinks() {
 }
 
 void handleDynamicLink(Uri url) async {
-  var context = MyApp.globalKey.currentContext!;
+  var context = Application.globalKey.currentContext!;
 
   var auth = FirebaseAuth.instance;
   var code = url.queryParameters["oobCode"];

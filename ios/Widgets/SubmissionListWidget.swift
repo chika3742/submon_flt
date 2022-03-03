@@ -25,7 +25,7 @@ struct Provider: TimelineProvider {
         var entries: [SubmissionEntry] = []
         
         do {
-            try Auth.auth().useUserAccessGroup("B66Z929S96.net.chikach.submon")
+            try Auth.auth().useUserAccessGroup("4L354SDDCC.net.chikach.submon")
         } catch let error as NSError {
             print(error)
         }
@@ -99,6 +99,11 @@ struct SubmissionListWidgetEntryView : View {
         df.dateFormat = "M/d (E)"
         return df
     }
+    var fromDateFormatter: DateFormatter {
+        let df = DateFormatter()
+        df.dateFormat = "yyyy/MM/dd HH:mm"
+        return df
+    }
     
     @ViewBuilder
     var body: some View {
@@ -131,31 +136,45 @@ struct SubmissionListWidgetEntryView : View {
         
         let currentDate = Date()
         let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        formatter.timeStyle = .short
+        formatter.dateFormat = "yyyy/MM/dd HH:mm"
         
         for n in 0..<4 {
             let entryDate = Calendar.current.date(byAdding: .day, value: n, to: currentDate)!
-            listEntries.append(SubmissionData(id: 0, title: "提出物\(n + 1)", date: formatter.string(from: entryDate)))
+            listEntries.append(SubmissionData(id: 0, title: "提出物\(n + 1)", date: entryDate))
         }
         
         return buildItemView(items: listEntries)
     }
     
     func buildItemView(items: [SubmissionData]) -> some View {
-        HStack(alignment: .bottom) {
+        return HStack(alignment: .bottom) {
             VStack(alignment: .leading) {
                 Text("提出物リスト").font(.headline)
                 Spacer()
                 HStack(alignment: .bottom) {
                     VStack(alignment: .leading) {
-                        ForEach(0..<items.count) { index in
+                        ForEach(0..<items.count, id: \.self) { index in
                             let item = items[index]
+                            let delta = Int(item.date - entry.date) / (60 * 60)
                             VStack {
                                 HStack {
                                     if family != .systemSmall {
-                                        Text(dateFormatter.string(from: dateFormatter.date(from: item.date)!))
+                                        Text({
+                                            if (delta < 24) {
+                                                return "\(delta) 時間"
+                                            }
+                                            return "\(delta / 24) 日"
+                                        }() as String)
                                             .font(.subheadline)
+                                            .foregroundColor({
+                                                if (delta < 0) {
+                                                    return .red
+                                                }
+                                                if (delta <= 48) {
+                                                    return .orange
+                                                }
+                                                return .green
+                                            }())
                                     }
                                     Text(item.title)
                                         .font(.subheadline)
@@ -212,12 +231,18 @@ struct SubmissionListWidget_Previews: PreviewProvider {
 struct SubmissionData: Decodable {
     let id: Int64
     let title: String
-    let date: String
+    let date: Date
     
     static func fromDic(dic: [String: Any]) -> Self? {
         do {
             let json = try JSONSerialization.data(withJSONObject: dic)
             let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .formatted({
+                let f = DateFormatter()
+                f.locale = .current
+                f.dateFormat = "yyyy/MM/dd HH:mm"
+                return f
+            }())
             let decoded = try decoder.decode(Self.self, from: json)
             return decoded
         } catch let e {
