@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:intl/intl.dart';
 import 'package:submon/components/dotime_detail_card.dart';
+import 'package:submon/components/dotime_edit_bottom_sheet.dart';
 import 'package:submon/components/formatted_date_remaining.dart';
+import 'package:submon/db/dotime.dart';
 import 'package:submon/db/submission.dart';
+import 'package:submon/utils/ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SubmissionDetailPage extends StatefulWidget {
@@ -17,6 +20,7 @@ class SubmissionDetailPage extends StatefulWidget {
 
 class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
   Submission? item;
+  List<DoTime> doTimes = [];
 
   @override
   void initState() {
@@ -26,6 +30,16 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
         setState(() {
           item = value;
         });
+      });
+    });
+    DoTimeProvider().use((provider) async {
+      var doTimes = await provider.getAll(
+          where: "$colSubmissionId = ?", whereArgs: [widget.submissionId]);
+      doTimes.sort((a, b) {
+        return a.startAt.difference(b.startAt).inMinutes;
+      });
+      setState(() {
+        this.doTimes = doTimes;
       });
     });
   }
@@ -51,6 +65,10 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
             },
           )
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: showCreateDoTimeBottomSheet,
       ),
       body: SingleChildScrollView(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -112,13 +130,93 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
             child: Text('DoTime',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           ),
-          DoTimeDetailCard(submissionId: 0, doTimeId: 0),
-          DoTimeDetailCard(submissionId: 0, doTimeId: 0),
-          DoTimeDetailCard(submissionId: 0, doTimeId: 0),
-          DoTimeDetailCard(submissionId: 0, doTimeId: 0),
-          DoTimeDetailCard(submissionId: 0, doTimeId: 0),
+          ...doTimes
+              .map((e) => DoTimeDetailCard(
+                    submissionId: e.submissionId,
+                    doTime: e,
+                    onDelete: () {
+                      onDoTimeDelete(e);
+                    },
+                    onEdit: () {
+                      onDoTimeEdit(e);
+                    },
+                    onTimer: () {},
+                  ))
+              .toList(),
+          if (doTimes.isEmpty)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Opacity(
+                  opacity: 0.7,
+                  child: Text(
+                    'DoTimeがありません。右下の「+」から\n追加できます。',
+                  ),
+                ),
+              ),
+            ),
         ]),
       ),
     );
+  }
+
+  void showCreateDoTimeBottomSheet() async {
+    var data = await showRoundedBottomSheet<DoTime>(
+      context: context,
+      title: "DoTime 新規作成",
+      child: DoTimeEditBottomSheet(submissionId: widget.submissionId),
+    );
+    if (data != null) {
+      DoTimeProvider().use((provider) async {
+        await provider.insert(data);
+      });
+      setState(() {
+        doTimes.add(data);
+      });
+    }
+  }
+
+  void onDoTimeDelete(DoTime e) async {
+    await DoTimeProvider().use((provider) async {
+      await provider.delete(e.id!);
+    });
+    var index = doTimes.indexOf(e);
+    setState(() {
+      doTimes.remove(e);
+    });
+    showSnackBar(context, "削除しました",
+        action: SnackBarAction(
+          label: "元に戻す",
+          onPressed: () {
+            DoTimeProvider().use((provider) async {
+              await provider.insert(e);
+            });
+            setState(() {
+              doTimes.insert(index, e);
+            });
+          },
+        ));
+  }
+
+  void onDoTimeEdit(DoTime e) async {
+    var data = await showRoundedBottomSheet<DoTime>(
+      context: context,
+      title: "編集",
+      child: DoTimeEditBottomSheet(
+        submissionId: widget.submissionId,
+        initialData: e,
+      ),
+    );
+    if (data != null) {
+      await DoTimeProvider().use((provider) async {
+        await provider.insert(data);
+      });
+      setState(() {
+        var index = doTimes.indexOf(e);
+        doTimes.removeAt(index);
+        doTimes.insert(index, data);
+      });
+      showSnackBar(context, "編集しました");
+    }
   }
 }

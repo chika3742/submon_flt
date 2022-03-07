@@ -10,10 +10,13 @@ import 'package:submon/method_channel/channels.dart';
 class NotificationMethodChannel {
   static const mc = MethodChannel(Channels.notification);
 
+  /// Unused.
   static Future<bool?> isGranted() {
     return mc.invokeMethod<bool>("isGranted");
   }
 
+  /// **Unused.**
+  ///
   /// Registers reminder notification.
   static void registerReminder() async {
     await unregisterReminder();
@@ -53,6 +56,8 @@ class NotificationMethodChannel {
     }
   }
 
+  /// **Unused.**
+  ///
   /// Unregisters reminder notification.
   static Future<void> unregisterReminder() async {
     await mc.invokeMethod("unregisterReminder");
