@@ -4,8 +4,10 @@ import 'package:googleapis/calendar/v3.dart' as c;
 import 'package:intl/intl.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/main.dart';
+import 'package:submon/components/tappable_card.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
+import 'package:submon/components/color_picker_dialog.dart';
 
 class SubmissionEditor extends StatefulWidget {
   const SubmissionEditor(
@@ -330,31 +332,5 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
 
       Navigator.of(context, rootNavigator: true).maybePop<dynamic>(result);
     });
-  }
-}
-
-class TappableCard extends StatelessWidget {
-  const TappableCard({Key? key, this.child, this.onTap, this.color}) : super(key: key);
-
-  final _cardBorderRadius = 8.0;
-  final Widget? child;
-  final void Function()? onTap;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_cardBorderRadius)),
-      color: color,
-      elevation: 4,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(_cardBorderRadius),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: child,
-        ),
-        onTap: onTap,
-      ),
-    );
   }
 }

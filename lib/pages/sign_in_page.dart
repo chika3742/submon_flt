@@ -433,7 +433,7 @@ Future<void> completeLogin(UserCredential result, BuildContext context) async {
         FirebaseFirestore.instance.collection("users").doc(result.user!.uid);
     var snapshot = await doc.get();
     if (!snapshot.exists) {
-// TODO: initialize firestore DB
+      // TODO: initialize firestore DB
     } else {
       if (snapshot.data()?["deleted"] == true) {
         showSimpleDialog(context, "エラー", "このアカウントは既に削除されています。再度作成してください。",
