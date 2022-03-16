@@ -92,15 +92,15 @@ Future<T?> showSimpleDialog<T>(
               PlatformTextButton(
                 child: Text(cancelText),
                 onPressed: () {
-                  onCancelPressed?.call();
                   Navigator.pop(context, false);
+                  onCancelPressed?.call();
                 },
               ),
             PlatformTextButton(
               child: Text(okText),
               onPressed: () {
-                onOKPressed?.call();
                 Navigator.pop(context, true);
+                onOKPressed?.call();
               },
             ),
           ],

@@ -45,13 +45,18 @@ dependencies:
   flutter_dotenv: ^5.0.2
   flutter_slidable: ^1.2.0
   url_launcher: ^6.0.20
-  camera: ^0.9.4+14
+  camera: ^0.9.4+16
   flutter_linkify: ^5.0.2
   path_provider: ^2.0.9
   flutter_exif_rotation: ^0.5.0
   time_picker_widget: ^1.0.0+10
-  flutter_local_notifications: ^9.4.0
   google_fonts: ^2.3.1
+  wakelock: ^0.6.1+2
+  fullscreen: ^1.0.3
+  flutter_dnd: ^0.1.4+1
+  permission_handler: ^9.2.0
+  fluttertoast: ^8.0.9
+  collection: ^1.16.0
 
   # error
   vector_math: ^2.1.1
@@ -64,13 +69,13 @@ dependencies:
 
   firebase_core: ^1.13.1
   firebase_crashlytics: ^2.5.3
-  firebase_auth: ^3.3.9
+  firebase_auth: ^3.3.10
   cloud_firestore: ^3.1.10
-  firebase_messaging: ^11.2.8
+  #  firebase_messaging: ^11.2.10
   firebase_analytics: ^9.1.2
-  firebase_dynamic_links: ^4.0.8
+  firebase_dynamic_links: ^4.1.0
   firebase_performance: ^0.8.0+7
-  cloud_functions: ^3.2.9
+  cloud_functions: ^3.2.10
 
 dev_dependencies:
   flutter_test:

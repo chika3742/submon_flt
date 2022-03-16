@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
     <queries>
         <intent>
@@ -73,7 +74,6 @@
             android:name=".WebPageActivity"
             android:theme="@style/Theme.AppCompat.DayNight" />
 
-
         <receiver
             android:name=".ReminderNotificationBroadcastReceiver"
             android:enabled="true"
@@ -91,8 +91,8 @@
         </receiver>
 
         <receiver
-            android:name=".BootCompletedBroadcastReceiver"
-            android:exported="false">
+                android:name=".BootCompletedBroadcastReceiver"
+                android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
@@ -100,21 +100,33 @@
         </receiver>
 
         <receiver
-            android:name=".ListItemActionBroadcastReceiver"
-            android:exported="true" />
+                android:name=".ListItemActionBroadcastReceiver"
+                android:exported="false" />
+
+        <receiver
+                android:name=".DeleteDoTimeBroadcastReceiver"
+                android:exported="false" />
 
         <service
-            android:name=".AppWidgetSubmissionListService"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
+                android:name=".AppWidgetSubmissionListService"
+                android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <service
+                android:name=".MyFirebaseMessagingService"
+                android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
+                android:name="androidx.core.content.FileProvider"
+                android:authorities="${applicationId}.fileprovider"
+                android:exported="false"
+                android:grantUriPermissions="true">
             <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/provider_paths" />
         </provider>
 
         <!--

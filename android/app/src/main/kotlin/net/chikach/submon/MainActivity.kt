@@ -1,31 +1,17 @@
 package net.chikach.submon
 
-import android.app.Activity
 import android.app.NotificationManager
-import android.appwidget.AppWidgetManager
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
-import android.net.Uri
-import android.os.Handler
-import android.provider.MediaStore
-import android.util.Log
-import android.widget.Toast
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationChannelGroupCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.FileProvider
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
-import java.io.File
-import java.io.FileOutputStream
+import net.chikach.submon.mch.ActionMethodChannelHandler
+import net.chikach.submon.mch.MainMethodChannelHandler
+import net.chikach.submon.mch.MessagingMethodChannelHandler
 
 val chromiumBrowserPackages = listOf(
     "com.android.chrome",
@@ -45,102 +31,60 @@ val chromiumBrowserPackages = listOf(
 
 const val REMINDER_CHANNEL = "reminder"
 const val TIMETABLE_CHANNEL = "timetable"
+const val DO_TIME_CHANNEL = "doTime"
 
-const val METHOD_CHANNEL_MAIN = "submon/main"
-const val METHOD_CHANNEL_NOTIFICATION = "submon/notification"
-const val METHOD_CHANNEL_ACTIONS = "submon/actions"
+const val METHOD_CHANNEL_MAIN = "net.chikach.submon/main"
+const val METHOD_CHANNEL_ACTION = "net.chikach.submon/action"
+const val METHOD_CHANNEL_MESSAGING = "net.chikach.submon/messaging"
+const val EVENT_CHANNEL_URI_INTENT = "net.chikach.submon/uriIntent"
 
 const val REQUEST_CODE_TAKE_PICTURE = 1
 
 class MainActivity : FlutterActivity() {
-    lateinit var mainMethodChannel: MethodChannel
-    var pendingAction: String? = null
-    var pendingActionArgument: Int? = null
-
-    var takePictureResult: MethodChannel.Result? = null
-    var pictureFile: File? = null
+    private var mainMethodChannelHandler = MainMethodChannelHandler(this)
+    private var actionMethodChannelHandler = ActionMethodChannelHandler()
+    private var messagingMethodChannelHandler = MessagingMethodChannelHandler()
+    var uriIntentEventSink: EventChannel.EventSink? = null
 
     companion object {
-        const val EXTRA_FLUTTER_ACTION = "FLUTTER_ACTION"
-        const val EXTRA_FLUTTER_ACTION_ARGUMENT_ID = "FLUTTER_ACTION_ARGUMENT_ID"
+        const val EXTRA_FLUTTER_ACTION = "flutterAction"
+        const val EXTRA_FLUTTER_ACTION_ARGUMENTS = "flutterActionArguments"
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
         if (intent.hasExtra(EXTRA_FLUTTER_ACTION)) {
-            val mc =
-                MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_ACTIONS)
-
-            pendingAction = intent.getStringExtra(EXTRA_FLUTTER_ACTION)
-            pendingActionArgument = intent.getIntExtra(EXTRA_FLUTTER_ACTION_ARGUMENT_ID, -1)
-            mc.invokeMethod(pendingAction!!, pendingActionArgument)
+            actionMethodChannelHandler.pendingAction = mapOf(
+                "actionName" to intent.getStringExtra(EXTRA_FLUTTER_ACTION)!!,
+                "arguments" to intent.getSerializableExtra(EXTRA_FLUTTER_ACTION_ARGUMENTS)
+            )
         }
 
-        mainMethodChannel =
-            MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_MAIN)
-        mainMethodChannel.setMethodCallHandler { call, result ->
-            when (call.method) {
-                // Opens web page with WebActivity
-                "openWebPage" -> {
-                    openWebPage(call, result)
-                }
-                // Opens Custom Tabs
-                "openCustomTabs" -> {
-                    openCustomTabs(call, result)
-                }
-                // Updates App Widgets
-                "updateWidgets" -> {
-                    updateWidgets()
-                }
-                "takePictureNative" -> {
-                    takePictureNative(result)
-                }
-                else -> {
-                    result.notImplemented()
-                }
+        // main method channel
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_MAIN).apply {
+            setMethodCallHandler(mainMethodChannelHandler)
+        }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_ACTION).apply {
+            setMethodCallHandler(actionMethodChannelHandler)
+        }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_MESSAGING).apply {
+            setMethodCallHandler(messagingMethodChannelHandler)
+        }
+
+        val uriIntentEventChannel =
+            EventChannel(flutterEngine.dartExecutor.binaryMessenger, EVENT_CHANNEL_URI_INTENT)
+        uriIntentEventChannel.setStreamHandler(object : EventChannel.StreamHandler {
+            override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+                uriIntentEventSink = events
             }
-        }
 
-        val notificationMethodChannel =
-            MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_NOTIFICATION)
-        notificationMethodChannel.setMethodCallHandler { call, result ->
-            when (call.method) {
-                "isGranted" -> {
-                    result.success(true)
-                }
-                "registerReminder" -> {
-                    Notifications.registerReminderNotification(
-                        this,
-                    )
-                    result.success(null)
-                }
-                "unregisterReminder" -> {
-                    Notifications.cancelReminderNotification(this)
-                    result.success(null)
-                }
-                "registerTimetable" -> {
-                    result.success(null)
-                }
-                else -> {
-                    result.notImplemented()
-                }
+            override fun onCancel(arguments: Any?) {
+                uriIntentEventSink = null
             }
-        }
-
-        val amc = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_ACTIONS)
-        amc.setMethodCallHandler { call, result ->
-            when (call.method) {
-                "getPendingAction" -> {
-                    result.success(pendingAction)
-                    pendingAction = null
-                }
-                "getPendingActionArgument" -> {
-                    result.success(pendingActionArgument)
-                    pendingActionArgument = null
-                }
-            }
-        }
+        })
 
         val notificationMgr = NotificationManagerCompat.from(context)
         notificationMgr.createNotificationChannelGroup(
@@ -163,148 +107,40 @@ class MainActivity : FlutterActivity() {
                 .setGroup("main")
                 .build()
         )
-    }
-
-    // Method channel: main
-
-    private fun openWebPage(call: MethodCall, result: MethodChannel.Result) {
-        val title = call.argument<String>("title")
-        val url = call.argument<String>("url")
-        startActivity(
-            Intent(this, WebPageActivity::class.java)
-                .putExtra("title", title)
-                .putExtra("url", url)
+        notificationMgr.createNotificationChannel(
+            NotificationChannelCompat.Builder(
+                DO_TIME_CHANNEL,
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+                .setName("DoTime通知")
+                .setGroup("main")
+                .build()
         )
-        result.success(null)
-    }
-
-    private fun openCustomTabs(call: MethodCall, result: MethodChannel.Result) {
-        val ctIntent = CustomTabsIntent.Builder().build()
-        val pm = packageManager
-        if (!chromiumBrowserPackages.contains(
-                pm.resolveActivity(
-                    Intent("android.intent.action.VIEW", Uri.parse("http://")),
-                    PackageManager.MATCH_DEFAULT_ONLY
-                )?.activityInfo?.packageName
-            )
-        ) {
-            val `package` = chromiumBrowserPackages.firstOrNull {
-                try {
-                    pm.getApplicationEnabledSetting(it) == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT
-                } catch (e: IllegalArgumentException) {
-                    false
-                }
-            }
-            if (`package` != null) {
-                ctIntent.intent.setPackage(`package`)
-            } else {
-                Toast.makeText(
-                    this,
-                    "Google Chromeもしくは、それ以外のChromium系ブラウザーをインストールする必要があります",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return
-            }
-        }
-        ctIntent.launchUrl(this, Uri.parse(call.argument("url")))
-        result.success(null)
-    }
-
-    private fun updateWidgets() {
-        Handler(mainLooper).postDelayed({
-            val aws = getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager
-            val widgetIds = aws.getAppWidgetIds(
-                ComponentName(
-                    this,
-                    SubmissionListAppWidgetProvider::class.java
-                )
-            )
-
-            sendBroadcast(
-                Intent(this, SubmissionListAppWidgetProvider::class.java)
-                    .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
-                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
-            )
-        }, 2000)
-    }
-
-    private fun takePictureNative(result: MethodChannel.Result) {
-        takePictureResult = result
-        pictureFile = File(cacheDir, "${System.currentTimeMillis()}.jpg")
-        pictureFile!!.createNewFile()
-        val uri =
-            FileProvider.getUriForFile(this, "$packageName.fileprovider", pictureFile!!)
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
-        startActivityForResult(intent, REQUEST_CODE_TAKE_PICTURE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_CODE_TAKE_PICTURE -> {
-                if (resultCode == Activity.RESULT_OK && pictureFile != null) {
-                    var bmp = BitmapFactory.decodeFile(pictureFile!!.path)
-                    var width = bmp.width
-                    var height = bmp.height
-                    val matrix = Matrix()
-//                    val exifInterface = ExifInterface(pictureFile!!.path)
-//                    when (exifInterface.getAttribute(ExifInterface.TAG_ORIENTATION)) {
-//                        "1" -> {
-//                            matrix.postRotate(90F)
-//                        }
-//                        "6" -> {
-//                            matrix.postRotate(0F)
-//                        }
-//                        "3" -> {
-//                            matrix.postRotate(90F)
-//                        }
-//                        "8" -> {
-//                            matrix.postRotate(270F)
-//                        }
-//                    }
-                    Log.d("bitmap size", "${width}x${height}")
-                    if (height > width) {
-                        if (width > (height * (9 / 16.0)).toInt()) {
-                            width = (height * (9 / 16.0)).toInt()
-                        } else {
-                            height = (width * (16.0 / 9)).toInt()
-                        }
-                    } else {
-                        if (width > (height * (16.0 / 9)).toInt()) {
-                            width = (height * (16.0 / 9)).toInt()
-                        } else {
-                            height = (width * (9 / 16.0)).toInt()
-                        }
-                        matrix.postRotate(90F)
-                    }
-                    Log.d("bitmap final size", "${width}x${height}")
-                    bmp = Bitmap.createBitmap(bmp, 0, 0, width, height, matrix, false)
-                    val stream = FileOutputStream(pictureFile!!)
-                    bmp.compress(Bitmap.CompressFormat.JPEG, 80, stream)
-                    stream.close()
-                    takePictureResult?.success(pictureFile!!.path)
-                    bmp.recycle()
-                } else {
-                    takePictureResult?.success(null)
-                }
-                takePictureResult = null
+                mainMethodChannelHandler.takePictureCallback()
             }
         }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        if (intent.data != null) mainMethodChannel.invokeMethod("onUriData", intent.data!!.query)
-
-        if (intent.hasExtra(EXTRA_FLUTTER_ACTION) && flutterEngine != null) {
-            val mc =
-                MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, METHOD_CHANNEL_ACTIONS)
-            mc.invokeMethod(
-                intent.getStringExtra(EXTRA_FLUTTER_ACTION)!!, intent.getIntExtra(
-                    EXTRA_FLUTTER_ACTION_ARGUMENT_ID, -1
+        when {
+            intent.hasExtra(EXTRA_FLUTTER_ACTION) -> {
+                actionMethodChannelHandler.pendingAction = mapOf(
+                    "actionName" to intent.getStringExtra(EXTRA_FLUTTER_ACTION)!!,
+                    "arguments" to intent.getSerializableExtra(EXTRA_FLUTTER_ACTION_ARGUMENTS),
                 )
-            )
+                actionMethodChannelHandler.invokeIntentAction(flutterEngine)
+            }
+
+            intent.data != null -> {
+                uriIntentEventSink?.success(intent.data!!.query)
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 class Channels {
-  static const main = "submon/main";
-  static const notification = "submon/notification";
-  static const actions = "submon/actions";
+  static const main = "net.chikach.submon/main";
+  static const action = "net.chikach.submon/action";
+  static const messaging = "net.chikach.submon/messaging";
+  static const onUriIntent = "net.chikach.submon/uriIntent";
 }

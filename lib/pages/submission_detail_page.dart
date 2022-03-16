@@ -71,91 +71,98 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
         onPressed: showCreateDoTimeBottomSheet,
       ),
       body: SingleChildScrollView(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          if (item != null)
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 16.0),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            if (item != null)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(item!.title,
+                    style: const TextStyle(
+                        fontSize: 22, fontWeight: FontWeight.bold)),
+              ),
+            const Divider(thickness: 2, indent: 32, endIndent: 32),
             Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(item!.title,
-                  style: const TextStyle(
-                      fontSize: 22, fontWeight: FontWeight.bold)),
-            ),
-          const Divider(thickness: 2, indent: 32, endIndent: 32),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                const Spacer(),
-                const Icon(Icons.event_available),
-                const SizedBox(width: 8),
-                if (item != null)
-                  Text(DateFormat("MM/dd (E)", 'ja_JP').format(item!.date!),
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold)),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                const Spacer(),
-                const Icon(Icons.schedule),
-                const SizedBox(width: 8),
-                if (item != null)
-                  FormattedDateRemaining(item!.date!.difference(DateTime.now()),
-                      numberSize: 24),
-              ],
-            ),
-          ),
-          if (item != null)
-            Padding(
-              padding:
-                  const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
-              // child: Text(item!.detail, style: const TextStyle(fontSize: 16, height: 1.3)),
-              child: Linkify(
-                onOpen: (link) async {
-                  if (await canLaunch(link.url)) {
-                    await launch(link.url);
-                  } else {
-                    throw 'Could not launch $link';
-                  }
-                },
-                text: item!.detail,
-                style: const TextStyle(fontSize: 16, height: 1.7),
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  const Spacer(),
+                  const Icon(Icons.event_available),
+                  const SizedBox(width: 8),
+                  if (item != null)
+                    Text(DateFormat("MM/dd (E)", 'ja_JP').format(item!.date!),
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                ],
               ),
             ),
-          const Divider(thickness: 2, indent: 32, endIndent: 32),
-          const Align(
-            alignment: Alignment.center,
-            child: Text('DoTime',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          ),
-          ...doTimes
-              .map((e) => DoTimeDetailCard(
-                    submissionId: e.submissionId,
-                    doTime: e,
-                    onDelete: () {
-                      onDoTimeDelete(e);
-                    },
-                    onEdit: () {
-                      onDoTimeEdit(e);
-                    },
-                    onTimer: () {},
-                  ))
-              .toList(),
-          if (doTimes.isEmpty)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Opacity(
-                  opacity: 0.7,
-                  child: Text(
-                    'DoTimeがありません。右下の「+」から\n追加できます。',
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  const Spacer(),
+                  const Icon(Icons.schedule),
+                  const SizedBox(width: 8),
+                  if (item != null)
+                    FormattedDateRemaining(
+                        item!.date!.difference(DateTime.now()),
+                        numberSize: 24),
+                ],
+              ),
+            ),
+            if (item != null)
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 16.0, right: 16.0, bottom: 16.0),
+                // child: Text(item!.detail, style: const TextStyle(fontSize: 16, height: 1.3)),
+                child: Linkify(
+                  onOpen: (link) async {
+                    if (await canLaunch(link.url)) {
+                      await launch(link.url);
+                    } else {
+                      throw 'Could not launch $link';
+                    }
+                  },
+                  text: item!.detail,
+                  style: const TextStyle(fontSize: 16, height: 1.7),
+                ),
+              ),
+            const Divider(thickness: 2, indent: 32, endIndent: 32),
+            const Align(
+              alignment: Alignment.center,
+              child: Text('DoTime',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            ),
+            ...doTimes
+                .map((e) => DoTimeDetailCard(
+                      submissionId: e.submissionId,
+                      doTime: e,
+                      onDelete: () {
+                        onDoTimeDelete(e);
+                      },
+                      onEdit: () {
+                        onDoTimeEdit(e);
+                      },
+                      onTimer: () {
+                        showFocusTimer(e);
+                      },
+                    ))
+                .toList(),
+            if (doTimes.isEmpty)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Opacity(
+                    opacity: 0.7,
+                    child: Text(
+                      'DoTimeがありません。右下の「+」から\n追加できます。',
+                    ),
                   ),
                 ),
               ),
-            ),
-        ]),
+          ]),
+        ),
       ),
     );
   }
@@ -217,6 +224,17 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
         doTimes.insert(index, data);
       });
       showSnackBar(context, "編集しました");
+    }
+  }
+
+  void showFocusTimer(DoTime e) async {
+    var result = await Navigator.pushNamed(context, "/focus-timer", arguments: {
+      "doTime": e,
+    });
+    if (result == true) {
+      setState(() {
+        doTimes.remove(e);
+      });
     }
   }
 }

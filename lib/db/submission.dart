@@ -7,7 +7,6 @@ import 'package:submon/db/firestore.dart';
 import 'package:submon/db/sql_provider.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
-import 'package:submon/method_channel/notification.dart';
 import 'package:submon/utils/utils.dart';
 
 const tableSubmission = "submission";
@@ -130,14 +129,14 @@ class SubmissionProvider extends SqlProvider<Submission> {
   void setFirestore(Submission data) {
     FirestoreProvider.submission
         .set(data.id.toString(), objToMap(data), SetOptions(merge: true));
-    NotificationMethodChannel.registerReminder();
+    // NotificationMethodChannel.registerReminder();
     updateWidgets();
   }
 
   @override
   void deleteFirestore(int id) {
     FirestoreProvider.submission.delete(id.toString());
-    NotificationMethodChannel.registerReminder();
+    // NotificationMethodChannel.registerReminder();
     updateWidgets();
 
     googleSignIn.authenticatedClient().then((client) async {

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submon/components/settings_ui.dart';
@@ -5,6 +7,11 @@ import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/timetable.dart';
 import 'package:submon/db/timetable_table.dart';
 import 'package:submon/utils/ui.dart';
+import 'package:time_picker_widget/time_picker_widget.dart';
+
+import '../../db/firestore.dart';
+import '../../method_channel/messaging.dart';
+import '../../utils/utils.dart';
 
 class TimetableSettingsPage extends StatefulWidget {
   const TimetableSettingsPage({Key? key}) : super(key: key);
@@ -16,6 +23,8 @@ class TimetableSettingsPage extends StatefulWidget {
 class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
   int? hours;
   List<TimetableTable> tables = [];
+  TimetableNotification? _timetableNotification;
+  bool _loadingTimetableNotification = true;
 
   @override
   void initState() {
@@ -26,11 +35,23 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
       });
     });
     getTables();
+
+    FirestoreProvider.config.then((value) {
+      setState(() {
+        _timetableNotification = value!.timetableNotification;
+      });
+    }).onError<FirebaseException>((error, stackTrace) {
+      handleFirebaseError(error, stackTrace, context, "時間割通知設定の取得に失敗しました。");
+    }).whenComplete(() {
+      setState(() {
+        _loadingTimetableNotification = false;
+      });
+    });
   }
 
   void getTables() {
     TimetableTableProvider().use((provider) async {
-      tables = await provider.getAll();
+      tables = [TimetableTable(title: "メイン"), ...await provider.getAll()];
       setState(() {});
     });
   }
@@ -40,57 +61,78 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
     return SettingsListView(
       categories: [
         SettingsCategory(title: "マルチ時間割表", tiles: [
-          SettingsTile(
-            title: "メイン",
-            leading: const Icon(Icons.table_chart),
-            trailing: IconButton(
-              icon: const Icon(Icons.content_copy),
-              onPressed: () {
-                copyTimetable(TimetableTable());
-              },
-            ),
-          ),
           ...tables.map((e) => SettingsTile(
             title: e.title,
                 leading: const Icon(Icons.table_chart),
-                trailing: PopupMenuButton(
-                  icon: const Icon(Icons.more_vert),
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      child: ListTile(
-                        title: Text("コピー"),
-                        leading: Icon(Icons.content_copy),
-                      ),
-                      value: 0,
-                    ),
-                    const PopupMenuItem(
-                      child: ListTile(
-                        title: Text("編集"),
-                        leading: Icon(Icons.edit),
-                      ),
-                      value: 1,
-                    ),
-                    const PopupMenuItem(
-                      child: ListTile(
-                        title: Text("削除"),
-                        leading: Icon(Icons.delete),
-                      ),
-                      value: 2,
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (e.id == _timetableNotification?.id)
+                      const Icon(Icons.notifications),
+                    PopupMenuButton<_PopupMenuAction>(
+                      icon: const Icon(Icons.more_vert),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          enabled: e.id != _timetableNotification?.id,
+                          child: ListTile(
+                            enabled: e.id != _timetableNotification?.id,
+                            title: const Text("この時間割を通知"),
+                            leading: const Icon(Icons.notifications),
+                          ),
+                          value: _PopupMenuAction.setNotification,
+                        ),
+                        const PopupMenuItem(
+                          child: ListTile(
+                            title: Text("コピー"),
+                            leading: Icon(Icons.content_copy),
+                          ),
+                          value: _PopupMenuAction.copy,
+                        ),
+                        if (e.id != null)
+                          const PopupMenuItem(
+                            child: ListTile(
+                              title: Text("編集"),
+                              leading: Icon(Icons.edit),
+                            ),
+                            value: _PopupMenuAction.edit,
+                          ),
+                        if (e.id != null)
+                          const PopupMenuItem(
+                            child: ListTile(
+                              title: Text("削除"),
+                              leading: Icon(Icons.delete),
+                            ),
+                            value: _PopupMenuAction.delete,
+                          ),
+                      ],
+                      onSelected: (value) {
+                        switch (value) {
+                          case _PopupMenuAction.setNotification:
+                            setState(() {
+                              _timetableNotification!.id = e.id;
+                              _loadingTimetableNotification = true;
+                            });
+                            FirestoreProvider.setTimetableNotification(
+                                    _timetableNotification!)
+                                .whenComplete(() {
+                              setState(() {
+                                _loadingTimetableNotification = false;
+                              });
+                            });
+                            break;
+                          case _PopupMenuAction.copy:
+                            copyTimetable(e);
+                            break;
+                          case _PopupMenuAction.edit:
+                            changeTimetableName(e);
+                            break;
+                          case _PopupMenuAction.delete:
+                            deleteTimetable(e);
+                            break;
+                        }
+                      },
                     ),
                   ],
-                  onSelected: (value) {
-                    switch (value) {
-                      case 0:
-                        copyTimetable(e);
-                        break;
-                      case 1:
-                        changeTimetableName(e);
-                        break;
-                      case 2:
-                        deleteTimetable(e);
-                        break;
-                    }
-                  },
                 ),
               )),
           SettingsTile(
@@ -120,17 +162,64 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
             subtitle: "毎朝、当日の時間割を通知します。(時間割が入っている曜日のみ)",
           ),
           SettingsTile(
-            title: "通知時刻",
-            subtitle: "12:55",
-            leading: const Icon(Icons.schedule),
-            trailing: IconButton(
-              icon: const Icon(Icons.clear),
-              onPressed: () {},
-            ),
-          ),
+              title: "通知時刻",
+              subtitle: _timetableNotification?.time?.format(context) ?? "未設定",
+              leading: const Icon(Icons.schedule),
+              trailing: _loadingTimetableNotification
+                  ? const CircularProgressIndicator()
+                  : _timetableNotification?.time != null
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            setState(() {
+                              _timetableNotification?.time = null;
+                            });
+                            FirestoreProvider.setTimetableNotification(
+                                _timetableNotification!);
+                          },
+                        )
+                      : null,
+              onTap: () async {
+                var requestPermissionResult =
+                    await MessagingPlugin.requestNotificationPermission();
+                if (requestPermissionResult ==
+                    NotificationPermissionState.denied) {
+                  showSnackBar(context, "通知の表示が許可されていません。本体設定から許可してください。");
+                } else {
+                  var result = await showCustomTimePicker(
+                    context: context,
+                    initialTime: _timetableNotification?.time ??
+                        const TimeOfDay(hour: 0, minute: 0),
+                    selectableTimePredicate: (time) {
+                      return time != null && time.minute % 5 == 0;
+                    },
+                    onFailValidation: (context) {
+                      showSimpleDialog(context, "エラー", "5分おきに設定可能です");
+                    },
+                  );
+                  if (result != null) {
+                    setState(() {
+                      _loadingTimetableNotification = true;
+                    });
+                    try {
+                      setState(() {
+                        _timetableNotification?.time = result;
+                      });
+                      await FirestoreProvider.setTimetableNotification(
+                          _timetableNotification!);
+                    } catch (e) {
+                      showSnackBar(context, "設定に失敗しました");
+                    }
+                    setState(() {
+                      _loadingTimetableNotification = false;
+                    });
+                  }
+                }
+              }),
           SettingsTile(
             title: "通知する時間割表",
-            subtitle: "メイン",
+            subtitle:
+                "${tables.firstWhereOrNull((e) => e.id == _timetableNotification?.id)?.title} (上の一覧から選択してください)",
             leading: const Icon(Icons.table_chart_outlined),
           ),
         ]),
@@ -179,7 +268,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
         (provider as TimetableProvider).currentTableId = newTable.id.toString();
         var cells = table.id != null
             ? await provider
-                .getAll(where: "$colTableId = ?", whereArgs: [table.id])
+            .getAll(where: "$colTableId = ?", whereArgs: [table.id])
             : await provider.getAll(where: "$colTableId is null");
         for (var cell in cells) {
           await provider.insert(
@@ -247,4 +336,11 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
       hours = value;
     });
   }
+}
+
+enum _PopupMenuAction {
+  setNotification,
+  copy,
+  edit,
+  delete,
 }

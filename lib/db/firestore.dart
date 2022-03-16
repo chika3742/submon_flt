@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:submon/db/dotime.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/sql_provider.dart';
 import 'package:submon/db/submission.dart';
@@ -16,6 +17,8 @@ class FirestoreProvider {
   final String collectionId;
 
   static FirestoreProvider get submission => FirestoreProvider("submission");
+
+  static FirestoreProvider get doTime => FirestoreProvider("doTime");
 
   static FirestoreProvider get timetable => FirestoreProvider("timetable");
 
@@ -59,16 +62,9 @@ class FirestoreProvider {
 
   static Future<void> saveNotificationToken(String? token) async {
     if (userDoc != null && token != null) {
-      await userDoc!.firestore.runTransaction((transaction) async {
-        var data = (await transaction.get(userDoc!)).data() as dynamic;
-        if (data == null ||
-            data["notificationTokens"] == null ||
-            !(data["notificationTokens"] as List).contains(token)) {
-          await userDoc!.set({
-            "notificationTokens": FieldValue.arrayUnion([token])
-          }, SetOptions(merge: true));
-        }
-      });
+      userDoc!.set({
+        "notificationTokens": FieldValue.arrayUnion([token])
+      }, SetOptions(merge: true));
     }
   }
 
@@ -84,17 +80,50 @@ class FirestoreProvider {
     }
   }
 
-  static Future<TimeOfDay?> fetchReminderNotificationTime() async {
+  static Future<void> setTimetableNotification(
+      TimetableNotification data) async {
     if (userDoc != null) {
-      var timeString = ((await userDoc!.get()).data()
-          as dynamic)["reminderNotificationTime"] as String?;
-      if (timeString != null) {
-        var split = timeString.split(":");
-        return TimeOfDay(
-            hour: int.parse(split[0]), minute: int.parse(split[1]));
+      String? timeString;
+      if (data.time != null) {
+        timeString = "${data.time!.hour}:${data.time!.minute}";
       }
+      await userDoc!.set({
+        "timetableNotificationTime": timeString,
+        "timetableNotificationId": data.id
+      }, SetOptions(merge: true));
     }
-    return null;
+  }
+
+  static Future<void> addDoTimeNotification(DocumentReference? ref) async {
+    if (userDoc != null && ref != null) {
+      await userDoc!.set({
+        "doTimeNotifications": FieldValue.arrayUnion([ref])
+      }, SetOptions(merge: true));
+    }
+  }
+
+  static Future<void> removeDoTimeNotification(DocumentReference? ref) async {
+    if (userDoc != null && ref != null) {
+      await userDoc!.set({
+        "doTimeNotifications": FieldValue.arrayRemove([ref])
+      }, SetOptions(merge: true));
+    }
+  }
+
+  static Future<void> setDoTimeNotificationTimeBefore(int value) async {
+    if (userDoc != null) {
+      await userDoc!.set(
+          {"doTimeNotificationTimeBefore": value}, SetOptions(merge: true));
+    }
+  }
+
+  static Future<ConfigData?> get config async {
+    if (userDoc != null) {
+      return ConfigData.fromMap(
+          (await userDoc!.get()).data() as Map<String, dynamic>);
+    } else {
+      return null;
+    }
   }
 
   static Future<void> checkMigration() async {
@@ -115,16 +144,22 @@ class FirestoreProvider {
 
     if (changed == true) {
       final submissionSnapshot = await userDoc!.collection("submission").get();
+      final doTimeSnapshot = await userDoc!.collection("doTime").get();
       final timetableDataSnapshot =
           await userDoc!.collection("timetable").get();
       final timetableCustomSubjectsSnapshot =
           await userDoc!.collection("timetableCustomSubject").get();
-      final configSnapshot = await userDoc!.get();
+      final configData = await config;
 
       await SubmissionProvider().use((provider) async {
         await provider.setAllLocalOnly(
             submissionSnapshot.docs.map((e) => e.data()).toList());
         eventBus.fire(SubmissionFetched());
+      });
+
+      await DoTimeProvider().use((provider) async {
+        await provider
+            .setAllLocalOnly(doTimeSnapshot.docs.map((e) => e.data()).toList());
       });
 
       var timetableTables = timetableDataSnapshot.docs
@@ -153,14 +188,10 @@ class FirestoreProvider {
             timetableCustomSubjectsSnapshot.docs.map((e) => e.data()).toList());
       });
 
-      if (configSnapshot.exists) {
-        var configData =
-            ConfigData.fromMap(configSnapshot.data() as Map<String, dynamic>);
-        if (configData.lastChanged != null) {
-          SharedPrefs.use((prefs) {
-            prefs.firestoreLastChanged = configData.lastChanged!.toDate();
-          });
-        }
+      if (configData?.lastChanged != null) {
+        SharedPrefs.use((prefs) {
+          prefs.firestoreLastChanged = configData?.lastChanged!.toDate();
+        });
       }
     }
 
@@ -169,13 +200,51 @@ class FirestoreProvider {
 }
 
 class ConfigData {
-  ConfigData({this.lastChanged, this.schemaVersion});
+  ConfigData(
+      {this.lastChanged,
+      this.schemaVersion,
+      this.reminderNotificationTime,
+      this.timetableNotification,
+      this.doTimeNotificationTimeBefore});
 
   Timestamp? lastChanged;
   int? schemaVersion;
+  TimeOfDay? reminderNotificationTime;
+  TimetableNotification? timetableNotification;
+  int? doTimeNotificationTimeBefore;
 
-  static ConfigData fromMap(Map<String, dynamic> map) {
+  static ConfigData fromMap(Map<String, dynamic>? map) {
+    if (map == null) return ConfigData();
+    var reminderNotificationTimeSpilt =
+        (map["reminderNotificationTime"] as String?)?.split(":");
+    var timetableNotificationTimeSpilt =
+        (map["timetableNotificationTime"] as String?)?.split(":");
     return ConfigData(
-        lastChanged: map["lastChanged"], schemaVersion: map["schemaVersion"]);
+      lastChanged: map["lastChanged"],
+      schemaVersion: map["schemaVersion"],
+      reminderNotificationTime: reminderNotificationTimeSpilt != null
+          ? TimeOfDay(
+              hour: int.parse(reminderNotificationTimeSpilt[0]),
+              minute: int.parse(reminderNotificationTimeSpilt[1]),
+            )
+          : null,
+      timetableNotification: TimetableNotification(
+        time: timetableNotificationTimeSpilt != null
+            ? TimeOfDay(
+                hour: int.parse(timetableNotificationTimeSpilt[0]),
+                minute: int.parse(timetableNotificationTimeSpilt[1]),
+              )
+            : null,
+        id: map["timetableNotificationId"],
+      ),
+      doTimeNotificationTimeBefore: map["doTimeNotificationTimeBefore"],
+    );
   }
+}
+
+class TimetableNotification {
+  TimetableNotification({this.time, this.id});
+
+  TimeOfDay? time;
+  int? id;
 }

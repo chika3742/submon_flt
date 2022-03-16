@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:googleapis/cloudsearch/v1.dart';
-
 import 'package:intl/intl.dart';
 import 'package:submon/db/dotime.dart';
 import 'package:submon/utils/ui.dart';
@@ -120,25 +118,28 @@ class _DoTimeEditBottomSheetState extends State<DoTimeEditBottomSheet> {
         const SizedBox(height: 16),
         Align(
           alignment: Alignment.bottomRight,
-          child: FloatingActionButton(
-            child: const Icon(Icons.check),
-            onPressed: () {
-              // 現在時刻より前に設定時、エラー表示 (編集時、時刻に変更がない場合を除く)
-              if ((widget.initialData == null || startAtChanged) &&
-                  startAt.isBefore(DateTime.now())) {
-                showSimpleDialog(context, "エラー", "現在時刻より後の時刻を設定してください。");
-                return;
-              }
-              Navigator.pop(
-                  context,
-                  DoTime(
-                    id: widget.initialData?.id,
-                    submissionId: widget.submissionId,
-                    startAt: startAt,
-                    minute: minute,
-                    content: _controller.text,
-                  ));
-            },
+          child: Padding(
+            padding: const EdgeInsets.only(right: 8, bottom: 16),
+            child: FloatingActionButton(
+              child: const Icon(Icons.check),
+              onPressed: () {
+                // 現在時刻より前に設定時、エラー表示 (編集時、時刻に変更がない場合を除く)
+                if ((widget.initialData == null || startAtChanged) &&
+                    startAt.isBefore(DateTime.now())) {
+                  showSimpleDialog(context, "エラー", "現在時刻より後の時刻を設定してください。");
+                  return;
+                }
+                Navigator.pop(
+                    context,
+                    DoTime(
+                      id: widget.initialData?.id,
+                      submissionId: widget.submissionId,
+                      startAt: startAt,
+                      minute: minute,
+                      content: _controller.text,
+                    ));
+              },
+            ),
           ),
         )
       ],

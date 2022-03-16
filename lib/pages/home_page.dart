@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:animations/animations.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +12,7 @@ import 'package:submon/events.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/actions.dart';
 import 'package:submon/method_channel/channels.dart';
-import 'package:submon/method_channel/notification.dart';
+import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/home_tabs/tab_memorize_card.dart';
 import 'package:submon/pages/home_tabs/tab_others.dart';
 import 'package:submon/pages/home_tabs/tab_submissions.dart';
@@ -72,12 +73,16 @@ class _HomePageState extends State<HomePage> {
 
     Application.globalKey = _scaffoldKey;
 
+    MessagingPlugin.getToken().then((token) {
+      FirestoreProvider.saveNotificationToken(token);
+    });
+
     linkListener = eventBus.on<SignedInWithLink>().listen((_) {
       Navigator.of(context, rootNavigator: true)
           .popUntil((route) => !route.settings.name!.startsWith("/signIn"));
     });
 
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
               MediaQuery.of(context).size.width.truncate())
           .then((adSize) {
@@ -255,6 +260,8 @@ class _HomePageState extends State<HomePage> {
         _navigatorKey.currentState
             ?.pushReplacement(FadeThroughPageRoute(pages[tabIndex]));
       }
+    } on FirebaseException catch (e, stackTrace) {
+      handleFirebaseError(e, stackTrace, context, "データの取得に失敗しました。");
     } catch (e, stackTrace) {
       showSnackBar(context, "エラーが発生しました");
       FirebaseCrashlytics.instance.recordError(e, stackTrace);
@@ -266,6 +273,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void initMethodCallHandler() {
+    // actions
     void createNew() async {
       var insertedId = await Navigator.of(context, rootNavigator: true)
           .pushNamed("/submission/create", arguments: {});
@@ -279,6 +287,9 @@ class _HomePageState extends State<HomePage> {
           .pushNamed("/submission/detail", arguments: {"id": id});
     }
 
+    void openFocusTimerPage(int doTimeId) {}
+
+    // init
     getPendingAction().then((action) {
       if (action != null) {
         switch (action.actionName) {
@@ -286,22 +297,25 @@ class _HomePageState extends State<HomePage> {
             createNew();
             break;
           case "openSubmissionDetailPage":
-            openSubmissionDetailPage(action.argument!);
+            openSubmissionDetailPage(action.arguments!["submissionId"]);
+            break;
+          case "openFocusTimerPage":
+            openFocusTimerPage(action.arguments!["doTimeId"]);
             break;
         }
       }
     });
 
-    const MethodChannel(Channels.actions).setMethodCallHandler((call) async {
+    const MethodChannel(Channels.action).setMethodCallHandler((call) async {
       switch (call.method) {
-        case "resetNotifications":
-          NotificationMethodChannel.registerReminder();
-          break;
         case "openCreateNewPage":
           createNew();
           break;
         case "openSubmissionDetailPage":
-          openSubmissionDetailPage(call.arguments);
+          openSubmissionDetailPage(call.arguments["submissionId"]);
+          break;
+        case "openFocusTimerPage":
+          openFocusTimerPage(call.arguments["doTimeId"]);
           break;
         default:
           return UnimplementedError();

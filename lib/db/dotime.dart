@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:submon/db/firestore.dart';
 import 'package:submon/db/sql_provider.dart';
 import 'package:submon/db/submission.dart';
+import 'package:submon/utils/firestore.dart';
 
 const tableDoTime = "doTime";
 const colSubmissionId = "submissionId";
@@ -14,12 +17,11 @@ class DoTime {
   int minute;
   String content;
 
-  DoTime(
-      {this.id,
-      required this.submissionId,
-      required this.startAt,
-      required this.minute,
-      required this.content});
+  DoTime({this.id,
+    required this.submissionId,
+    required this.startAt,
+    required this.minute,
+    required this.content});
 }
 
 class DoTimeProvider extends SqlProvider<DoTime> {
@@ -66,7 +68,10 @@ class DoTimeProvider extends SqlProvider<DoTime> {
 
   @override
   void setFirestore(data) {
-    // TODO: implement
+    FirestoreProvider.doTime
+        .set(data.id.toString(), objToMap(data), SetOptions(merge: true));
+    FirestoreProvider.addDoTimeNotification(
+        userDoc?.collection("doTime").doc(data.id.toString()));
   }
 
   @override
@@ -76,6 +81,8 @@ class DoTimeProvider extends SqlProvider<DoTime> {
 
   @override
   void deleteFirestore(int id) {
-    // TODO: implement deleteFirestore
+    FirestoreProvider.doTime.delete(id.toString());
+    FirestoreProvider.removeDoTimeNotification(
+        userDoc?.collection("doTime").doc(id.toString()));
   }
 }

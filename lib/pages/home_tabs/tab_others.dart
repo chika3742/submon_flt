@@ -1,9 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/components/hidable_progress_indicator.dart';
 import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/firestore.dart';
-import 'package:submon/utils/ui.dart';
+import 'package:submon/utils/utils.dart';
 
 class TabOthers extends StatefulWidget {
   const TabOthers({Key? key}) : super(key: key);
@@ -32,9 +33,10 @@ class _TabOthersState extends State<TabOthers> {
                   });
                   try {
                     await FirestoreProvider.fetchData(force: true);
-                  } on Error catch (e) {
-                    showSnackBar(context, "エラーが発生しました");
-                    FirebaseCrashlytics.instance.recordError(e, e.stackTrace);
+                  } on FirebaseException catch (e, stackTrace) {
+                    handleFirebaseError(e, stackTrace, context, "同期に失敗しました。");
+                  } catch (e, stackTrace) {
+                    FirebaseCrashlytics.instance.recordError(e, stackTrace);
                   }
                   setState(() {
                     _loading = false;

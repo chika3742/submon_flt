@@ -7,4 +7,5 @@ import androidx.annotation.Keep
 enum class Action {
     openCreateNewPage,
     openSubmissionDetailPage,
+    openFocusTimerPage,
 }

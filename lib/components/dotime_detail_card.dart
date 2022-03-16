@@ -1,6 +1,5 @@
-import 'package:intl/intl.dart';
-
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:submon/utils/ui.dart';
 
 import '../db/dotime.dart';
@@ -108,25 +107,32 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
                         padding: EdgeInsets.zero,
                         splashRadius: 24,
                         itemBuilder: (context) {
-                          return [
+                          return const [
                             PopupMenuItem(
                               child: ListTile(
-                                title: const Text("編集"),
-                                leading: const Icon(Icons.edit),
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  widget.onEdit?.call();
-                                },
+                                title: Text("編集"),
+                                leading: Icon(Icons.edit),
                               ),
+                              value: 0,
                             ),
                             PopupMenuItem(
-                              child: const ListTile(
+                              child: ListTile(
                                 title: Text("削除"),
                                 leading: Icon(Icons.delete),
                               ),
-                              onTap: widget.onDelete,
+                              value: 1,
                             ),
                           ];
+                        },
+                        onSelected: (value) {
+                          switch (value) {
+                            case 0:
+                              widget.onEdit?.call();
+                              break;
+                            case 1:
+                              widget.onDelete?.call();
+                              break;
+                          }
                         },
                       ),
                       IconButton(

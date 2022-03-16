@@ -152,8 +152,10 @@ class AppWidgetSubmissionListService : RemoteViewsService() {
                         R.id.listItemLayout, Intent()
                             .setAction(ListItemActionBroadcastReceiver.ACTION_LIST_ITEM_CLICK)
                             .putExtra(
-                                MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENT_ID,
-                                list[position].id.toInt()
+                                MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENTS,
+                                hashMapOf(
+                                    "submissionId" to list[position].id.toInt()
+                                )
                             )
                     )
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -208,8 +210,8 @@ class ListItemActionBroadcastReceiver : BroadcastReceiver() {
                     Action.openSubmissionDetailPage.name
                 )
                 .putExtra(
-                    MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENT_ID,
-                    intent.getIntExtra(MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENT_ID, -1)
+                    MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENTS,
+                    intent.getSerializableExtra(MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENTS)
                 )
                 .putExtra(
                     AppWidgetManager.EXTRA_APPWIDGET_ID,
