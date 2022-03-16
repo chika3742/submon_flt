@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -47,10 +48,24 @@ void handleAuthError(FirebaseAuthException e, BuildContext context) {
       FirebaseAuth.instance.signOut();
       break;
     default:
-      showSnackBar(context, "エラーが発生しました (Code: ${e.code})",
+      showSnackBar(context, "エラーが発生しました。(${e.code})",
           duration: const Duration(minutes: 1));
   }
   debugPrint(e.message);
+}
+
+void handleFirebaseError(FirebaseException e, StackTrace stackTrace,
+    BuildContext context, String message) {
+  switch (e.code) {
+    case "permission-denied":
+      showSnackBar(context, "$message現在サーバーメンテナンス中です。");
+      break;
+
+    default:
+      showSnackBar(context, "$message(${e.code})",
+          duration: const Duration(seconds: 20));
+  }
+  FirebaseCrashlytics.instance.recordError(e, stackTrace);
 }
 
 Future<bool> canAccessCalendar() async {

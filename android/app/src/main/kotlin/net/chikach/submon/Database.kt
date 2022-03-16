@@ -5,6 +5,7 @@ import androidx.room.*
 @Database(entities = [Submission::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun submissionDao(): SubmissionDao
+    abstract fun doTimeDao(): DoTimeDao
 }
 
 @Entity
@@ -23,4 +24,20 @@ data class Submission(
 interface SubmissionDao {
     @Query("select * from submission where done = (0)")
     fun getAllUndone(): List<Submission>
+}
+
+
+@Entity
+data class DoTime(
+    @PrimaryKey val id: Int?,
+    val submissionId: Int,
+    val startAt: String,
+    val minute: Int,
+    val content: String
+)
+
+@Dao
+interface DoTimeDao {
+    @Query("delete from doTime where id = :id")
+    fun delete(id: Int)
 }

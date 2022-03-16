@@ -22,6 +22,9 @@ import 'package:submon/twitter_sign_in.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
+import '../db/firestore.dart';
+import '../method_channel/messaging.dart';
+
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key, this.initialCred, this.reAuth = false})
       : super(key: key);
@@ -446,6 +449,10 @@ Future<void> completeLogin(UserCredential result, BuildContext context) async {
         });
       }
     }
+    // save messaging token
+    MessagingPlugin.getToken().then((token) {
+      FirestoreProvider.saveNotificationToken(token);
+    });
     updateWidgets();
     SharedPrefs.use((prefs) {
       prefs.firestoreLastChanged = null;

@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
@@ -150,10 +152,28 @@ class _TabMemorizeCardState extends State<TabMemorizeCard>
                 }
                 pref.isCameraPrivacyPolicyDisplayed = true;
               }
-              eventBus.fire(SubmissionDetailPageOpened(true));
-              await Navigator.of(context, rootNavigator: true)
-                  .pushNamed("/memorize/camera");
-              eventBus.fire(SubmissionDetailPageOpened(false));
+
+              if (await Permission.camera.request().isGranted) {
+                eventBus.fire(SubmissionDetailPageOpened(true));
+                await Navigator.of(context, rootNavigator: true)
+                    .pushNamed("/memorize/camera");
+                eventBus.fire(SubmissionDetailPageOpened(false));
+              } else {
+                if (!await Permission.camera.shouldShowRequestRationale) {
+                  showSimpleDialog(
+                    context,
+                    "権限について",
+                    "今後許可ダイアログを表示しない選択をしたため、設定画面から権限を許可する必要があります。",
+                    showCancel: true,
+                    okText: "設定画面に移動",
+                    onOKPressed: () {
+                      openAppSettings();
+                    },
+                  );
+                } else {
+                  Fluttertoast.showToast(msg: "権限が許可されませんでした。");
+                }
+              }
             },
           ),
           ListTile(

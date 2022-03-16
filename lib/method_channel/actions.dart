@@ -3,17 +3,19 @@ import 'package:submon/method_channel/channels.dart';
 
 class PendingAction {
   String actionName;
-  int? argument;
+  Map<String, dynamic>? arguments;
 
-  PendingAction(this.actionName, this.argument);
+  PendingAction(this.actionName, this.arguments);
 }
 
 Future<PendingAction?> getPendingAction() async {
-  const mc = MethodChannel(Channels.actions);
+  const mc = MethodChannel(Channels.action);
 
-  final action = await mc.invokeMethod<String>("getPendingAction");
-  final argument = await mc.invokeMethod<int>("getPendingActionArgument");
+  var action = (await mc.invokeMethod("getPendingAction"));
 
   if (action == null) return null;
-  return PendingAction(action, argument);
+  action = Map.from(action);
+  var arguments = action["arguments"];
+  return PendingAction(
+      action["actionName"], arguments != null ? Map.from(arguments) : null);
 }

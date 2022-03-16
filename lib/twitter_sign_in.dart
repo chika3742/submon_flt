@@ -148,18 +148,19 @@ class TwitterSignIn {
 
   Future<AuthResult> waitForUri() async {
     var completer = Completer<AuthResult>();
-    const MethodChannel(Channels.main).setMethodCallHandler((call) async {
-      if (call.method == "onUriData") {
-        var query = Uri.splitQueryString(call.arguments);
-        completer.complete(
-            AuthResult(query["oauth_token"]!, query["oauth_verifier"]!));
-        return true;
-      } else {
-        return UnimplementedError();
-      }
+    var subscription = const EventChannel(Channels.onUriIntent)
+        .receiveBroadcastStream()
+        .listen((event) {
+      var query = Uri.splitQueryString(event);
+      completer.complete(
+          AuthResult(query["oauth_token"]!, query["oauth_verifier"]!));
     });
 
-    return completer.future;
+    var result = await completer.future;
+
+    subscription.cancel();
+
+    return result;
   }
 }
 

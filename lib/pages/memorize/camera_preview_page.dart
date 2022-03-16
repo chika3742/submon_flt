@@ -66,7 +66,7 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
 
   @override
   void initState() {
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
     _switchAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
@@ -98,7 +98,7 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
 
   @override
   void dispose() {
-    WidgetsBinding.instance?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     _controller?.dispose();
     if (_imagePath != null) {
       File(_imagePath!).delete();

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:submon/components/settings_ui.dart';
@@ -10,6 +9,7 @@ import 'package:submon/db/firestore.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
+import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/sign_in_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
@@ -45,14 +45,12 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
       });
     });
 
-    FirestoreProvider.fetchReminderNotificationTime().then((value) {
+    FirestoreProvider.config.then((value) {
       setState(() {
-        _reminderTime = value;
+        _reminderTime = value!.reminderNotificationTime;
       });
-    }).catchError((e, stack) {
-      showSnackBar(context, "リマインダー通知時刻の取得に失敗しました");
-      debugPrint(e.toString());
-      debugPrintStack(stackTrace: stack);
+    }).onError<FirebaseException>((error, stackTrace) {
+      handleFirebaseError(error, stackTrace, context, "リマインダー設定の取得に失敗しました。");
     }).whenComplete(() {
       setState(() {
         _loadingReminderTime = false;
@@ -103,25 +101,21 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
               leading: const Icon(Icons.schedule),
               trailing: _buildReminderTimeTrailing(),
               onTap: () async {
-                var messaging = FirebaseMessaging.instance;
                 var requestPermissionResult =
-                    await messaging.requestPermission();
-                if (requestPermissionResult.authorizationStatus !=
-                    AuthorizationStatus.authorized) {
+                    await MessagingPlugin.requestNotificationPermission();
+                if (requestPermissionResult ==
+                    NotificationPermissionState.denied) {
                   showSnackBar(context, "通知の表示が許可されていません。本体設定から許可してください。");
                 } else {
-                  messaging.getToken().then((token) {
-                    FirestoreProvider.saveNotificationToken(token);
-                  });
                   var result = await showCustomTimePicker(
                     context: context,
                     initialTime:
                         _reminderTime ?? const TimeOfDay(hour: 0, minute: 0),
                     selectableTimePredicate: (time) {
-                      return time != null && time.minute % 15 == 0;
+                      return time != null && time.minute % 5 == 0;
                     },
                     onFailValidation: (context) {
-                      showSimpleDialog(context, "エラー", "15分おきに設定可能です");
+                      showSimpleDialog(context, "エラー", "5分おきに設定可能です");
                     },
                   );
                   if (result != null) {
