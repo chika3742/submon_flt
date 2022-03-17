@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:submon/components/settings_ui.dart';
-import 'package:submon/db/firestore.dart';
+import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';

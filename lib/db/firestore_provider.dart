@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submon/db/dotime.dart';
@@ -119,10 +120,29 @@ class FirestoreProvider {
 
   static Future<ConfigData?> get config async {
     if (userDoc != null) {
-      return ConfigData.fromMap(
-          (await userDoc!.get()).data() as Map<String, dynamic>);
+      var snapshot = await userDoc!.get();
+      return ConfigData.fromMap(snapshot.data() as Map<String, dynamic>);
     } else {
       return null;
+    }
+  }
+
+  static Future<void> initializeUser() async {
+    await FirebaseFunctions.instanceFor(region: "asia-northeast1")
+        .httpsCallable("createUser")
+        .call();
+    await userDoc!.set({"schemaVersion": schemaVer});
+  }
+
+  static Future<void> deleteUser() async {
+    try {
+      await userDoc!.delete();
+    } on FirebaseException catch (e) {
+      if (e.code == "permission-denied") {
+        // do nothing
+      } else {
+        rethrow;
+      }
     }
   }
 
@@ -130,26 +150,25 @@ class FirestoreProvider {
     if (userDoc == null) return;
     var snapshot = await userDoc!.get();
 
-    if (snapshot.data() == null) {
-      await userDoc?.set({"schemaVersion": schemaVer}, SetOptions(merge: true));
-    } else {
-      var schemaVersion = (snapshot.data() as dynamic)["schemaVersion"];
-    }
+    var schemaVersion = (snapshot.data() as dynamic)["schemaVersion"];
   }
 
+  ///
+  /// if value is changed, true will be changed.
+  ///
   static Future<bool> fetchData({bool force = false}) async {
     await FirestoreProvider.checkMigration();
 
     var changed = !force ? await FirestoreProvider.checkTimestamp() : true;
 
     if (changed == true) {
+      final configData = await config;
       final submissionSnapshot = await userDoc!.collection("submission").get();
       final doTimeSnapshot = await userDoc!.collection("doTime").get();
       final timetableDataSnapshot =
           await userDoc!.collection("timetable").get();
       final timetableCustomSubjectsSnapshot =
           await userDoc!.collection("timetableCustomSubject").get();
-      final configData = await config;
 
       await SubmissionProvider().use((provider) async {
         await provider.setAllLocalOnly(
@@ -165,9 +184,9 @@ class FirestoreProvider {
       var timetableTables = timetableDataSnapshot.docs
           .where((e) => e.id != "main")
           .map((e) => {
-                "id": int.parse(e.id),
-                "title": e.data()["title"],
-              })
+        "id": int.parse(e.id),
+        "title": e.data()["title"],
+      })
           .toList();
 
       await TimetableTableProvider().use((provider) async {

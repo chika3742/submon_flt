@@ -2,7 +2,7 @@ package net.chikach.submon
 
 import androidx.room.*
 
-@Database(entities = [Submission::class], version = 1, exportSchema = false)
+@Database(entities = [Submission::class, DoTime::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun submissionDao(): SubmissionDao
     abstract fun doTimeDao(): DoTimeDao

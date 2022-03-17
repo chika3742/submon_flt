@@ -22,7 +22,7 @@ import 'package:submon/twitter_sign_in.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
-import '../db/firestore.dart';
+import '../db/firestore_provider.dart';
 import '../method_channel/messaging.dart';
 
 class SignInPage extends StatefulWidget {
@@ -432,21 +432,17 @@ class _SignInPageState extends State<SignInPage> {
 
 Future<void> completeLogin(UserCredential result, BuildContext context) async {
   try {
-    var doc =
-        FirebaseFirestore.instance.collection("users").doc(result.user!.uid);
-    var snapshot = await doc.get();
-    if (!snapshot.exists) {
-      // TODO: initialize firestore DB
-    } else {
-      if (snapshot.data()?["deleted"] == true) {
-        showSimpleDialog(context, "エラー", "このアカウントは既に削除されています。再度作成してください。",
-            onOKPressed: () async {
-          await FirebaseAuth.instance.currentUser!.delete();
-          Navigator.of(context, rootNavigator: true)
-              .popUntil(ModalRoute.withName("/"));
-          Navigator.of(context, rootNavigator: true)
-              .pushReplacementNamed("/welcome");
-        });
+    try {
+      var doc =
+          FirebaseFirestore.instance.collection("users").doc(result.user!.uid);
+      await doc.get();
+      showSnackBar(context, "ログインしました");
+    } on FirebaseException catch (e) {
+      if (e.code == "permission-denied") {
+        await FirestoreProvider.initializeUser();
+        showSnackBar(context, "アカウントを作成しました");
+      } else {
+        rethrow;
       }
     }
     // save messaging token
@@ -457,7 +453,6 @@ Future<void> completeLogin(UserCredential result, BuildContext context) async {
     SharedPrefs.use((prefs) {
       prefs.firestoreLastChanged = null;
     });
-    showSnackBar(context, "ログインしました");
   } catch (e) {
     FirebaseCrashlytics.instance.recordError(e, (e as dynamic).stackTrace);
     showSnackBar(context, "エラーが発生しました");

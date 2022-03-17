@@ -9,7 +9,7 @@ import 'package:submon/db/timetable_table.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:time_picker_widget/time_picker_widget.dart';
 
-import '../../db/firestore.dart';
+import '../../db/firestore_provider.dart';
 import '../../method_channel/messaging.dart';
 import '../../utils/utils.dart';
 

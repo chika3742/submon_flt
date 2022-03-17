@@ -58,13 +58,15 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                         it.setContentIntent(
                             createActivityPendingIntent(
                                 Intent(this, MainActivity::class.java)
+                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                     .putExtra(
                                         MainActivity.EXTRA_FLUTTER_ACTION,
-                                        Action.openSubmissionDetailPage
+                                        Action.openSubmissionDetailPage.name
                                     )
                                     .putExtra(
-                                        MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENTS, hashMapOf(
-                                            "submissionId" to data["submissionId"],
+                                        MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENTS,
+                                        hashMapOf(
+                                            "submissionId" to data["submissionId"]?.toInt(),
                                         )
                                     )
                             )
@@ -80,8 +82,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                                             Action.openFocusTimerPage.name
                                         )
                                         .putExtra(
-                                            MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENTS, hashMapOf(
-                                                "doTimeId" to data["doTimeId"],
+                                            MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENTS,
+                                            hashMapOf(
+                                                "doTimeId" to data["doTimeId"]?.toInt(),
                                             )
                                         )
                                 )

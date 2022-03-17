@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/components/settings_ui.dart';
-import 'package:submon/db/firestore.dart';
+import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 

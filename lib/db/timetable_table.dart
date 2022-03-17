@@ -1,4 +1,4 @@
-import 'package:submon/db/firestore.dart';
+import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/sql_provider.dart';
 
 const tableTimetableTable = "timetableTable";

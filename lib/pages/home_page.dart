@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:submon/components/hidable_progress_indicator.dart';
-import 'package:submon/db/firestore.dart';
+import 'package:submon/db/dotime.dart';
+import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/events.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/actions.dart';
@@ -287,7 +288,17 @@ class _HomePageState extends State<HomePage> {
           .pushNamed("/submission/detail", arguments: {"id": id});
     }
 
-    void openFocusTimerPage(int doTimeId) {}
+    void openFocusTimerPage(int doTimeId) {
+      DoTimeProvider().use((provider) async {
+        var doTime = await provider.get(doTimeId);
+        if (doTime != null) {
+          Navigator.of(context, rootNavigator: true)
+              .pushNamed("/focus-timer", arguments: {"doTime": doTime});
+        } else {
+          showSnackBar(context, "このDoTimeはすでに削除されています");
+        }
+      });
+    }
 
     // init
     getPendingAction().then((action) {
