@@ -2,6 +2,7 @@ package net.chikach.submon
 
 import android.app.NotificationManager
 import android.content.Intent
+import android.util.Log
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationChannelGroupCompat
 import androidx.core.app.NotificationManagerCompat
@@ -47,7 +48,14 @@ class MainActivity : FlutterActivity() {
     var uriIntentEventSink: EventChannel.EventSink? = null
 
     companion object {
+        /**
+         * Type: [String]
+         */
         const val EXTRA_FLUTTER_ACTION = "flutterAction"
+
+        /**
+         * Type: [HashMap]
+         */
         const val EXTRA_FLUTTER_ACTION_ARGUMENTS = "flutterActionArguments"
     }
 
@@ -55,6 +63,7 @@ class MainActivity : FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
 
         if (intent.hasExtra(EXTRA_FLUTTER_ACTION)) {
+            Log.d("action", intent.getStringExtra(EXTRA_FLUTTER_ACTION).toString())
             actionMethodChannelHandler.pendingAction = mapOf(
                 "actionName" to intent.getStringExtra(EXTRA_FLUTTER_ACTION)!!,
                 "arguments" to intent.getSerializableExtra(EXTRA_FLUTTER_ACTION_ARGUMENTS)

@@ -3,7 +3,7 @@ import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sig
 import 'package:flutter/material.dart';
 import 'package:googleapis/calendar/v3.dart' as c;
 import "package:intl/intl.dart";
-import 'package:submon/db/firestore.dart';
+import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/sql_provider.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';

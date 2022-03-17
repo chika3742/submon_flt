@@ -3,7 +3,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/components/hidable_progress_indicator.dart';
 import 'package:submon/components/settings_ui.dart';
-import 'package:submon/db/firestore.dart';
+import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/utils/utils.dart';
 
 class TabOthers extends StatefulWidget {

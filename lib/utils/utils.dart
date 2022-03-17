@@ -58,7 +58,11 @@ void handleFirebaseError(FirebaseException e, StackTrace stackTrace,
     BuildContext context, String message) {
   switch (e.code) {
     case "permission-denied":
-      showSnackBar(context, "$message現在サーバーメンテナンス中です。");
+      showSimpleDialog(
+        context,
+        "エラー",
+        "$message\nデータにアクセスする権限がありません。\nアカウントがすでに削除されたか、サーバーメンテナンス中である可能性があります。",
+      );
       break;
 
     default:

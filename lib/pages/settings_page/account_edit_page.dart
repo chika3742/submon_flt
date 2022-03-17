@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
@@ -259,7 +260,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
           _loading = true;
         });
         try {
-          // TODO: delete data
+          await FirestoreProvider.deleteUser();
           await FirebaseAuth.instance.currentUser!.delete();
 
           Navigator.pop(context);
@@ -272,6 +273,8 @@ class _AccountEditPageState extends State<AccountEditPage> {
           } else {
             handleAuthError(e, context);
           }
+        } catch (e) {
+          showSnackBar(context, "アカウントの削除に失敗しました。");
         }
         setState(() {
           _loading = false;

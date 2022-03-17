@@ -8,7 +8,6 @@
         android:name="android.permission.RECORD_AUDIO"
         tools:node="remove" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
@@ -75,11 +74,6 @@
             android:theme="@style/Theme.AppCompat.DayNight" />
 
         <receiver
-            android:name=".ReminderNotificationBroadcastReceiver"
-            android:enabled="true"
-            android:exported="false" />
-
-        <receiver
             android:name=".SubmissionListAppWidgetProvider"
             android:exported="true">
             <intent-filter>
@@ -88,15 +82,6 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/submission_list_appwidget_info" />
-        </receiver>
-
-        <receiver
-                android:name=".BootCompletedBroadcastReceiver"
-                android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-            </intent-filter>
         </receiver>
 
         <receiver
