@@ -24,9 +24,7 @@ const policyDialogContent = "是非最後までお読みください。\n\n"
     "本機能では、Google LLC(以下「Google」) の提供する Cloud Vision API を利用してOCR(文字認識)を行っています。\n"
     "このAPIでは、画像をGoogleに送信することで、Googleのサーバーで画像処理をして認識された文字を取得しています。\n\n"
     "送信された画像はGoogleのサーバーのメモリ内でのみ処理され、処理後はすぐに削除されます。画像がGoogleサーバーに蓄積されることはありません。ご安心ください。\n\n"
-    "また、本アプリで撮影した画像は上記の目的以外には使用しません。\n\n"
-    "【お知らせ】\n"
-    "現在、一部端末(例: Google Pixel 6)において、アプリ内カメラでシャッターボタンを押しても一定の確率で写真が撮れない不具合が存在します。申し訳ございませんが、機能設定から「端末側の撮影UIを使用」をオンにしてご利用ください。(※iOSでは表示されません)";
+    "また、本アプリで撮影した画像は上記の目的以外には使用しません。";
 const tempImgDirName = "tempImg";
 
 class CameraPreviewPage extends StatefulWidget {

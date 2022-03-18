@@ -263,13 +263,14 @@ class _AccountEditPageState extends State<AccountEditPage> {
           await FirestoreProvider.deleteUser();
           await FirebaseAuth.instance.currentUser!.delete();
 
-          Navigator.pop(context);
           showSnackBar(context, "アカウントを削除しました。");
+          backToWelcomePage(context);
         } on FirebaseAuthException catch (e) {
           if (e.code == "requires-recent-login") {
+            showSnackBar(context, "セキュリティのため、再度ログインをお願いします。");
             var result = await Navigator.pushNamed(context, "/signIn",
                 arguments: {'reAuth': true});
-            if (result == true) await changeEmail();
+            if (result == true) await deleteAccount();
           } else {
             handleAuthError(e, context);
           }

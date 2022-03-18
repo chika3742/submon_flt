@@ -15,6 +15,10 @@
 		9FEC70D669B39EDA21B28813 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54DE1AA03065D56C55E4F359 /* Pods_Runner.framework */; };
 		C7448BB0277F0F2A0053FE44 /* Info-Release.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7448BAE277F0F2A0053FE44 /* Info-Release.plist */; };
 		C7448BB1277F0F2A0053FE44 /* Info-Debug.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7448BAF277F0F2A0053FE44 /* Info-Debug.plist */; };
+		C778404E27E41FFA00291495 /* MainMethodChannelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C778404D27E41FFA00291495 /* MainMethodChannelHandler.swift */; };
+		C778405127E4281B00291495 /* MessagingMethodChannelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C778405027E4281B00291495 /* MessagingMethodChannelHandler.swift */; };
+		C778405327E4288500291495 /* ActionMethodChannelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C778405227E4288500291495 /* ActionMethodChannelHandler.swift */; };
+		C778405527E46D1A00291495 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C778405427E46D1A00291495 /* Extensions.swift */; };
 		C79CBA59277E7C0E00D62ECE /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C795EEBC2775966D00BBE527 /* WidgetKit.framework */; };
 		C79CBA5A277E7C0E00D62ECE /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C795EEBE2775966D00BBE527 /* SwiftUI.framework */; };
 		C79CBA5D277E7C0E00D62ECE /* Widgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79CBA5C277E7C0E00D62ECE /* Widgets.swift */; };
@@ -89,6 +93,10 @@
 		C7448BAF277F0F2A0053FE44 /* Info-Debug.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-Debug.plist"; sourceTree = "<group>"; };
 		C759CFCA2775AE600026B907 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		C759CFCB2775AFF90026B907 /* SubmissionListWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SubmissionListWidgetExtension.entitlements; sourceTree = "<group>"; };
+		C778404D27E41FFA00291495 /* MainMethodChannelHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMethodChannelHandler.swift; sourceTree = "<group>"; };
+		C778405027E4281B00291495 /* MessagingMethodChannelHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagingMethodChannelHandler.swift; sourceTree = "<group>"; };
+		C778405227E4288500291495 /* ActionMethodChannelHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionMethodChannelHandler.swift; sourceTree = "<group>"; };
+		C778405427E46D1A00291495 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		C795EEBC2775966D00BBE527 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		C795EEBE2775966D00BBE527 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		C79CBA52277E719F00D62ECE /* DoTimeListWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DoTimeListWidgetExtension.entitlements; sourceTree = "<group>"; };
@@ -196,6 +204,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				C778404F27E425A800291495 /* MethodChannelHandler */,
 				C7448BAF277F0F2A0053FE44 /* Info-Debug.plist */,
 				C7448BAE277F0F2A0053FE44 /* Info-Release.plist */,
 				C759CFCA2775AE600026B907 /* Runner.entitlements */,
@@ -206,8 +215,19 @@
 				1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
+				C778405427E46D1A00291495 /* Extensions.swift */,
 			);
 			path = Runner;
+			sourceTree = "<group>";
+		};
+		C778404F27E425A800291495 /* MethodChannelHandler */ = {
+			isa = PBXGroup;
+			children = (
+				C778404D27E41FFA00291495 /* MainMethodChannelHandler.swift */,
+				C778405027E4281B00291495 /* MessagingMethodChannelHandler.swift */,
+				C778405227E4288500291495 /* ActionMethodChannelHandler.swift */,
+			);
+			path = MethodChannelHandler;
 			sourceTree = "<group>";
 		};
 		C79CBA5B277E7C0E00D62ECE /* Widgets */ = {
@@ -450,9 +470,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C778405327E4288500291495 /* ActionMethodChannelHandler.swift in Sources */,
+				C778405127E4281B00291495 /* MessagingMethodChannelHandler.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				C79CBA63277E7C0F00D62ECE /* Widgets.intentdefinition in Sources */,
+				C778404E27E41FFA00291495 /* MainMethodChannelHandler.swift in Sources */,
 				C7F285B127697B670067BB87 /* GeneratedPluginRegistrant.m in Sources */,
+				C778405527E46D1A00291495 /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
