@@ -33,6 +33,7 @@ class _TimetableSubjectSelectPageState
       appBar: AppBar(
         title: Text("${getWeekdayString(widget.weekday)}曜日 ${widget.index}時間目"),
       ),
+      resizeToAvoidBottomInset: false,
       floatingActionButton: _showFab
           ? FloatingActionButton(
               child: const Icon(Icons.add),

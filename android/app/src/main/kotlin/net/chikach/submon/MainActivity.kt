@@ -1,5 +1,6 @@
 package net.chikach.submon
 
+import android.app.Activity
 import android.app.NotificationManager
 import android.content.Intent
 import android.util.Log
@@ -131,7 +132,7 @@ class MainActivity : FlutterActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_CODE_TAKE_PICTURE -> {
-                mainMethodChannelHandler.takePictureCallback()
+                mainMethodChannelHandler.takePictureCallback(resultCode)
             }
         }
     }

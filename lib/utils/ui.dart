@@ -181,6 +181,12 @@ void showSelectSheet(BuildContext context, String title, String message,
   }
 }
 
+void backToWelcomePage(BuildContext context) {
+  var navigatorState = Navigator.of(context, rootNavigator: true);
+  navigatorState.popUntil(ModalRoute.withName("/"));
+  navigatorState.pushReplacementNamed("welcome");
+}
+
 class SelectSheetAction {
   final String title;
   final void Function() onPressed;

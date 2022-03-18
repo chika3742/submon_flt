@@ -1,5 +1,6 @@
 package net.chikach.submon.mch
 
+import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
@@ -146,8 +147,8 @@ class MainMethodChannelHandler(private val activity: MainActivity) :
     /**
      * Callback of [takePictureNative]
      */
-    fun takePictureCallback() {
-        if (pictureFile != null) {
+    fun takePictureCallback(resultCode: Int) {
+        if (pictureFile != null && resultCode == Activity.RESULT_OK) {
             var bmp = BitmapFactory.decodeFile(pictureFile!!.path)
             var width = bmp.width
             var height = bmp.height
