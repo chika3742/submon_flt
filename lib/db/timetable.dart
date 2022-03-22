@@ -68,24 +68,39 @@ class TimetableProvider extends SqlProvider<Timetable> {
     );
   }
 
-  @override
-  Future<Timetable> insert(Timetable data) {
-    if (currentTableId != "main") data.tableId = int.parse(currentTableId);
-    return super.insert(data);
+  Future<List<Timetable>> getCurrentTimetable() async {
+    if (currentTableId != "main") {
+      return await getAll(
+          where: "$colTableId = ?", whereArgs: [currentTableId]);
+    } else {
+      return await getAll(where: "$colTableId is null");
+    }
   }
 
   @override
-  Future<int> delete(int id) async {
+  Future<Timetable> insert(Timetable data) async {
+    if (currentTableId != "main") data.tableId = int.parse(currentTableId);
+    await deleteLocal(data.cellId);
+    return await super.insert(data);
+  }
+
+  Future<void> deleteLocal(int cellId) async {
     if (currentTableId != "main") {
       await db.delete(tableName(),
           where: "$colCellId = ? and $colTableId = ?",
-          whereArgs: [id, currentTableId]);
+          whereArgs: [cellId, currentTableId]);
     } else {
       await db.delete(tableName(),
-          where: "$colCellId = ? and $colTableId is null", whereArgs: [id]);
+          where: "$colCellId = ? and $colTableId is null", whereArgs: [cellId]);
     }
+  }
 
-    return id;
+  @override
+  // ignore: avoid_renaming_method_parameters
+  Future<int> delete(int cellId) async {
+    deleteLocal(cellId);
+    deleteFirestore(cellId);
+    return cellId;
   }
 
   @override
@@ -105,11 +120,12 @@ class TimetableProvider extends SqlProvider<Timetable> {
 
   @override
   void setFirestore(Timetable data) async {
-    if (await FirestoreProvider.timetable.exists(currentTableId) == true) {
+    if (await FirestoreProvider.timetable.exists(currentTableId) == true ||
+        currentTableId == "main") {
       FirestoreProvider.timetable.set(
           currentTableId,
           {
-            "cells": {data.id.toString(): objToMap(data)}
+            "cells": {data.cellId.toString(): objToMap(data)}
           },
           SetOptions(merge: true));
     }
@@ -127,13 +143,15 @@ class TimetableProvider extends SqlProvider<Timetable> {
   }
 
   @override
-  void deleteFirestore(int id) {
+  // ignore: avoid_renaming_method_parameters
+  void deleteFirestore(int cellId) {
     FirestoreProvider.timetable.set(
-        currentTableId,
-        {
-          "cells": {id.toString(): FieldValue.delete()}
-        },
-        SetOptions(merge: true));
+      currentTableId,
+      {
+        "cells": {cellId.toString(): FieldValue.delete()}
+      },
+      SetOptions(merge: true),
+    );
   }
 
   @override

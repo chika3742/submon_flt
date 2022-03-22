@@ -150,7 +150,17 @@ class FirestoreProvider {
     if (userDoc == null) return;
     var snapshot = await userDoc!.get();
 
-    var schemaVersion = (snapshot.data() as dynamic)["schemaVersion"];
+    var schemaVersion = (snapshot.data() as dynamic)?["schemaVersion"];
+
+    if (schemaVersion == null) {
+      await userDoc!.set({"schemaVersion": schemaVer}, SetOptions(merge: true));
+    } else {
+      if (schemaVersion < schemaVer) {
+        // migrate
+      } else if (schemaVersion > schemaVer) {
+        throw SchemaVersionMismatchException(schemaVer, schemaVersion);
+      }
+    }
   }
 
   ///
@@ -266,4 +276,15 @@ class TimetableNotification {
 
   TimeOfDay? time;
   int? id;
+}
+
+class SchemaVersionMismatchException {
+  final int serverVersion;
+  final int expectedVersion;
+
+  SchemaVersionMismatchException(this.expectedVersion, this.serverVersion);
+
+  @override
+  String toString() =>
+      "Current schema version $expectedVersion is lower than server side version $serverVersion.";
 }

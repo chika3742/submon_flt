@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -132,18 +133,19 @@ class _TabMemorizeCardState extends State<TabMemorizeCard>
             title: Text('手入力でカード追加'),
             leading: Icon(Icons.add),
           ),
-          ListTile(
-            title: const Text('カメラ入力でカード追加'),
-            leading: const Icon(Icons.camera_alt),
-            onTap: () async {
-              var pref = SharedPrefs(await SharedPreferences.getInstance());
-              if (!pref.isCameraPrivacyPolicyDisplayed) {
-                var dialogResult = await showSimpleDialog(
-                  context,
-                  policyDialogTitle,
-                  policyDialogContent,
-                  allowCancel: false,
-                  showCancel: true,
+          if (Platform.isAndroid || Platform.isIOS)
+            ListTile(
+              title: const Text('カメラ入力でカード追加'),
+              leading: const Icon(Icons.camera_alt),
+              onTap: () async {
+                var pref = SharedPrefs(await SharedPreferences.getInstance());
+                if (!pref.isCameraPrivacyPolicyDisplayed) {
+                  var dialogResult = await showSimpleDialog(
+                    context,
+                    policyDialogTitle,
+                    policyDialogContent,
+                    allowCancel: false,
+                    showCancel: true,
                   okText: "同意する",
                   cancelText: "同意しない",
                 );
@@ -153,18 +155,19 @@ class _TabMemorizeCardState extends State<TabMemorizeCard>
                 pref.isCameraPrivacyPolicyDisplayed = true;
               }
 
-              if (await Permission.camera.request().isGranted) {
-                eventBus.fire(SubmissionDetailPageOpened(true));
-                await Navigator.of(context, rootNavigator: true)
-                    .pushNamed("/memorize/camera");
-                eventBus.fire(SubmissionDetailPageOpened(false));
-              } else {
-                if (!await Permission.camera.shouldShowRequestRationale) {
-                  showSimpleDialog(
-                    context,
-                    "権限について",
-                    "今後許可ダイアログを表示しない選択をしたため、設定画面から権限を許可する必要があります。",
-                    showCancel: true,
+              if (await Permission.camera.request().isGranted ||
+                    Platform.isIOS) {
+                  eventBus.fire(SubmissionDetailPageOpened(true));
+                  await Navigator.of(context, rootNavigator: true)
+                      .pushNamed("/memorize/camera");
+                  eventBus.fire(SubmissionDetailPageOpened(false));
+                } else {
+                  if (!await Permission.camera.shouldShowRequestRationale) {
+                    showSimpleDialog(
+                      context,
+                      "権限について",
+                      "今後許可ダイアログを表示しない選択をしたため、設定画面から権限を許可する必要があります。",
+                      showCancel: true,
                     okText: "設定画面に移動",
                     onOKPressed: () {
                       openAppSettings();

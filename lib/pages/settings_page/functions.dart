@@ -146,7 +146,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
             title: auth.currentUser != null ? "ログアウト" : "ログイン / 新規登録",
             onTap: () async {
               if (auth.currentUser == null) {
-                await pushPage(context, const SignInPage());
+                await pushPage(context, SignInPage());
                 setState(() {});
               } else {
                 showSimpleDialog(context, "確認", "ログアウトしますか？",

@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,11 +27,16 @@ import '../db/firestore_provider.dart';
 import '../method_channel/messaging.dart';
 
 class SignInPage extends StatefulWidget {
-  const SignInPage({Key? key, this.initialCred, this.reAuth = false})
-      : super(key: key);
+  SignInPage({Key? key, dynamic arguments})
+      : initialCred = arguments?["initialCred"],
+        reAuth = arguments?["reAuth"] ?? false,
+        // forMigration = arguments?["forMigration"] ?? false,
+        super(key: key);
 
   final UserCredential? initialCred;
   final bool reAuth;
+
+  // final bool forMigration;
 
   @override
   _SignInPageState createState() => _SignInPageState();
@@ -45,6 +51,17 @@ class _SignInPageState extends State<SignInPage> {
     if (widget.reAuth) {
       reAuth();
     }
+    // if (widget.forMigration) {
+    //   Firebase.initializeApp(
+    //       name: "old",
+    //       options: const FirebaseOptions(
+    //         apiKey: "***REMOVED***",
+    //         appId: "1:218237880785:android:4ec8e02f50fe7dcd",
+    //         messagingSenderId: "218237880785",
+    //         projectId: "mydatauploader",
+    //       )
+    //   );
+    // }
   }
 
   @override
@@ -250,7 +267,7 @@ class _SignInPageState extends State<SignInPage> {
         return await FirebaseAuth.instance.currentUser!
             .reauthenticateWithCredential(cred);
       } else {
-        return await FirebaseAuth.instance.signInWithCredential(cred);
+        return await signInWithCredential(cred);
       }
     } on FirebaseAuthException catch (e) {
       handleCredentialError(e);
@@ -300,7 +317,7 @@ class _SignInPageState extends State<SignInPage> {
         return await FirebaseAuth.instance.currentUser!
             .reauthenticateWithCredential(cred);
       } else {
-        return await FirebaseAuth.instance.signInWithCredential(cred);
+        return await signInWithCredential(cred);
       }
     } on FirebaseAuthException catch (e) {
       handleCredentialError(e);
@@ -344,7 +361,7 @@ class _SignInPageState extends State<SignInPage> {
         return await FirebaseAuth.instance.currentUser!
             .reauthenticateWithCredential(cred);
       } else {
-        return await FirebaseAuth.instance.signInWithCredential(cred);
+        return await signInWithCredential(cred);
       }
     } on FirebaseAuthException catch (e) {
       handleCredentialError(e);
@@ -353,6 +370,14 @@ class _SignInPageState extends State<SignInPage> {
       });
       return null;
     }
+  }
+
+  Future<UserCredential> signInWithCredential(AuthCredential credential) async {
+    // if (widget.forMigration) {
+    //   return FirebaseAuth.instanceFor(app: Firebase.app("old")).signInWithCredential(credential);
+    // } else {
+    return FirebaseAuth.instance.signInWithCredential(credential);
+    // }
   }
 
   void handleCredentialError(FirebaseAuthException e) {

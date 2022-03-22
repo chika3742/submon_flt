@@ -42,8 +42,15 @@ class MessagingMethodChannelHandler {
         notificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { (granted, _) in
             if granted {
                 notificationCenter.delegate = self.appDelegate
+                result(NotificationPermissionState.granted.rawValue)
+            } else {
+                result(NotificationPermissionState.denied.rawValue)
             }
-            result(granted)
         }
     }
+}
+
+enum NotificationPermissionState: Int {
+    case granted = 0
+    case denied = 1
 }
