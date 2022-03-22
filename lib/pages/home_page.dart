@@ -263,6 +263,17 @@ class _HomePageState extends State<HomePage> {
       }
     } on FirebaseException catch (e, stackTrace) {
       handleFirebaseError(e, stackTrace, context, "データの取得に失敗しました。");
+    } on SchemaVersionMismatchException catch (e) {
+      debugPrint(e.toString());
+      showSimpleDialog(
+          context,
+          "エラー",
+          "Submonを最新版にアップデートしてください。\n\n(${e.toString()})",
+          allowCancel: false,
+          onOKPressed: () {
+            SystemChannels.platform.invokeMethod("SystemNavigator.pop");
+          }
+      );
     } catch (e, stackTrace) {
       showSnackBar(context, "エラーが発生しました");
       FirebaseCrashlytics.instance.recordError(e, stackTrace);

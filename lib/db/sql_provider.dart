@@ -128,12 +128,12 @@ abstract class SqlProvider<T> {
   }
 
   Future close() => db.close();
+}
 
-  Future<void> migrate(Database db, int oldVersion, int newVersion) async {
-    // MIGRATE FIRESTORE TOO
-    if (oldVersion == 0) {
-      oldVersion++;
-    }
+Future<void> migrate(Database db, int oldVersion, int newVersion) async {
+  // MIGRATE FIRESTORE TOO
+  if (oldVersion == 1) {
+    oldVersion++;
   }
 }
 

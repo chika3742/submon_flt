@@ -19,15 +19,15 @@ class MainMethodChannelHandler : NSObject {
     }
     
     private func handler(call: FlutterMethodCall, result: @escaping FlutterResult) {
-        let args = call.arguments as! [String: String]
+        let args = call.arguments as? [String: String]
         
         switch call.method {
         case "openWebPage":
-            openWebPage(args: args)
+            openWebPage(args: args!)
             result(nil)
             break
         case "openCustomTabs":
-            startAuthenticationSession(args: args, result: result)
+            startAuthenticationSession(args: args!, result: result)
             break
         case "updateWidgets":
             updateWidgets()

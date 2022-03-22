@@ -2,7 +2,6 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submon/components/open_modal_animation.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/timetable.dart' as db;
@@ -45,15 +44,8 @@ class TimetableState extends State<Timetable> {
 
   void getTable() {
     db.TimetableProvider().use((provider) async {
-      var pref = await SharedPreferences.getInstance();
-      var sp = SharedPrefs(pref);
-      List<db.Timetable> list;
-      if (sp.currentTimetableId != "main") {
-        list = await provider.getAll(
-            where: "${db.colTableId} = ?", whereArgs: [sp.currentTimetableId]);
-      } else {
-        list = await provider.getAll(where: "${db.colTableId} is null");
-      }
+      List<db.Timetable> list =
+          await (provider as db.TimetableProvider).getCurrentTimetable();
 
       setState(() {
         table = Map.fromIterables(list.map((e) => e.cellId), list);

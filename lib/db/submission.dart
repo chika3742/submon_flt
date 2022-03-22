@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:googleapis/calendar/v3.dart' as c;
-import "package:intl/intl.dart";
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/sql_provider.dart';
 import 'package:submon/main.dart';
@@ -43,8 +42,6 @@ class Submission {
 }
 
 class SubmissionProvider extends SqlProvider<Submission> {
-  final _formatter = DateFormat("yyyy/MM/dd HH:mm", "ja_JP");
-
   @override
   String tableName() => "submission";
 
@@ -62,9 +59,10 @@ class SubmissionProvider extends SqlProvider<Submission> {
 
   @override
   Submission mapToObj(Map map) {
+    var date = DateTime.parse(map[colDate]);
     return Submission(
       id: map[colId],
-      date: _formatter.parse(map[colDate]),
+      date: date.subtract(date.timeZoneOffset),
       title: map[colTitle],
       detail: map[colDetail],
       done: map[colDone] == 1,
@@ -78,7 +76,7 @@ class SubmissionProvider extends SqlProvider<Submission> {
   Map<String, Object?> objToMap(Submission data) {
     return {
       colId: data.id,
-      colDate: _formatter.format(data.date!),
+      colDate: data.date!.toIso8601String(),
       colTitle: data.title,
       colDetail: data.detail,
       colDone: data.done == true ? 1 : 0,

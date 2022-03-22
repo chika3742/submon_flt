@@ -87,7 +87,7 @@ extension AppDelegate : MessagingDelegate {
         NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: ["token": fcmToken ?? ""])
         
         if fcmToken != nil, let user = Auth.auth().currentUser {
-            Firestore.firestore().document("users/\(user.uid)").setData(["notificationTokens": FieldValue.arrayUnion([fcmToken!])], merge: true)
+//            Firestore.firestore().document("users/\(user.uid)").setData(["notificationTokens": FieldValue.arrayUnion([fcmToken!])], merge: true)
         }
     }
 }
