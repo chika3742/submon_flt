@@ -2,12 +2,12 @@ import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sig
 import 'package:flutter/material.dart';
 import 'package:googleapis/calendar/v3.dart' as c;
 import 'package:intl/intl.dart';
+import 'package:submon/components/color_picker_dialog.dart';
+import 'package:submon/components/tappable_card.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/main.dart';
-import 'package:submon/components/tappable_card.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
-import 'package:submon/components/color_picker_dialog.dart';
 
 class SubmissionEditor extends StatefulWidget {
   const SubmissionEditor(
@@ -81,7 +81,12 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                       children: [
                         const Icon(Icons.event_available),
                         const SizedBox(width: 8),
-                        Text(DateFormat("MM月 dd日 (E)" + (_addTime ? " HH:mm" : ""), "ja_JP").format(_date), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold))
+                        Text(
+                            DateFormat("M月 d日 (E)" + (_addTime ? " HH:mm" : ""),
+                                    "ja_JP")
+                                .format(_date),
+                            style: const TextStyle(
+                                fontSize: 17, fontWeight: FontWeight.bold))
                       ],
                     ),
                     onTap: showDateTimePickerDialog,

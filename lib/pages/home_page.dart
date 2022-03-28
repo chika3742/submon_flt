@@ -7,13 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:submon/components/hidable_progress_indicator.dart';
-import 'package:submon/db/dotime.dart';
+import 'package:submon/db/doTime.dart';
 import 'package:submon/db/firestore_provider.dart';
+import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/actions.dart';
 import 'package:submon/method_channel/channels.dart';
 import 'package:submon/method_channel/messaging.dart';
+import 'package:submon/pages/home_tabs/tab_do_time_list.dart';
 import 'package:submon/pages/home_tabs/tab_memorize_card.dart';
 import 'package:submon/pages/home_tabs/tab_others.dart';
 import 'package:submon/pages/home_tabs/tab_submissions.dart';
@@ -41,24 +43,7 @@ class _HomePageState extends State<HomePage> {
 
   BannerAd? bannerAd;
 
-  List<BottomNavigationBarItem> _bottomNavigationItems() => const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: "提出物",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.table_chart_outlined),
-          label: "時間割表",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.school),
-          label: "暗記カード",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.more_horiz),
-          label: "その他",
-        ),
-      ];
+  List<BottomNavItem> _bottomNavItems = [];
 
   List<Widget> pages = [];
 
@@ -107,32 +92,79 @@ class _HomePageState extends State<HomePage> {
 
     initMethodCallHandler();
     fetchData();
-    pages = [
-      const TabSubmissions(),
-      TabTimetable(key: timetableKey),
-      const TabMemorizeCard(),
-      const TabOthers(),
-    ];
-    actions = [
-      [],
-      [
-        ActionItem(Icons.settings, "設定", () async {
-          await Navigator.pushNamed(context, "/settings/timetable");
-          timetableKey.currentState?.getPref();
-          var state = timetableKey.currentState?.tableKey.currentState;
-          state?.getPref();
-          state?.getTable();
-        }),
-        ActionItem(Icons.edit, "編集", () async {
-          await Navigator.pushNamed(context, "/timetable/edit");
-          timetableKey.currentState?.setState(() {
-            timetableKey.currentState?.tableKey.currentState?.getTable();
-          });
-        }),
-      ],
-      [],
-      [],
-    ];
+
+    SharedPrefs.use((prefs) {
+      _bottomNavItems = [
+        BottomNavItem(
+          BottomNavItemId.home,
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: "提出物",
+          ),
+        ),
+        BottomNavItem(
+          BottomNavItemId.doTime,
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.task),
+            label: "DoTime",
+          ),
+        ),
+        if (prefs.showTimetableMenu)
+          BottomNavItem(
+            BottomNavItemId.timetable,
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.table_chart_outlined),
+              label: "時間割表",
+            ),
+          ),
+        if (prefs.showMemorizeMenu)
+          BottomNavItem(
+            BottomNavItemId.memorizeCard,
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.school),
+              label: "暗記カード",
+            ),
+          ),
+        BottomNavItem(
+          BottomNavItemId.others,
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.more_horiz),
+            label: "その他",
+          ),
+        )
+      ];
+
+      pages = [
+        const TabSubmissions(),
+        const TabDoTimeList(),
+        if (prefs.showTimetableMenu) TabTimetable(key: timetableKey),
+        if (prefs.showMemorizeMenu) const TabMemorizeCard(),
+        const TabOthers(),
+      ];
+
+      actions = [
+        [],
+        [],
+        if (prefs.showTimetableMenu)
+          [
+            ActionItem(Icons.settings, "設定", () async {
+              await Navigator.pushNamed(context, "/settings/timetable");
+              timetableKey.currentState?.getPref();
+              var state = timetableKey.currentState?.tableKey.currentState;
+              state?.getPref();
+              state?.getTable();
+            }),
+            ActionItem(Icons.edit, "編集", () async {
+              await Navigator.pushNamed(context, "/timetable/edit");
+              timetableKey.currentState?.setState(() {
+                timetableKey.currentState?.tableKey.currentState?.getTable();
+              });
+            }),
+          ],
+        if (prefs.showMemorizeMenu) [],
+        [],
+      ];
+    });
   }
 
   @override
@@ -144,10 +176,14 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_bottomNavItems.isEmpty) {
+      return Container();
+    }
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(_bottomNavigationItems()[tabIndex].label!),
+        title: Text(_bottomNavItems[tabIndex].item.label!),
         actions: actions[tabIndex]
             .map((e) => IconButton(
                   icon: Icon(e.icon),
@@ -188,7 +224,7 @@ class _HomePageState extends State<HomePage> {
             ),
           BottomNavigationBar(
             currentIndex: tabIndex,
-            items: _bottomNavigationItems(),
+            items: _bottomNavItems.map((e) => e.item).toList(),
             onTap: onBottomNavTap,
           ),
         ],
@@ -197,8 +233,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget? _buildFloatingActionButton() {
-    switch (tabIndex) {
-      case 0:
+    switch (_bottomNavItems[tabIndex].id) {
+      case BottomNavItemId.home:
         return OpenContainer<int>(
           useRootNavigator: true,
           closedElevation: 8,
@@ -224,7 +260,7 @@ class _HomePageState extends State<HomePage> {
             });
           },
         );
-      case 2:
+      case BottomNavItemId.memorizeCard:
         return FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () {
@@ -352,4 +388,19 @@ class ActionItem {
   final IconData icon;
   final String title;
   final void Function()? onPressed;
+}
+
+class BottomNavItem {
+  final BottomNavItemId id;
+  final BottomNavigationBarItem item;
+
+  BottomNavItem(this.id, this.item);
+}
+
+enum BottomNavItemId {
+  home,
+  doTime,
+  timetable,
+  memorizeCard,
+  others,
 }

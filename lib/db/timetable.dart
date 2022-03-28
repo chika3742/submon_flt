@@ -119,10 +119,10 @@ class TimetableProvider extends SqlProvider<Timetable> {
   }
 
   @override
-  void setFirestore(Timetable data) async {
+  Future<void> setFirestore(Timetable data) async {
     if (await FirestoreProvider.timetable.exists(currentTableId) == true ||
         currentTableId == "main") {
-      FirestoreProvider.timetable.set(
+      await FirestoreProvider.timetable.set(
           currentTableId,
           {
             "cells": {data.cellId.toString(): objToMap(data)}
@@ -144,8 +144,8 @@ class TimetableProvider extends SqlProvider<Timetable> {
 
   @override
   // ignore: avoid_renaming_method_parameters
-  void deleteFirestore(int cellId) {
-    FirestoreProvider.timetable.set(
+  Future<void> deleteFirestore(int cellId) async {
+    await FirestoreProvider.timetable.set(
       currentTableId,
       {
         "cells": {cellId.toString(): FieldValue.delete()}

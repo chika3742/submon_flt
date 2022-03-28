@@ -89,24 +89,28 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
                                         bottomRight: Radius.circular(16)),
                                     border: Border.all(
                                         color: Theme.of(context).brightness ==
-                                            Brightness.light
-                                            ? Colors.black : Colors.white,
+                                                Brightness.light
+                                            ? Colors.black.withOpacity(0.6)
+                                            : Colors.white.withOpacity(0.6),
                                         width: 3)),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
-                                      vertical: 0, horizontal: 12),
+                                      vertical: 2, horizontal: 12),
                                   child: Text.rich(
                                     TextSpan(children: [
                                       TextSpan(
                                           text: "${_item.date!.month} / ",
-                                          style: const TextStyle(fontSize: 20)),
+                                          style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold)),
                                       TextSpan(
                                           text: "${_item.date!.day}",
                                           style: const TextStyle(
-                                              fontSize: 36,
+                                              fontSize: 34,
                                               fontWeight: FontWeight.bold)),
                                       TextSpan(
-                                          text: " (${getWeekdayString(_item.date!.weekday - 1)})",
+                                          text:
+                                              " (${getWeekdayString(_item.date!.weekday - 1)})",
                                           style: const TextStyle(fontSize: 20)),
                                     ]),
                                   ),

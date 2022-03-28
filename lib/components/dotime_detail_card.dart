@@ -2,19 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:submon/utils/ui.dart';
 
-import '../db/dotime.dart';
+import '../db/doTime.dart';
 
 class DoTimeDetailCard extends StatefulWidget {
   const DoTimeDetailCard(
       {Key? key,
-      required this.submissionId,
       required this.doTime,
       this.onDelete,
       this.onEdit,
       this.onTimer})
       : super(key: key);
 
-  final int submissionId;
   final DoTime doTime;
   final void Function()? onDelete;
   final void Function()? onEdit;
@@ -27,16 +25,23 @@ class DoTimeDetailCard extends StatefulWidget {
 class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
   @override
   Widget build(BuildContext context) {
+    var doTime = widget.doTime;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
       child: Card(
-        color: widget.doTime.startAt.isBefore(DateTime.now())
+        color: doTime.startAt.isBefore(DateTime.now())
             ? Colors.red.withOpacity(0.5).blendedToCardColor(context)
             : null,
-        child: Stack(
-          children: [
-            IntrinsicHeight(
-              child: Row(
+        child: IntrinsicHeight(
+          child: Stack(
+            children: [
+              if (doTime.done)
+                const Align(
+                  alignment: Alignment.center,
+                  child:
+                      Opacity(opacity: 0.7, child: Icon(Icons.check, size: 96)),
+                ),
+              Row(
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -49,15 +54,13 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
                             Text.rich(TextSpan(
                                 children: [
                                   TextSpan(
-                                      text: widget.doTime.startAt.month
-                                          .toString(),
+                                      text: doTime.startAt.month.toString(),
                                       style: const TextStyle(fontSize: 20)),
                                   const TextSpan(
                                       text: "月 ",
                                       style: TextStyle(fontSize: 16)),
                                   TextSpan(
-                                      text:
-                                          widget.doTime.startAt.day.toString(),
+                                      text: doTime.startAt.day.toString(),
                                       style: const TextStyle(fontSize: 20)),
                                   const TextSpan(
                                       text: "日",
@@ -70,10 +73,10 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
                                 children: [
                                   TextSpan(
                                       text: DateFormat("H:mm")
-                                          .format(widget.doTime.startAt),
+                                          .format(doTime.startAt),
                                       style: const TextStyle(fontSize: 20)),
                                   const TextSpan(
-                                      text: "〜",
+                                      text: "から",
                                       style: TextStyle(fontSize: 16)),
                                 ],
                                 style: const TextStyle(
@@ -81,13 +84,12 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
                             const SizedBox(width: 16),
                             Text.rich(TextSpan(children: [
                               TextSpan(
-                                  text: widget.doTime.minute.toString(),
-                                  style: TextStyle(
+                                  text: doTime.minute.toString(),
+                                  style: const TextStyle(
                                       fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.blue.shade700)),
+                                      fontWeight: FontWeight.bold)),
                               const TextSpan(
-                                  text: "分",
+                                  text: "分間",
                                   style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold)),
@@ -95,8 +97,19 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
                           ],
                         ),
                         const Spacer(),
-                        Text(widget.doTime.content,
-                            style: const TextStyle(fontSize: 20)),
+                        Text(doTime.content,
+                            style: TextStyle(
+                                fontSize: 20,
+                                decoration: doTime.done
+                                    ? TextDecoration.lineThrough
+                                    : null,
+                                color: doTime.done
+                                    ? Theme.of(context)
+                                        .textTheme
+                                        .bodyText1
+                                        ?.color
+                                        ?.withOpacity(0.7)
+                                    : null)),
                       ],
                     ),
                   ),
@@ -145,8 +158,8 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
                   ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

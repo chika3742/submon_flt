@@ -15,19 +15,14 @@ class TimetableTable {
 
 class TimetableTableProvider extends SqlProvider<TimetableTable> {
   @override
+  String tableName() => tableTimetableTable;
+
+  @override
   List<SqlField> columns() {
     return [
       SqlField("id", DataType.integer, isPrimaryKey: true),
       SqlField("title", DataType.integer),
     ];
-  }
-
-  @override
-  void deleteAllFirestore() {}
-
-  @override
-  void deleteFirestore(int id) {
-    FirestoreProvider.timetable.delete(id.toString());
   }
 
   @override
@@ -47,10 +42,16 @@ class TimetableTableProvider extends SqlProvider<TimetableTable> {
   void setAllFirestore(List<Map<String, dynamic>> list) {}
 
   @override
-  void setFirestore(TimetableTable data) {
-    FirestoreProvider.timetable.set(data.id.toString(), {"title": data.title});
+  Future<void> setFirestore(TimetableTable data) async {
+    await FirestoreProvider.timetable
+        .set(data.id.toString(), {"title": data.title});
   }
 
   @override
-  String tableName() => tableTimetableTable;
+  void deleteAllFirestore() {}
+
+  @override
+  Future<void> deleteFirestore(int id) async {
+    await FirestoreProvider.timetable.delete(id.toString());
+  }
 }

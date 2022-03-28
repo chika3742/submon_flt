@@ -23,13 +23,14 @@ List<String> getRemainingString(Duration diff, bool weekView) {
   }
 }
 
-Color getRemainingDateColor(int remainingHours) {
+Color getRemainingDateColor(BuildContext context, int remainingHours) {
+  var dark = Theme.of(context).brightness == Brightness.dark;
   if (remainingHours < 0) {
-    return Colors.red;
+    return dark ? Colors.redAccent : Colors.red;
   } else if (0 <= remainingHours && remainingHours <= 2 * 24) {
-    return Colors.orange;
+    return dark ? Colors.orange : Colors.orange.shade600;
   } else {
-    return Colors.green;
+    return dark ? Colors.green.shade300 : Colors.green;
   }
 }
 
@@ -60,7 +61,11 @@ void showSnackBar(BuildContext context, String text,
   ScaffoldMessenger.maybeOf(context)?.hideCurrentSnackBar();
   ScaffoldMessenger.maybeOf(context)?.showSnackBar(SnackBar(
     behavior: SnackBarBehavior.floating,
-    content: Text(text),
+    content: Text(text,
+        style: Theme.of(context)
+            .textTheme
+            .bodyMedium
+            ?.copyWith(color: Theme.of(context).colorScheme.surface)),
     duration: duration,
     action: action,
     dismissDirection: DismissDirection.horizontal,
@@ -83,9 +88,9 @@ Future<T?> showSimpleDialog<T>(
       barrierDismissible: allowCancel,
       builder: (context) {
         return PlatformAlertDialog(
-          title: Text(title),
+          title: Text(title, style: Theme.of(context).textTheme.titleLarge),
           content: SingleChildScrollView(
-            child: Text(message, style: const TextStyle(fontSize: 16)),
+            child: Text(message, style: Theme.of(context).textTheme.bodyLarge),
           ),
           actions: [
             if (showCancel)
@@ -123,8 +128,9 @@ void showSelectSheet(BuildContext context, String title, String message,
         context: context,
         builder: (context) {
           return CupertinoActionSheet(
-            title: Text(title),
-            message: Text(message),
+            title: Text(title, style: Theme.of(context).textTheme.titleLarge),
+            message:
+                Text(message, style: Theme.of(context).textTheme.bodyLarge),
             actions: actions
                 .map((e) => CupertinoActionSheetAction(
                     onPressed: e.onPressed, child: Text(e.title)))
@@ -155,25 +161,30 @@ void showSelectSheet(BuildContext context, String title, String message,
                 color: Theme.of(context).textTheme.bodyText1!.color,
               ),
             ),
-            const SizedBox(height: 8),
-            Text(title,
-                style: Theme.of(context)
-                    .textTheme
-                    .headline6!
-                    .copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
+            Text(title, style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(message),
+              child:
+                  Text(message, style: Theme.of(context).textTheme.bodyLarge),
             ),
-            const SizedBox(height: 8),
-            ...actions
-                .map((e) => ListTile(
-                      title: Text(e.title),
-                      onTap: e.onPressed,
-                    ))
-                .toList(),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
+            Flex(
+              direction: Axis.horizontal,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  child: Text(actions[0].title),
+                  onPressed: actions[0].onPressed,
+                ),
+                OutlinedButton(
+                  child: Text(actions[1].title),
+                  onPressed: actions[1].onPressed,
+                ),
+              ],
+            ),
+            const SizedBox(height: 32),
           ],
         );
       },
@@ -208,28 +219,81 @@ Future<T?> showRoundedBottomSheet<T>({
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(8), topRight: Radius.circular(8))),
     builder: (ctx) {
-      return Padding(
-        padding: MediaQuery.of(context).viewInsets,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              height: 4,
-              width: 40,
-              margin: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                  color: Theme.of(context).textTheme.bodyText1!.color,
-                  borderRadius: BorderRadius.circular(8)),
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: 4,
+            width: 40,
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+                color: Theme.of(context).textTheme.bodyText1!.color,
+                borderRadius: BorderRadius.circular(8)),
+          ),
+          Text(title!,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 16),
+          Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: child,
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<T?> showRoundedDraggableBottomSheet<T>({
+  required BuildContext context,
+  String? title,
+  required Widget Function(
+          BuildContext context, ScrollController scrollController)
+      builder,
+  bool useRootNavigator = false,
+}) {
+  return showModalBottomSheet(
+    context: context,
+    useRootNavigator: useRootNavigator,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(8), topRight: Radius.circular(8))),
+    builder: (context) {
+      return DraggableScrollableSheet(
+        expand: false,
+        snap: true,
+        initialChildSize: 0.4,
+        maxChildSize: 0.7,
+        snapSizes: const [0.4],
+        builder: (context, controller) {
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 4,
+                  width: 40,
+                  margin: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).textTheme.bodyText1!.color,
+                      borderRadius: BorderRadius.circular(8)),
+                ),
+                Text(title!,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.bold)),
+                builder(context, controller),
+              ],
             ),
-            Text(title!,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: child,
-            )
-          ],
-        ),
+          );
+        },
       );
     },
   );
@@ -263,20 +327,24 @@ class _TextFormFieldBottomSheetState extends State<TextFormFieldBottomSheet> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TextFormField(
-          controller: _controller,
-          autofocus: true,
-          decoration: InputDecoration(
-            border: const OutlineInputBorder(),
-            label: Text(widget.formLabel),
-            errorText: _fieldError,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: TextFormField(
+            controller: _controller,
+            autofocus: true,
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              label: Text(widget.formLabel),
+              errorText: _fieldError,
+            ),
           ),
         ),
         const SizedBox(height: 8),
-        Row(
-          children: [
-            const Spacer(),
-            IconButton(
+        Align(
+          alignment: Alignment.bottomRight,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 16, right: 16),
+            child: IconButton(
               icon: const Icon(Icons.check),
               splashRadius: 24,
               onPressed: () {
@@ -292,8 +360,8 @@ class _TextFormFieldBottomSheetState extends State<TextFormFieldBottomSheet> {
                   widget.onDone?.call(_controller.text);
                 }
               },
-            )
-          ],
+            ),
+          ),
         ),
         SizedBox(height: MediaQuery.of(context).viewInsets.bottom)
       ],

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
 import 'package:submon/main.dart';
@@ -52,12 +51,15 @@ class _WelcomePageState extends State<WelcomePage> {
             child: Column(
               children: [
                 const SizedBox(height: 32),
-                Text('Submon',
-                    style: GoogleFonts.exo(
-                        fontSize: 50, fontWeight: FontWeight.bold)),
+                const Text('Submon',
+                    style: TextStyle(
+                      fontFamily: "Play",
+                      fontSize: 50,
+                      fontWeight: FontWeight.bold,
+                    )),
                 const SizedBox(height: 8),
                 const Text('簡単に提出物を一括管理', style: TextStyle(fontSize: 15)),
-                const SizedBox(height: 160),
+                const SizedBox(height: 120),
                 SizedBox(
                   height: 55,
                   width: 240,
@@ -65,7 +67,7 @@ class _WelcomePageState extends State<WelcomePage> {
                     child: const Text('ログインして始める',
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: 18,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold)),
                     onPressed: () async {
                       var result =
@@ -83,10 +85,7 @@ class _WelcomePageState extends State<WelcomePage> {
                   width: 240,
                   child: ElevatedButton(
                     child: const Text('お試しモードで開始',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold)),
+                        style: TextStyle(color: Colors.white, fontSize: 16)),
                     onPressed: () async {
                       showSimpleDialog(
                           context,
@@ -102,6 +101,14 @@ class _WelcomePageState extends State<WelcomePage> {
                     style: ElevatedButton.styleFrom(primary: Colors.grey),
                   ),
                 ),
+                const SizedBox(height: 32),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    'アカウント作成は必要ありません。\nログインすることで自動的にアカウントが作成できます。',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
                 const SizedBox(height: 48),
                 SizedBox(
                   height: 70,
@@ -109,9 +116,10 @@ class _WelcomePageState extends State<WelcomePage> {
                   child: ElevatedButton(
                     child: const Text('旧「提出物マネージャー」\nからアカウント移行',
                         style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold),
+                          color: Colors.white,
+                          fontSize: 16,
+                          height: 1.4,
+                        ),
                         textAlign: TextAlign.center),
                     onPressed: () async {
                       showSimpleDialog(
@@ -126,15 +134,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       });
                     },
                     style: ElevatedButton.styleFrom(
-                        primary: Colors.orange.shade700),
-                  ),
-                ),
-                const SizedBox(height: 32),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(
-                    'アカウント作成は必要ありません。\nログインしようとすることでアカウントが作成できます。',
-                    textAlign: TextAlign.center,
+                        primary: Colors.orange.shade900),
                   ),
                 ),
                 const SizedBox(height: 32),
