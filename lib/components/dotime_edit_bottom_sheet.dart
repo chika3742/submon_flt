@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:submon/db/dotime.dart';
-import 'package:submon/utils/ui.dart';
+import 'package:submon/db/doTime.dart';
 
 class DoTimeEditBottomSheet extends StatefulWidget {
   const DoTimeEditBottomSheet(
@@ -46,13 +44,18 @@ class _DoTimeEditBottomSheetState extends State<DoTimeEditBottomSheet> {
             InkWell(
               child: Text(
                 DateFormat("M/d").format(startAt),
-                style:
-                    GoogleFonts.exo(fontSize: 32, fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black87,
+                    ),
               ),
               onTap: () async {
                 var result = await showDatePicker(
                   context: context,
-                  initialDate: startAt,
+                  initialDate: startAt.isBefore(DateTime.now())
+                      ? DateTime.now()
+                      : startAt,
                   firstDate: DateTime.now(),
                   lastDate: DateTime(2100),
                 );
@@ -69,8 +72,10 @@ class _DoTimeEditBottomSheetState extends State<DoTimeEditBottomSheet> {
             InkWell(
               child: Text(
                 DateFormat("H:mm").format(startAt),
-                style:
-                    GoogleFonts.exo(fontSize: 32, fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black87),
               ),
               onTap: () async {
                 var result = await showTimePicker(
@@ -90,7 +95,7 @@ class _DoTimeEditBottomSheetState extends State<DoTimeEditBottomSheet> {
               value: minute,
               items: _acceptableMinute
                   .map((e) => DropdownMenuItem(
-                        child: Text("$e分",
+                child: Text("$e分",
                             style: const TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold)),
                         value: e,
@@ -104,9 +109,12 @@ class _DoTimeEditBottomSheetState extends State<DoTimeEditBottomSheet> {
             )
           ],
         ),
+        if ((widget.initialData == null || startAtChanged) &&
+            startAt.isBefore(DateTime.now())) const Text(
+            '現在時刻より後の時刻を選択してください', style: TextStyle(color: Colors.redAccent)),
         const SizedBox(height: 16),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           child: TextFormField(
             controller: _controller,
             decoration: const InputDecoration(
@@ -119,14 +127,13 @@ class _DoTimeEditBottomSheetState extends State<DoTimeEditBottomSheet> {
         Align(
           alignment: Alignment.bottomRight,
           child: Padding(
-            padding: const EdgeInsets.only(right: 8, bottom: 16),
+            padding: const EdgeInsets.only(right: 16, bottom: 16),
             child: FloatingActionButton(
               child: const Icon(Icons.check),
               onPressed: () {
                 // 現在時刻より前に設定時、エラー表示 (編集時、時刻に変更がない場合を除く)
                 if ((widget.initialData == null || startAtChanged) &&
                     startAt.isBefore(DateTime.now())) {
-                  showSimpleDialog(context, "エラー", "現在時刻より後の時刻を設定してください。");
                   return;
                 }
                 Navigator.pop(
@@ -137,11 +144,13 @@ class _DoTimeEditBottomSheetState extends State<DoTimeEditBottomSheet> {
                       startAt: startAt,
                       minute: minute,
                       content: _controller.text,
+                      done: false,
                     ));
               },
             ),
           ),
-        )
+        ),
+        SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
       ],
     );
   }

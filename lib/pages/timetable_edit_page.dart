@@ -100,7 +100,7 @@ class _TimetableEditPageState extends State<TimetableEditPage> {
 
   void updateLocalDb() {
     db.TimetableProvider().use((provider) async {
-      await provider.setAllLocalOnly(_tableKey.currentState!.table.values
+      await provider.setAllLocal(_tableKey.currentState!.table.values
           .map((e) => db.TimetableProvider.objToMapStatic(e))
           .toList());
     });

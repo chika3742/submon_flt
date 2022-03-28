@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:googleapis/calendar/v3.dart' as c;
+import 'package:submon/db/doTime.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/sql_provider.dart';
 import 'package:submon/main.dart';
@@ -119,25 +120,26 @@ class SubmissionProvider extends SqlProvider<Submission> {
   }
 
   @override
-  Future<Submission> insert(Submission data) {
-    return super.insert(data);
+  Future<int> delete(int id) async {
+    await DoTimeProvider(db: db).deleteForSubmissionId(id);
+    return await super.delete(id);
   }
 
   @override
-  void setFirestore(Submission data) {
-    FirestoreProvider.submission
+  Future<void> setFirestore(Submission data) async {
+    await FirestoreProvider.submission
         .set(data.id.toString(), objToMap(data), SetOptions(merge: true));
     // NotificationMethodChannel.registerReminder();
     updateWidgets();
   }
 
   @override
-  void deleteFirestore(int id) {
-    FirestoreProvider.submission.delete(id.toString());
+  Future<void> deleteFirestore(int id) async {
+    await FirestoreProvider.submission.delete(id.toString());
     // NotificationMethodChannel.registerReminder();
     updateWidgets();
 
-    googleSignIn.authenticatedClient().then((client) async {
+    await googleSignIn.authenticatedClient().then((client) async {
       if (client != null) {
         var api = c.CalendarApi(client).events;
 

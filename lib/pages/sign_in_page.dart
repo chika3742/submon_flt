@@ -85,16 +85,20 @@ class _SignInPageState extends State<SignInPage> {
                                 .bodyText1!
                                 .color)),
                     Row(
-                      children: const [
+                      children: [
                         TextButton(
                           child: Text("利用規約",
-                              style: TextStyle(color: Colors.blueAccent)),
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary)),
                           onPressed: openTermsOfUse,
                         ),
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
                         TextButton(
                           child: Text("プライバシーポリシー",
-                              style: TextStyle(color: Colors.blueAccent)),
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary)),
                           onPressed: openPrivacyPolicy,
                         ),
                       ],
@@ -106,7 +110,7 @@ class _SignInPageState extends State<SignInPage> {
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.mail, color: Colors.white),
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.orange,
+                          primary: Colors.orange.shade800,
                         ),
                         label: const Text("メールアドレスでログイン",
                             style: TextStyle(color: Colors.white)),
@@ -192,8 +196,11 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                         style: ElevatedButton.styleFrom(
                             primary: const Color(0xff1da1f2)),
-                        label: const Text("Twitterでログイン",
-                            style: TextStyle(color: Colors.white)),
+                        label: Text("Twitterでログイン",
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge
+                                ?.copyWith(color: Colors.white)),
                         onPressed: !loading && !widget.reAuth
                             ? () async {
                                 var result = await signInWithTwitter();

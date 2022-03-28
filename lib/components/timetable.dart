@@ -208,10 +208,9 @@ class TimetableState extends State<Timetable> {
           table.containsKey(getWholeIndex(youbi, index))
               ? table[getWholeIndex(youbi, index)]!.subject
               : "",
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-          ),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Colors.white,
+              ),
         ),
       ),
     );
@@ -340,17 +339,21 @@ class _NoteViewState extends State<_NoteView> {
                           title:
                               "${widget.cell.subject} (${getWeekdayString(widget.weekday)}曜 ${widget.index}限) メモ編集",
                           child: Column(children: [
-                            TextFormField(
-                              controller: controller,
-                              autofocus: true,
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                labelText: "メモ",
-                                suffixIcon: IconButton(
-                                  icon: const Icon(Icons.clear),
-                                  onPressed: () {
-                                    controller.clear();
-                                  },
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: TextFormField(
+                                controller: controller,
+                                autofocus: true,
+                                decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText: "メモ",
+                                  suffixIcon: IconButton(
+                                    icon: const Icon(Icons.clear),
+                                    onPressed: () {
+                                      controller.clear();
+                                    },
+                                  ),
                                 ),
                               ),
                             ),

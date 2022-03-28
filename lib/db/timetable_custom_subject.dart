@@ -46,14 +46,14 @@ class TimetableCustomSubjectProvider
   }
 
   @override
-  void setFirestore(data) {
-    FirestoreProvider.timetableCustomSubject
+  Future<void> setFirestore(data) async {
+    await FirestoreProvider.timetableCustomSubject
         .set(data.id.toString(), objToMap(data), SetOptions(merge: true));
   }
 
   @override
-  void deleteFirestore(int id) {
-    FirestoreProvider.timetableCustomSubject.delete(id.toString());
+  Future<void> deleteFirestore(int id) async {
+    await FirestoreProvider.timetableCustomSubject.delete(id.toString());
   }
 
   @override

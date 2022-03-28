@@ -5,8 +5,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dnd/flutter_dnd.dart';
 import 'package:fullscreen/fullscreen.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:submon/db/dotime.dart';
+import 'package:submon/db/doTime.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:wakelock/wakelock.dart';
@@ -28,7 +27,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
   final AudioCache _audioCache = AudioCache();
   bool? _dndAccessGranted = Platform.isAndroid ? false : null;
 
-  bool _enableDnd = true;
+  bool _isEnableDnd = true;
   bool _timerFinished = false;
   bool _displayTimer = true;
   bool _started = false;
@@ -120,6 +119,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                         style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold)),
                   ])),
+                  const SizedBox(height: 8),
                   Text.rich(TextSpan(children: [
                     const TextSpan(text: "集中すること: "),
                     TextSpan(
@@ -127,6 +127,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                         style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold)),
                   ])),
+                  const SizedBox(height: 8),
                   const Text('※アプリのタスクを終了するとタイマーがキャンセルされます。'),
                 ],
               ),
@@ -151,10 +152,12 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                         !_takingBreak
                             ? _getTimerString(_remainingTime)
                             : _getTimerString(_breakRemainingTime),
-                        style: GoogleFonts.ubuntuMono(
-                            fontSize: 80,
-                            fontWeight: FontWeight.bold,
-                            color: _takingBreak ? Colors.blue.shade500 : null),
+                        style: TextStyle(
+                          fontFamily: "B612 Mono",
+                          fontSize: 72,
+                          fontWeight: FontWeight.bold,
+                          color: _takingBreak ? Colors.blue.shade500 : null,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 96),
@@ -180,11 +183,6 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                     _started = true;
                                   });
                                   _startTimer();
-                                  Wakelock.enable();
-                                  if (_enableDnd && _dndAccessGranted == true) {
-                                    FlutterDnd.setInterruptionFilter(
-                                        FlutterDnd.INTERRUPTION_FILTER_NONE);
-                                  }
                                 },
                               ),
                             ),
@@ -193,11 +191,11 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Checkbox(
-                                  value: _enableDnd,
+                                  value: _isEnableDnd,
                                   onChanged: _dndAccessGranted == true
                                       ? (value) {
                                           setState(() {
-                                            _enableDnd = !_enableDnd;
+                                            _isEnableDnd = !_isEnableDnd;
                                           });
                                         }
                                       : null,
@@ -207,7 +205,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                     onTap: _dndAccessGranted == true
                                         ? () {
                                             setState(() {
-                                              _enableDnd = !_enableDnd;
+                                              _isEnableDnd = !_isEnableDnd;
                                             });
                                           }
                                         : null,
@@ -265,8 +263,10 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                         setState(() {
                                           _remainingTime +=
                                               const Duration(minutes: 5);
-                                          _lastTookBreak +=
-                                              const Duration(minutes: 5);
+                                          if (_lastTookBreak.inSeconds != 0) {
+                                            _lastTookBreak +=
+                                                const Duration(minutes: 5);
+                                          }
                                         });
                                         if (_timerFinished) {
                                           _startTimer();
@@ -353,8 +353,26 @@ class _FocusTimerPageState extends State<FocusTimerPage>
     return elapsedTime.inMinutes > 5 || elapsedTime.isNegative;
   }
 
+  void _enableDnd() {
+    if (_isEnableDnd && _dndAccessGranted == true) {
+      FlutterDnd.setInterruptionFilter(FlutterDnd.INTERRUPTION_FILTER_NONE);
+    }
+  }
+
+  void _disableDnd() {
+    if (_isEnableDnd && _dndAccessGranted == true) {
+      FlutterDnd.setInterruptionFilter(FlutterDnd.INTERRUPTION_FILTER_ALL);
+    }
+  }
+
   void _startTimer() {
+    Wakelock.enable();
+    _enableDnd();
     _stopBreakTimer();
+    _stopBlinkTimer();
+    setState(() {
+      _timerFinished = false;
+    });
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       try {
         setState(() {
@@ -363,6 +381,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
       } catch (e) {}
       if (_remainingTime.inSeconds == 0) {
         _stopTimer();
+        _disableDnd();
         _startBlinkTimer();
         _alarmPlayer = await _audioCache.play("audio/alarm.mp3");
         setState(() {
@@ -378,6 +397,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
 
   void _startBreakTimer() {
     _stopTimer();
+    _disableDnd();
     _breakTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       try {
         setState(() {

@@ -46,6 +46,18 @@ class SharedPrefs {
   set isCameraPrivacyPolicyDisplayed(bool value) =>
       pref!.setBool("IS_CAMERA_PRIVACY_POLICY_DISPLAYED", value);
 
+  // SHOW_TIMETABLE_MENU
+  bool get showTimetableMenu => pref!.getBool("SHOW_TIMETABLE_MENU") ?? true;
+
+  set showTimetableMenu(bool value) =>
+      pref!.setBool("SHOW_TIMETABLE_MENU", value);
+
+  // SHOW_MEMORIZE_MENU
+  bool get showMemorizeMenu => pref!.getBool("SHOW_MEMORIZE_MENU") ?? true;
+
+  set showMemorizeMenu(bool value) =>
+      pref!.setBool("SHOW_MEMORIZE_MENU", value);
+
   // String
 
   // EMAIL_FOR_URL_SIGN_IN

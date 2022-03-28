@@ -14,7 +14,7 @@ class SettingsListView extends StatelessWidget {
     for (var element in categories) {
       list.add(CategoryListTile(element.title));
 
-      list.addAll(element.tiles.map((e) => e.buildWidget()));
+      list.addAll(element.tiles.map((e) => e.buildWidget(context)));
     }
 
     return Material(
@@ -33,7 +33,7 @@ class SettingsCategory {
 }
 
 abstract class AbstractSettingsTile {
-  Widget buildWidget();
+  Widget buildWidget(BuildContext context);
 }
 
 class SettingsTile extends AbstractSettingsTile {
@@ -55,10 +55,12 @@ class SettingsTile extends AbstractSettingsTile {
   final void Function()? onTap;
 
   @override
-  Widget buildWidget() {
+  Widget buildWidget(BuildContext context) {
     return ListTile(
       title: title != null ? Text(title!, style: titleTextStyle) : null,
-      subtitle: subtitle != null ? Text(subtitle!) : null,
+      subtitle: subtitle != null
+          ? Text(subtitle!, style: const TextStyle(height: 1.5))
+          : null,
       enabled: enabled,
       leading: leading,
       trailing: trailing,
@@ -80,10 +82,12 @@ class SwitchSettingsTile extends AbstractSettingsTile {
   final void Function(bool) onChanged;
 
   @override
-  Widget buildWidget() {
+  Widget buildWidget(BuildContext context) {
     return SwitchListTile(
       title: title != null ? Text(title!) : null,
-      subtitle: subtitle != null ? Text(subtitle!) : null,
+      subtitle: subtitle != null
+          ? Text(subtitle!, style: const TextStyle(height: 1.5))
+          : null,
       value: value,
       onChanged: onChanged,
     );
@@ -103,10 +107,12 @@ class CheckBoxSettingsTile extends AbstractSettingsTile {
   final void Function(bool?) onChanged;
 
   @override
-  Widget buildWidget() {
+  Widget buildWidget(BuildContext context) {
     return CheckboxListTile(
       title: title != null ? Text(title!) : null,
-      subtitle: subtitle != null ? Text(subtitle!) : null,
+      subtitle: subtitle != null
+          ? Text(subtitle!, style: const TextStyle(height: 1.5))
+          : null,
       value: value,
       onChanged: onChanged,
     );
@@ -129,7 +135,7 @@ class RadioSettingsTile extends AbstractSettingsTile {
   final void Function(Object?) onChanged;
 
   @override
-  Widget buildWidget() {
+  Widget buildWidget(BuildContext context) {
     return RadioListTile(
       title: title != null ? Text(title!) : null,
       subtitle: subtitle != null ? Text(subtitle!) : null,

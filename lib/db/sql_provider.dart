@@ -3,6 +3,12 @@ import 'package:sqflite/sqflite.dart';
 const schemaVer = 1;
 
 abstract class SqlProvider<T> {
+  SqlProvider({Database? db}) {
+    if (db != null) {
+      this.db = db;
+    }
+  }
+
   late Database db;
 
   /// Gets SQL Column list with [SqlField]
@@ -72,6 +78,7 @@ abstract class SqlProvider<T> {
     return maps.map((e) => mapToObj(e)).toList();
   }
 
+  /// Inserts item to both local DB and Firestore.
   Future<T> insert(T data) async {
     (data as dynamic).id = await db.insert(tableName(), objToMap(data),
         conflictAlgorithm: ConflictAlgorithm.replace);
@@ -79,6 +86,7 @@ abstract class SqlProvider<T> {
     return data;
   }
 
+  /// Inserts item to local DB.
   Future<T> insertLocalOnly(T data) async {
     (data as dynamic).id = await db.insert(tableName(), objToMap(data),
         conflictAlgorithm: ConflictAlgorithm.replace);
@@ -98,27 +106,28 @@ abstract class SqlProvider<T> {
 
   Future<void> deleteAll() async {
     deleteAllFirestore();
+    await deleteAllLocal();
+  }
+
+  Future<void> deleteAllLocal() async {
     await db.execute("delete from ${tableName()}");
   }
 
-  Future<void> deleteAllLocalOnly() async {
-    await db.execute("delete from ${tableName()}");
-  }
-
-  Future<void> setAllLocalOnly(List<Map<String, dynamic>> list) async {
-    await deleteAll();
+  Future<void> setAllLocal(List<Map<String, dynamic>> list) async {
+    await deleteAllLocal();
     await Future.forEach<Map<String, dynamic>>(list, (element) async {
       await db.insert(tableName(), objToMap(mapToObj(element)),
           conflictAlgorithm: ConflictAlgorithm.replace);
     });
   }
 
-  void setFirestore(T data);
+  Future<void> setFirestore(T data);
 
-  void deleteFirestore(int id);
+  Future<void> deleteFirestore(int id);
 
   void deleteAllFirestore();
 
+  /// Currently unused.
   void setAllFirestore(List<Map<String, dynamic>> list);
 
   Future<void> use(dynamic Function(SqlProvider<T> provider) fn) async {
