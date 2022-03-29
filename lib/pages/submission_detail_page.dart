@@ -20,7 +20,7 @@ class SubmissionDetailPage extends StatefulWidget {
 
 class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
   Submission? item;
-  List<DoTime> doTimes = [];
+  List<DoTime> _doTimeList = [];
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
         return a.startAt.difference(b.startAt).inMinutes;
       });
       setState(() {
-        this.doTimes = doTimes;
+        _doTimeList = doTimes;
       });
     });
   }
@@ -136,21 +136,16 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
                     style:
                         TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               ),
-              ...doTimes
+              ..._doTimeList
                   .map((e) => DoTimeDetailCard(
                         doTime: e,
-                        onDelete: () {
-                          onDoTimeDelete(e);
-                        },
-                        onEdit: () {
-                          onDoTimeEdit(e);
-                        },
-                        onTimer: () {
-                          showFocusTimer(e);
+                        parentList: _doTimeList,
+                        onChanged: () {
+                          setState(() {});
                         },
                       ))
                   .toList(),
-              if (doTimes.isEmpty)
+              if (_doTimeList.isEmpty)
                 const Center(
                   child: Padding(
                     padding: EdgeInsets.all(16.0),
@@ -180,62 +175,7 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
         await provider.insert(data);
       });
       setState(() {
-        doTimes.add(data);
-      });
-    }
-  }
-
-  void onDoTimeDelete(DoTime e) async {
-    await DoTimeProvider().use((provider) async {
-      await provider.delete(e.id!);
-    });
-    var index = doTimes.indexOf(e);
-    setState(() {
-      doTimes.remove(e);
-    });
-    showSnackBar(context, "削除しました",
-        action: SnackBarAction(
-          label: "元に戻す",
-          onPressed: () {
-            DoTimeProvider().use((provider) async {
-              await provider.insert(e);
-            });
-            setState(() {
-              doTimes.insert(index, e);
-            });
-          },
-        ));
-  }
-
-  void onDoTimeEdit(DoTime e) async {
-    var data = await showRoundedBottomSheet<DoTime>(
-      context: context,
-      title: "編集",
-      child: DoTimeEditBottomSheet(
-        submissionId: widget.submissionId,
-        initialData: e,
-      ),
-    );
-    if (data != null) {
-      await DoTimeProvider().use((provider) async {
-        await provider.insert(data);
-      });
-      setState(() {
-        var index = doTimes.indexOf(e);
-        doTimes.removeAt(index);
-        doTimes.insert(index, data);
-      });
-      showSnackBar(context, "編集しました");
-    }
-  }
-
-  void showFocusTimer(DoTime e) async {
-    var result = await Navigator.pushNamed(context, "/focus-timer", arguments: {
-      "doTime": e,
-    });
-    if (result == true) {
-      setState(() {
-        doTimes.remove(e);
+        _doTimeList.add(data);
       });
     }
   }

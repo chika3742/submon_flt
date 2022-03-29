@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:submon/db/memorize_card.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/utils/card_side_builder.dart';
@@ -29,7 +30,11 @@ const policyDialogContent = "是非最後までお読みください。\n\n"
 const tempImgDirName = "tempImg";
 
 class CameraPreviewPage extends StatefulWidget {
-  const CameraPreviewPage({Key? key}) : super(key: key);
+  CameraPreviewPage({Key? key, required dynamic arguments})
+      : folderId = arguments["folderId"],
+        super(key: key);
+
+  final int folderId;
 
   @override
   _CameraPreviewPageState createState() => _CameraPreviewPageState();
@@ -56,6 +61,7 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
   Offset _focusPoint = Offset.zero;
   bool _isFocusing = false;
   Timer? _focusTimer;
+  FlashMode _flashMode = FlashMode.auto;
 
   final _panelKey = GlobalKey();
   final _cameraPreviewKey = GlobalKey();
@@ -136,6 +142,7 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
           weight: 1),
       TweenSequenceItem(tween: ConstantTween(begin), weight: 0.5),
     ]).animate(_radarAnimationController!);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -144,6 +151,16 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
           IconButton(
               icon: const Icon(Icons.info),
               onPressed: showAboutTextRecognizing),
+          if (!_isPickingMode)
+            IconButton(
+              icon: Icon(getFlashIcon()),
+              onPressed: () {
+                setState(() {
+                  _flashMode = getNextFlashMode();
+                  _controller?.setFlashMode(_flashMode);
+                });
+              },
+            ),
           if (_isPickingMode && !_isEditMode)
             IconButton(
               icon: const Icon(Icons.delete),
@@ -160,33 +177,69 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
               itemBuilder: (ctx) {
                 return [
                   PopupMenuItem(
-                    child: CheckboxListTile(
+                    value: 0,
+                    child: ListTile(
                       title: const Text("単語の後にスペースを挿入"),
-                      value: _autoInsertSpace,
-                      onChanged: (v) {
-                        setState(() {
-                          _autoInsertSpace = v!;
-                        });
-                        Navigator.pop(context);
-                      },
+                      trailing: Checkbox(
+                        value: _autoInsertSpace,
+                        onChanged: (v) {
+                          setState(() {
+                            _autoInsertSpace = !_autoInsertSpace;
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
                     ),
                   ),
-                  PopupMenuItem(
+                  const PopupMenuItem(
+                    value: 1,
                     child: ListTile(
-                      title: const Text("スペースを挿入"),
-                      onTap: () {
-                        setState(() {
-                          _builder.append(_currentCardSide, TextElement(" "));
-                        });
-                        Navigator.pop(context);
-                      },
+                      title: Text("スペースを挿入"),
                     ),
                   ),
                 ];
               },
+              onSelected: (value) {
+                switch (value) {
+                  case 0:
+                    setState(() {
+                      _autoInsertSpace = !_autoInsertSpace;
+                    });
+                    break;
+                  case 1:
+                    setState(() {
+                      _builder.append(_currentCardSide, TextElement(" "));
+                    });
+                    break;
+                }
+              },
             ),
         ],
       ),
+      floatingActionButton: _isPickingMode && !_hideResultPanel
+          ? FloatingActionButton.extended(
+              icon: const Icon(Icons.check),
+              label: const Text('作成'),
+              onPressed: _builder.toStringFront() != "" &&
+                      _builder.toStringBack() != ""
+                  ? () {
+                      MemorizeCardProvider().use((provider) async {
+                        await provider.insert(MemorizeCard(
+                          front: _builder.toStringFront(),
+                          back: _builder.toStringBack(),
+                          folderId: widget.folderId,
+                        ));
+                        setState(() {
+                          _builder.clearAll();
+                          _switchAnimationController!.reverse();
+                          _currentCardSide = CardSide.front;
+                        });
+                        showSnackBar(context, "作成しました。");
+                      });
+                    }
+                  : null,
+            )
+          : null,
       body: WillPopScope(
         onWillPop: () async {
           if (_isEditMode) {
@@ -422,7 +475,9 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
       } else {
         return Text(
           sideText == "" ? "なぞって選択" : sideText,
-          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              fontSize: 22,
+              fontWeight: sideText != "" ? FontWeight.bold : FontWeight.normal),
           overflow: TextOverflow.fade,
           softWrap: false,
         );
@@ -668,9 +723,36 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
     _controller = CameraController(cameras[0], ResolutionPreset.veryHigh,
         enableAudio: false);
     await _controller!.initialize();
+    await _controller!.setFlashMode(_flashMode);
     _controller!.lockCaptureOrientation(DeviceOrientation.portraitUp);
     if (mounted) {
       setState(() {});
+    }
+  }
+
+  IconData getFlashIcon() {
+    switch (_flashMode) {
+      case FlashMode.off:
+        return Icons.flash_off;
+      case FlashMode.auto:
+        return Icons.flash_auto;
+      case FlashMode.always:
+        return Icons.flash_on;
+      case FlashMode.torch:
+        return Icons.flash_on;
+    }
+  }
+
+  FlashMode getNextFlashMode() {
+    switch (_flashMode) {
+      case FlashMode.off:
+        return FlashMode.auto;
+      case FlashMode.auto:
+        return FlashMode.always;
+      case FlashMode.always:
+        return FlashMode.off;
+      case FlashMode.torch:
+        return FlashMode.off;
     }
   }
 }

@@ -1,4 +1,4 @@
-import 'package:submon/pages/memorize/camera_preview_page.dart';
+import 'package:submon/pages/memorize_card/camera_preview_page.dart';
 import 'package:submon/utils/text_recognized_candidate_painter.dart';
 
 class CardSideBuilder {
