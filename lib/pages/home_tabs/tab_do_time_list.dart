@@ -4,7 +4,6 @@ import 'package:submon/components/dotime_detail_card.dart';
 import 'package:submon/db/doTime.dart';
 import 'package:submon/db/submission.dart';
 
-import '../../components/dotime_edit_bottom_sheet.dart';
 import '../../utils/ui.dart';
 
 class TabDoTimeList extends StatefulWidget {
@@ -89,14 +88,9 @@ class _TabDoTimeListState extends State<TabDoTimeList> {
 
       widgets.add(DoTimeDetailCard(
         doTime: e,
-        onEdit: () {
-          _edit(e);
-        },
-        onDelete: () {
-          _delete(e);
-        },
-        onTimer: () {
-          _timer(e);
+        parentList: _doTimeList,
+        onChanged: () {
+          setState(() {});
         },
       ));
     }
@@ -110,65 +104,6 @@ class _TabDoTimeListState extends State<TabDoTimeList> {
         if (_doTimeList.isEmpty) const Center(child: Text('DoTimeがありません')),
       ],
     );
-  }
-
-  void _delete(DoTime item) async {
-    await DoTimeProvider().use((provider) async {
-      await provider.delete(item.id!);
-    });
-    var index = _doTimeList.indexWhere((e) => e.id == item.id);
-    late DoTimeWithSubmission removed;
-    setState(() {
-      removed = _doTimeList.removeAt(index);
-    });
-    showSnackBar(context, "削除しました",
-        action: SnackBarAction(
-          label: "元に戻す",
-          onPressed: () {
-            DoTimeProvider().use((provider) async {
-              await provider.insert(item);
-            });
-            setState(() {
-              _doTimeList.insert(index, removed);
-            });
-          },
-        ));
-  }
-
-  void _edit(DoTime item) async {
-    var data = await showRoundedBottomSheet<DoTime>(
-      context: context,
-      useRootNavigator: true,
-      title: "編集",
-      child: DoTimeEditBottomSheet(
-        submissionId: item.submissionId,
-        initialData: item,
-      ),
-    );
-    if (data != null) {
-      await DoTimeProvider().use((provider) async {
-        await provider.insert(data);
-      });
-      setState(() {
-        var index = _doTimeList.indexWhere((e) => e.id == item.id);
-        var removed = _doTimeList.removeAt(index);
-        _doTimeList.insert(
-            index, DoTimeWithSubmission.fromObject(data, removed.submission));
-      });
-      showSnackBar(context, "編集しました");
-    }
-  }
-
-  void _timer(DoTime item) async {
-    var result = await Navigator.of(context, rootNavigator: true)
-        .pushNamed("/focus-timer", arguments: {
-      "doTime": item,
-    });
-    if (result == true) {
-      setState(() {
-        _doTimeList.remove(item);
-      });
-    }
   }
 }
 

@@ -44,6 +44,9 @@ abstract class SqlProvider<T> {
         case DataType.bool:
           createSql += "integer ";
           break;
+        case DataType.real:
+          createSql += "real ";
+          break;
       }
       if (element.isPrimaryKey) {
         createSql += "primary key autoincrement, ";
@@ -156,4 +159,4 @@ class SqlField {
   final bool isNonNull;
 }
 
-enum DataType { string, integer, bool }
+enum DataType { string, integer, bool, real }

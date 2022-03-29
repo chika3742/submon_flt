@@ -2,13 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submon/db/memorize_card_folder.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
-import 'package:submon/pages/memorize/camera_preview_page.dart';
+import 'package:submon/pages/memorize_card/camera_preview_page.dart';
 import 'package:submon/utils/ui.dart';
 
 class TabMemorizeCard extends StatefulWidget {
@@ -23,7 +22,7 @@ class _TabMemorizeCardState extends State<TabMemorizeCard>
   AnimationController? _animController;
   StreamSubscription? _streamSubscription;
 
-  final ends = [0.7, 0.8, 0.9, 1.0];
+  final ends = [0.6, 0.7, 0.8, 0.9, 1.0];
 
   @override
   void initState() {
@@ -53,11 +52,11 @@ class _TabMemorizeCardState extends State<TabMemorizeCard>
         padding: const EdgeInsets.all(32.0),
         child: Column(
           children: [
-            _buildMemorizeItem("カードを見る", 1, Icons.remove_red_eye, () {}),
-            _buildMemorizeItem("カードで確認", 2, Icons.check, () {}),
-            _buildMemorizeItem("結果を確認", 3, Icons.trending_up, () {}),
-            _buildMemorizeItem("みんなのカード", 3, Icons.catching_pokemon, () {}),
-            _buildMemorizeItem("カード作成", 4, Icons.add, () {
+            _buildMemorizeItem("カードを見る", 1, Icons.remove_red_eye),
+            _buildMemorizeItem("チェックテスト", 2, Icons.check),
+            _buildMemorizeItem("テストの結果", 3, Icons.trending_up),
+            _buildMemorizeItem("みんなのカード", 4, Icons.catching_pokemon),
+            _buildMemorizeItem("カード作成", 5, Icons.add, onTap: () {
               eventBus.fire(MemorizeCardAddButtonPressed());
             }),
           ],
@@ -66,8 +65,8 @@ class _TabMemorizeCardState extends State<TabMemorizeCard>
     );
   }
 
-  Widget _buildMemorizeItem(
-      String title, int index, IconData icon, void Function() onTap) {
+  Widget _buildMemorizeItem(String title, int index, IconData icon,
+      {void Function()? onTap}) {
     return SlideTransition(
         position: Tween(
                 begin: Offset(-0.5 - index.toDouble() * 0.3, 0),
@@ -81,39 +80,58 @@ class _TabMemorizeCardState extends State<TabMemorizeCard>
           child: SizedBox(
             height: 80,
             child: Card(
+              elevation: 6,
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(8.0)),
               ),
               child: InkWell(
                 onTap: onTap,
                 borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Row(
-                    children: [
-                      Icon(icon, size: 32),
-                      const SizedBox(width: 16),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 4.0),
-                        child: Text(
-                          title,
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelLarge
-                              ?.copyWith(
-                                  fontSize: 22,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        children: [
+                          Icon(icon, size: 32),
+                          const SizedBox(width: 16),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 4.0),
+                            child: Text(
+                              title,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge
+                                  ?.copyWith(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (onTap == null)
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.4),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(8))),
+                        child: const Align(
+                          alignment: Alignment.bottomRight,
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text('Coming Soon',
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  fontFamily: 'Play',
                                   color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  shadows: [
-                                Shadow(
-                                    color: Colors.black.withOpacity(0.7),
-                                    offset: const Offset(1.7, 1.7),
-                                    blurRadius: 12)
-                              ]),
+                                )),
+                          ),
                         ),
                       ),
-                    ],
-                  ),
+                  ],
                 ),
               ),
             ),
@@ -156,6 +174,7 @@ class _TabMemorizeCardState extends State<TabMemorizeCard>
                 }
 
                 _popRoot();
+                Colors.orangeAccent;
 
                 // フォルダー選択画面を表示
                 _showFolderSelectBottomSheet((id) async {
@@ -166,24 +185,22 @@ class _TabMemorizeCardState extends State<TabMemorizeCard>
                     eventBus.fire(SubmissionDetailPageOpened(true));
                     // カメラを表示
                     await Navigator.of(context, rootNavigator: true)
-                        .pushNamed("/memorize/camera");
+                        .pushNamed("/memorize_card/camera", arguments: {
+                      "folderId": id,
+                    });
 
                     eventBus.fire(SubmissionDetailPageOpened(false));
                   } else {
-                    if (await Permission.camera.isPermanentlyDenied) {
-                      showSimpleDialog(
-                        context,
-                        "権限について",
-                        "今後許可ダイアログを表示しない選択をしたため、設定画面から権限を許可する必要があります。",
-                        showCancel: true,
-                        okText: "設定画面に移動",
-                        onOKPressed: () {
-                          openAppSettings();
-                        },
-                      );
-                    } else {
-                      Fluttertoast.showToast(msg: "権限が許可されませんでした。");
-                    }
+                    showSimpleDialog(
+                      context,
+                      "権限について",
+                      "カメラ権限を許可しない選択をしたため、この機能はご利用いただけません。許可画面が表示されなかった場合は、設定画面から権限を許可する必要があります。",
+                      showCancel: true,
+                      okText: "設定画面に移動",
+                      onOKPressed: () {
+                        openAppSettings();
+                      },
+                    );
                   }
                 });
               },
@@ -219,6 +236,34 @@ class _TabMemorizeCardState extends State<TabMemorizeCard>
                     var item = folders[index];
                     return ListTile(
                       title: Text(item.title),
+                      trailing: PopupMenuButton(
+                        itemBuilder: (context) {
+                          return [
+                            const PopupMenuItem(
+                              value: 0,
+                              child: ListTile(
+                                leading: Icon(Icons.edit),
+                                title: Text('名称変更'),
+                              ),
+                            ),
+                            const PopupMenuItem(
+                              value: 1,
+                              child: ListTile(
+                                leading: Icon(Icons.delete),
+                                title: Text('削除'),
+                              ),
+                            ),
+                          ];
+                        },
+                        onSelected: (value) {
+                          switch (value) {
+                            case 0:
+                              break;
+                            case 1:
+                              break;
+                          }
+                        },
+                      ),
                       onTap: () {
                         onSelected(item.id!);
                       },
