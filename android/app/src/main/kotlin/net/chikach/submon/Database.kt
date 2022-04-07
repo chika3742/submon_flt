@@ -32,12 +32,13 @@ data class DoTime(
     @PrimaryKey val id: Int?,
     val submissionId: Int,
     val startAt: String,
+    val done: Int,
     val minute: Int,
     val content: String
 )
 
 @Dao
 interface DoTimeDao {
-    @Query("delete from doTime where id = :id")
-    fun delete(id: Int)
+    @Query("update doTime set done = :done where id = :id")
+    fun updateDone(id: Int, done: Int)
 }

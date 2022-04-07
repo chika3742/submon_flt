@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 class CardViewPage extends StatefulWidget {
-  const CardViewPage({Key? key}) : super(key: key);
+  CardViewPage({Key? key, required dynamic arguments})
+      : folderId = arguments["folderId"],
+        super(key: key);
+
+  final int folderId;
 
   @override
   State<CardViewPage> createState() => _CardViewPageState();
@@ -10,6 +14,11 @@ class CardViewPage extends StatefulWidget {
 class _CardViewPageState extends State<CardViewPage> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('カードビュー'),
+      ),
+      body: Container(),
+    );
   }
 }

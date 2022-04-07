@@ -35,6 +35,8 @@ class MemorizeCardAddButtonPressed {
   MemorizeCardAddButtonPressed();
 }
 
+class DoTimeAddButtonPressed {}
+
 class SubmissionDetailPageOpened {
   bool opened;
 

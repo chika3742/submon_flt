@@ -104,18 +104,20 @@ class FirestoreProvider {
     }
   }
 
-  static Future<void> addDoTimeNotification(DocumentReference? ref) async {
-    if (userDoc != null && ref != null) {
+  static Future<void> addDoTimeNotification(int? id) async {
+    if (userDoc != null && id != null) {
       await userDoc!.set({
-        "doTimeNotifications": FieldValue.arrayUnion([ref])
+        "doTimeNotifications": FieldValue.arrayUnion(
+            [userDoc!.collection("doTime").doc(id.toString())])
       }, SetOptions(merge: true));
     }
   }
 
-  static Future<void> removeDoTimeNotification(DocumentReference? ref) async {
-    if (userDoc != null && ref != null) {
+  static Future<void> removeDoTimeNotification(int? id) async {
+    if (userDoc != null && id != null) {
       await userDoc!.set({
-        "doTimeNotifications": FieldValue.arrayRemove([ref])
+        "doTimeNotifications": FieldValue.arrayRemove(
+            [userDoc!.collection("doTime").doc(id.toString())])
       }, SetOptions(merge: true));
     }
   }

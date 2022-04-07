@@ -8,7 +8,7 @@ class DoTimeEditBottomSheet extends StatefulWidget {
       : super(key: key);
 
   final DoTime? initialData;
-  final int submissionId;
+  final int? submissionId;
 
   @override
   State<DoTimeEditBottomSheet> createState() => _DoTimeEditBottomSheetState();
@@ -36,6 +36,7 @@ class _DoTimeEditBottomSheetState extends State<DoTimeEditBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -47,8 +48,8 @@ class _DoTimeEditBottomSheetState extends State<DoTimeEditBottomSheet> {
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
-                          : Colors.black87,
-                    ),
+                      : Colors.black87,
+                ),
               ),
               onTap: () async {
                 var result = await showDatePicker(
@@ -96,10 +97,10 @@ class _DoTimeEditBottomSheetState extends State<DoTimeEditBottomSheet> {
               items: _acceptableMinute
                   .map((e) => DropdownMenuItem(
                 child: Text("$e分",
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
-                        value: e,
-                      ))
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold)),
+                value: e,
+              ))
                   .toList(),
               onChanged: (value) {
                 setState(() {

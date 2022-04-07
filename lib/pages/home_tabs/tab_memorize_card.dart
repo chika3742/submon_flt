@@ -52,7 +52,14 @@ class _TabMemorizeCardState extends State<TabMemorizeCard>
         padding: const EdgeInsets.all(32.0),
         child: Column(
           children: [
-            _buildMemorizeItem("カードを見る", 1, Icons.remove_red_eye),
+            _buildMemorizeItem("カードを見る", 1, Icons.remove_red_eye, onTap: () {
+              _showFolderSelectBottomSheet((id) {
+                Navigator.of(context, rootNavigator: true)
+                    .pushNamed("/memorize_card/view", arguments: {
+                  "folderId": id,
+                });
+              });
+            }),
             _buildMemorizeItem("チェックテスト", 2, Icons.check),
             _buildMemorizeItem("テストの結果", 3, Icons.trending_up),
             _buildMemorizeItem("みんなのカード", 4, Icons.catching_pokemon),

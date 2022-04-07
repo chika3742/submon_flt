@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/pages/home_tabs/tab_do_time_list.dart';
 import 'package:submon/utils/ui.dart';
 
@@ -35,19 +36,6 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
         child: IntrinsicHeight(
           child: Stack(
             children: [
-              if (doTime.done)
-                Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(4)),
-                    color: Colors.black.withOpacity(0.3),
-                  ),
-                  child: const Icon(
-                    Icons.check,
-                    size: 80,
-                    color: Colors.white,
-                  ),
-                ),
               Row(
                 children: [
                   Padding(
@@ -175,6 +163,21 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
                   ),
                 ],
               ),
+              if (doTime.done)
+                IgnorePointer(
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(4)),
+                      color: Colors.black.withOpacity(0.3),
+                    ),
+                    child: const Icon(
+                      Icons.check,
+                      size: 80,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -188,6 +191,11 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
       await provider.insert(widget.doTime..done = !isDone);
     });
     setState(() {});
+    if (!isDone) {
+      FirestoreProvider.removeDoTimeNotification(widget.doTime.id);
+    } else {
+      FirestoreProvider.addDoTimeNotification(widget.doTime.id);
+    }
     showSnackBar(context, !isDone ? "完了しました" : "完了マークを外しました",
         action: SnackBarAction(
           label: "元に戻す",

@@ -206,19 +206,19 @@ class SelectSheetAction {
 }
 
 Future<T?> showRoundedBottomSheet<T>({
-  BuildContext? context,
+  required Widget child,
+  required BuildContext context,
   String? title,
-  Widget? child,
   bool useRootNavigator = false,
 }) {
   return showModalBottomSheet<T>(
-    context: context!,
+    context: context,
     useRootNavigator: useRootNavigator,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(8), topRight: Radius.circular(8))),
-    builder: (ctx) {
+    builder: (context) {
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -236,11 +236,7 @@ Future<T?> showRoundedBottomSheet<T>({
                   .titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
-          Padding(
-            padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom),
-            child: child,
-          ),
+          child,
         ],
       );
     },

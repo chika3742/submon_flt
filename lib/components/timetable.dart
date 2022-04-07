@@ -138,43 +138,7 @@ class TimetableState extends State<Timetable> {
                     Feedback.forLongPress(context);
                   }
                 : null,
-            child: widget.edit
-                ? OpenContainer<dynamic>(
-                    // tappable: widget.edit,
-                    routeSettings:
-                        const RouteSettings(name: "/timetable/edit/select"),
-                    closedColor: Colors.green,
-                    onClosed: (result) {
-                      if (result != null) {
-                        Future.delayed(const Duration(milliseconds: 300))
-                            .then((value) {
-                          onSubjectSelected(result, youbi, index);
-                        });
-                      }
-                    },
-                    closedShape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5)),
-                    closedBuilder: (_, __) =>
-                        _buildTimetableCell(key, youbi, index),
-                    openBuilder: (context, callback) =>
-                        TimetableSubjectSelectPage(youbi, index),
-                  )
-                : OpenModalAnimatedContainer(
-                    context: context,
-                    tappable: cell != null,
-                    width: 500,
-                    height: 200,
-                    closedBuilder: (context) {
-                      return _buildTimetableCell(key, youbi, index);
-                    },
-                    openBuilder: (context) {
-                      return _NoteView(
-                          cell: cell!,
-                          weekday: youbi,
-                          index: index,
-                          createSubmission: createNewSubmission);
-                    },
-                  ),
+            child: _buildCellContainer(key, youbi, index, cell),
           ),
         ));
       }
@@ -192,12 +156,56 @@ class TimetableState extends State<Timetable> {
     return widgets;
   }
 
+  Widget _buildCellContainer(
+      GlobalKey containerKey, int youbi, int index, db.Timetable? cell) {
+    if (widget.edit) {
+      return OpenContainer<dynamic>(
+        // tappable: widget.edit,
+        routeSettings: const RouteSettings(name: "/timetable/edit/select"),
+        onClosed: (result) {
+          if (result != null) {
+            Future.delayed(const Duration(milliseconds: 300)).then((value) {
+              onSubjectSelected(result, youbi, index);
+            });
+          }
+        },
+        closedColor: Theme.of(context).cardColor,
+        closedShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(6),
+        ),
+        closedBuilder: (_, __) =>
+            _buildTimetableCell(containerKey, youbi, index),
+        closedElevation: 4,
+        openBuilder: (context, callback) =>
+            TimetableSubjectSelectPage(youbi, index),
+      );
+    } else {
+      return OpenModalAnimatedContainer(
+        context: context,
+        tappable: cell != null,
+        width: 500,
+        height: 200,
+        closedBuilder: (context) {
+          return _buildTimetableCell(containerKey, youbi, index);
+        },
+        openBuilder: (context) {
+          return _NoteView(
+              cell: cell!,
+              weekday: youbi,
+              index: index,
+              createSubmission: createNewSubmission);
+        },
+      );
+    }
+  }
+
   Widget _buildTimetableCell(GlobalKey containerKey, int youbi, int index) {
     var weekday = DateTime.now().weekday;
+    var orange = weekday == youbi + 1 && !widget.edit;
     return Material(
-      color:
-          weekday == youbi + 1 && !widget.edit ? Colors.orange : Colors.green,
-      borderRadius: BorderRadius.circular(5),
+      color: orange ? Colors.orange : Theme.of(context).cardColor,
+      borderRadius: BorderRadius.circular(6),
+      elevation: 4,
       child: Container(
         key: containerKey,
         padding: const EdgeInsets.all(8.0),
@@ -209,7 +217,7 @@ class TimetableState extends State<Timetable> {
               ? table[getWholeIndex(youbi, index)]!.subject
               : "",
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Colors.white,
+            color: orange ? Colors.white : null,
               ),
         ),
       ),
@@ -320,7 +328,7 @@ class _NoteViewState extends State<_NoteView> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("${widget.cell.subject} メモ",
+                      Text(widget.cell.subject,
                           style: const TextStyle(fontSize: 18)),
                       Text(
                           "${getWeekdayString(widget.weekday)}曜日 ${widget.index}時間目",
@@ -332,53 +340,23 @@ class _NoteViewState extends State<_NoteView> {
                     icon: const Icon(Icons.edit),
                     splashRadius: 24,
                     onPressed: () async {
-                      var controller =
-                          TextEditingController(text: widget.cell.note);
-                      var result = await showRoundedBottomSheet(
-                          context: context,
-                          title:
-                              "${widget.cell.subject} (${getWeekdayString(widget.weekday)}曜 ${widget.index}限) メモ編集",
-                          child: Column(children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: TextFormField(
-                                controller: controller,
-                                autofocus: true,
-                                decoration: InputDecoration(
-                                  border: const OutlineInputBorder(),
-                                  labelText: "メモ",
-                                  suffixIcon: IconButton(
-                                    icon: const Icon(Icons.clear),
-                                    onPressed: () {
-                                      controller.clear();
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.bottomRight,
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
-                                child: IconButton(
-                                  icon: const Icon(Icons.check),
-                                  splashRadius: 24,
-                                  onPressed: () async {
-                                    Navigator.pop(context, controller.text);
-                                  },
-                                ),
-                              ),
-                            )
-                          ]));
-                      if (result != null) {
-                        setState(() {
-                          widget.cell.note = result;
-                        });
-                        db.TimetableProvider().use((provider) async {
-                          await provider.update(widget.cell);
-                        });
-                      }
+                      await showRoundedBottomSheet(
+                        context: context,
+                        title:
+                            "${widget.cell.subject} (${getWeekdayString(widget.weekday)}曜 ${widget.index}限) メモ編集",
+                        child: TextFormFieldBottomSheet(
+                          formLabel: "メモ",
+                          onDone: (text) {
+                            setState(() {
+                              widget.cell.note = text;
+                            });
+                            db.TimetableProvider().use((provider) async {
+                              await provider.update(widget.cell);
+                            });
+                            Navigator.of(context, rootNavigator: true).pop();
+                          },
+                        ),
+                      );
                     },
                   ),
                 ],
@@ -386,9 +364,10 @@ class _NoteViewState extends State<_NoteView> {
               Padding(
                 padding: const EdgeInsets.symmetric(
                     vertical: 16.0, horizontal: 16.0),
-                child: Text(widget.cell.note.isNotEmpty
-                    ? widget.cell.note
-                    : "メモはありません"),
+                child: widget.cell.note.isNotEmpty
+                    ? Text(widget.cell.note)
+                    : Text("メモはありません",
+                        style: Theme.of(context).textTheme.caption),
               ),
               const Spacer(),
               Padding(

@@ -47,8 +47,9 @@ class _FocusTimerPageState extends State<FocusTimerPage>
     _remainingTime = Duration(minutes: widget.doTime.minute);
 
     SubmissionProvider().use((provider) async {
-      var submissionName =
-          (await provider.get(widget.doTime.submissionId))!.title;
+      var submissionName = widget.doTime.submissionId != null
+          ? (await provider.get(widget.doTime.submissionId!))!.title
+          : "";
       setState(() {
         _submissionName = submissionName;
       });
@@ -112,22 +113,24 @@ class _FocusTimerPageState extends State<FocusTimerPage>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text.rich(TextSpan(children: [
-                    const TextSpan(text: "提出物: "),
-                    TextSpan(
-                        text: _submissionName,
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
-                  ])),
+                  if (_submissionName.isNotEmpty)
+                    Text.rich(TextSpan(children: [
+                      const TextSpan(text: "提出物: "),
+                      TextSpan(
+                          text: _submissionName,
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
+                    ])),
                   const SizedBox(height: 8),
-                  Text.rich(TextSpan(children: [
-                    const TextSpan(text: "集中すること: "),
-                    TextSpan(
-                        text: widget.doTime.content,
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
-                  ])),
-                  const SizedBox(height: 8),
+                  if (widget.doTime.content.isNotEmpty)
+                    Text.rich(TextSpan(children: [
+                      const TextSpan(text: "集中すること: "),
+                      TextSpan(
+                          text: widget.doTime.content,
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
+                    ])),
+                  const SizedBox(height: 16),
                   const Text('※アプリのタスクを終了するとタイマーがキャンセルされます。'),
                 ],
               ),

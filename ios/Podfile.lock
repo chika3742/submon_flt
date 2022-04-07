@@ -393,7 +393,7 @@ PODS:
     - Firebase/Analytics (= 8.11.0)
     - firebase_core
     - Flutter
-  - firebase_auth (3.3.10):
+  - firebase_auth (3.3.11):
     - Firebase/Auth (= 8.11.0)
     - firebase_core
     - Flutter
@@ -404,7 +404,7 @@ PODS:
     - Firebase/Crashlytics (= 8.11.0)
     - firebase_core
     - Flutter
-  - firebase_dynamic_links (4.1.0):
+  - firebase_dynamic_links (4.1.1):
     - Firebase/DynamicLinks (= 8.11.0)
     - firebase_core
     - Flutter
@@ -745,10 +745,10 @@ SPEC CHECKSUMS:
   cloud_functions: 8415560122ac43e9edc2efd070ae14e664aa2fd3
   Firebase: 44dd9724c84df18b486639e874f31436eaa9a20c
   firebase_analytics: 20841ef6a705a412c737deb2fe98290e9242d323
-  firebase_auth: fa562bf84ce3e872cc4225374cb687edb32e8d26
+  firebase_auth: bdfbd5b10da1db6d5eb6ae7dbda5d81365b9cc9d
   firebase_core: 08f6a85f62060111de5e98d6a214810d11365de9
   firebase_crashlytics: 28149c943342a73fefe1afef224d345cfb35e1ee
-  firebase_dynamic_links: 167a78046c09ba772adcad7147ba967c24c39f41
+  firebase_dynamic_links: 1b6e3aeb743c0a0df1dab3543bd9dec6aab4de58
   firebase_performance: 9bd6910cd8a724596c741dd6f77a2e297f6fd7b3
   FirebaseABTesting: 1b05c92327b3f0a9545cea3bab4d93e82550e29b
   FirebaseAnalytics: 4e4b13031034e6561ed3bd1d47b6fdabbd6487c6

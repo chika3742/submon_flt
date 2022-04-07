@@ -92,15 +92,15 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                         )
                         it.addAction(
                             NotificationCompat.Action(
-                                null, "DoTimeを削除",
+                                null, "完了",
                                 createBroadcastPendingIntent(
-                                    Intent(this, DeleteDoTimeBroadcastReceiver::class.java)
+                                    Intent(this, DoneDoTimeBroadcastReceiver::class.java)
                                         .putExtra(
-                                            DeleteDoTimeBroadcastReceiver.EXTRA_DO_TIME_ID,
+                                            DoneDoTimeBroadcastReceiver.EXTRA_DO_TIME_ID,
                                             data["doTimeId"]?.toInt()
                                         )
                                         .putExtra(
-                                            DeleteDoTimeBroadcastReceiver.EXTRA_NOTIFICATION_ID,
+                                            DoneDoTimeBroadcastReceiver.EXTRA_NOTIFICATION_ID,
                                             notificationId
                                         )
                                 )

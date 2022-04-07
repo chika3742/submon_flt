@@ -3,7 +3,6 @@ import 'package:sqflite/sqflite.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/sql_provider.dart';
 import 'package:submon/db/submission.dart';
-import 'package:submon/utils/firestore.dart';
 
 const tableDoTime = "doTime";
 const colSubmissionId = "submissionId";
@@ -13,7 +12,7 @@ const colContent = "content";
 
 class DoTime {
   int? id;
-  int submissionId;
+  int? submissionId;
   DateTime startAt;
   int minute;
   String content;
@@ -38,7 +37,7 @@ class DoTimeProvider extends SqlProvider<DoTime> {
   List<SqlField> columns() {
     return [
       SqlField(colId, DataType.integer, isPrimaryKey: true),
-      SqlField(colSubmissionId, DataType.integer),
+      SqlField(colSubmissionId, DataType.integer, isNonNull: false),
       SqlField(colStartAt, DataType.string),
       SqlField(colMinute, DataType.integer),
       SqlField(colContent, DataType.string),
@@ -73,15 +72,13 @@ class DoTimeProvider extends SqlProvider<DoTime> {
   Future<void> setFirestore(data) async {
     await FirestoreProvider.doTime
         .set(data.id.toString(), objToMap(data), SetOptions(merge: true));
-    await FirestoreProvider.addDoTimeNotification(
-        userDoc?.collection("doTime").doc(data.id.toString()));
+    await FirestoreProvider.addDoTimeNotification(data.id);
   }
 
   @override
   Future<void> deleteFirestore(int id) async {
     await FirestoreProvider.doTime.delete(id.toString());
-    await FirestoreProvider.removeDoTimeNotification(
-        userDoc?.collection("doTime").doc(id.toString()));
+    await FirestoreProvider.removeDoTimeNotification(id);
   }
 
   Future<void> deleteForSubmissionId(int submissionId) async {
