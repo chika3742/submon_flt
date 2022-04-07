@@ -89,7 +89,7 @@
                 android:exported="false" />
 
         <receiver
-                android:name=".DeleteDoTimeBroadcastReceiver"
+                android:name=".DoneDoTimeBroadcastReceiver"
                 android:exported="false" />
 
         <service

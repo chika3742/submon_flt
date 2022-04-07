@@ -56,6 +56,12 @@ class TwitterSignIn {
       return result;
     } on SocketException {
       return TwitterAuthResult(errorMessage: "エラーが発生しました。インターネット接続をご確認ください。");
+    } on TwitterRequestFailedException catch (e) {
+      if (e.code == 135) {
+        return TwitterAuthResult(errorMessage: "端末の時刻がサーバー時刻と大幅にずれています。");
+      } else {
+        return TwitterAuthResult(errorMessage: "エラーが発生しました。(${e.code})");
+      }
     } catch (e, stackTrace) {
       debugPrint(e.toString());
       debugPrint(stackTrace.toString());
@@ -90,7 +96,11 @@ class TwitterSignIn {
     var result = await http.post(baseUri.replace(queryParameters: params),
         headers: headers);
 
-    if (result.statusCode != 200) return null;
+    if (result.statusCode != 200) {
+      var error = jsonDecode(result.body)["errors"][0];
+      throw TwitterRequestFailedException(
+          code: error["code"], message: error["message"]);
+    }
 
     var query = Uri.splitQueryString(result.body);
     return RequestTokenResult(
@@ -194,5 +204,17 @@ class TwitterAuthResult {
   @override
   String toString() {
     return "oauthToken: $accessToken, oauthSecret: $accessTokenSecret";
+  }
+}
+
+class TwitterRequestFailedException implements Exception {
+  int? code;
+  String? message;
+
+  TwitterRequestFailedException({this.code, this.message});
+
+  @override
+  String toString() {
+    return "Twitter request failed. ($code) $message";
   }
 }

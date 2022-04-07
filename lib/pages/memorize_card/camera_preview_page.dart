@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 
 import 'package:camera/camera.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
@@ -642,37 +643,56 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
 
     var functions = FirebaseFunctions.instanceFor(region: "asia-northeast1");
 
-    var result = await functions.httpsCallable("recognizeText")({
-      "image": {
-        "content": base64Encode(imageBytes),
-      },
-      "features": [
-        {
-          "type": "DOCUMENT_TEXT_DETECTION",
+    try {
+      var result = await functions.httpsCallable("recognizeText")({
+        "image": {
+          "content": base64Encode(imageBytes),
+        },
+        "features": [
+          {
+            "type": "DOCUMENT_TEXT_DETECTION",
+          }
+        ],
+        "imageContext": {
+          "languageHints": ["ja", "en"],
         }
-      ],
-      "imageContext": {
-        "languageHints": ["ja", "en"],
-      }
-    });
+      });
 
-    setState(() {
-      _recognizingText = false;
-      _recognizingResult = (result.data as List<dynamic>)
-          .map((e) => TextElement.fromMap(Map.from(e)))
-          .toList();
+      setState(() {
+        _recognizingResult = (result.data as List<dynamic>)
+            .map((e) => TextElement.fromMap(Map.from(e)))
+            .toList();
 
-      if (_recognizingResult!.isEmpty) {
-        showSimpleDialog(context, "エラー", "テキストが見つかりませんでした。", allowCancel: false,
-            onOKPressed: () {
-          back();
-        });
-      }
-
+        if (_recognizingResult!.isEmpty) {
+          showSimpleDialog(context, "エラー", "テキストが見つかりませんでした。",
+              allowCancel: false, onOKPressed: () {
+            back();
+          });
+        }
+      });
+    } catch (e, stack) {
+      FirebaseCrashlytics.instance.recordError(e, stack);
+      showSimpleDialog(
+        context,
+        "エラー",
+        "テキスト認識に失敗しました。\n\n${e.toString()}",
+        okText: "再試行",
+        showCancel: true,
+        onOKPressed: () {
+          recognizeText(imageFile);
+        },
+        onCancelPressed: () {
+          Navigator.pop(context);
+        },
+      );
+    } finally {
+      setState(() {
+        _recognizingText = false;
+      });
       Timer(const Duration(milliseconds: 300), () {
         _radarAnimationController!.reset();
       });
-    });
+    }
   }
 
   void onSelectText(Offset pos) {

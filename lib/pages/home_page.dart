@@ -37,6 +37,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
   StreamSubscription? linkListener;
+  StreamSubscription? hideAdListener;
+
   var tabIndex = 0;
   var _loading = false;
   var _hideAd = false;
@@ -84,7 +86,7 @@ class _HomePageState extends State<HomePage> {
       });
     });
 
-    eventBus.on<SubmissionDetailPageOpened>().listen((event) {
+    hideAdListener = eventBus.on<SubmissionDetailPageOpened>().listen((event) {
       setState(() {
         _hideAd = event.opened;
       });
@@ -170,6 +172,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     linkListener?.cancel();
+    hideAdListener?.cancel();
     bannerAd?.dispose();
     super.dispose();
   }
@@ -258,6 +261,13 @@ class _HomePageState extends State<HomePage> {
             setState(() {
               _hideAd = false;
             });
+          },
+        );
+      case BottomNavItemId.doTime:
+        return FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () async {
+            eventBus.fire(DoTimeAddButtonPressed());
           },
         );
       case BottomNavItemId.memorizeCard:
