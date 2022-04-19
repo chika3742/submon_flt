@@ -91,25 +91,34 @@ class _SubmissionListState extends State<SubmissionList> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        if (items != null) AnimatedOpacity(
-          opacity: items!.isNotEmpty ? 0 : 0.7,
-          duration: const Duration(milliseconds: 200),
-          child: const Center(
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text("提出物がありません", style: TextStyle(fontSize: 16)),
+        if (items != null)
+          AnimatedOpacity(
+            opacity: items!.isNotEmpty ? 0 : 0.7,
+            duration: const Duration(milliseconds: 200),
+            child: const Center(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text("提出物がありません", style: TextStyle(fontSize: 16)),
+              ),
             ),
           ),
-        ),
-        AnimatedList(
-          key: _listKey,
-          controller: _scrollController,
-          itemBuilder: (context, pos, anim) {
-            return SizeTransition(
-              sizeFactor: anim.drive(Tween(begin: 0.0, end: 1.0).chain(CurveTween(curve: Curves.easeOutQuint))),
-              child: SubmissionListItem(items![pos], key: ObjectKey(items![pos].id), onDelete: () { delete(pos); }, onDone: () { checkDone(pos); }),
-            );
-          },
+        Scrollbar(
+          child: AnimatedList(
+            key: _listKey,
+            controller: _scrollController,
+            itemBuilder: (context, pos, anim) {
+              return SizeTransition(
+                sizeFactor: anim.drive(Tween(begin: 0.0, end: 1.0)
+                    .chain(CurveTween(curve: Curves.easeOutQuint))),
+                child: SubmissionListItem(items![pos],
+                    key: ObjectKey(items![pos].id), onDelete: () {
+                  delete(pos);
+                }, onDone: () {
+                  checkDone(pos);
+                }),
+              );
+            },
+          ),
         ),
       ],
     );

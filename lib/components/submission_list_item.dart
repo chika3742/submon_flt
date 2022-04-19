@@ -1,5 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:submon/components/formatted_date_remaining.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/pages/submission_detail_page.dart';
@@ -105,13 +106,18 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
                                               fontWeight: FontWeight.bold)),
                                       TextSpan(
                                           text: "${_item.date!.day}",
-                                          style: const TextStyle(
-                                              fontSize: 34,
-                                              fontWeight: FontWeight.bold)),
+                                          style: const TextStyle(fontSize: 34)),
                                       TextSpan(
                                           text:
                                               " (${getWeekdayString(_item.date!.weekday - 1)})",
                                           style: const TextStyle(fontSize: 20)),
+                                      if (_item.date!.hour != 23 ||
+                                          _item.date!.minute != 59)
+                                        TextSpan(
+                                          text:
+                                              " ${DateFormat("HH:mm").format(_item.date!)}",
+                                          style: const TextStyle(fontSize: 20),
+                                        )
                                     ]),
                                   ),
                                 ),

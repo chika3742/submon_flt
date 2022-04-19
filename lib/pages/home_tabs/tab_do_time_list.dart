@@ -86,22 +86,23 @@ class _TabDoTimeListState extends State<TabDoTimeList> {
         var diff = e.submission?.date?.difference(DateTime.now());
         var remainingString =
             diff != null ? getRemainingString(diff, false) : null;
-        widgets.add(Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                flex: 100,
-                child: Text(
-                  e.submission != null ? e.submission!.title : "提出物なし",
-                  style: Theme.of(context).textTheme.titleMedium,
-                  softWrap: false,
-                  overflow: TextOverflow.fade,
+        if (e.submission != null) {
+          widgets.add(Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  flex: 100,
+                  child: Text(
+                    e.submission!.title,
+                    style: Theme.of(context).textTheme.titleMedium,
+                    softWrap: false,
+                    overflow: TextOverflow.fade,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              if (e.submission != null)
+                const SizedBox(width: 8),
                 Text.rich(TextSpan(
                     text:
                         "${DateFormat("M/d (E)", "ja").format(e.submission!.date!)}・あと ",
@@ -117,10 +118,11 @@ class _TabDoTimeListState extends State<TabDoTimeList> {
                       TextSpan(
                         text: remainingString[1],
                       ),
-                  ])),
-            ],
-          ),
-        ));
+                    ])),
+              ],
+            ),
+          ));
+        }
       }
       prevSubmissionId = e.submissionId;
 

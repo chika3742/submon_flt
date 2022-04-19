@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:submon/components/timetable.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/timetable.dart' as db;
 import 'package:submon/db/timetable_table.dart';
+import 'package:submon/events.dart';
 
 class TabTimetable extends StatefulWidget {
   const TabTimetable({Key? key}) : super(key: key);
@@ -22,12 +25,17 @@ class TabTimetableState extends State<TabTimetable> {
   Map<int, db.Timetable>? table;
   var bannerKey = GlobalKey();
   var tableKey = GlobalKey<TimetableState>();
+  StreamSubscription? listener;
 
   @override
   void initState() {
     super.initState();
     getTimetableCount();
     getPref();
+
+    listener = eventBus.on<TimetableListChanged>().listen((event) {
+      tableKey.currentState?.getTable();
+    });
   }
 
   void getTimetableCount() {
@@ -73,12 +81,12 @@ class TabTimetableState extends State<TabTimetable> {
                 curve: Curves.easeOutQuint,
                 child: SizedBox(
                   height: timetableBanner1Flag == false &&
-                          timetableCount != null &&
-                          timetableCount! >= 1
+                      timetableCount != null &&
+                      timetableCount! >= 1
                       ? (bannerKey.currentContext?.findRenderObject()
-                              as RenderBox?)
-                          ?.size
-                          .height
+                  as RenderBox?)
+                      ?.size
+                      .height
                       : 0,
                   child: MaterialBanner(
                     key: bannerKey,
@@ -101,7 +109,7 @@ class TabTimetableState extends State<TabTimetable> {
               ),
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 4.0, horizontal: 32),
+                const EdgeInsets.symmetric(vertical: 4.0, horizontal: 32),
                 child: SizedBox(
                   child: DropdownButton<String>(
                     value: tableId,
@@ -113,8 +121,8 @@ class TabTimetableState extends State<TabTimetable> {
                       ),
                       ...tables.map((e) => DropdownMenuItem(
                         value: e.id.toString(),
-                            child: Text(e.title!),
-                          )),
+                        child: Text(e.title!),
+                      )),
                     ],
                     onChanged: (value) {
                       setState(() {

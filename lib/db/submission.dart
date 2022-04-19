@@ -60,10 +60,10 @@ class SubmissionProvider extends SqlProvider<Submission> {
 
   @override
   Submission mapToObj(Map map) {
-    var date = DateTime.parse(map[colDate]);
+    var date = DateTime.parse(map[colDate]).toLocal();
     return Submission(
       id: map[colId],
-      date: date.subtract(date.timeZoneOffset),
+      date: date,
       title: map[colTitle],
       detail: map[colDetail],
       done: map[colDone] == 1,
@@ -77,7 +77,7 @@ class SubmissionProvider extends SqlProvider<Submission> {
   Map<String, Object?> objToMap(Submission data) {
     return {
       colId: data.id,
-      colDate: data.date!.toIso8601String(),
+      colDate: data.date!.toUtc().toIso8601String(),
       colTitle: data.title,
       colDetail: data.detail,
       colDone: data.done == true ? 1 : 0,
@@ -120,12 +120,6 @@ class SubmissionProvider extends SqlProvider<Submission> {
   }
 
   @override
-  Future<int> delete(int id) async {
-    await DoTimeProvider(db: db).deleteForSubmissionId(id);
-    return await super.delete(id);
-  }
-
-  @override
   Future<void> setFirestore(Submission data) async {
     await FirestoreProvider.submission
         .set(data.id.toString(), objToMap(data), SetOptions(merge: true));
@@ -136,7 +130,7 @@ class SubmissionProvider extends SqlProvider<Submission> {
   @override
   Future<void> deleteFirestore(int id) async {
     await FirestoreProvider.submission.delete(id.toString());
-    // NotificationMethodChannel.registerReminder();
+    await DoTimeProvider(db: db).deleteForSubmissionId(id);
     updateWidgets();
 
     await googleSignIn.authenticatedClient().then((client) async {

@@ -34,7 +34,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
 
   _SubmissionEditorState() {
     var date = DateTime.now().add(const Duration(days: 1));
-    date.toLocal();
+    date = date.toLocal();
     _date = DateTime(date.year, date.month, date.day, 23, 59);
   }
 

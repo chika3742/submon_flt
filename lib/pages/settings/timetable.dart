@@ -22,6 +22,7 @@ class TimetableSettingsPage extends StatefulWidget {
 
 class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
   int? hours;
+  bool? showSaturday;
   List<TimetableTable> tables = [];
   TimetableNotification? _timetableNotification;
   bool _loadingTimetableNotification = true;
@@ -32,6 +33,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
     SharedPrefs.use((prefs) {
       setState(() {
         hours = prefs.timetableHour;
+        showSaturday = prefs.timetableShowSaturday;
       });
     });
     getTables();
@@ -219,11 +221,11 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
           SettingsTile(
             title: "通知する時間割表",
             subtitle:
-                "${tables.firstWhereOrNull((e) => e.id == _timetableNotification?.id)?.title} (上の一覧から選択してください)",
+                "${tables.firstWhereOrNull((e) => e.id == _timetableNotification?.id)?.title ?? "未選択"} (上の一覧から選択してください)",
             leading: const Icon(Icons.table_chart_outlined),
           ),
         ]),
-        if (hours != null)
+        if (hours != null && showSaturday != null)
           SettingsCategory(title: "表示する時限数", tiles: [
             RadioSettingsTile(
                 title: "5 時間目",
@@ -253,7 +255,29 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
                 onChanged: (value) {
                   updateHours(value as int);
                 }),
+            CheckBoxSettingsTile(
+              title: "土曜日を表示",
+              value: showSaturday!,
+              onChanged: (value) {
+                SharedPrefs.use((prefs) {
+                  prefs.timetableShowSaturday = value!;
+                });
+                setState(() {
+                  showSaturday = value;
+                });
+              },
+            )
           ]),
+        SettingsCategory(
+          title: "各時限の始業・終業時刻",
+          tiles: [1, 2, 3, 4, 5, 6, 7, 8].map((e) {
+            return SettingsTile(
+              title: "$e 時間目",
+              subtitle: "未設定",
+              onTap: () {},
+            );
+          }).toList(),
+        ),
       ],
     );
   }

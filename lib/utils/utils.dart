@@ -22,6 +22,10 @@ Future<dynamic> pushPage(BuildContext context, Widget page) async {
   return await Navigator.of(context, rootNavigator: true).push(route);
 }
 
+int getTimetableCellId(int period, int weekday) {
+  return period * 6 + weekday;
+}
+
 ActionCodeSettings actionCodeSettings([String url = "https://chikach.net"]) {
   return ActionCodeSettings(
     url: url,
@@ -91,6 +95,26 @@ Future<bool> canAccessCalendar() async {
   }
 }
 
+void createNewSubmissionForTimetable(
+    BuildContext context, int weekday, String name) {
+  var now = DateTime.now();
+  now = DateTime(now.year, now.month, now.day, 23, 59);
+  DateTime deadline;
+  if (now.weekday == weekday + 1) {
+    deadline = now.add(const Duration(days: 7));
+  } else {
+    deadline = now;
+    while (deadline.weekday != weekday + 1) {
+      deadline = deadline.add(const Duration(days: 1));
+    }
+  }
+  Navigator.of(context, rootNavigator: true)
+      .pushNamed("/submission/create", arguments: {
+    "initialTitle": name,
+    "initialDeadline": deadline,
+  });
+}
+
 extension SubmissionExtension on calendar.EventsResource {
   Future<calendar.Event?> getEventForSubmissionId(int submissionId) async {
     var events = await list("primary",
@@ -104,6 +128,8 @@ extension SubmissionExtension on calendar.EventsResource {
 
 enum AdUnit {
   homeBottomBanner,
+  submissionDetailBanner,
+  focusTimerInterstitial,
 }
 
 String? getAdUnitId(AdUnit adUnit) {
@@ -117,7 +143,27 @@ String? getAdUnitId(AdUnit adUnit) {
         "iOS": dotenv.get("AD_UNIT_HOME_IOS"),
         "Android": dotenv.get("AD_UNIT_HOME_ANDROID"),
       }
-    }
+    },
+    AdUnit.submissionDetailBanner: {
+      "debug": {
+        "iOS": dotenv.get("AD_UNIT_DEBUG_BANNER_IOS"),
+        "Android": dotenv.get("AD_UNIT_DEBUG_BANNER_ANDROID"),
+      },
+      "release": {
+        "iOS": dotenv.get("AD_UNIT_SUBMISSION_DETAIL_IOS"),
+        "Android": dotenv.get("AD_UNIT_SUBMISSION_DETAIL_ANDROID"),
+      }
+    },
+    AdUnit.focusTimerInterstitial: {
+      "debug": {
+        "iOS": dotenv.get("AD_UNIT_DEBUG_INTERSTITIAL_IOS"),
+        "Android": dotenv.get("AD_UNIT_DEBUG_INTERSTITIAL_ANDROID"),
+      },
+      "release": {
+        "iOS": dotenv.get("AD_UNIT_FOCUS_TIMER_INTERSTITIAL_IOS"),
+        "Android": dotenv.get("AD_UNIT_FOCUS_TIMER_INTERSTITIAL_ANDROID"),
+      }
+    },
   };
   String platform;
   if (Platform.isIOS) {

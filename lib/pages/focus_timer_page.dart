@@ -5,9 +5,11 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dnd/flutter_dnd.dart';
 import 'package:fullscreen/fullscreen.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:submon/db/doTime.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/utils/ui.dart';
+import 'package:submon/utils/utils.dart';
 import 'package:wakelock/wakelock.dart';
 
 class FocusTimerPage extends StatefulWidget {
@@ -39,6 +41,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
   Timer? _breakTimer;
   Timer? _blinkTimer;
   AudioPlayer? _alarmPlayer;
+  InterstitialAd? ad;
 
   @override
   void initState() {
@@ -61,6 +64,16 @@ class _FocusTimerPageState extends State<FocusTimerPage>
 
     _checkDndAccessGranted();
 
+    InterstitialAd.load(
+      adUnitId: getAdUnitId(AdUnit.focusTimerInterstitial)!,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (ad) {
+            this.ad = ad;
+          },
+          onAdFailedToLoad: (e) {}),
+    );
+
     super.initState();
   }
 
@@ -76,6 +89,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
     if (Platform.isAndroid) {
       FlutterDnd.setInterruptionFilter(FlutterDnd.INTERRUPTION_FILTER_ALL);
     }
+    ad?.dispose();
     super.dispose();
   }
 
@@ -320,10 +334,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                 child: Text(!_takingBreak ? '終わった！' : "休憩終わり！"),
                                 onPressed: () async {
                                   if (!_takingBreak) {
-                                    await DoTimeProvider()
-                                        .use((provider) async {
-                                      await provider.delete(widget.doTime.id!);
-                                    });
+                                    ad?.show();
                                     showSnackBar(context, "DoTimeを完了しました！");
                                     Navigator.pop(context, true);
                                   } else {
