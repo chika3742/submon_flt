@@ -18,7 +18,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         val notificationManager = NotificationManagerCompat.from(this)
 
-        val channelId = data["notificationChannelId"] as String
+        val channelId = data["notificationChannelId"] ?: "default"
         val notificationId = UUID.randomUUID().hashCode()
         val notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle(data["title"])

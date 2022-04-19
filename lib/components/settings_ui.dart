@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:submon/components/list_tile.dart';
 
 class SettingsListView extends StatelessWidget {
-  const SettingsListView({Key? key, required this.categories})
+  const SettingsListView(
+      {Key? key, required this.categories, this.shrinkWrap = false})
       : super(key: key);
 
   final List<SettingsCategory> categories;
+  final bool shrinkWrap;
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +19,9 @@ class SettingsListView extends StatelessWidget {
       list.addAll(element.tiles.map((e) => e.buildWidget(context)));
     }
 
-    return Material(
+    return Scrollbar(
       child: ListView(
+        shrinkWrap: shrinkWrap,
         children: list,
       ),
     );

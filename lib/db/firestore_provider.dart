@@ -129,6 +129,31 @@ class FirestoreProvider {
     }
   }
 
+  static Future<void> disconnectCanvasLms() async {
+    await FirebaseFunctions.instanceFor(region: "asia-northeast1")
+        .httpsCallable("disconnectCanvas")();
+  }
+
+  static Future<void> clearCanvasLmsSyncExcludeList() async {
+    await userDoc?.set({
+      "lms": {
+        "canvas": {
+          "excludedPlannableIds": [],
+        },
+      },
+    }, SetOptions(merge: true));
+  }
+
+  static Future<void> setCanvasLmsSubmissionColor(Color color) async {
+    await userDoc?.set({
+      "lms": {
+        "canvas": {
+          "submissionColor": color.value,
+        },
+      },
+    }, SetOptions(merge: true));
+  }
+
   static Future<ConfigData?> get config async {
     if (userDoc != null) {
       var snapshot = await userDoc!.get();
@@ -249,18 +274,21 @@ class FirestoreProvider {
 }
 
 class ConfigData {
-  ConfigData(
-      {this.lastChanged,
-      this.schemaVersion,
-      this.reminderNotificationTime,
-      this.timetableNotification,
-      this.doTimeNotificationTimeBefore});
+  ConfigData({
+    this.lastChanged,
+    this.schemaVersion,
+    this.reminderNotificationTime,
+    this.timetableNotification,
+    this.doTimeNotificationTimeBefore,
+    this.lms,
+  });
 
   Timestamp? lastChanged;
   int? schemaVersion;
   TimeOfDay? reminderNotificationTime;
   TimetableNotification? timetableNotification;
   int? doTimeNotificationTimeBefore;
+  Lms? lms;
 
   static ConfigData fromMap(Map<String, dynamic>? map) {
     if (map == null) return ConfigData();
@@ -287,7 +315,43 @@ class ConfigData {
         id: map["timetableNotificationId"],
       ),
       doTimeNotificationTimeBefore: map["doTimeNotificationTimeBefore"],
+      lms: Lms.fromMap(map["lms"]),
     );
+  }
+}
+
+class Lms {
+  CanvasLms? canvas;
+
+  Lms(Map<String, dynamic> map) : canvas = CanvasLms.fromMap(map["canvas"]);
+
+  static fromMap(Map<String, dynamic>? map) {
+    if (map != null) {
+      return Lms(map);
+    }
+    return null;
+  }
+}
+
+class CanvasLms {
+  int universityId;
+  Timestamp? lastSync;
+  bool hasError;
+  List<dynamic> excludedPlannableIds;
+  int submissionColor;
+
+  CanvasLms(Map<String, dynamic> map)
+      : universityId = map["universityId"],
+        lastSync = map["lastSync"],
+        hasError = map["hasError"],
+        excludedPlannableIds = map["excludedPlannableIds"],
+        submissionColor = map["submissionColor"];
+
+  static fromMap(Map<String, dynamic>? map) {
+    if (map != null) {
+      return CanvasLms(map);
+    }
+    return null;
   }
 }
 

@@ -58,6 +58,13 @@ class SharedPrefs {
   set showMemorizeMenu(bool value) =>
       pref!.setBool("SHOW_MEMORIZE_MENU", value);
 
+  // SHOW_MEMORIZE_MENU
+  bool get timetableShowSaturday =>
+      pref!.getBool("TIMETABLE_SHOW_SATURDAY") ?? true;
+
+  set timetableShowSaturday(bool value) =>
+      pref!.setBool("TIMETABLE_SHOW_SATURDAY", value);
+
   // String
 
   // EMAIL_FOR_URL_SIGN_IN
@@ -85,7 +92,7 @@ class SharedPrefs {
   // int
 
   // TIMETABLE_HOUR
-  int? get timetableHour => pref!.getInt("TIMETABLE_HOUR") ?? 6;
+  int get timetableHour => pref!.getInt("TIMETABLE_HOUR") ?? 6;
 
   set timetableHour(int? value) => pref!.setInt("TIMETABLE_HOUR", value!);
 

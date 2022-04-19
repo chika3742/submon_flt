@@ -31,9 +31,9 @@ class TimetableCustomSubjectInserted {
   TimetableCustomSubjectInserted(this.data);
 }
 
-class MemorizeCardAddButtonPressed {
-  MemorizeCardAddButtonPressed();
-}
+class TimetableListChanged {}
+
+class MemorizeCardAddButtonPressed {}
 
 class DoTimeAddButtonPressed {}
 

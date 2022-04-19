@@ -10,6 +10,7 @@ import 'package:submon/pages/timetable_edit_page.dart';
 import 'package:submon/utils/ui.dart';
 
 import '../pages/timetable_subject_select_page.dart';
+import '../utils/utils.dart';
 
 class Timetable extends StatefulWidget {
   const Timetable({
@@ -134,7 +135,8 @@ class TimetableState extends State<Timetable> {
           child: GestureDetector(
             onLongPress: cell != null && !widget.edit
                 ? () {
-                    createNewSubmission(context, youbi, cell.subject);
+              createNewSubmissionForTimetable(
+                        context, youbi, cell.subject);
                     Feedback.forLongPress(context);
                   }
                 : null,
@@ -193,7 +195,7 @@ class TimetableState extends State<Timetable> {
               cell: cell!,
               weekday: youbi,
               index: index,
-              createSubmission: createNewSubmission);
+              createSubmission: createNewSubmissionForTimetable);
         },
       );
     }
@@ -263,25 +265,6 @@ class TimetableState extends State<Timetable> {
   int getWholeIndex(int youbi, int index) {
     return youbi + (index - 1) * 6;
   }
-
-  void createNewSubmission(BuildContext context, int youbi, String name) {
-    var now = DateTime.now();
-    now = DateTime(now.year, now.month, now.day);
-    DateTime deadline;
-    if (now.weekday == youbi + 1) {
-      deadline = now.add(const Duration(days: 7));
-    } else {
-      deadline = now;
-      while (deadline.weekday != youbi + 1) {
-        deadline = deadline.add(const Duration(days: 1));
-      }
-    }
-    Navigator.of(context, rootNavigator: true)
-        .pushNamed("/submission/create", arguments: {
-      "initialTitle": name,
-      "initialDeadline": deadline,
-    });
-  }
 }
 
 class _NoteView extends StatefulWidget {
@@ -335,39 +318,51 @@ class _NoteViewState extends State<_NoteView> {
                           style: Theme.of(context).textTheme.caption),
                     ],
                   ),
-                  const Spacer(),
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    splashRadius: 24,
-                    onPressed: () async {
-                      await showRoundedBottomSheet(
-                        context: context,
-                        title:
-                            "${widget.cell.subject} (${getWeekdayString(widget.weekday)}曜 ${widget.index}限) メモ編集",
-                        child: TextFormFieldBottomSheet(
-                          formLabel: "メモ",
-                          onDone: (text) {
-                            setState(() {
-                              widget.cell.note = text;
-                            });
-                            db.TimetableProvider().use((provider) async {
-                              await provider.update(widget.cell);
-                            });
-                            Navigator.of(context, rootNavigator: true).pop();
-                          },
-                        ),
-                      );
-                    },
-                  ),
+                  // const Spacer(),
+                  // IconButton(
+                  //   icon: const Icon(Icons.edit),
+                  //   splashRadius: 24,
+                  //   onPressed: () async {
+                  //     await showRoundedBottomSheet(
+                  //       context: context,
+                  //       title:
+                  //           "${widget.cell.subject} (${getWeekdayString(widget.weekday)}曜 ${widget.index}限) メモ編集",
+                  //       child: TextFormFieldBottomSheet(
+                  //         formLabel: "メモ",
+                  //         onDone: (text) {
+                  //           setState(() {
+                  //             // widget.cell.note = text;
+                  //           });
+                  //           db.TimetableProvider().use((provider) async {
+                  //             await provider.update(widget.cell);
+                  //           });
+                  //           Navigator.of(context, rootNavigator: true).pop();
+                  //         },
+                  //       ),
+                  //     );
+                  //   },
+                  // ),
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 16.0, horizontal: 16.0),
-                child: widget.cell.note.isNotEmpty
-                    ? Text(widget.cell.note)
-                    : Text("メモはありません",
-                        style: Theme.of(context).textTheme.caption),
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.meeting_room),
+                        Text(widget.cell.room),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        const Icon(Icons.person),
+                        Text(widget.cell.teacher),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               const Spacer(),
               Padding(

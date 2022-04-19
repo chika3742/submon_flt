@@ -1,6 +1,5 @@
 package net.chikach.submon
 
-import android.app.Activity
 import android.app.NotificationManager
 import android.content.Intent
 import android.util.Log
@@ -34,6 +33,7 @@ val chromiumBrowserPackages = listOf(
 const val REMINDER_CHANNEL = "reminder"
 const val TIMETABLE_CHANNEL = "timetable"
 const val DO_TIME_CHANNEL = "doTime"
+const val DEFAULT_CHANNEL = "default"
 
 const val METHOD_CHANNEL_MAIN = "net.chikach.submon/main"
 const val METHOD_CHANNEL_ACTION = "net.chikach.submon/action"
@@ -123,6 +123,15 @@ class MainActivity : FlutterActivity() {
                 NotificationManager.IMPORTANCE_DEFAULT
             )
                 .setName("DoTime通知")
+                .setGroup("main")
+                .build()
+        )
+        notificationMgr.createNotificationChannel(
+            NotificationChannelCompat.Builder(
+                DEFAULT_CHANNEL,
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+                .setName("その他")
                 .setGroup("main")
                 .build()
         )

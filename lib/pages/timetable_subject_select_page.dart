@@ -97,45 +97,49 @@ class _CreateSubjectBottomSheetState extends State<CreateSubjectBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TextFormField(
-          controller: _controller,
-          autofocus: true,
-          decoration: InputDecoration(
-            border: const OutlineInputBorder(),
-            label: const Text('教科名'),
-            errorText: _fieldError,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        children: [
+          TextFormField(
+            controller: _controller,
+            autofocus: true,
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              label: const Text('教科名'),
+              errorText: _fieldError,
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            const Spacer(),
-            IconButton(
-              icon: const Icon(Icons.check),
-              splashRadius: 24,
-              onPressed: () {
-                if (_controller.text.isEmpty) {
-                  setState(() {
-                    _fieldError = "入力してください";
-                  });
-                } else {
-                  setState(() {
-                    _fieldError = null;
-                  });
-                  TimetableCustomSubjectProvider().use((provider) async {
-                    var data = await provider.insert(
-                        TimetableCustomSubject(title: _controller.text));
-                    eventBus.fire(TimetableCustomSubjectInserted(data));
-                    Navigator.pop(context);
-                  });
-                }
-              },
-            )
-          ],
-        ),
-      ],
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              const Spacer(),
+              IconButton(
+                icon: const Icon(Icons.check),
+                splashRadius: 24,
+                onPressed: () {
+                  if (_controller.text.isEmpty) {
+                    setState(() {
+                      _fieldError = "入力してください";
+                    });
+                  } else {
+                    setState(() {
+                      _fieldError = null;
+                    });
+                    TimetableCustomSubjectProvider().use((provider) async {
+                      var data = await provider.insert(
+                          TimetableCustomSubject(title: _controller.text));
+                      eventBus.fire(TimetableCustomSubjectInserted(data));
+                      Navigator.pop(context);
+                    });
+                  }
+                },
+              )
+            ],
+          ),
+          SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
+        ],
+      ),
     );
   }
 }
@@ -454,15 +458,16 @@ class _ListPageState extends State<_ListPage> {
   @override
   Widget build(BuildContext context) {
     return Material(
-        child: Stack(
-      children: [
-        _buildListView(),
-        if (customSubjects.isEmpty && subjects.isEmpty)
-          const Center(
-            child: Text('教科がありません'),
-          ),
-      ],
-    ));
+      child: Stack(
+        children: [
+          _buildListView(),
+          if (customSubjects.isEmpty && subjects.isEmpty)
+            const Center(
+              child: Text('教科がありません'),
+            ),
+        ],
+      ),
+    );
   }
 
   Widget _buildListView() {
@@ -487,19 +492,20 @@ class _ListPageState extends State<_ListPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CategoryListTile(widget.category.toJPString()),
-            AnimatedList(
-              key: _animatedListKey,
-              shrinkWrap: true,
-              initialItemCount: customSubjects.length,
-              itemBuilder: (context, pos, anim) {
-                var item = customSubjects[pos];
-                return SizeTransition(
-                  sizeFactor: Tween(begin: 0.0, end: 1.0)
-                      .chain(CurveTween(curve: Curves.fastOutSlowIn))
-                      .animate(anim),
-                  child: _buildItem(item, pos),
-                );
-              },
+            Expanded(
+              child: AnimatedList(
+                key: _animatedListKey,
+                initialItemCount: customSubjects.length,
+                itemBuilder: (context, pos, anim) {
+                  var item = customSubjects[pos];
+                  return SizeTransition(
+                    sizeFactor: Tween(begin: 0.0, end: 1.0)
+                        .chain(CurveTween(curve: Curves.fastOutSlowIn))
+                        .animate(anim),
+                    child: _buildItem(item, pos),
+                  );
+                },
+              ),
             ),
           ],
         ),

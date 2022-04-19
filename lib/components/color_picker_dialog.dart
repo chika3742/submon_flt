@@ -67,7 +67,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
             curve: Curves.easeOutQuint,
             duration: const Duration(milliseconds: 300),
             transform: Transform.scale(
-              scale: selectedColor == e ? 1.3 : 1.0,
+              scale: selectedColor.value == e.value ? 1.3 : 1.0,
             ).transform,
             transformAlignment: Alignment.center,
             decoration: BoxDecoration(
@@ -75,7 +75,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
                 boxShadow: [
                   BoxShadow(
                       color: const Color(0x99000000),
-                      blurRadius: selectedColor == e ? 4 : 1)
+                      blurRadius: selectedColor.value == e.value ? 4 : 1)
                 ]),
             child: Stack(
               children: [
@@ -87,7 +87,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
                   width: 30,
                   height: 30,
                   child: Visibility(
-                    visible: selectedColor == e,
+                    visible: selectedColor.value == e.value,
                     child: Icon(
                       Icons.check,
                       color: e.computeLuminance() > 0.5

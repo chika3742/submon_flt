@@ -401,64 +401,74 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  void reAuth() async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    showLoadingModal(context);
-    var provider = (await FirebaseAuth.instance.fetchSignInMethodsForEmail(
-        FirebaseAuth.instance.currentUser!.email!))
-        .first;
-    Navigator.pop(context); // Close Loading modal
-    if (provider == EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {
-      var result = await Navigator.pushNamed(context, "/signIn/email",
-          arguments: {'reAuth': true});
-      Navigator.pop(context, result != null);
-    } else if (provider == EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD) {
-      showSimpleDialog(
-        context,
-        "追加認証",
-        "セキュリティのため、再度ログインする必要があります。送信されたメールにあるURLをタップし、ログインしてください。\n\n"
-            "その後、再度メールアドレス変更をお試しください。",
-        onOKPressed: () async {
-          showLoadingModal(context);
-          try {
-            await FirebaseAuth.instance.sendSignInLinkToEmail(
-                email: FirebaseAuth.instance.currentUser!.email!,
-                actionCodeSettings: actionCodeSettings());
-            showSnackBar(context, "送信しました");
-          } catch (e) {
-            showSnackBar(context, "エラーが発生しました");
-          }
-          Navigator.pop(context); // Close Loading modal
-          Navigator.pop(context); // Close sign in page
-        },
-        onCancelPressed: () {
-          Navigator.pop(context); // Close sign in page
-        },
-        showCancel: true,
-      );
-    } else {
-      try {
-        UserCredential? result;
-        if (provider == GoogleAuthProvider.GOOGLE_SIGN_IN_METHOD) {
-          result = await signInWithGoogle();
-        } else if (provider == TwitterAuthProvider.TWITTER_SIGN_IN_METHOD) {
-          result = await signInWithTwitter();
-        } else if (provider == "apple.com") {
-          result = await signInWithApple();
-        }
+  void reAuth() {
+    Future(() async {
+      var auth = FirebaseAuth.instance;
 
-        Navigator.pop(context, result != null && result.user != null);
-      } on FirebaseAuthException catch (e) {
-        switch (e.code) {
-          case "user-mismatch":
-            showSnackBar(context, "ユーザーがログインされているものと一致しません");
-            break;
-          default:
-            handleAuthError(e, context);
+      var currentUser = auth.currentUser!;
+      var providerId = currentUser.providerData.first.providerId;
+
+      if (providerId == EmailAuthProvider.PROVIDER_ID) {
+        showLoadingModal(context);
+
+        var methods = await auth.fetchSignInMethodsForEmail(currentUser.email!);
+
+        Navigator.pop(context); // Close Loading modal
+
+        if (methods.first == EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {
+          var result = await Navigator.pushNamed(context, "/signIn/email",
+              arguments: {'reAuth': true});
+          Navigator.pop(context, result != null);
+        } else if (methods.first ==
+            EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD) {
+          showSimpleDialog(
+            context,
+            "追加認証",
+            "セキュリティのため、再度ログインする必要があります。送信されたメールにあるURLをタップし、ログインしてください。\n\n"
+                "その後、再度メールアドレス変更をお試しください。",
+            onOKPressed: () async {
+              showLoadingModal(context);
+              try {
+                await auth.sendSignInLinkToEmail(
+                    email: currentUser.email!,
+                    actionCodeSettings: actionCodeSettings());
+                showSnackBar(context, "送信しました");
+              } catch (e) {
+                showSnackBar(context, "エラーが発生しました");
+              }
+              Navigator.pop(context); // Close Loading modal
+              Navigator.pop(context); // Close sign in page
+            },
+            onCancelPressed: () {
+              Navigator.pop(context); // Close sign in page
+            },
+            showCancel: true,
+          );
         }
-        Navigator.pop(context);
+      } else {
+        try {
+          UserCredential? result;
+          if (providerId == GoogleAuthProvider.PROVIDER_ID) {
+            result = await signInWithGoogle();
+          } else if (providerId == TwitterAuthProvider.PROVIDER_ID) {
+            result = await signInWithTwitter();
+          } else if (providerId == "apple.com") {
+            result = await signInWithApple();
+          }
+
+          Navigator.pop(context, result != null && result.user != null);
+        } on FirebaseAuthException catch (e) {
+          switch (e.code) {
+            case "user-mismatch":
+              showSnackBar(context, "ユーザーがログインされているものと一致しません");
+              break;
+            default:
+              handleAuthError(e, context);
+          }
+          Navigator.pop(context);
+        }
       }
-    }
+    });
   }
 }
 

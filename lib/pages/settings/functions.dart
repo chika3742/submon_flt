@@ -240,12 +240,15 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                 }
               })
         ]),
-        SettingsCategory(title: "LMS連携", tiles: [
+        SettingsCategory(title: "LMS連携 (ログイン中のみ利用できます)", tiles: [
           SettingsTile(
-              title: "Canvas LMSと連携 (実装予定)",
-              subtitle: "大学等の学習管理システムから提出物を取得し、自動的に追加します。",
-              enabled: false,
-              onTap: () async {})
+            title: "Canvas LMSと連携",
+            subtitle: "大学等の学習管理システムから提出物を取得し、自動的に追加します。",
+            enabled: FirebaseAuth.instance.currentUser != null,
+            onTap: () async {
+              Navigator.pushNamed(context, "/settings/functions/canvasLmsSync");
+            },
+          )
         ]),
         SettingsCategory(title: "その他の機能", tiles: [
           if (_enableSE != null)

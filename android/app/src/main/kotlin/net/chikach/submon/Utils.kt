@@ -3,11 +3,14 @@ package net.chikach.submon
 import android.content.Context
 import android.graphics.Color
 import android.icu.text.SimpleDateFormat
+import android.icu.util.TimeZone
 import java.util.*
 
 object Utils {
     fun getDateDiff(dateString: String, context: Context): Long {
-        val date = SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.JAPAN).parse(dateString)!!
+        val date = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sssZ", Locale.US).apply {
+            timeZone = TimeZone.getTimeZone("Asia/Tokyo")
+        }.parse(dateString)
         return date.time - System.currentTimeMillis()
     }
 

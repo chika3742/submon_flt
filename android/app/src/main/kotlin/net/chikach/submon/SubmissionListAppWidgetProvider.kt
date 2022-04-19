@@ -8,9 +8,10 @@ import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.icu.text.SimpleDateFormat
+import android.icu.util.TimeZone
 import android.net.Uri
 import android.os.Build
-import android.text.format.DateFormat
 import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
@@ -120,7 +121,11 @@ class AppWidgetSubmissionListService : RemoteViewsService() {
                                 it["title"] as String,
                                 it["date"] as String
                             )
-                        }.sortedBy { DateFormat.getDateFormat(context).parse(it.date) }
+                        }.sortedBy {
+                            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sssZ", Locale.US).apply {
+                                timeZone = TimeZone.getTimeZone("UTC")
+                            }.parse(it.date)
+                        }
                         this.list = list
                         deferred.complete(Unit)
                     }

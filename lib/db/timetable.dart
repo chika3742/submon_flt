@@ -9,14 +9,16 @@ const colId = "id";
 const colTableId = "tableId";
 const colCellId = "cellId";
 const colSubject = "subject";
-const colNote = "note";
+const colRoom = "room";
+const colTeacher = "teacher";
 
 class Timetable {
   int? id;
   int? tableId;
   int cellId;
   String subject;
-  String note;
+  String room;
+  String teacher;
 
   static var undoList = <Map<int, Timetable>>[];
   static var redoList = <Map<int, Timetable>>[];
@@ -25,8 +27,9 @@ class Timetable {
     this.id,
     this.tableId,
     required this.cellId,
-    this.subject = "",
-    this.note = "",
+    required this.subject,
+    this.room = "",
+    this.teacher = "",
   });
 
   @override
@@ -34,8 +37,8 @@ class Timetable {
     return {
       "id": id,
       "tableId": tableId,
+      "cellId": cellId,
       "subject": subject,
-      "note": note,
     }.toString();
   }
 }
@@ -53,7 +56,8 @@ class TimetableProvider extends SqlProvider<Timetable> {
       SqlField(colTableId, DataType.integer, isNonNull: false),
       SqlField(colCellId, DataType.integer),
       SqlField(colSubject, DataType.string),
-      SqlField(colNote, DataType.string),
+      SqlField(colRoom, DataType.string),
+      SqlField(colTeacher, DataType.string),
     ];
   }
 
@@ -64,7 +68,8 @@ class TimetableProvider extends SqlProvider<Timetable> {
       tableId: map[colTableId],
       cellId: map[colCellId],
       subject: map[colSubject],
-      note: map[colNote],
+      room: map[colRoom],
+      teacher: map[colTeacher],
     );
   }
 
@@ -114,7 +119,8 @@ class TimetableProvider extends SqlProvider<Timetable> {
       colTableId: data.tableId,
       colCellId: data.cellId,
       colSubject: data.subject,
-      colNote: data.note,
+      colRoom: data.room,
+      colTeacher: data.teacher,
     };
   }
 

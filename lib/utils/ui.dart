@@ -117,7 +117,12 @@ void showLoadingModal(BuildContext context) {
   showModal(
       context: context,
       builder: (context) {
-        return const Center(child: CircularProgressIndicator());
+        return WillPopScope(
+          child: const Center(child: CircularProgressIndicator()),
+          onWillPop: () async {
+            return false;
+          },
+        );
       });
 }
 
@@ -219,25 +224,27 @@ Future<T?> showRoundedBottomSheet<T>({
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(8), topRight: Radius.circular(8))),
     builder: (context) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            height: 4,
-            width: 40,
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-                color: Theme.of(context).textTheme.bodyText1!.color,
-                borderRadius: BorderRadius.circular(8)),
-          ),
-          Text(title!,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 16),
-          child,
-        ],
+      return SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              height: 4,
+              width: 40,
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).textTheme.bodyText1!.color,
+                  borderRadius: BorderRadius.circular(8)),
+            ),
+            Text(title!,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            child,
+          ],
+        ),
       );
     },
   );
