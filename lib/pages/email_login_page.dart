@@ -6,7 +6,10 @@ import 'package:submon/utils/ui.dart';
 import '../utils/utils.dart';
 
 class EmailLoginPage extends StatefulWidget {
-  const EmailLoginPage({Key? key, this.reAuth = false}) : super(key: key);
+  const EmailLoginPage({
+    Key? key,
+    this.reAuth = false,
+  }) : super(key: key);
 
   final bool reAuth;
 

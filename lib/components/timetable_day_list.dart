@@ -1,6 +1,10 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:animations/animations.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:submon/db/timetable_class_time.dart';
 import 'package:submon/pages/timetable_cell_edit_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
@@ -8,16 +12,18 @@ import 'package:submon/utils/utils.dart';
 import '../db/timetable.dart';
 
 class TimetableDayList extends StatefulWidget {
-  const TimetableDayList(
-      {Key? key,
-      required this.weekday,
-      required this.periodCount,
-      required this.items})
-      : super(key: key);
+  const TimetableDayList({
+    Key? key,
+    required this.weekday,
+    required this.periodCount,
+    required this.items,
+    required this.classTimeItems,
+  }) : super(key: key);
 
   final int weekday;
   final List<Timetable> items;
   final int periodCount;
+  final List<TimetableClassTime> classTimeItems;
 
   @override
   State<TimetableDayList> createState() => _TimetableDayListState();
@@ -25,18 +31,62 @@ class TimetableDayList extends StatefulWidget {
 
 class _TimetableDayListState extends State<TimetableDayList> {
   final _columnKey = GlobalKey();
+  Timer? _markerTimer;
 
-  double _markerPos = 0;
+  double? _markerPos;
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    _markerTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setMarkerPos();
+    });
+    setMarkerPos();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _markerTimer?.cancel();
+  }
+
+  void setMarkerPos() {
+    Future(() {
       setState(() {
-        var currentContext = GlobalObjectKey(getWidgetId(3)).currentContext;
-        _markerPos = getWidgetPos(currentContext)!.dy - 16 + 32;
+        var currentTime = TimeOfDay.now();
+        var currentPeriod = widget.classTimeItems.firstWhereOrNull((element) {
+          return currentTime.isInsideRange(element.start, element.end);
+        });
+
+        if (currentPeriod != null) {
+          var currentContext =
+              GlobalObjectKey(getWidgetId(currentPeriod.id - 1)).currentContext;
+          _markerPos = getWidgetPos(currentContext)!.dy -
+              16 +
+              getWidgetSize(currentContext)!.height *
+                  ((currentTime.toMinutes() - currentPeriod.start.toMinutes()) /
+                      (currentPeriod.end.toMinutes() -
+                          currentPeriod.start.toMinutes()));
+        } else {
+          var interval = widget.classTimeItems.firstWhereOrNull((e) {
+            return e.end.toMinutes() < currentTime.toMinutes() &&
+                widget.classTimeItems.any((element) =>
+                    element.id == e.id + 1 &&
+                    currentTime.toMinutes() < element.start.toMinutes());
+          });
+          if (interval != null) {
+            var currentContext =
+                GlobalObjectKey(getWidgetId(interval.id - 1)).currentContext;
+            _markerPos = getWidgetPos(currentContext)!.dy -
+                16 +
+                getWidgetSize(currentContext)!.height +
+                4;
+          } else {
+            _markerPos = null;
+          }
+        }
       });
     });
-    super.initState();
   }
 
   @override
@@ -65,11 +115,14 @@ class _TimetableDayListState extends State<TimetableDayList> {
               ],
             ),
             Visibility(
-              visible: DateTime.now().weekday - 1 == widget.weekday,
+              visible: DateTime.now().weekday - 1 == widget.weekday &&
+                  _markerPos != null,
               child: Positioned(
                 top: _markerPos,
-                left: 16,
-                child: const Icon(Icons.arrow_right, size: 32),
+                left: 20,
+                child: const IgnorePointer(
+                  child: Icon(Icons.arrow_right, size: 32, color: Colors.red),
+                ),
               ),
             ),
           ],
@@ -81,7 +134,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
   Offset? getWidgetPos(BuildContext? context) {
     if (context == null) return null;
     var childOffset =
-        (context.findRenderObject() as RenderBox).localToGlobal(Offset.zero);
+    (context.findRenderObject() as RenderBox).localToGlobal(Offset.zero);
     return (_columnKey.currentContext?.findRenderObject() as RenderBox)
         .globalToLocal(childOffset);
   }
@@ -106,6 +159,8 @@ class _TimetableDayListState extends State<TimetableDayList> {
   }
 
   Widget _buildTimetableCell(int index, Timetable? data) {
+    var timeItem = widget.classTimeItems
+        .firstWhereOrNull((element) => element.id == index + 1);
     return OpenContainer(
       key: GlobalObjectKey(getWidgetId(index)),
       useRootNavigator: true,
@@ -121,6 +176,19 @@ class _TimetableDayListState extends State<TimetableDayList> {
               child: Text("${index + 1}",
                   style: const TextStyle(
                       fontSize: 24, fontWeight: FontWeight.bold)),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+              child: Column(
+                children: [
+                  Text(timeItem?.start.format(context) ?? "--:--"),
+                  Transform.rotate(
+                    angle: pi / 2,
+                    child: const Icon(Icons.arrow_right),
+                  ),
+                  Text(timeItem?.end.format(context) ?? "--:--"),
+                ],
+              ),
             ),
             const SizedBox(
                 height: 32, child: VerticalDivider(width: 2, thickness: 2)),
@@ -154,7 +222,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
                 splashRadius: 24,
                 onPressed: () {
                   createNewSubmissionForTimetable(
-                      context, widget.weekday, data!.subject);
+                      context, widget.weekday, data.subject);
                 },
               )
           ],

@@ -42,7 +42,7 @@ void handleAuthError(FirebaseAuthException e, BuildContext context) {
       showSnackBar(context, "ユーザーが見つかりません。既に削除された可能性があります。");
       break;
     case "user-disabled":
-      showSnackBar(context, "このアカウントは停止されています。");
+      showSnackBar(context, "このアカウントは凍結されています。");
       break;
     case "network-request-failed":
       showSnackBar(context, "通信に失敗しました。ネットワーク接続を確認してください。");
@@ -65,7 +65,7 @@ void handleFirebaseError(FirebaseException e, StackTrace stackTrace,
       showSimpleDialog(
         context,
         "エラー",
-        "$message\nデータにアクセスする権限がありません。\nアカウントがすでに削除されたか、サーバーメンテナンス中である可能性があります。",
+        "$message\n\nアカウントがすでに削除されたか、サーバーメンテナンス中である可能性があります。",
       );
       break;
 
@@ -174,4 +174,14 @@ String? getAdUnitId(AdUnit adUnit) {
     return null;
   }
   return adUnitIds[adUnit]?[kReleaseMode ? "release" : "debug"]?[platform];
+}
+
+extension TimeOfDayToMinutes on TimeOfDay {
+  int toMinutes() {
+    return hour * 60 + minute;
+  }
+
+  bool isInsideRange(TimeOfDay start, TimeOfDay end) {
+    return start.toMinutes() <= toMinutes() && toMinutes() < end.toMinutes();
+  }
 }

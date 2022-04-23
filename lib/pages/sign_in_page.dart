@@ -6,7 +6,6 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,11 +29,13 @@ class SignInPage extends StatefulWidget {
   SignInPage({Key? key, dynamic arguments})
       : initialCred = arguments?["initialCred"],
         reAuth = arguments?["reAuth"] ?? false,
+        upgrade = arguments?["upgrade"] ?? false,
         // forMigration = arguments?["forMigration"] ?? false,
         super(key: key);
 
   final UserCredential? initialCred;
   final bool reAuth;
+  final bool upgrade;
 
   // final bool forMigration;
 
@@ -139,30 +140,30 @@ class _SignInPageState extends State<SignInPage> {
                               style: TextStyle(color: Colors.white)),
                           onPressed: !loading && !widget.reAuth
                               ? () {
-                            showPlatformDialog(
-                                context: context,
-                                builder: (context) {
-                                  return PlatformAlertDialog(
-                                    title: const Text("注意"),
-                                    content: const Text(
-                                        "現在、Android版ではAppleログインをご利用いただけません。"
-                                            "そのため、Android端末にデータ移行することができません。続行しますか？"),
-                                    actions: [
-                                      PlatformTextButton(
-                                          child: const Text("Cancel"),
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          }),
-                                      PlatformTextButton(
-                                          child: const Text("OK"),
-                                          onPressed: () async {
-                                            Navigator.pop(context);
+                                  showPlatformDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return PlatformAlertDialog(
+                                          title: const Text("注意"),
+                                          content: const Text(
+                                              "現在、Android版ではAppleログインをご利用いただけません。"
+                                              "そのため、Android端末にデータ移行することができません。続行しますか？"),
+                                          actions: [
+                                            PlatformTextButton(
+                                                child: const Text("Cancel"),
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                }),
+                                            PlatformTextButton(
+                                                child: const Text("OK"),
+                                                onPressed: () async {
+                                                  Navigator.pop(context);
                                                   wrapSignIn(signInWithApple);
                                                 }),
-                                    ],
-                                  );
-                                });
-                          }
+                                          ],
+                                        );
+                                      });
+                                }
                               : null,
                         ),
                       ),
@@ -217,8 +218,8 @@ class _SignInPageState extends State<SignInPage> {
                     if (Platform.isIOS)
                       Text(
                           "「Googleでログイン」もしくは「Twitterでログイン」をタップすると、「あなたに関する情報を共有することを許可します」"
-                              "という内容のダイアログが表示されます。\nここでいう「情報」はログインのみに使用する情報ですので、"
-                              "ログインする場合は「続ける」をタップしてください。",
+                          "という内容のダイアログが表示されます。\nここでいう「情報」はログインのみに使用する情報ですので、"
+                          "ログインする場合は「続ける」をタップしてください。",
                           style: TextStyle(
                               fontSize: 14,
                               color: Theme.of(context)
@@ -273,6 +274,9 @@ class _SignInPageState extends State<SignInPage> {
       if (widget.reAuth) {
         return await FirebaseAuth.instance.currentUser!
             .reauthenticateWithCredential(cred);
+      } else if (widget.upgrade) {
+        return await FirebaseAuth.instance.currentUser!
+            .linkWithCredential(cred);
       } else {
         return await signInWithCredential(cred);
       }
@@ -323,6 +327,9 @@ class _SignInPageState extends State<SignInPage> {
       if (widget.reAuth) {
         return await FirebaseAuth.instance.currentUser!
             .reauthenticateWithCredential(cred);
+      } else if (widget.upgrade) {
+        return await FirebaseAuth.instance.currentUser!
+            .linkWithCredential(cred);
       } else {
         return await signInWithCredential(cred);
       }
@@ -367,6 +374,9 @@ class _SignInPageState extends State<SignInPage> {
       if (widget.reAuth) {
         return await FirebaseAuth.instance.currentUser!
             .reauthenticateWithCredential(cred);
+      } else if (widget.upgrade) {
+        return await FirebaseAuth.instance.currentUser!
+            .linkWithCredential(cred);
       } else {
         return await signInWithCredential(cred);
       }

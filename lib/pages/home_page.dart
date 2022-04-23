@@ -16,7 +16,6 @@ import 'package:submon/method_channel/actions.dart';
 import 'package:submon/method_channel/channels.dart';
 import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/home_tabs/tab_do_time_list.dart';
-import 'package:submon/pages/home_tabs/tab_memorize_card.dart';
 import 'package:submon/pages/home_tabs/tab_others.dart';
 import 'package:submon/pages/home_tabs/tab_submissions.dart';
 import 'package:submon/pages/submission_create_page.dart';
@@ -50,8 +49,6 @@ class _HomePageState extends State<HomePage> {
   List<Widget> pages = [];
 
   List<List<ActionItem>> actions = [];
-
-  // final timetableKey = GlobalKey<TabTimetableState>();
 
   final _scaffoldKey = GlobalKey();
 
@@ -140,7 +137,10 @@ class _HomePageState extends State<HomePage> {
         const TabSubmissions(),
         const TabDoTimeList(),
         if (prefs.showTimetableMenu) const TabTimetable2(),
-        if (prefs.showMemorizeMenu) const TabMemorizeCard(),
+        if (prefs.showMemorizeMenu)
+          const Center(
+            child: Text('Coming Soon...'),
+          ),
         const TabOthers(),
       ];
 
@@ -151,25 +151,11 @@ class _HomePageState extends State<HomePage> {
           [
             ActionItem(Icons.table_view, "テーブルビュー", () async {
               await Navigator.pushNamed(context, "/timetable/table-view");
-              // timetableKey.currentState?.getPref();
-              // var state = timetableKey.currentState?.tableKey.currentState;
-              // state?.getPref();
-              // state?.getTable();
             }),
             ActionItem(Icons.settings, "設定", () async {
               await Navigator.pushNamed(context, "/settings/timetable");
               eventBus.fire(TimetableListChanged());
-              // timetableKey.currentState?.getPref();
-              // var state = timetableKey.currentState?.tableKey.currentState;
-              // state?.getPref();
-              // state?.getTable();
             }),
-            // ActionItem(Icons.edit, "編集", () async {
-            //   await Navigator.pushNamed(context, "/timetable/edit");
-            //   timetableKey.currentState?.setState(() {
-            //     timetableKey.currentState?.tableKey.currentState?.getTable();
-            //   });
-            // }),
           ],
         if (prefs.showMemorizeMenu) [],
         [],
@@ -278,13 +264,13 @@ class _HomePageState extends State<HomePage> {
             eventBus.fire(DoTimeAddButtonPressed());
           },
         );
-      case BottomNavItemId.memorizeCard:
-        return FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () {
-            eventBus.fire(MemorizeCardAddButtonPressed());
-          },
-        );
+      // case BottomNavItemId.memorizeCard:
+      //   return FloatingActionButton(
+      //     child: const Icon(Icons.add),
+      //     onPressed: () {
+      //       eventBus.fire(MemorizeCardAddButtonPressed());
+      //     },
+      //   );
       default:
         return null;
     }

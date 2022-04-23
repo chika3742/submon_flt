@@ -104,3 +104,5 @@ dependencies {
     implementation "androidx.room:room-runtime:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
 }
+
+android.buildTypes.release.ndk.debugSymbolLevel = "FULL"
