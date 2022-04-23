@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
@@ -254,35 +253,39 @@ class _AccountEditPageState extends State<AccountEditPage> {
     showSimpleDialog(
       context,
       "最終確認",
-      "アカウントを削除すると、サーバー上のデータがすべて削除され、二度と復元できません。本当に全データを削除しますか？",
+      "アカウントを削除すると、サーバー上のデータがすべて削除され、二度と復元できません。本当に全データを削除しますか？\n\n(セキュリティのため再ログインが必要になる場合があります。)",
       onOKPressed: () async {
         setState(() {
           _loading = true;
         });
-        try {
-          await FirestoreProvider.deleteUser();
-          await FirebaseAuth.instance.currentUser!.delete();
-
-          showSnackBar(context, "アカウントを削除しました。");
-          backToWelcomePage(context);
-        } on FirebaseAuthException catch (e) {
-          if (e.code == "requires-recent-login") {
-            showSnackBar(context, "セキュリティのため、再度ログインをお願いします。");
-            var result = await Navigator.pushNamed(context, "/signIn",
-                arguments: {'reAuth': true});
-            if (result == true) await deleteAccount();
-          } else {
-            handleAuthError(e, context);
-          }
-        } catch (e) {
-          showSnackBar(context, "アカウントの削除に失敗しました。");
-        }
+        await executeAccountDeletion();
         setState(() {
           _loading = false;
         });
       },
       showCancel: true,
     );
+  }
+
+  Future<void> executeAccountDeletion() async {
+    try {
+      await FirebaseAuth.instance.currentUser!.delete();
+
+      showSnackBar(context, "アカウントを削除しました。");
+      backToWelcomePage(context);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "requires-recent-login") {
+        showSnackBar(context, "セキュリティのため再ログインが必要です。");
+        var result = await Navigator.pushNamed(context, "/signIn", arguments: {
+          "reAuth": true,
+        });
+        if (result == true) {
+          await executeAccountDeletion();
+        }
+      }
+    } catch (e) {
+      showSnackBar(context, "アカウントの削除に失敗しました。");
+    }
   }
 }
 

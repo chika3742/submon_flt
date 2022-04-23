@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/timetable.dart';
+import 'package:submon/db/timetable_class_time.dart';
 import 'package:submon/db/timetable_table.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:time_picker_widget/time_picker_widget.dart';
@@ -24,6 +25,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
   int? hours;
   bool? showSaturday;
   List<TimetableTable> tables = [];
+  List<TimetableClassTime> classTimes = [];
   TimetableNotification? _timetableNotification;
   bool _loadingTimetableNotification = true;
 
@@ -36,7 +38,12 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
         showSaturday = prefs.timetableShowSaturday;
       });
     });
+
     getTables();
+
+    TimetableClassTimeProvider(context).use((provider) async {
+      classTimes = await provider.getAll();
+    });
 
     FirestoreProvider.config.then((value) {
       setState(() {
@@ -266,15 +273,78 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
                   showSaturday = value;
                 });
               },
-            )
+            ),
           ]),
         SettingsCategory(
           title: "各時限の始業・終業時刻",
           tiles: [1, 2, 3, 4, 5, 6, 7, 8].map((e) {
+            var item =
+                classTimes.firstWhereOrNull((element) => element.id == e);
             return SettingsTile(
               title: "$e 時間目",
-              subtitle: "未設定",
-              onTap: () {},
+              subtitle: item != null
+                  ? "${item.start.format(context)} ~ ${item.end.format(context)}"
+                  : "未設定",
+              onTap: () async {
+                var start = await showTimePicker(
+                  context: context,
+                  initialTime:
+                      item?.start ?? const TimeOfDay(hour: 0, minute: 0),
+                  helpText: "始業時刻を設定 (1/2)",
+                );
+
+                if (start == null) return;
+
+                var end = await showTimePicker(
+                  context: context,
+                  initialTime: item?.end ?? start,
+                  helpText: "終業時刻を設定 (2/2)",
+                );
+
+                if (end == null) return;
+
+                if (start.toMinutes() >= end.toMinutes()) {
+                  showSnackBar(context, "終業時刻が始業時刻よりも前か同じになっています");
+                  return;
+                }
+
+                if (classTimes.any((element) {
+                  var a = element.start.toMinutes();
+                  var b = element.end.toMinutes();
+                  var x = start.toMinutes();
+                  var y = end.toMinutes();
+                  return element.id != e &&
+                      ((x <= b && a <= y) ||
+                          ((element.id < e && x < b) ||
+                              (element.id > e && y > a)));
+                })) {
+                  showSnackBar(context, "他の設定時刻との関係が正しくありません");
+                  return;
+                }
+
+                await TimetableClassTimeProvider(context).use((provider) async {
+                  var obj = TimetableClassTime(id: e, start: start, end: end);
+                  await provider.insert(obj);
+                  classTimes.remove(item);
+                  classTimes.add(obj);
+                  setState(() {});
+                });
+              },
+              trailing: item != null
+                  ? IconButton(
+                      splashRadius: 24,
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        TimetableClassTimeProvider(context)
+                            .use((provider) async {
+                          await provider.delete(e);
+                        });
+                        setState(() {
+                          classTimes.removeWhere((element) => element.id == e);
+                        });
+                      },
+                    )
+                  : null,
             );
           }).toList(),
         ),
@@ -292,7 +362,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
         (provider as TimetableProvider).currentTableId = newTable.id.toString();
         var cells = table.id != null
             ? await provider
-            .getAll(where: "$colTableId = ?", whereArgs: [table.id])
+                .getAll(where: "$colTableId = ?", whereArgs: [table.id])
             : await provider.getAll(where: "$colTableId is null");
         for (var cell in cells) {
           await provider.insert(

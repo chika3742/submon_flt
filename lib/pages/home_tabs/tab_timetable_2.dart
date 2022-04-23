@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/timetable.dart';
+import 'package:submon/db/timetable_class_time.dart';
 import 'package:submon/db/timetable_table.dart';
 import 'package:submon/events.dart';
 
@@ -24,6 +25,7 @@ class _TabTimetable2State extends State<TabTimetable2> {
           DateTime.now().weekday != 7 ? DateTime.now().weekday - 1 : 0);
   List<Timetable>? _items;
   List<TimetableTable>? _tables;
+  List<TimetableClassTime>? _classTimes;
   int? _currentTableId;
 
   @override
@@ -60,6 +62,10 @@ class _TabTimetable2State extends State<TabTimetable2> {
               .getAll(where: "$colTableId = ?", whereArgs: [timetableId]);
         }
 
+        await TimetableClassTimeProvider(context).use((provider) async {
+          _classTimes = await provider.getAll();
+        });
+
         setState(() {});
       });
     });
@@ -87,7 +93,11 @@ class _TabTimetable2State extends State<TabTimetable2> {
                   .where((element) => element.cellId % 6 == index)
                   .toList();
               return TimetableDayList(
-                  weekday: index, periodCount: periodCount, items: items);
+                weekday: index,
+                periodCount: periodCount,
+                items: items,
+                classTimeItems: _classTimes!,
+              );
             },
           ),
         ),

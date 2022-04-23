@@ -170,18 +170,6 @@ class FirestoreProvider {
     await userDoc!.set({"schemaVersion": schemaVer});
   }
 
-  static Future<void> deleteUser() async {
-    try {
-      await userDoc!.delete();
-    } on FirebaseException catch (e) {
-      if (e.code == "permission-denied") {
-        // do nothing
-      } else {
-        rethrow;
-      }
-    }
-  }
-
   static Future<void> checkMigration() async {
     if (userDoc == null) return;
     var snapshot = await userDoc!.get();

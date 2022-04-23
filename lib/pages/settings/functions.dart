@@ -142,18 +142,19 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
           ],
         ),
         SettingsCategory(title: "アカウント", tiles: [
-          SettingsTile(
-            title: auth.currentUser != null ? "ログアウト" : "ログイン / 新規登録",
-            onTap: () async {
-              if (auth.currentUser == null) {
-                await pushPage(context, SignInPage());
-                setState(() {});
-              } else {
-                showSimpleDialog(context, "確認", "ログアウトしますか？",
-                    onOKPressed: () async {
-                      await auth.signOut();
-                  await GoogleSignIn().signOut();
-                  updateWidgets();
+          if (auth.currentUser != null && !auth.currentUser!.isAnonymous)
+            SettingsTile(
+              title: auth.currentUser != null ? "ログアウト" : "ログイン / 新規登録",
+              onTap: () async {
+                if (auth.currentUser == null) {
+                  await pushPage(context, SignInPage());
+                  setState(() {});
+                } else {
+                  showSimpleDialog(context, "確認", "ログアウトしますか？",
+                      onOKPressed: () async {
+                    await auth.signOut();
+                    await GoogleSignIn().signOut();
+                    updateWidgets();
                   Navigator.pop(context);
                   Navigator.pushReplacementNamed(context, "welcome");
                   showSnackBar(context, "ログアウトしました");
@@ -161,7 +162,9 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
               }
             },
           ),
-          if (auth.currentUser != null && auth.currentUser!.email != "")
+          if (auth.currentUser != null &&
+              auth.currentUser!.email != "" &&
+              !auth.currentUser!.isAnonymous)
             SettingsTile(
               title: emailChangeable() ? "メールアドレスの変更" : "メールアドレス",
               subtitle: auth.currentUser!.email,
@@ -192,9 +195,26 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                 setState(() {});
               },
             ),
+          if (auth.currentUser != null && auth.currentUser!.isAnonymous)
+            SettingsTile(
+              title: "アカウントをアップグレード",
+              subtitle: "お試しアカウントを通常アカウントにアップグレードできます。",
+              onTap: () async {
+                var result =
+                    await Navigator.pushNamed(context, "/signIn", arguments: {
+                  "upgrade": true,
+                });
+                if (result == true) {
+                  setState(() {});
+                  showSnackBar(context, "アカウントがアップグレードされました！");
+                }
+              },
+            ),
           if (auth.currentUser != null)
             SettingsTile(
-              title: "アカウントの削除",
+              title: auth.currentUser!.isAnonymous
+                  ? "ログアウト(アカウントの削除)"
+                  : "アカウントの削除",
               titleTextStyle: const TextStyle(color: Colors.red),
               onTap: () async {
                 await Navigator.pushNamed(context, "/account/delete");
@@ -348,14 +368,16 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
       EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD,
       EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD
     ];
-    var providerId =
-        FirebaseAuth.instance.currentUser?.providerData.first.providerId;
-    return providers.contains(providerId);
+    var currentUser = FirebaseAuth.instance.currentUser!;
+    return !currentUser.isAnonymous &&
+        providers.contains(currentUser.providerData.first.providerId);
   }
 
   bool passwordChangeable() {
-    return FirebaseAuth.instance.currentUser?.providerData.first.providerId ==
-        EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD;
+    var currentUser = FirebaseAuth.instance.currentUser!;
+    return !currentUser.isAnonymous &&
+        currentUser.providerData.first.providerId ==
+            EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD;
   }
 
   Future<void> _checkSignedInAndScopeGranted() async {
