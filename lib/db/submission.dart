@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:googleapis/calendar/v3.dart' as c;
-import 'package:submon/db/doTime.dart';
+import 'package:submon/db/digestive.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/sql_provider.dart';
 import 'package:submon/main.dart';
@@ -130,7 +130,7 @@ class SubmissionProvider extends SqlProvider<Submission> {
   @override
   Future<void> deleteFirestore(int id) async {
     await FirestoreProvider.submission.delete(id.toString());
-    await DoTimeProvider(db: db).deleteForSubmissionId(id);
+    await DigestiveProvider(db: db).deleteForSubmissionId(id);
     updateWidgets();
 
     await googleSignIn.authenticatedClient().then((client) async {

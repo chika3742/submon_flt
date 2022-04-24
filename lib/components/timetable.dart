@@ -6,10 +6,10 @@ import 'package:submon/components/open_modal_animation.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/timetable.dart' as db;
 import 'package:submon/events.dart';
+import 'package:submon/pages/timetable_cell_edit_page.dart';
 import 'package:submon/pages/timetable_edit_page.dart';
 import 'package:submon/utils/ui.dart';
 
-import '../pages/timetable_subject_select_page.dart';
 import '../utils/utils.dart';
 
 class Timetable extends StatefulWidget {
@@ -178,8 +178,11 @@ class TimetableState extends State<Timetable> {
         closedBuilder: (_, __) =>
             _buildTimetableCell(containerKey, youbi, index),
         closedElevation: 4,
-        openBuilder: (context, callback) =>
-            TimetableSubjectSelectPage(youbi, index),
+        openBuilder: (context, callback) => TimetableCellEditPage(
+          weekDay: youbi,
+          period: index - 1,
+          initialData: cell,
+        ),
       );
     } else {
       return OpenModalAnimatedContainer(
@@ -318,30 +321,6 @@ class _NoteViewState extends State<_NoteView> {
                           style: Theme.of(context).textTheme.caption),
                     ],
                   ),
-                  // const Spacer(),
-                  // IconButton(
-                  //   icon: const Icon(Icons.edit),
-                  //   splashRadius: 24,
-                  //   onPressed: () async {
-                  //     await showRoundedBottomSheet(
-                  //       context: context,
-                  //       title:
-                  //           "${widget.cell.subject} (${getWeekdayString(widget.weekday)}曜 ${widget.index}限) メモ編集",
-                  //       child: TextFormFieldBottomSheet(
-                  //         formLabel: "メモ",
-                  //         onDone: (text) {
-                  //           setState(() {
-                  //             // widget.cell.note = text;
-                  //           });
-                  //           db.TimetableProvider().use((provider) async {
-                  //             await provider.update(widget.cell);
-                  //           });
-                  //           Navigator.of(context, rootNavigator: true).pop();
-                  //         },
-                  //       ),
-                  //     );
-                  //   },
-                  // ),
                 ],
               ),
               Padding(
@@ -374,7 +353,7 @@ class _NoteViewState extends State<_NoteView> {
                         context, widget.weekday, widget.cell.subject);
                   },
                 ),
-              )
+              ),
             ],
           ),
         ),

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:submon/db/doTime.dart';
+import 'package:submon/db/digestive.dart';
 import 'package:submon/db/memorize_card_folder.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/sql_provider.dart';
@@ -20,7 +20,7 @@ class FirestoreProvider {
 
   static FirestoreProvider get submission => FirestoreProvider("submission");
 
-  static FirestoreProvider get doTime => FirestoreProvider("doTime");
+  static FirestoreProvider get digestive => FirestoreProvider("digestive");
 
   static FirestoreProvider get timetable => FirestoreProvider("timetable");
 
@@ -104,28 +104,28 @@ class FirestoreProvider {
     }
   }
 
-  static Future<void> addDoTimeNotification(int? id) async {
+  static Future<void> addDigestiveNotification(int? id) async {
     if (userDoc != null && id != null) {
       await userDoc!.set({
-        "doTimeNotifications": FieldValue.arrayUnion(
-            [userDoc!.collection("doTime").doc(id.toString())])
+        "digestiveNotifications": FieldValue.arrayUnion(
+            [userDoc!.collection("digestive").doc(id.toString())])
       }, SetOptions(merge: true));
     }
   }
 
-  static Future<void> removeDoTimeNotification(int? id) async {
+  static Future<void> removeDigestiveNotification(int? id) async {
     if (userDoc != null && id != null) {
       await userDoc!.set({
-        "doTimeNotifications": FieldValue.arrayRemove(
-            [userDoc!.collection("doTime").doc(id.toString())])
+        "digestiveNotifications": FieldValue.arrayRemove(
+            [userDoc!.collection("digestive").doc(id.toString())])
       }, SetOptions(merge: true));
     }
   }
 
-  static Future<void> setDoTimeNotificationTimeBefore(int value) async {
+  static Future<void> setDigestiveNotificationTimeBefore(int value) async {
     if (userDoc != null) {
       await userDoc!.set(
-          {"doTimeNotificationTimeBefore": value}, SetOptions(merge: true));
+          {"digestiveNotificationTimeBefore": value}, SetOptions(merge: true));
     }
   }
 
@@ -188,7 +188,7 @@ class FirestoreProvider {
   }
 
   ///
-  /// if value is changed, true will be changed.
+  /// if value is changed, true will be returned.
   ///
   static Future<bool> fetchData({bool force = false}) async {
     await FirestoreProvider.checkMigration();
@@ -198,7 +198,7 @@ class FirestoreProvider {
     if (changed == true) {
       final configData = await config;
       final submissionSnapshot = await submission.get();
-      final doTimeSnapshot = await doTime.get();
+      final digestiveSnapshot = await digestive.get();
       final timetableDataSnapshot = await timetable.get();
       final timetableCustomSubjectsSnapshot =
           await timetableCustomSubject.get();
@@ -210,9 +210,9 @@ class FirestoreProvider {
         eventBus.fire(SubmissionFetched());
       });
 
-      await DoTimeProvider().use((provider) async {
+      await DigestiveProvider().use((provider) async {
         await provider
-            .setAllLocal(doTimeSnapshot.docs.map((e) => e.data()).toList());
+            .setAllLocal(digestiveSnapshot.docs.map((e) => e.data()).toList());
       });
 
       var timetableTables = timetableDataSnapshot.docs
@@ -267,7 +267,7 @@ class ConfigData {
     this.schemaVersion,
     this.reminderNotificationTime,
     this.timetableNotification,
-    this.doTimeNotificationTimeBefore,
+    this.digestiveNotificationTimeBefore,
     this.lms,
   });
 
@@ -275,7 +275,7 @@ class ConfigData {
   int? schemaVersion;
   TimeOfDay? reminderNotificationTime;
   TimetableNotification? timetableNotification;
-  int? doTimeNotificationTimeBefore;
+  int? digestiveNotificationTimeBefore;
   Lms? lms;
 
   static ConfigData fromMap(Map<String, dynamic>? map) {
@@ -302,7 +302,7 @@ class ConfigData {
             : null,
         id: map["timetableNotificationId"],
       ),
-      doTimeNotificationTimeBefore: map["doTimeNotificationTimeBefore"],
+      digestiveNotificationTimeBefore: map["digestiveNotificationTimeBefore"],
       lms: Lms.fromMap(map["lms"]),
     );
   }

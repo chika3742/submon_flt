@@ -14,7 +14,7 @@ class CustomizeSettingsPage extends StatefulWidget {
 }
 
 class _CustomizeSettingsPageState extends State<CustomizeSettingsPage> {
-  int? _doTimeNotificationTimeBefore;
+  int? _digestiveNotificationTimeBefore;
   bool? _timetableInMenu;
   bool? _memorizeCardInMenu;
 
@@ -22,11 +22,12 @@ class _CustomizeSettingsPageState extends State<CustomizeSettingsPage> {
   void initState() {
     FirestoreProvider.config.then((value) {
       setState(() {
-        _doTimeNotificationTimeBefore =
-            value?.doTimeNotificationTimeBefore ?? 5;
+        _digestiveNotificationTimeBefore =
+            value?.digestiveNotificationTimeBefore ?? 5;
       });
     }).onError<FirebaseException>((error, stackTrace) {
-      handleFirebaseError(error, stackTrace, context, "DoTime通知時間の取得に失敗しました。");
+      handleFirebaseError(
+          error, stackTrace, context, "Digestive通知時間の取得に失敗しました。");
     });
 
     SharedPrefs.use((prefs) {
@@ -42,19 +43,19 @@ class _CustomizeSettingsPageState extends State<CustomizeSettingsPage> {
   Widget build(BuildContext context) {
     return SettingsListView(
       categories: [
-        SettingsCategory(title: "DoTime", tiles: [
+        SettingsCategory(title: "Digestive", tiles: [
           SettingsTile(
             title: "通知する時間",
-            subtitle: _doTimeNotificationTimeBefore == null
+            subtitle: _digestiveNotificationTimeBefore == null
                 ? "Loading..."
-                : "$_doTimeNotificationTimeBefore 分前",
-            onTap: _doTimeNotificationTimeBefore != null
+                : "$_digestiveNotificationTimeBefore 分前",
+            onTap: _digestiveNotificationTimeBefore != null
                 ? () {
                     showRoundedBottomSheet(
                       context: context,
                       title: "通知する時間",
                       child: RadioBottomSheet(
-                        initialValue: _doTimeNotificationTimeBefore,
+                        initialValue: _digestiveNotificationTimeBefore,
                         items: [5, 10, 15, 20]
                             .map((e) => RadioBottomSheetItem(
                                   value: e,
@@ -63,10 +64,10 @@ class _CustomizeSettingsPageState extends State<CustomizeSettingsPage> {
                             .toList(),
                         onSelected: (value) {
                           setState(() {
-                            _doTimeNotificationTimeBefore = value;
+                            _digestiveNotificationTimeBefore = value;
                           });
-                          FirestoreProvider.setDoTimeNotificationTimeBefore(
-                              _doTimeNotificationTimeBefore!);
+                          FirestoreProvider.setDigestiveNotificationTimeBefore(
+                              _digestiveNotificationTimeBefore!);
                         },
                       ),
                     );

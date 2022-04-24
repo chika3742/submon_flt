@@ -21,7 +21,7 @@ class _MigrationPageState extends State<MigrationPage> {
             const Text('これで最後です。「アカウント移行を完了する」をタップするとアカウント移行を開始します。\n\n'
                 '移行されるデータは以下のとおりです。\n\n'
                 '・提出物(完了済みも含む)\n'
-                '・DoTime\n'
+                '・Digestive\n'
                 '・時間割表\n'
                 '・暗記カード\n\n'
                 '以下のデータは移行されません。\n'

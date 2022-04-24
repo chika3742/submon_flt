@@ -101,9 +101,7 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
                                     TextSpan(children: [
                                       TextSpan(
                                           text: "${_item.date!.month} / ",
-                                          style: const TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold)),
+                                          style: const TextStyle(fontSize: 20)),
                                       TextSpan(
                                           text: "${_item.date!.day}",
                                           style: const TextStyle(fontSize: 34)),

@@ -1,36 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:submon/db/firestore_provider.dart';
-import 'package:submon/pages/home_tabs/tab_do_time_list.dart';
+import 'package:submon/pages/home_tabs/tab_digestive_list.dart';
 import 'package:submon/utils/ui.dart';
 
-import '../db/doTime.dart';
-import 'dotime_edit_bottom_sheet.dart';
+import '../db/digestive.dart';
+import 'digestive_edit_bottom_sheet.dart';
 
-class DoTimeDetailCard extends StatefulWidget {
-  const DoTimeDetailCard({
+class DigestiveDetailCard extends StatefulWidget {
+  const DigestiveDetailCard({
     Key? key,
-    required this.doTime,
+    required this.digestive,
     required this.parentList,
     this.onChanged,
   }) : super(key: key);
 
-  final DoTime doTime;
-  final List<DoTime> parentList;
+  final Digestive digestive;
+  final List<Digestive> parentList;
   final void Function()? onChanged;
 
   @override
-  _DoTimeDetailCardState createState() => _DoTimeDetailCardState();
+  _DigestiveDetailCardState createState() => _DigestiveDetailCardState();
 }
 
-class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
+class _DigestiveDetailCardState extends State<DigestiveDetailCard> {
   @override
   Widget build(BuildContext context) {
-    var doTime = widget.doTime;
+    var digestive = widget.digestive;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
       child: Card(
-        color: doTime.startAt.isBefore(DateTime.now()) && doTime.done == false
+        color: digestive.startAt.isBefore(DateTime.now()) &&
+                digestive.done == false
             ? Colors.red.withOpacity(0.5).blendedToCardColor(context)
             : null,
         child: IntrinsicHeight(
@@ -49,13 +50,13 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
                             Text.rich(TextSpan(
                                 children: [
                                   TextSpan(
-                                      text: doTime.startAt.month.toString(),
+                                      text: digestive.startAt.month.toString(),
                                       style: const TextStyle(fontSize: 20)),
                                   const TextSpan(
                                       text: "月 ",
                                       style: TextStyle(fontSize: 16)),
                                   TextSpan(
-                                      text: doTime.startAt.day.toString(),
+                                      text: digestive.startAt.day.toString(),
                                       style: const TextStyle(fontSize: 20)),
                                   const TextSpan(
                                       text: "日",
@@ -68,7 +69,7 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
                                 children: [
                                   TextSpan(
                                       text: DateFormat("H:mm")
-                                          .format(doTime.startAt),
+                                          .format(digestive.startAt),
                                       style: const TextStyle(fontSize: 20)),
                                   const TextSpan(
                                       text: "から",
@@ -79,7 +80,7 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
                             const SizedBox(width: 16),
                             Text.rich(TextSpan(children: [
                               TextSpan(
-                                  text: doTime.minute.toString(),
+                                  text: digestive.minute.toString(),
                                   style: const TextStyle(
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold)),
@@ -92,13 +93,13 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
                           ],
                         ),
                         const Spacer(),
-                        Text(doTime.content,
+                        Text(digestive.content,
                             style: TextStyle(
                                 fontSize: 20,
-                                decoration: doTime.done
+                                decoration: digestive.done
                                     ? TextDecoration.lineThrough
                                     : null,
-                                color: doTime.done
+                                color: digestive.done
                                     ? Theme.of(context)
                                         .textTheme
                                         .bodyText1
@@ -118,7 +119,8 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
                           return [
                             PopupMenuItem(
                               child: ListTile(
-                                title: Text(!doTime.done ? "完了にする" : "未完了にする"),
+                                title:
+                                    Text(!digestive.done ? "完了にする" : "未完了にする"),
                                 leading: const Icon(Icons.check),
                               ),
                               value: 2,
@@ -163,7 +165,7 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
                   ),
                 ],
               ),
-              if (doTime.done)
+              if (digestive.done)
                 IgnorePointer(
                   child: Container(
                     alignment: Alignment.center,
@@ -186,22 +188,22 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
   }
 
   void done() async {
-    var isDone = widget.doTime.done;
-    await DoTimeProvider().use((provider) async {
-      await provider.insert(widget.doTime..done = !isDone);
+    var isDone = widget.digestive.done;
+    await DigestiveProvider().use((provider) async {
+      await provider.insert(widget.digestive..done = !isDone);
     });
     setState(() {});
     if (!isDone) {
-      FirestoreProvider.removeDoTimeNotification(widget.doTime.id);
+      FirestoreProvider.removeDigestiveNotification(widget.digestive.id);
     } else {
-      FirestoreProvider.addDoTimeNotification(widget.doTime.id);
+      FirestoreProvider.addDigestiveNotification(widget.digestive.id);
     }
     showSnackBar(context, !isDone ? "完了しました" : "完了マークを外しました",
         action: SnackBarAction(
           label: "元に戻す",
           onPressed: () {
-            DoTimeProvider().use((provider) async {
-              await provider.insert(widget.doTime..done = isDone);
+            DigestiveProvider().use((provider) async {
+              await provider.insert(widget.digestive..done = isDone);
               setState(() {});
             });
           },
@@ -209,25 +211,25 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
   }
 
   void edit() async {
-    var data = await showRoundedBottomSheet<DoTime>(
+    var data = await showRoundedBottomSheet<Digestive>(
       context: context,
       useRootNavigator: true,
       title: "編集",
-      child: DoTimeEditBottomSheet(
-        submissionId: widget.doTime.submissionId,
-        initialData: widget.doTime,
+      child: DigestiveEditBottomSheet(
+        submissionId: widget.digestive.submissionId,
+        initialData: widget.digestive,
       ),
     );
     if (data != null) {
-      await DoTimeProvider().use((provider) async {
+      await DigestiveProvider().use((provider) async {
         await provider.insert(data);
       });
 
       var index = widget.parentList
-          .indexWhere((element) => element.id == widget.doTime.id);
-      if (widget.parentList is List<DoTimeWithSubmission>) {
-        widget.parentList[index] = DoTimeWithSubmission.fromObject(data,
-            (widget.parentList[index] as DoTimeWithSubmission).submission);
+          .indexWhere((element) => element.id == widget.digestive.id);
+      if (widget.parentList is List<DigestiveWithSubmission>) {
+        widget.parentList[index] = DigestiveWithSubmission.fromObject(data,
+            (widget.parentList[index] as DigestiveWithSubmission).submission);
       } else {
         widget.parentList[index] = data;
       }
@@ -238,10 +240,10 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
   }
 
   void delete() async {
-    await DoTimeProvider().use((provider) async {
-      await provider.delete(widget.doTime.id!);
+    await DigestiveProvider().use((provider) async {
+      await provider.delete(widget.digestive.id!);
     });
-    var removedIndex = widget.parentList.indexOf(widget.doTime);
+    var removedIndex = widget.parentList.indexOf(widget.digestive);
     var removed = widget.parentList.removeAt(removedIndex);
     widget.onChanged?.call();
 
@@ -249,8 +251,8 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
         action: SnackBarAction(
           label: "元に戻す",
           onPressed: () {
-            DoTimeProvider().use((provider) async {
-              await provider.insert(widget.doTime);
+            DigestiveProvider().use((provider) async {
+              await provider.insert(widget.digestive);
             });
 
             if (removedIndex > widget.parentList.length) {
@@ -265,7 +267,7 @@ class _DoTimeDetailCardState extends State<DoTimeDetailCard> {
   void openTimerPage() async {
     var result = await Navigator.of(context, rootNavigator: true)
         .pushNamed("/focus-timer", arguments: {
-      "doTime": widget.doTime,
+      "digestive": widget.digestive,
     });
     if (result == true) {
       done();

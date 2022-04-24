@@ -63,35 +63,65 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextFormField(
-              controller: _subjectController,
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                label: const Text('教科名'),
-                errorText: _subjectError,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _subjectController,
+                decoration: InputDecoration(
+                  filled: true,
+                  label: const Text('教科名'),
+                  errorText: _subjectError,
+                ),
               ),
-            ),
-            const SizedBox(height: 32),
-            TextFormField(
-              controller: _roomController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                label: Text('教室'),
+              const SizedBox(height: 32),
+              Row(
+                children: [
+                  const Icon(Icons.meeting_room),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: TextFormField(
+                      controller: _roomController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        label: Text('教室'),
+                        isDense: true,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _teacherController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                label: Text('先生'),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  const Icon(Icons.person),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: TextFormField(
+                      controller: _teacherController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        label: Text('先生'),
+                        isDense: true,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 32),
+              TextFormField(
+                controller: _teacherController,
+                minLines: 2,
+                maxLines: 8,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  label: Text('メモ'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
