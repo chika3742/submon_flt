@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/sql_provider.dart';
 import 'package:submon/db/timetable.dart';
 
@@ -35,14 +36,6 @@ class TimetableClassTimeProvider extends SqlProvider<TimetableClassTime> {
       ];
 
   @override
-  void deleteAllFirestore() {}
-
-  @override
-  Future<void> deleteFirestore(int id) async {
-    // TODO: implement deleteFirestore
-  }
-
-  @override
   TimetableClassTime mapToObj(Map<String, dynamic> map) {
     return TimetableClassTime(
       id: map[colId],
@@ -65,10 +58,19 @@ class TimetableClassTimeProvider extends SqlProvider<TimetableClassTime> {
   }
 
   @override
-  void setAllFirestore(List<Map<String, dynamic>> list) {
-    // TODO: implement setAllFirestore
+  Future<void> setFirestore(TimetableClassTime data) async {
+    await FirestoreProvider.timetableClassTime
+        .set(data.id.toString(), objToMap(data));
   }
 
   @override
-  Future<void> setFirestore(TimetableClassTime data) async {}
+  Future<void> deleteFirestore(int id) async {
+    await FirestoreProvider.timetableClassTime.delete(id.toString());
+  }
+
+  @override
+  void setAllFirestore(List<Map<String, dynamic>> list) {}
+
+  @override
+  void deleteAllFirestore() {}
 }

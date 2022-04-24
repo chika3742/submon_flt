@@ -95,9 +95,8 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
             SettingsTile(
               title: "通知時刻",
               enabled: !_loadingReminderTime,
-              subtitle: _reminderTime != null
-                  ? _reminderTime!.format(context)
-                  : "タップして設定",
+              subtitle: getUnsetOrString(
+                  _reminderTime?.format(context), _loadingReminderTime),
               leading: const Icon(Icons.schedule),
               trailing: _buildReminderTimeTrailing(),
               onTap: () async {

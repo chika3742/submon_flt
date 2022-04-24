@@ -8,7 +8,7 @@ import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/sql_provider.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/db/timetable.dart';
-import 'package:submon/db/timetable_custom_subject.dart';
+import 'package:submon/db/timetable_class_time.dart';
 import 'package:submon/db/timetable_table.dart';
 import 'package:submon/events.dart';
 import 'package:submon/utils/firestore.dart';
@@ -24,8 +24,8 @@ class FirestoreProvider {
 
   static FirestoreProvider get timetable => FirestoreProvider("timetable");
 
-  static FirestoreProvider get timetableCustomSubject =>
-      FirestoreProvider("timetableCustomSubject");
+  static FirestoreProvider get timetableClassTime =>
+      FirestoreProvider("timetableClassTime");
 
   static FirestoreProvider get memorizeCard =>
       FirestoreProvider("memorizeCard");
@@ -190,7 +190,8 @@ class FirestoreProvider {
   ///
   /// if value is changed, true will be returned.
   ///
-  static Future<bool> fetchData({bool force = false}) async {
+  static Future<bool> fetchData(
+      {required BuildContext context, bool force = false}) async {
     await FirestoreProvider.checkMigration();
 
     var changed = !force ? await FirestoreProvider.checkTimestamp() : true;
@@ -200,19 +201,18 @@ class FirestoreProvider {
       final submissionSnapshot = await submission.get();
       final digestiveSnapshot = await digestive.get();
       final timetableDataSnapshot = await timetable.get();
-      final timetableCustomSubjectsSnapshot =
-          await timetableCustomSubject.get();
-      final memorizeCardSnapshot = await timetableCustomSubject.get();
+      final timetableClassTimeDataSnapshot = await timetableClassTime.get();
+      final memorizeCardSnapshot = await memorizeCard.get();
 
       await SubmissionProvider().use((provider) async {
-        await provider
-            .setAllLocal(submissionSnapshot.docs.map((e) => e.data()).toList());
+        await provider.setAllLocally(
+            submissionSnapshot.docs.map((e) => e.data()).toList());
         eventBus.fire(SubmissionFetched());
       });
 
       await DigestiveProvider().use((provider) async {
-        await provider
-            .setAllLocal(digestiveSnapshot.docs.map((e) => e.data()).toList());
+        await provider.setAllLocally(
+            digestiveSnapshot.docs.map((e) => e.data()).toList());
       });
 
       var timetableTables = timetableDataSnapshot.docs
@@ -224,7 +224,7 @@ class FirestoreProvider {
           .toList();
 
       await TimetableTableProvider().use((provider) async {
-        await provider.setAllLocal(timetableTables);
+        await provider.setAllLocally(timetableTables);
       });
 
       await TimetableProvider().use((provider) async {
@@ -236,13 +236,13 @@ class FirestoreProvider {
         }
       });
 
-      await TimetableCustomSubjectProvider().use((provider) async {
-        await provider.setAllLocal(
-            timetableCustomSubjectsSnapshot.docs.map((e) => e.data()).toList());
+      await TimetableClassTimeProvider(context).use((provider) async {
+        await provider.setAllLocally(
+            timetableClassTimeDataSnapshot.docs.map((e) => e.data()).toList());
       });
 
       await MemorizeCardFolderProvider().use((provider) async {
-        await provider.setAllLocal(memorizeCardSnapshot.docs
+        await provider.setAllLocally(memorizeCardSnapshot.docs
             .map((e) => {
                   "id": e.data()["id"],
                   "title": e.data()["title"],

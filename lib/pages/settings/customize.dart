@@ -15,6 +15,7 @@ class CustomizeSettingsPage extends StatefulWidget {
 
 class _CustomizeSettingsPageState extends State<CustomizeSettingsPage> {
   int? _digestiveNotificationTimeBefore;
+  bool _loadingDigestiveNotificationTimeBefore = true;
   bool? _timetableInMenu;
   bool? _memorizeCardInMenu;
 
@@ -28,6 +29,10 @@ class _CustomizeSettingsPageState extends State<CustomizeSettingsPage> {
     }).onError<FirebaseException>((error, stackTrace) {
       handleFirebaseError(
           error, stackTrace, context, "Digestive通知時間の取得に失敗しました。");
+    }).whenComplete(() {
+      setState(() {
+        _loadingDigestiveNotificationTimeBefore = false;
+      });
     });
 
     SharedPrefs.use((prefs) {
@@ -46,9 +51,9 @@ class _CustomizeSettingsPageState extends State<CustomizeSettingsPage> {
         SettingsCategory(title: "Digestive", tiles: [
           SettingsTile(
             title: "通知する時間",
-            subtitle: _digestiveNotificationTimeBefore == null
-                ? "Loading..."
-                : "$_digestiveNotificationTimeBefore 分前",
+            enabled: !_loadingDigestiveNotificationTimeBefore,
+            subtitle: getUnsetOrString("$_digestiveNotificationTimeBefore 分前",
+                _loadingDigestiveNotificationTimeBefore),
             onTap: _digestiveNotificationTimeBefore != null
                 ? () {
                     showRoundedBottomSheet(

@@ -23,6 +23,16 @@ List<String> getRemainingString(Duration diff, bool weekView) {
   }
 }
 
+String getUnsetOrString(String? string, bool loading) {
+  if (loading) {
+    return "Loading...";
+  }
+  if (string == null) {
+    return "未設定";
+  }
+  return string;
+}
+
 Color getRemainingDateColor(BuildContext context, int remainingHours) {
   var dark = Theme.of(context).brightness == Brightness.dark;
   if (remainingHours < 0) {

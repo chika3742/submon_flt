@@ -156,11 +156,21 @@ class _HomePageState extends State<HomePage> {
                   content: SingleChildScrollView(
                     child: Column(
                       children: [
-                        Text(
-                            "提出物に取り掛かる時間と、何分続けるかをスケジュールすることができます。集中タイマーで重い腰を上げるのにも最適。")
+                        const Text(
+                            "ダイジェスティブでは、提出物に取り掛かる時間と、何分続けるかをスケジュールすることができます。\n集中タイマーで重い腰を上げるのにも最適。"),
+                        const SizedBox(height: 16),
+                        Image.asset("assets/img/digestive_guide.jpg"),
                       ],
                     ),
                   ),
+                  actions: [
+                    TextButton(
+                      child: const Text("OK"),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    )
+                  ],
                 );
               },
             );
@@ -314,7 +324,7 @@ class _HomePageState extends State<HomePage> {
     });
 
     try {
-      var result = await FirestoreProvider.fetchData();
+      var result = await FirestoreProvider.fetchData(context: context);
 
       if (result) {
         _navigatorKey.currentState
