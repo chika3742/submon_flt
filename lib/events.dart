@@ -1,5 +1,4 @@
 import 'package:event_bus/event_bus.dart';
-import 'package:submon/db/timetable_custom_subject.dart';
 
 final eventBus = EventBus();
 
@@ -23,12 +22,6 @@ class UndoRedoUpdatedEvent {
 
 class SubmissionFetched {
   SubmissionFetched();
-}
-
-class TimetableCustomSubjectInserted {
-  TimetableCustomSubject data;
-
-  TimetableCustomSubjectInserted(this.data);
 }
 
 class TimetableListChanged {}

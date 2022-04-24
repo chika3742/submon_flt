@@ -116,7 +116,7 @@ abstract class SqlProvider<T> {
     await db.execute("delete from ${tableName()}");
   }
 
-  Future<void> setAllLocal(List<Map<String, dynamic>> list) async {
+  Future<void> setAllLocally(List<Map<String, dynamic>> list) async {
     await deleteAllLocal();
     await Future.forEach<Map<String, dynamic>>(list, (element) async {
       await db.insert(tableName(), objToMap(mapToObj(element)),

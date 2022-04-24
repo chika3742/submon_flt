@@ -172,7 +172,10 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
           ),
           SettingsTile(
               title: "通知時刻",
-              subtitle: _timetableNotification?.time?.format(context) ?? "未設定",
+              subtitle: getUnsetOrString(
+                  _timetableNotification?.time?.format(context),
+                  _loadingTimetableNotification),
+              enabled: !_loadingTimetableNotification,
               leading: const Icon(Icons.schedule),
               trailing: _loadingTimetableNotification
                   ? const CircularProgressIndicator()
