@@ -4,13 +4,13 @@ import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/sql_provider.dart';
 import 'package:submon/db/submission.dart';
 
-const tableDoTime = "doTime";
+const tableDigestive = "digestive";
 const colSubmissionId = "submissionId";
 const colStartAt = "startAt";
 const colMinute = "minute";
 const colContent = "content";
 
-class DoTime {
+class Digestive {
   int? id;
   int? submissionId;
   DateTime startAt;
@@ -18,7 +18,7 @@ class DoTime {
   String content;
   bool done;
 
-  DoTime(
+  Digestive(
       {this.id,
       required this.submissionId,
       required this.startAt,
@@ -27,11 +27,11 @@ class DoTime {
       required this.done});
 }
 
-class DoTimeProvider extends SqlProvider<DoTime> {
-  DoTimeProvider({Database? db}) : super(db: db);
+class DigestiveProvider extends SqlProvider<Digestive> {
+  DigestiveProvider({Database? db}) : super(db: db);
 
   @override
-  String tableName() => tableDoTime;
+  String tableName() => tableDigestive;
 
   @override
   List<SqlField> columns() {
@@ -46,8 +46,8 @@ class DoTimeProvider extends SqlProvider<DoTime> {
   }
 
   @override
-  DoTime mapToObj(Map<String, dynamic> map) {
-    return DoTime(
+  Digestive mapToObj(Map<String, dynamic> map) {
+    return Digestive(
         id: map[colId],
         submissionId: map[colSubmissionId],
         startAt: DateTime.parse(map[colStartAt]),
@@ -57,7 +57,7 @@ class DoTimeProvider extends SqlProvider<DoTime> {
   }
 
   @override
-  Map<String, Object?> objToMap(DoTime data) {
+  Map<String, Object?> objToMap(Digestive data) {
     return {
       colId: data.id,
       colSubmissionId: data.submissionId,
@@ -70,15 +70,15 @@ class DoTimeProvider extends SqlProvider<DoTime> {
 
   @override
   Future<void> setFirestore(data) async {
-    await FirestoreProvider.doTime
+    await FirestoreProvider.digestive
         .set(data.id.toString(), objToMap(data), SetOptions(merge: true));
-    await FirestoreProvider.addDoTimeNotification(data.id);
+    await FirestoreProvider.addDigestiveNotification(data.id);
   }
 
   @override
   Future<void> deleteFirestore(int id) async {
-    await FirestoreProvider.doTime.delete(id.toString());
-    await FirestoreProvider.removeDoTimeNotification(id);
+    await FirestoreProvider.digestive.delete(id.toString());
+    await FirestoreProvider.removeDigestiveNotification(id);
   }
 
   Future<void> deleteForSubmissionId(int submissionId) async {

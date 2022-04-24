@@ -6,18 +6,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dnd/flutter_dnd.dart';
 import 'package:fullscreen/fullscreen.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:submon/db/doTime.dart';
+import 'package:submon/db/digestive.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 import 'package:wakelock/wakelock.dart';
 
+const addMinutes = 20;
+const breakMinutes = 10;
+
 class FocusTimerPage extends StatefulWidget {
   FocusTimerPage({Key? key, required Map<String, dynamic> arguments})
-      : doTime = arguments["doTime"],
+      : digestive = arguments["digestive"],
         super(key: key);
 
-  final DoTime doTime;
+  final Digestive digestive;
 
   @override
   State<FocusTimerPage> createState() => _FocusTimerPageState();
@@ -47,11 +50,11 @@ class _FocusTimerPageState extends State<FocusTimerPage>
   void initState() {
     WidgetsBinding.instance.addObserver(this);
 
-    _remainingTime = Duration(minutes: widget.doTime.minute);
+    _remainingTime = Duration(minutes: widget.digestive.minute);
 
     SubmissionProvider().use((provider) async {
-      var submissionName = widget.doTime.submissionId != null
-          ? (await provider.get(widget.doTime.submissionId!))!.title
+      var submissionName = widget.digestive.submissionId != null
+          ? (await provider.get(widget.digestive.submissionId!))!.title
           : "";
       setState(() {
         _submissionName = submissionName;
@@ -136,11 +139,11 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                               fontSize: 18, fontWeight: FontWeight.bold)),
                     ])),
                   const SizedBox(height: 8),
-                  if (widget.doTime.content.isNotEmpty)
+                  if (widget.digestive.content.isNotEmpty)
                     Text.rich(TextSpan(children: [
                       const TextSpan(text: "集中すること: "),
                       TextSpan(
-                          text: widget.doTime.content,
+                          text: widget.digestive.content,
                           style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold)),
                     ])),
@@ -278,11 +281,11 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                         !_takingBreak
                                     ? () {
                                         setState(() {
-                                          _remainingTime +=
-                                              const Duration(minutes: 5);
+                                          _remainingTime += const Duration(
+                                              minutes: addMinutes);
                                           if (_lastTookBreak.inSeconds != 0) {
-                                            _lastTookBreak +=
-                                                const Duration(minutes: 5);
+                                            _lastTookBreak += const Duration(
+                                                minutes: addMinutes);
                                           }
                                         });
                                         if (_timerFinished) {
@@ -306,8 +309,8 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                         _takingBreakAvailable() &&
                                         !_timerFinished
                                     ? () {
-                                        _breakRemainingTime =
-                                            const Duration(minutes: 10);
+                                  _breakRemainingTime = const Duration(
+                                            minutes: breakMinutes);
                                         _startBreakTimer();
                                         setState(() {
                                           _lastTookBreak = _remainingTime;
@@ -335,7 +338,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                 onPressed: () async {
                                   if (!_takingBreak) {
                                     ad?.show();
-                                    showSnackBar(context, "DoTimeを完了しました！");
+                                    showSnackBar(context, "Digestiveを完了しました！");
                                     Navigator.pop(context, true);
                                   } else {
                                     _startTimer();

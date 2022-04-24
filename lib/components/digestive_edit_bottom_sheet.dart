@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:submon/db/doTime.dart';
+import 'package:submon/db/digestive.dart';
 
-class DoTimeEditBottomSheet extends StatefulWidget {
-  const DoTimeEditBottomSheet(
+class DigestiveEditBottomSheet extends StatefulWidget {
+  const DigestiveEditBottomSheet(
       {Key? key, this.initialData, required this.submissionId})
       : super(key: key);
 
-  final DoTime? initialData;
+  final Digestive? initialData;
   final int? submissionId;
 
   @override
-  State<DoTimeEditBottomSheet> createState() => _DoTimeEditBottomSheetState();
+  State<DigestiveEditBottomSheet> createState() =>
+      _DigestiveEditBottomSheetState();
 }
 
-class _DoTimeEditBottomSheetState extends State<DoTimeEditBottomSheet> {
+class _DigestiveEditBottomSheetState extends State<DigestiveEditBottomSheet> {
   final _acceptableMinute = [5, 10, 15, 20, 30, 45, 60];
 
   var startAt = DateTime.now();
@@ -139,7 +140,7 @@ class _DoTimeEditBottomSheetState extends State<DoTimeEditBottomSheet> {
                 }
                 Navigator.pop(
                     context,
-                    DoTime(
+                    Digestive(
                       id: widget.initialData?.id,
                       submissionId: widget.submissionId,
                       startAt: startAt,

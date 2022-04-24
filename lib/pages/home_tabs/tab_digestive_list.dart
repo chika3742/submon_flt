@@ -2,55 +2,55 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:submon/components/dotime_detail_card.dart';
-import 'package:submon/db/doTime.dart';
+import 'package:submon/components/digestive_detail_card.dart';
+import 'package:submon/db/digestive.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/events.dart';
 
-import '../../components/dotime_edit_bottom_sheet.dart';
+import '../../components/digestive_edit_bottom_sheet.dart';
 import '../../utils/ui.dart';
 
-class TabDoTimeList extends StatefulWidget {
-  const TabDoTimeList({Key? key}) : super(key: key);
+class TabDigestiveList extends StatefulWidget {
+  const TabDigestiveList({Key? key}) : super(key: key);
 
   @override
-  State<TabDoTimeList> createState() => _TabDoTimeListState();
+  State<TabDigestiveList> createState() => _TabDigestiveListState();
 }
 
-class _TabDoTimeListState extends State<TabDoTimeList> {
+class _TabDigestiveListState extends State<TabDigestiveList> {
   StreamSubscription? listener;
 
-  List<DoTimeWithSubmission> _doTimeList = [];
+  List<DigestiveWithSubmission> _digestiveList = [];
 
   @override
   void initState() {
-    DoTimeProvider().use((provider) async {
+    DigestiveProvider().use((provider) async {
       var submissionProvider = SubmissionProvider();
       submissionProvider.db = provider.db;
-      var doTimeList = await provider.getAll(where: "$colDone = 0");
-      _doTimeList = await Future.wait(doTimeList.map((e) async {
+      var digestiveList = await provider.getAll(where: "$colDone = 0");
+      _digestiveList = await Future.wait(digestiveList.map((e) async {
         var submission = e.submissionId != null
             ? await submissionProvider.get(e.submissionId!)
             : null;
-        return DoTimeWithSubmission.fromObject(e, submission);
+        return DigestiveWithSubmission.fromObject(e, submission);
       }).toList());
       setState(() {});
     });
 
-    listener = eventBus.on<DoTimeAddButtonPressed>().listen((event) async {
-      var result = await showRoundedBottomSheet<DoTime>(
+    listener = eventBus.on<DigestiveAddButtonPressed>().listen((event) async {
+      var result = await showRoundedBottomSheet<Digestive>(
           context: context,
           useRootNavigator: true,
-          title: "DoTime単体作成 (提出物なし)",
-          child: const DoTimeEditBottomSheet(
+          title: "Digestive単体作成 (提出物なし)",
+          child: const DigestiveEditBottomSheet(
             submissionId: null,
           ));
 
       if (result != null) {
-        DoTimeProvider().use((provider) async {
+        DigestiveProvider().use((provider) async {
           var data = await provider.insert(result);
           setState(() {
-            _doTimeList.add(DoTimeWithSubmission.fromObject(data, null));
+            _digestiveList.add(DigestiveWithSubmission.fromObject(data, null));
           });
         });
         showSnackBar(context, "作成しました");
@@ -71,8 +71,8 @@ class _TabDoTimeListState extends State<TabDoTimeList> {
     var widgets = <Widget>[];
     int? prevSubmissionId;
 
-    for (var i in _doTimeList.asMap().keys) {
-      var e = _doTimeList[i];
+    for (var i in _digestiveList.asMap().keys) {
+      var e = _digestiveList[i];
       if (e.submissionId != prevSubmissionId) {
         widgets.add(i != 0
             ? const Divider(
@@ -126,9 +126,9 @@ class _TabDoTimeListState extends State<TabDoTimeList> {
       }
       prevSubmissionId = e.submissionId;
 
-      widgets.add(DoTimeDetailCard(
-        doTime: e,
-        parentList: _doTimeList,
+      widgets.add(DigestiveDetailCard(
+        digestive: e,
+        parentList: _digestiveList,
         onChanged: () {
           setState(() {});
         },
@@ -141,16 +141,17 @@ class _TabDoTimeListState extends State<TabDoTimeList> {
             children: widgets,
           ),
         ),
-        if (_doTimeList.isEmpty) const Center(child: Text('DoTimeがありません')),
+        if (_digestiveList.isEmpty)
+          const Center(child: Text('Digestiveがありません')),
       ],
     );
   }
 }
 
-class DoTimeWithSubmission extends DoTime {
+class DigestiveWithSubmission extends Digestive {
   final Submission? submission;
 
-  DoTimeWithSubmission(
+  DigestiveWithSubmission(
       {required int id,
       required int? submissionId,
       required DateTime startAt,
@@ -160,28 +161,28 @@ class DoTimeWithSubmission extends DoTime {
       required this.submission})
       : super(
           id: id,
-    submissionId: submissionId,
-    startAt: startAt,
-    minute: minute,
-    content: content,
-    done: done,
-  );
+          submissionId: submissionId,
+          startAt: startAt,
+          minute: minute,
+          content: content,
+          done: done,
+        );
 
-  static DoTimeWithSubmission fromObject(
-      DoTime doTime, Submission? submission) {
-    return DoTimeWithSubmission(
-      id: doTime.id!,
-      submissionId: doTime.submissionId,
-      startAt: doTime.startAt,
-      minute: doTime.minute,
-      content: doTime.content,
-      done: doTime.done,
+  static DigestiveWithSubmission fromObject(
+      Digestive digestive, Submission? submission) {
+    return DigestiveWithSubmission(
+      id: digestive.id!,
+      submissionId: digestive.submissionId,
+      startAt: digestive.startAt,
+      minute: digestive.minute,
+      content: digestive.content,
+      done: digestive.done,
       submission: submission,
     );
   }
 
-  DoTime toDoTime() {
-    return DoTime(
+  Digestive toDigestive() {
+    return Digestive(
         submissionId: submissionId,
         startAt: startAt,
         minute: minute,

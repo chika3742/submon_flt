@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:submon/components/hidable_progress_indicator.dart';
-import 'package:submon/db/doTime.dart';
+import 'package:submon/db/digestive.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
@@ -15,7 +15,7 @@ import 'package:submon/main.dart';
 import 'package:submon/method_channel/actions.dart';
 import 'package:submon/method_channel/channels.dart';
 import 'package:submon/method_channel/messaging.dart';
-import 'package:submon/pages/home_tabs/tab_do_time_list.dart';
+import 'package:submon/pages/home_tabs/tab_digestive_list.dart';
 import 'package:submon/pages/home_tabs/tab_others.dart';
 import 'package:submon/pages/home_tabs/tab_submissions.dart';
 import 'package:submon/pages/submission_create_page.dart';
@@ -102,10 +102,10 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         BottomNavItem(
-          BottomNavItemId.doTime,
+          BottomNavItemId.digestive,
           const BottomNavigationBarItem(
             icon: Icon(Icons.task),
-            label: "DoTime",
+            label: "Digestive",
           ),
         ),
         if (prefs.showTimetableMenu)
@@ -135,7 +135,7 @@ class _HomePageState extends State<HomePage> {
 
       pages = [
         const TabSubmissions(),
-        const TabDoTimeList(),
+        const TabDigestiveList(),
         if (prefs.showTimetableMenu) const TabTimetable2(),
         if (prefs.showMemorizeMenu)
           const Center(
@@ -146,7 +146,26 @@ class _HomePageState extends State<HomePage> {
 
       actions = [
         [],
-        [],
+        [
+          ActionItem(Icons.help, "ヘルプ", () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text("Digestiveとは？"),
+                  content: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Text(
+                            "提出物に取り掛かる時間と、何分続けるかをスケジュールすることができます。集中タイマーで重い腰を上げるのにも最適。")
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          }),
+        ],
         if (prefs.showTimetableMenu)
           [
             ActionItem(Icons.table_view, "テーブルビュー", () async {
@@ -257,11 +276,11 @@ class _HomePageState extends State<HomePage> {
             });
           },
         );
-      case BottomNavItemId.doTime:
+      case BottomNavItemId.digestive:
         return FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () async {
-            eventBus.fire(DoTimeAddButtonPressed());
+            eventBus.fire(DigestiveAddButtonPressed());
           },
         );
       // case BottomNavItemId.memorizeCard:
@@ -339,14 +358,14 @@ class _HomePageState extends State<HomePage> {
           .pushNamed("/submission/detail", arguments: {"id": id});
     }
 
-    void openFocusTimerPage(int doTimeId) {
-      DoTimeProvider().use((provider) async {
-        var doTime = await provider.get(doTimeId);
-        if (doTime != null) {
+    void openFocusTimerPage(int digestiveId) {
+      DigestiveProvider().use((provider) async {
+        var digestive = await provider.get(digestiveId);
+        if (digestive != null) {
           Navigator.of(context, rootNavigator: true)
-              .pushNamed("/focus-timer", arguments: {"doTime": doTime});
+              .pushNamed("/focus-timer", arguments: {"digestive": digestive});
         } else {
-          showSnackBar(context, "このDoTimeはすでに削除されています");
+          showSnackBar(context, "このDigestiveはすでに削除されています");
         }
       });
     }
@@ -362,7 +381,7 @@ class _HomePageState extends State<HomePage> {
             openSubmissionDetailPage(action.arguments!["submissionId"]);
             break;
           case "openFocusTimerPage":
-            openFocusTimerPage(action.arguments!["doTimeId"]);
+            openFocusTimerPage(action.arguments!["digestiveId"]);
             break;
         }
       }
@@ -377,7 +396,7 @@ class _HomePageState extends State<HomePage> {
           openSubmissionDetailPage(call.arguments["submissionId"]);
           break;
         case "openFocusTimerPage":
-          openFocusTimerPage(call.arguments["doTimeId"]);
+          openFocusTimerPage(call.arguments["digestiveId"]);
           break;
         default:
           return UnimplementedError();
@@ -403,7 +422,7 @@ class BottomNavItem {
 
 enum BottomNavItemId {
   home,
-  doTime,
+  digestive,
   timetable,
   memorizeCard,
   others,

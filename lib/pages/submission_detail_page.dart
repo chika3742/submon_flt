@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
-import 'package:submon/components/dotime_detail_card.dart';
-import 'package:submon/components/dotime_edit_bottom_sheet.dart';
+import 'package:submon/components/digestive_detail_card.dart';
+import 'package:submon/components/digestive_edit_bottom_sheet.dart';
 import 'package:submon/components/formatted_date_remaining.dart';
-import 'package:submon/db/doTime.dart';
+import 'package:submon/db/digestive.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
@@ -22,7 +22,7 @@ class SubmissionDetailPage extends StatefulWidget {
 
 class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
   Submission? item;
-  List<DoTime> _doTimeList = [];
+  List<Digestive> _digestiveList = [];
   BannerAd? _bannerAd;
 
   @override
@@ -35,14 +35,14 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
         });
       });
     });
-    DoTimeProvider().use((provider) async {
-      var doTimes = await provider.getAll(
+    DigestiveProvider().use((provider) async {
+      var digestives = await provider.getAll(
           where: "$colSubmissionId = ?", whereArgs: [widget.submissionId]);
-      doTimes.sort((a, b) {
+      digestives.sort((a, b) {
         return a.startAt.difference(b.startAt).inMinutes;
       });
       setState(() {
-        _doTimeList = doTimes;
+        _digestiveList = digestives;
       });
     });
 
@@ -80,7 +80,7 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: showCreateDoTimeBottomSheet,
+        onPressed: showCreateDigestiveBottomSheet,
       ),
       body: SafeArea(
         child: Column(
@@ -109,11 +109,9 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
                             const SizedBox(width: 8),
                             if (item != null)
                               Text(
-                                  DateFormat("MM/dd (E)", 'ja_JP')
+                                  DateFormat("M/d (E)", 'ja_JP')
                                       .format(item!.date!),
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold)),
+                                  style: const TextStyle(fontSize: 18)),
                           ],
                         ),
                       ),
@@ -151,27 +149,27 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
                       const Divider(thickness: 2, indent: 32, endIndent: 32),
                       const Align(
                         alignment: Alignment.center,
-                        child: Text('DoTime',
+                        child: Text('Digestive',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold)),
                       ),
-                      ..._doTimeList
-                          .map((e) => DoTimeDetailCard(
-                                doTime: e,
-                                parentList: _doTimeList,
+                      ..._digestiveList
+                          .map((e) => DigestiveDetailCard(
+                                digestive: e,
+                                parentList: _digestiveList,
                                 onChanged: () {
                                   setState(() {});
                                 },
                               ))
                           .toList(),
-                      if (_doTimeList.isEmpty)
+                      if (_digestiveList.isEmpty)
                         const Center(
                           child: Padding(
                             padding: EdgeInsets.all(16.0),
                             child: Opacity(
                               opacity: 0.7,
                               child: Text(
-                                'DoTimeがありません。右下の「+」から\n追加できます。',
+                                'Digestiveがありません。右下の「+」から\n追加できます。',
                               ),
                             ),
                           ),
@@ -194,18 +192,18 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
     );
   }
 
-  void showCreateDoTimeBottomSheet() async {
-    var data = await showRoundedBottomSheet<DoTime>(
+  void showCreateDigestiveBottomSheet() async {
+    var data = await showRoundedBottomSheet<Digestive>(
       context: context,
-      title: "DoTime 新規作成",
-      child: DoTimeEditBottomSheet(submissionId: widget.submissionId),
+      title: "Digestive 新規作成",
+      child: DigestiveEditBottomSheet(submissionId: widget.submissionId),
     );
     if (data != null) {
-      DoTimeProvider().use((provider) async {
+      DigestiveProvider().use((provider) async {
         await provider.insert(data);
       });
       setState(() {
-        _doTimeList.add(data);
+        _digestiveList.add(data);
       });
     }
   }

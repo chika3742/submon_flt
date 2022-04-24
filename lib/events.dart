@@ -35,7 +35,7 @@ class TimetableListChanged {}
 
 class MemorizeCardAddButtonPressed {}
 
-class DoTimeAddButtonPressed {}
+class DigestiveAddButtonPressed {}
 
 class SubmissionDetailPageOpened {
   bool opened;
