@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
+import 'package:submon/db/timetable.dart';
 
-const schemaVer = 1;
+const schemaVer = 2;
 
 abstract class SqlProvider<T> {
   SqlProvider({Database? db}) {
@@ -145,6 +146,8 @@ abstract class SqlProvider<T> {
 Future<void> migrate(Database db, int oldVersion, int newVersion) async {
   // MIGRATE FIRESTORE TOO
   if (oldVersion == 1) {
+    await db.execute(
+        "alter table $tableTimetable add column $colNote integer not null default ''");
     oldVersion++;
   }
 }

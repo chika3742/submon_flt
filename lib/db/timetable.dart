@@ -11,6 +11,7 @@ const colCellId = "cellId";
 const colSubject = "subject";
 const colRoom = "room";
 const colTeacher = "teacher";
+const colNote = "note";
 
 class Timetable {
   int? id;
@@ -19,6 +20,7 @@ class Timetable {
   String subject;
   String room;
   String teacher;
+  String note;
 
   static var undoList = <Map<int, Timetable>>[];
   static var redoList = <Map<int, Timetable>>[];
@@ -30,6 +32,7 @@ class Timetable {
     required this.subject,
     this.room = "",
     this.teacher = "",
+    this.note = "",
   });
 
   @override
@@ -58,6 +61,7 @@ class TimetableProvider extends SqlProvider<Timetable> {
       SqlField(colSubject, DataType.string),
       SqlField(colRoom, DataType.string),
       SqlField(colTeacher, DataType.string),
+      SqlField(colNote, DataType.string),
     ];
   }
 
@@ -70,7 +74,7 @@ class TimetableProvider extends SqlProvider<Timetable> {
       subject: map[colSubject],
       room: map[colRoom],
       teacher: map[colTeacher],
-    );
+        note: map[colNote]);
   }
 
   Future<List<Timetable>> getCurrentTimetable() async {
@@ -121,6 +125,7 @@ class TimetableProvider extends SqlProvider<Timetable> {
       colSubject: data.subject,
       colRoom: data.room,
       colTeacher: data.teacher,
+      colNote: data.note,
     };
   }
 

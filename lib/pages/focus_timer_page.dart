@@ -14,6 +14,7 @@ import 'package:wakelock/wakelock.dart';
 
 const addMinutes = 20;
 const breakMinutes = 10;
+const breakCoolingMinutes = 10;
 
 class FocusTimerPage extends StatefulWidget {
   FocusTimerPage({Key? key, required Map<String, dynamic> arguments})
@@ -276,7 +277,8 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                               width: 300,
                               height: 50,
                               child: OutlinedButton(
-                                child: const Text('もっといけそう (+ 5 min)'),
+                                child:
+                                    const Text('もっといけそう (+ $addMinutes min)'),
                                 onPressed: _remainingTime.inMinutes < 10 &&
                                         !_takingBreak
                                     ? () {
@@ -291,7 +293,8 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                         if (_timerFinished) {
                                           _startTimer();
                                         }
-                                        showSnackBar(context, "5分追加しました");
+                                        showSnackBar(
+                                            context, "$addMinutes分追加しました");
                                       }
                                     : null,
                               ),
@@ -304,12 +307,12 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                               width: 300,
                               height: 50,
                               child: OutlinedButton(
-                                child: const Text('休憩 (10 min)'),
+                                child: const Text('休憩 ($breakMinutes min)'),
                                 onPressed: !_takingBreak &&
                                         _takingBreakAvailable() &&
                                         !_timerFinished
                                     ? () {
-                                  _breakRemainingTime = const Duration(
+                                        _breakRemainingTime = const Duration(
                                             minutes: breakMinutes);
                                         _startBreakTimer();
                                         setState(() {
@@ -321,7 +324,8 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                               ),
                             ),
                             if (!_takingBreak && !_takingBreakAvailable())
-                              Text('最後に休憩してから5分以上経過する必要があります',
+                              Text(
+                                  '最後に休憩してから$breakCoolingMinutes分以上経過する必要があります',
                                   style: Theme.of(context).textTheme.caption),
                             const SizedBox(height: 8),
                             SizedBox(
@@ -367,7 +371,8 @@ class _FocusTimerPageState extends State<FocusTimerPage>
 
   bool _takingBreakAvailable() {
     var elapsedTime = _lastTookBreak - _remainingTime;
-    return elapsedTime.inMinutes > 5 || elapsedTime.isNegative;
+    return elapsedTime.inMinutes > breakCoolingMinutes ||
+        elapsedTime.isNegative;
   }
 
   void _enableDnd() {

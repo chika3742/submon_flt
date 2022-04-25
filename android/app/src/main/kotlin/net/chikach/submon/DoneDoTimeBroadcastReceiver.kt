@@ -15,9 +15,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class DoneDoTimeBroadcastReceiver : BroadcastReceiver() {
+class DoneDigestiveBroadcastReceiver : BroadcastReceiver() {
     companion object {
-        const val EXTRA_DO_TIME_ID = "doTimeId"
+        const val EXTRA_DO_TIME_ID = "digestiveId"
         const val EXTRA_NOTIFICATION_ID = "notificationId"
     }
 
@@ -29,8 +29,9 @@ class DoneDoTimeBroadcastReceiver : BroadcastReceiver() {
 
         if (auth.currentUser != null) {
             try {
-                val doTimeId = intent.getIntExtra(EXTRA_DO_TIME_ID, -1)
-                db.document("users/${auth.currentUser!!.uid}/doTime/$doTimeId").update("done", 1)
+                val digestiveId = intent.getIntExtra(EXTRA_DO_TIME_ID, -1)
+                db.document("users/${auth.currentUser!!.uid}/digestive/$digestiveId")
+                    .update("done", 1)
                 db.document("users/${auth.currentUser!!.uid}").set(
                     mapOf(
                         "lastChanged" to Timestamp.now()
@@ -43,10 +44,10 @@ class DoneDoTimeBroadcastReceiver : BroadcastReceiver() {
                         AppDatabase::class.java,
                         "main.db"
                     ).build()
-                    roomDb.doTimeDao().updateDone(doTimeId, 1)
+                    roomDb.digestiveDao().updateDone(digestiveId, 1)
                 }
             } catch (e: FirebaseException) {
-                Log.e("DoneDoTimeBroadcastReceiver", e.toString(), e)
+                Log.e("DoneDigestiveBroadcastReceiver", e.toString(), e)
             }
         }
 

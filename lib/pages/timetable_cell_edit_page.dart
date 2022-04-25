@@ -25,6 +25,7 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
   final _subjectController = TextEditingController();
   final _roomController = TextEditingController();
   final _teacherController = TextEditingController();
+  final _noteController = TextEditingController();
 
   String? _subjectError;
 
@@ -33,6 +34,7 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
     _subjectController.text = widget.initialData?.subject ?? "";
     _roomController.text = widget.initialData?.room ?? "";
     _teacherController.text = widget.initialData?.teacher ?? "";
+    _teacherController.text = widget.initialData?.note ?? "";
     super.initState();
   }
 
@@ -112,7 +114,7 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
               ),
               const SizedBox(height: 32),
               TextFormField(
-                controller: _teacherController,
+                controller: _noteController,
                 minLines: 2,
                 maxLines: 8,
                 decoration: const InputDecoration(
@@ -146,6 +148,7 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
     data.subject = _subjectController.text;
     data.room = _roomController.text;
     data.teacher = _teacherController.text;
+    data.note = _noteController.text;
     await TimetableProvider().use((provider) async {
       await provider.insert(data);
     });
