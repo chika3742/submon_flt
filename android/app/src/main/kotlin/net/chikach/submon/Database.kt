@@ -2,10 +2,10 @@ package net.chikach.submon
 
 import androidx.room.*
 
-@Database(entities = [Submission::class, DoTime::class], version = 1, exportSchema = false)
+@Database(entities = [Submission::class, Digestive::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun submissionDao(): SubmissionDao
-    abstract fun doTimeDao(): DoTimeDao
+    abstract fun digestiveDao(): DigestiveDao
 }
 
 @Entity
@@ -28,7 +28,7 @@ interface SubmissionDao {
 
 
 @Entity
-data class DoTime(
+data class Digestive(
     @PrimaryKey val id: Int?,
     val submissionId: Int,
     val startAt: String,
@@ -38,7 +38,7 @@ data class DoTime(
 )
 
 @Dao
-interface DoTimeDao {
-    @Query("update doTime set done = :done where id = :id")
+interface DigestiveDao {
+    @Query("update digestive set done = :done where id = :id")
     fun updateDone(id: Int, done: Int)
 }

@@ -32,7 +32,7 @@ val chromiumBrowserPackages = listOf(
 
 const val REMINDER_CHANNEL = "reminder"
 const val TIMETABLE_CHANNEL = "timetable"
-const val DO_TIME_CHANNEL = "doTime"
+const val DO_TIME_CHANNEL = "digestive"
 const val DEFAULT_CHANNEL = "default"
 
 const val METHOD_CHANNEL_MAIN = "net.chikach.submon/main"
@@ -122,7 +122,7 @@ class MainActivity : FlutterActivity() {
                 DO_TIME_CHANNEL,
                 NotificationManager.IMPORTANCE_DEFAULT
             )
-                .setName("DoTime通知")
+                .setName("Digestive通知")
                 .setGroup("main")
                 .build()
         )

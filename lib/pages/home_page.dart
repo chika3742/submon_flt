@@ -160,6 +160,10 @@ class _HomePageState extends State<HomePage> {
                             "ダイジェスティブでは、提出物に取り掛かる時間と、何分続けるかをスケジュールすることができます。\n集中タイマーで重い腰を上げるのにも最適。"),
                         const SizedBox(height: 16),
                         Image.asset("assets/img/digestive_guide.jpg"),
+                        const SizedBox(height: 16),
+                        const Text(
+                            "※Digestiveの通知は5分毎(サーバー時間)に行われます。例えば、28分にセットしていて「通知する時間」を5分前に設定していた場合、25分に通知されます。\n"
+                            "また、ユーザー数が増えれば増えるほど、サーバー側の処理量が増え通知が遅れる可能性があります。対策を検討しています。")
                       ],
                     ),
                   ),

@@ -84,7 +84,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                                         .putExtra(
                                             MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENTS,
                                             hashMapOf(
-                                                "doTimeId" to data["doTimeId"]?.toInt(),
+                                                "digestiveId" to data["digestiveId"]?.toInt(),
                                             )
                                         )
                                 )
@@ -94,13 +94,13 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                             NotificationCompat.Action(
                                 null, "完了",
                                 createBroadcastPendingIntent(
-                                    Intent(this, DoneDoTimeBroadcastReceiver::class.java)
+                                    Intent(this, DoneDigestiveBroadcastReceiver::class.java)
                                         .putExtra(
-                                            DoneDoTimeBroadcastReceiver.EXTRA_DO_TIME_ID,
-                                            data["doTimeId"]?.toInt()
+                                            DoneDigestiveBroadcastReceiver.EXTRA_DO_TIME_ID,
+                                            data["digestiveId"]?.toInt()
                                         )
                                         .putExtra(
-                                            DoneDoTimeBroadcastReceiver.EXTRA_NOTIFICATION_ID,
+                                            DoneDigestiveBroadcastReceiver.EXTRA_NOTIFICATION_ID,
                                             notificationId
                                         )
                                 )
