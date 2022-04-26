@@ -13,7 +13,7 @@ publish_to: 'none'
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0-alpha3+3
+version: 1.0.0-alpha5+5
 
 environment:
   sdk: ">=2.14.4 <3.0.0"
@@ -32,20 +32,20 @@ dependencies:
 
   cupertino_icons: ^1.0.4
   audioplayers: ^0.20.1
-  sqflite: ^2.0.2
+  sqflite: ^2.0.2+1
   animations: ^2.0.2
   event_bus: ^2.0.0
   flutter_platform_widgets: ^1.20.0
   package_info_plus: ^1.4.2
   flutter_svg: ^1.0.3
   shared_preferences: ^2.0.13
-  google_sign_in: ^5.2.4
+  google_sign_in: ^5.3.0
   sign_in_with_apple: ^3.3.0
   crypto: ^3.0.1
   flutter_dotenv: ^5.0.2
   flutter_slidable: ^1.2.0
-  url_launcher: ^6.0.20
-  camera: ^0.9.4+19
+  url_launcher: ^6.1.0
+  camera: ^0.9.4+20
   flutter_linkify: ^5.0.2
   path_provider: ^2.0.9
   flutter_exif_rotation: ^0.5.1
@@ -55,7 +55,7 @@ dependencies:
   flutter_dnd: ^0.1.4+1
   permission_handler: ^9.2.0
   fluttertoast: ^8.0.9
-  collection: ^1.15.0
+  collection: ^1.16.0
   vector_math: ^2.1.2
   path: ^1.8.1
 
@@ -64,15 +64,14 @@ dependencies:
   extension_google_sign_in_as_googleapis_auth: ^2.0.4
   google_mobile_ads: ^1.2.0
 
-  firebase_core: ^1.14.0
-  firebase_crashlytics: ^2.6.1
-  firebase_auth: ^3.3.13
-  cloud_firestore: ^3.1.11
-  #  firebase_messaging: ^11.2.10
-  firebase_analytics: ^9.1.4
-  firebase_dynamic_links: ^4.1.2
-  firebase_performance: ^0.8.0+8
-  cloud_functions: ^3.2.11
+  firebase_core: ^1.15.0
+  firebase_crashlytics: ^2.6.3
+  firebase_auth: ^3.3.15
+  cloud_firestore: ^3.1.13
+  firebase_analytics: ^9.1.6
+  firebase_dynamic_links: ^4.2.0
+  firebase_performance: ^0.8.0+10
+  cloud_functions: ^3.2.13
 
 dev_dependencies:
   flutter_test:

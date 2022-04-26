@@ -58,12 +58,26 @@ class SharedPrefs {
   set showMemorizeMenu(bool value) =>
       pref!.setBool("SHOW_MEMORIZE_MENU", value);
 
-  // SHOW_MEMORIZE_MENU
+  // TIMETABLE_SHOW_SATURDAY
   bool get timetableShowSaturday =>
       pref!.getBool("TIMETABLE_SHOW_SATURDAY") ?? true;
 
   set timetableShowSaturday(bool value) =>
       pref!.setBool("TIMETABLE_SHOW_SATURDAY", value);
+
+  // TIMETABLE_SHOW_CLASS_TIME
+  bool get timetableShowClassTime =>
+      pref!.getBool("TIMETABLE_SHOW_CLASS_TIME") ?? true;
+
+  set timetableShowClassTime(bool value) =>
+      pref!.setBool("TIMETABLE_SHOW_CLASS_TIME", value);
+
+  // TIMETABLE_SHOW_TIME_MARKER
+  bool get timetableShowTimeMarker =>
+      pref!.getBool("TIMETABLE_SHOW_TIME_MARKER") ?? true;
+
+  set timetableShowTimeMarker(bool value) =>
+      pref!.setBool("TIMETABLE_SHOW_TIME_MARKER", value);
 
   // String
 

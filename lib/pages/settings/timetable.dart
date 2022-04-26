@@ -7,6 +7,7 @@ import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/timetable.dart';
 import 'package:submon/db/timetable_class_time.dart';
 import 'package:submon/db/timetable_table.dart';
+import 'package:submon/pages/settings/customize.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:time_picker_widget/time_picker_widget.dart';
 
@@ -22,8 +23,9 @@ class TimetableSettingsPage extends StatefulWidget {
 }
 
 class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
-  int? hours;
-  bool? showSaturday;
+  // int? hours;
+  // bool? showSaturday;
+  SharedPrefs? prefs;
   List<TimetableTable> tables = [];
   List<TimetableClassTime> classTimes = [];
   TimetableNotification? _timetableNotification;
@@ -32,10 +34,16 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
   @override
   void initState() {
     super.initState();
-    SharedPrefs.use((prefs) {
+    // SharedPrefs.use((prefs) {
+    //   setState(() {
+    //     hours = prefs.timetableHour;
+    //     showSaturday = prefs.timetableShowSaturday;
+    //   });
+    // });
+
+    SharedPreferences.getInstance().then((value) {
       setState(() {
-        hours = prefs.timetableHour;
-        showSaturday = prefs.timetableShowSaturday;
+        prefs = SharedPrefs(value);
       });
     });
 
@@ -56,6 +64,11 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
         _loadingTimetableNotification = false;
       });
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   void getTables() {
@@ -235,46 +248,53 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
             leading: const Icon(Icons.table_chart_outlined),
           ),
         ]),
-        if (hours != null && showSaturday != null)
-          SettingsCategory(title: "表示する時限数", tiles: [
-            RadioSettingsTile(
-                title: "5 時間目",
-                value: 5,
-                groupValue: hours!,
-                onChanged: (value) {
-                  updateHours(value as int);
-                }),
-            RadioSettingsTile(
-                title: "6 時間目",
-                value: 6,
-                groupValue: hours!,
-                onChanged: (value) {
-                  updateHours(value as int);
-                }),
-            RadioSettingsTile(
-                title: "7 時間目",
-                value: 7,
-                groupValue: hours!,
-                onChanged: (value) {
-                  updateHours(value as int);
-                }),
-            RadioSettingsTile(
-                title: "8 時間目",
-                value: 8,
-                groupValue: hours!,
-                onChanged: (value) {
-                  updateHours(value as int);
+        if (prefs != null)
+          SettingsCategory(title: "表示する情報", tiles: [
+            SettingsTile(
+                title: "表示する時限数",
+                subtitle: "${prefs!.timetableHour} 時限目",
+                onTap: () {
+                  showRoundedBottomSheet(
+                    context: context,
+                    title: "表示する時限数",
+                    child: RadioBottomSheet(
+                      initialValue: prefs!.timetableHour,
+                      items: [4, 5, 6, 7, 8].map((e) {
+                        return RadioBottomSheetItem(
+                          value: e,
+                          title: "$e 時限目",
+                        );
+                      }).toList(),
+                      onSelected: (value) {
+                        prefs?.timetableHour = value;
+                        setState(() {});
+                      },
+                    ),
+                  );
                 }),
             CheckBoxSettingsTile(
               title: "土曜日を表示",
-              value: showSaturday!,
+              value: prefs!.timetableShowSaturday,
               onChanged: (value) {
-                SharedPrefs.use((prefs) {
-                  prefs.timetableShowSaturday = value!;
-                });
-                setState(() {
-                  showSaturday = value;
-                });
+                prefs?.timetableShowSaturday = value!;
+                setState(() {});
+              },
+            ),
+            CheckBoxSettingsTile(
+              title: "始業・終業時刻を表示",
+              value: prefs!.timetableShowClassTime,
+              onChanged: (value) {
+                prefs?.timetableShowClassTime = value!;
+                setState(() {});
+              },
+            ),
+            CheckBoxSettingsTile(
+              title: "現在時刻マーカーを表示",
+              subtitle: "現在時刻に合わせて動くマーカーを表示します。",
+              value: prefs!.timetableShowTimeMarker,
+              onChanged: (value) {
+                prefs?.timetableShowTimeMarker = value!;
+                setState(() {});
               },
             ),
           ]),
@@ -422,15 +442,6 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
       });
 
       showSnackBar(context, "削除しました");
-    });
-  }
-
-  void updateHours(int value) {
-    SharedPrefs.use((prefs) {
-      prefs.timetableHour = value;
-    });
-    setState(() {
-      hours = value;
     });
   }
 }
