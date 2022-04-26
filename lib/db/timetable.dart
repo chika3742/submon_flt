@@ -74,7 +74,8 @@ class TimetableProvider extends SqlProvider<Timetable> {
       subject: map[colSubject],
       room: map[colRoom],
       teacher: map[colTeacher],
-        note: map[colNote]);
+      note: map[colNote] ?? "",
+    );
   }
 
   Future<List<Timetable>> getCurrentTimetable() async {
