@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:animations/animations.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/timetable_class_time.dart';
 import 'package:submon/pages/timetable_cell_edit_page.dart';
 import 'package:submon/utils/ui.dart';
@@ -15,14 +16,14 @@ class TimetableDayList extends StatefulWidget {
   const TimetableDayList({
     Key? key,
     required this.weekday,
-    required this.periodCount,
+    required this.prefs,
     required this.items,
     required this.classTimeItems,
   }) : super(key: key);
 
   final int weekday;
   final List<Timetable> items;
-  final int periodCount;
+  final SharedPrefs prefs;
   final List<TimetableClassTime> classTimeItems;
 
   @override
@@ -32,7 +33,6 @@ class TimetableDayList extends StatefulWidget {
 class _TimetableDayListState extends State<TimetableDayList> {
   final _columnKey = GlobalKey();
   Timer? _markerTimer;
-
   double? _markerPos;
 
   @override
@@ -51,6 +51,9 @@ class _TimetableDayListState extends State<TimetableDayList> {
   }
 
   void setMarkerPos() {
+    if (!widget.prefs.timetableShowTimeMarker) {
+      return;
+    }
     Future(() {
       setState(() {
         var currentTime = TimeOfDay.now();
@@ -71,7 +74,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
           var interval = widget.classTimeItems.firstWhereOrNull((e) {
             return e.end.toMinutes() < currentTime.toMinutes() &&
                 widget.classTimeItems.any((element) =>
-                    element.id == e.id + 1 &&
+                element.id == e.id + 1 &&
                     currentTime.toMinutes() < element.start.toMinutes());
           });
           if (interval != null) {
@@ -114,17 +117,18 @@ class _TimetableDayListState extends State<TimetableDayList> {
                 const SizedBox(height: 16),
               ],
             ),
-            Visibility(
-              visible: DateTime.now().weekday - 1 == widget.weekday &&
-                  _markerPos != null,
-              child: Positioned(
-                top: _markerPos,
-                left: 20,
-                child: const IgnorePointer(
-                  child: Icon(Icons.arrow_right, size: 32, color: Colors.red),
+            if (widget.prefs.timetableShowTimeMarker)
+              Visibility(
+                visible: DateTime.now().weekday - 1 == widget.weekday &&
+                    _markerPos != null,
+                child: Positioned(
+                  top: _markerPos,
+                  left: 20,
+                  child: const IgnorePointer(
+                    child: Icon(Icons.arrow_right, size: 32, color: Colors.red),
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
@@ -134,7 +138,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
   Offset? getWidgetPos(BuildContext? context) {
     if (context == null) return null;
     var childOffset =
-    (context.findRenderObject() as RenderBox).localToGlobal(Offset.zero);
+        (context.findRenderObject() as RenderBox).localToGlobal(Offset.zero);
     return (_columnKey.currentContext?.findRenderObject() as RenderBox)
         .globalToLocal(childOffset);
   }
@@ -147,7 +151,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
   List<Widget> _buildTimetableList() {
     var list = <Widget>[];
 
-    for (var index = 0; index < widget.periodCount; index++) {
+    for (var index = 0; index < widget.prefs.timetableHour; index++) {
       list.add(const SizedBox(height: 8));
       list.add(_buildTimetableCell(
           index,
@@ -177,19 +181,21 @@ class _TimetableDayListState extends State<TimetableDayList> {
                   style: const TextStyle(
                       fontSize: 24, fontWeight: FontWeight.bold)),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-              child: Column(
-                children: [
-                  Text(timeItem?.start.format(context) ?? "--:--"),
-                  Transform.rotate(
-                    angle: pi / 2,
-                    child: const Icon(Icons.arrow_right),
-                  ),
-                  Text(timeItem?.end.format(context) ?? "--:--"),
-                ],
+            if (widget.prefs.timetableShowClassTime)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(timeItem?.start.format(context) ?? "--:--"),
+                    Transform.rotate(
+                      angle: pi / 2,
+                      child: const Icon(Icons.arrow_right),
+                    ),
+                    Text(timeItem?.end.format(context) ?? "--:--"),
+                  ],
+                ),
               ),
-            ),
             const SizedBox(
                 height: 32, child: VerticalDivider(width: 2, thickness: 2)),
             const SizedBox(width: 16),

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/timetable.dart';
 import 'package:submon/db/timetable_class_time.dart';
@@ -18,19 +19,15 @@ class TabTimetable2 extends StatefulWidget {
 
 class _TabTimetable2State extends State<TabTimetable2> {
   StreamSubscription? _listener;
-  int periodCount = 6;
-  bool showSaturday = true;
-  final _controller = PageController(
-      initialPage:
-          DateTime.now().weekday != 7 ? DateTime.now().weekday - 1 : 0);
+  late final PageController _controller;
   List<Timetable>? _items;
   List<TimetableTable>? _tables;
   List<TimetableClassTime>? _classTimes;
-  int? _currentTableId;
+  SharedPrefs? prefs;
 
   @override
   void initState() {
-    initTable();
+    initSharedPrefs();
     initTableList();
 
     _listener = eventBus.on<TimetableListChanged>().listen((event) {
@@ -47,27 +44,40 @@ class _TabTimetable2State extends State<TabTimetable2> {
     super.dispose();
   }
 
-  void initTable() {
-    SharedPrefs.use((prefs) {
-      periodCount = prefs.timetableHour;
-      showSaturday = prefs.timetableShowSaturday;
-      TimetableProvider().use((provider) async {
-        var timetableId = prefs.currentTimetableId;
-        if (timetableId == "main") {
-          _currentTableId = -1;
-          _items = await provider.getAll(where: "$colTableId is null");
-        } else {
-          _currentTableId = int.parse(timetableId);
-          _items = await provider
-              .getAll(where: "$colTableId = ?", whereArgs: [timetableId]);
-        }
+  void initSharedPrefs() async {
+    prefs ??= SharedPrefs(await SharedPreferences.getInstance());
 
-        await TimetableClassTimeProvider(context).use((provider) async {
-          _classTimes = await provider.getAll();
-        });
+    initPagePos();
+  }
 
-        setState(() {});
+  void initPagePos() {
+    var page = DateTime.now().weekday - 1;
+    if (!prefs!.timetableShowSaturday && page == 5) {
+      page = 0;
+    }
+    if (page == 6) {
+      page = 0;
+    }
+    _controller = PageController(initialPage: page);
+
+    initTable();
+  }
+
+  void initTable() async {
+    await TimetableProvider().use((provider) async {
+      var timetableId = prefs?.currentTimetableId;
+      if (timetableId == "main") {
+        _items = await provider.getAll(where: "$colTableId is null");
+      } else {
+        _items = await provider
+            .getAll(where: "$colTableId = ?", whereArgs: [timetableId]);
+      }
+
+      await TimetableClassTimeProvider(context).use((provider) async {
+        _classTimes = await provider.getAll();
       });
+
+      setState(() {});
     });
   }
 
@@ -79,14 +89,14 @@ class _TabTimetable2State extends State<TabTimetable2> {
 
   @override
   Widget build(BuildContext context) {
-    if (_items == null) return Container();
+    if (_items == null || prefs == null) return Container();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Flexible(
           child: PageView.builder(
-            itemCount: showSaturday ? 6 : 5,
+            itemCount: prefs!.timetableShowSaturday ? 6 : 5,
             controller: _controller,
             itemBuilder: (context, index) {
               var items = _items!
@@ -94,7 +104,7 @@ class _TabTimetable2State extends State<TabTimetable2> {
                   .toList();
               return TimetableDayList(
                 weekday: index,
-                periodCount: periodCount,
+                prefs: prefs!,
                 items: items,
                 classTimeItems: _classTimes!,
               );
@@ -104,32 +114,27 @@ class _TabTimetable2State extends State<TabTimetable2> {
         if (_tables != null)
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: DropdownButtonFormField<int>(
-              value: _currentTableId,
+            child: DropdownButtonFormField<String>(
+              value: prefs!.currentTimetableId,
               decoration: const InputDecoration(
                 label: Text("時間割選択"),
                 border: OutlineInputBorder(),
               ),
               items: [
-                const DropdownMenuItem<int>(
-                  value: -1,
+                const DropdownMenuItem<String>(
+                  value: "main",
                   child: Text("メイン"),
                 ),
                 ..._tables!.map((e) {
-                  return DropdownMenuItem<int>(
-                    value: e.id,
+                  return DropdownMenuItem<String>(
+                    value: e.id.toString(),
                     child: Text(e.title!),
                   );
                 }).toList()
               ],
               onChanged: (e) {
                 setState(() {
-                  _currentTableId = e;
-                });
-                SharedPrefs.use((prefs) {
-                  prefs.currentTimetableId = _currentTableId == -1
-                      ? "main"
-                      : _currentTableId.toString();
+                  prefs!.currentTimetableId = e!;
                 });
                 initTable();
               },

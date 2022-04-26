@@ -68,9 +68,9 @@ let actionsChannel = "submon/actions"
                 UNNotificationAction(identifier: "openCreateNewPage", title: "新規作成", options: [.foreground])
             ], intentIdentifiers: [], options: []),
             UNNotificationCategory(identifier: "timetable", actions: [], intentIdentifiers: [], options: []),
-            UNNotificationCategory(identifier: "doTime", actions: [
+            UNNotificationCategory(identifier: "digestive", actions: [
                 UNNotificationAction(identifier: "openFocusTimerPage", title: "集中タイマー", options: [.foreground]),
-                UNNotificationAction(identifier: "deleteDoTime", title: "DoTimeを削除", options: []),
+                UNNotificationAction(identifier: "deleteDigestive", title: "Digestiveを削除", options: []),
             ], intentIdentifiers: [], options: [])
         ])
         

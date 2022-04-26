@@ -34,7 +34,7 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
     _subjectController.text = widget.initialData?.subject ?? "";
     _roomController.text = widget.initialData?.room ?? "";
     _teacherController.text = widget.initialData?.teacher ?? "";
-    _teacherController.text = widget.initialData?.note ?? "";
+    _noteController.text = widget.initialData?.note ?? "";
     super.initState();
   }
 

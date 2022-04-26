@@ -36,7 +36,7 @@ class ActionMethodChannelHandler {
             ])
         case "openFocusTimerPage":
             methodChannel.invokeMethod(actionName, arguments: [
-                "doTimeId": arguments["doTimeId"]
+                "digestiveId": arguments["digestiveId"]
             ])
             break
         default: break

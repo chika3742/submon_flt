@@ -148,6 +148,28 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
                           : "未同期",
                     ),
                     SettingsTile(
+                      title: "今すぐ同期",
+                      onTap: () {
+                        showSimpleDialog(context, "注意",
+                            "本機能は短時間に何度も実行しないでください。\n\n今すぐ同期しますか？",
+                            showCancel: true, onOKPressed: () async {
+                          showLoadingModal(context);
+                          try {
+                            await FirebaseFunctions.instanceFor(
+                                    region: "asia-northeast1")
+                                .httpsCallable("canvasSyncNow")();
+                            Navigator.pop(context);
+                            showSimpleDialog(context, "完了",
+                                "同期リクエストを送信しました。結果は本画面でご確認ください。");
+                          } catch (e) {
+                            Navigator.pop(context);
+                            showSimpleDialog(context, "エラー", "エラーが発生しました。");
+                            print(e);
+                          }
+                        });
+                      },
+                    ),
+                    SettingsTile(
                         title: "提出物カラー選択",
                         subtitle: "提出物が追加される際のカラーを設定できます。",
                         onTap: () async {
