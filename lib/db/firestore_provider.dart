@@ -230,7 +230,8 @@ class FirestoreProvider {
       await TimetableProvider().use((provider) async {
         await provider.deleteAllLocal();
         for (var e in timetableDataSnapshot.docs) {
-          for (var value in ((e.data()["cells"] as Map?) ?? {}).values) {
+          for (var value
+              in ((e.data()["cells"] as Map<String, dynamic>?) ?? {}).values) {
             await provider.insertLocalOnly(provider.mapToObj(value));
           }
         }
