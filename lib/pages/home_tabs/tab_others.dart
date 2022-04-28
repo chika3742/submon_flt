@@ -1,10 +1,16 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:in_app_review/in_app_review.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:submon/components/hidable_progress_indicator.dart';
 import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/utils/utils.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class TabOthers extends StatefulWidget {
   const TabOthers({Key? key}) : super(key: key);
@@ -76,6 +82,44 @@ class _TabOthersState extends State<TabOthers> {
                 },
               ),
             ]),
+            SettingsCategory(
+              title: "フィードバック",
+              tiles: [
+                SettingsTile(
+                  title: "レビューを書く",
+                  subtitle: "全体的なアプリ評価はこちら。",
+                  leading: const Icon(Icons.star),
+                  onTap: () {
+                    InAppReview.instance.openStoreListing();
+                  },
+                ),
+                SettingsTile(
+                  title: "フィードバックを書く",
+                  subtitle: "不具合報告や細かな改善要望はこちら。",
+                  leading: const Icon(Icons.rate_review),
+                  onTap: () async {
+                    var deviceInfoPlugin = DeviceInfoPlugin();
+                    var deviceNameVer = "";
+
+                    if (Platform.isAndroid) {
+                      var info = await deviceInfoPlugin.androidInfo;
+                      deviceNameVer =
+                          "${info.model} / Android ${info.version.release}";
+                    } else if (Platform.isIOS) {
+                      var info = await deviceInfoPlugin.iosInfo;
+                      deviceNameVer =
+                          "${info.utsname.machine} / iOS ${info.systemVersion}";
+                    }
+
+                    var appVer = (await PackageInfo.fromPlatform()).version;
+
+                    var url =
+                        "https://docs.google.com/forms/d/e/1FAIpQLSeb0kHMcYWkl8LDpiS6NqoViuU5DHL8FcRRBHyMXXSzhiCx3Q/viewform?usp=pp_url&entry.1179597929=$deviceNameVer&entry.1250051436=$appVer";
+                    launchUrlString(url, mode: LaunchMode.externalApplication);
+                  },
+                ),
+              ],
+            ),
           ],
         ),
         HidableLinearProgressIndicator(show: _loading)
