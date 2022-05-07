@@ -21,7 +21,7 @@ class TimetableTableProvider extends SqlProvider<TimetableTable> {
   List<SqlField> columns() {
     return [
       SqlField("id", DataType.integer, isPrimaryKey: true),
-      SqlField("title", DataType.integer),
+      SqlField("title", DataType.string),
     ];
   }
 

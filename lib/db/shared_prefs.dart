@@ -46,6 +46,13 @@ class SharedPrefs {
   set isCameraPrivacyPolicyDisplayed(bool value) =>
       pref!.setBool("IS_CAMERA_PRIVACY_POLICY_DISPLAYED", value);
 
+  // WRITE_GOOGLE_CALENDAR_BY_DEFAULT
+  bool get writeGoogleCalendarByDefault =>
+      pref!.getBool("WRITE_GOOGLE_CALENDAR_BY_DEFAULT") ?? false;
+
+  set writeGoogleCalendarByDefault(bool value) =>
+      pref!.setBool("WRITE_GOOGLE_CALENDAR_BY_DEFAULT", value);
+
   // SHOW_TIMETABLE_MENU
   bool get showTimetableMenu => pref!.getBool("SHOW_TIMETABLE_MENU") ?? true;
 
@@ -57,6 +64,11 @@ class SharedPrefs {
 
   set showMemorizeMenu(bool value) =>
       pref!.setBool("SHOW_MEMORIZE_MENU", value);
+
+  // SHOW_REVIEW_BTN
+  bool get showReviewBtn => pref!.getBool("SHOW_REVIEW_BTN") ?? true;
+
+  set showReviewBtn(bool value) => pref!.setBool("SHOW_REVIEW_BTN", value);
 
   // TIMETABLE_SHOW_SATURDAY
   bool get timetableShowSaturday =>

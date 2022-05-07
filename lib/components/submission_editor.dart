@@ -4,6 +4,7 @@ import 'package:googleapis/calendar/v3.dart' as c;
 import 'package:intl/intl.dart';
 import 'package:submon/components/color_picker_dialog.dart';
 import 'package:submon/components/tappable_card.dart';
+import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/main.dart';
 import 'package:submon/utils/ui.dart';
@@ -29,7 +30,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
   late DateTime _date;
   Color _color = Colors.white;
   bool _addTime = false;
-  bool _syncWithGoogleCalendar = false;
+  bool _writeGoogleCalendar = false;
   bool? _googleCalendarEnabled;
 
   _SubmissionEditorState() {
@@ -61,6 +62,12 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
     canAccessCalendar().then((value) {
       setState(() {
         _googleCalendarEnabled = value;
+      });
+    });
+
+    SharedPrefs.use((prefs) {
+      setState(() {
+        _writeGoogleCalendar = prefs.writeGoogleCalendarByDefault;
       });
     });
   }
@@ -146,12 +153,12 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
               const SizedBox(height: 24),
               Row(
                 children: [
-                  Checkbox(
-                    value: _syncWithGoogleCalendar,
+                  Switch(
+                    value: _writeGoogleCalendar,
                     onChanged: _googleCalendarEnabled == true
                         ? (value) {
                             setState(() {
-                              _syncWithGoogleCalendar = value!;
+                              _writeGoogleCalendar = value;
                             });
                           }
                         : null,
@@ -177,8 +184,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                     onTap: _googleCalendarEnabled == true
                         ? () {
                             setState(() {
-                              _syncWithGoogleCalendar =
-                                  !_syncWithGoogleCalendar;
+                              _writeGoogleCalendar = !_writeGoogleCalendar;
                             });
                           }
                         : null,
@@ -295,7 +301,9 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
         result = true;
 
         // update google calendar event
-        if (_syncWithGoogleCalendar && api != null) {
+        if (_writeGoogleCalendar &&
+            _googleCalendarEnabled == true &&
+            api != null) {
           api.getEventForSubmissionId(widget.submissionId!).then((event) {
             if (event != null) {
               api.patch(eventRequest, "primary", event.id!);
@@ -323,7 +331,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
         result = (await provider.insert(data)).id;
 
         // insert google calendar event
-        if (_syncWithGoogleCalendar) {
+        if (_writeGoogleCalendar && _googleCalendarEnabled == true) {
           api?.insert(
               eventRequest
                 ..extendedProperties = c.EventExtendedProperties(

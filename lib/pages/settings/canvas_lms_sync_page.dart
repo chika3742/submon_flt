@@ -5,6 +5,7 @@ import 'package:submon/components/color_picker_dialog.dart';
 import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/utils/ui.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class CanvasLmsSyncPage extends StatefulWidget {
   const CanvasLmsSyncPage({Key? key}) : super(key: key);
@@ -98,7 +99,9 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
                     child: OutlinedButton(
                       child: const Text('追加報告'),
                       onPressed: () {
-                        // launch("");
+                        launchUrlString(
+                            "https://docs.google.com/forms/d/e/1FAIpQLSeb0kHMcYWkl8LDpiS6NqoViuU5DHL8FcRRBHyMXXSzhiCx3Q/viewform?usp=pp_url&entry.1540960450=Canvas+LMS%E3%82%92%E5%88%A9%E7%94%A8%E3%81%99%E3%82%8B%E5%A4%A7%E5%AD%A6%E3%81%AE%E5%A0%B1%E5%91%8A",
+                            mode: LaunchMode.externalApplication);
                       },
                     ),
                   ),

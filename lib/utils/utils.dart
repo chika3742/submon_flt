@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
+import 'package:googleapis/oauth2/v2.dart' as oauth;
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:submon/main.dart';
 import 'package:submon/utils/ui.dart';
@@ -81,8 +82,12 @@ Future<bool> canAccessCalendar() async {
     var client = await googleSignIn.authenticatedClient();
     if (client == null) return false;
 
-    await calendar.CalendarApi(client).events.list("primary", maxResults: 1);
-    return true;
+    var tokenInfo = await oauth.Oauth2Api(client).tokeninfo();
+
+    return tokenInfo.scope
+            ?.split(" ")
+            .contains("https://www.googleapis.com/auth/calendar.events") ==
+        true;
   } on AccessDeniedException catch (e, stackTrace) {
     if (e.message.contains("invalid_token")) {
       await googleSignIn.disconnect();
@@ -91,6 +96,11 @@ Future<bool> canAccessCalendar() async {
 
     debugPrint(e.toString());
     debugPrint(stackTrace.toString());
+    return false;
+  } catch (e, st) {
+    await googleSignIn.disconnect();
+    debugPrint(e.toString());
+    debugPrint(st.toString());
     return false;
   }
 }

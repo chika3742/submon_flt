@@ -272,28 +272,28 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
                     ),
                   );
                 }),
-            CheckBoxSettingsTile(
+            SwitchSettingsTile(
               title: "土曜日を表示",
               value: prefs!.timetableShowSaturday,
               onChanged: (value) {
-                prefs?.timetableShowSaturday = value!;
+                prefs?.timetableShowSaturday = value;
                 setState(() {});
               },
             ),
-            CheckBoxSettingsTile(
+            SwitchSettingsTile(
               title: "始業・終業時刻を表示",
               value: prefs!.timetableShowClassTime,
               onChanged: (value) {
-                prefs?.timetableShowClassTime = value!;
+                prefs?.timetableShowClassTime = value;
                 setState(() {});
               },
             ),
-            CheckBoxSettingsTile(
+            SwitchSettingsTile(
               title: "現在時刻マーカーを表示",
               subtitle: "現在時刻に合わせて動くマーカーを表示します。",
               value: prefs!.timetableShowTimeMarker,
               onChanged: (value) {
-                prefs?.timetableShowTimeMarker = value!;
+                prefs?.timetableShowTimeMarker = value;
                 setState(() {});
               },
             ),
