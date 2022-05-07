@@ -16,8 +16,7 @@ class CustomizeSettingsPage extends StatefulWidget {
 class _CustomizeSettingsPageState extends State<CustomizeSettingsPage> {
   int? _digestiveNotificationTimeBefore;
   bool _loadingDigestiveNotificationTimeBefore = true;
-  bool? _timetableInMenu;
-  bool? _memorizeCardInMenu;
+  SharedPrefs? prefs;
 
   @override
   void initState() {
@@ -37,8 +36,7 @@ class _CustomizeSettingsPageState extends State<CustomizeSettingsPage> {
 
     SharedPrefs.use((prefs) {
       setState(() {
-        _timetableInMenu = prefs.showTimetableMenu;
-        _memorizeCardInMenu = prefs.showMemorizeMenu;
+        this.prefs = prefs;
       });
     });
     super.initState();
@@ -80,32 +78,53 @@ class _CustomizeSettingsPageState extends State<CustomizeSettingsPage> {
                 : null,
           ),
         ]),
+        SettingsCategory(
+          title: "デフォルト設定",
+          tiles: [
+            if (prefs != null)
+              SwitchSettingsTile(
+                title: "Googleカレンダー追加/編集",
+                subtitle: "デフォルトで追加/編集がオンになります",
+                value: prefs!.writeGoogleCalendarByDefault,
+                onChanged: (value) {
+                  setState(() {
+                    prefs!.writeGoogleCalendarByDefault = value;
+                  });
+                },
+              )
+          ],
+        ),
         SettingsCategory(title: "メニューに表示する項目 (再起動後に反映されます)", tiles: [
-          if (_timetableInMenu != null)
+          if (prefs != null)
             SwitchSettingsTile(
               title: "時間割表",
               subtitle: "利用しない場合はメニューから削除できます",
-              value: _timetableInMenu!,
+              value: prefs!.showTimetableMenu,
               onChanged: (value) {
-                SharedPrefs.use((prefs) {
-                  prefs.showTimetableMenu = value;
-                });
                 setState(() {
-                  _timetableInMenu = value;
+                  prefs!.showTimetableMenu = value;
                 });
               },
             ),
-          if (_timetableInMenu != null)
+          if (prefs != null)
             SwitchSettingsTile(
               title: "暗記カード",
               subtitle: "利用しない場合はメニューから削除できます",
-              value: _memorizeCardInMenu!,
+              value: prefs!.showMemorizeMenu,
               onChanged: (value) {
-                SharedPrefs.use((prefs) {
-                  prefs.showMemorizeMenu = value;
-                });
                 setState(() {
-                  _memorizeCardInMenu = value;
+                  prefs!.showMemorizeMenu = value;
+                });
+              },
+            ),
+          if (prefs != null)
+            SwitchSettingsTile(
+              title: "レビューを書く",
+              subtitle: "既に書いた場合・書くつもりがない場合は「その他」のメニューから削除できます",
+              value: prefs!.showReviewBtn,
+              onChanged: (value) {
+                setState(() {
+                  prefs!.showReviewBtn = value;
                 });
               },
             ),

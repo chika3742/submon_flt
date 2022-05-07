@@ -14,6 +14,7 @@ import 'package:submon/pages/sign_in_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 import 'package:time_picker_widget/time_picker_widget.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class FunctionsSettingsPage extends StatefulWidget {
   const FunctionsSettingsPage({Key? key}) : super(key: key);
@@ -241,21 +242,22 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                   if (googleSignIn.currentUser != null) {
                     result = await googleSignIn.requestScopes(calendarScopes);
                   } else {
-                    result = await googleSignIn.signIn();
+                    var r = await googleSignIn.signIn();
+                    if (r == null) return;
+                    result = await googleSignIn.requestScopes(calendarScopes);
                   }
-                  if ((result is bool && result) ||
-                      (result is GoogleSignInAccount)) {
+
+                  print(result);
+
+                  if (result == true) {
                     showSnackBar(context, "Googleカレンダーと連携しました。");
                     setState(() {
                       _signedInAndScopeGranted = true;
                     });
                   }
                 } else {
-                  await googleSignIn.signOut();
-                  showSnackBar(context, "Googleカレンダー連携を解除しました");
-                  setState(() {
-                    _signedInAndScopeGranted = false;
-                  });
+                  launchUrlString("https://myaccount.google.com/permissions",
+                      mode: LaunchMode.externalApplication);
                 }
               })
         ]),
