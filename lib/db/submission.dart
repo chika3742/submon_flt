@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:googleapis/calendar/v3.dart' as c;
+import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:submon/db/digestive.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/sql_provider.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
-import 'package:submon/utils/utils.dart';
 
 const tableSubmission = "submission";
 
@@ -19,6 +19,7 @@ const colDone = "done";
 const colImportant = "important";
 const colRepeat = "repeat";
 const colColor = "color";
+const colGoogleTasksTaskId = "googleTasksTaskId";
 
 class Submission {
   int? id;
@@ -29,6 +30,7 @@ class Submission {
   bool important;
   Repeat repeat;
   Color color;
+  String? googleTasksTaskId;
 
   Submission({
     this.id,
@@ -39,6 +41,7 @@ class Submission {
     this.important = false,
     this.repeat = Repeat.none,
     this.color = Colors.white,
+    this.googleTasksTaskId,
   });
 }
 
@@ -47,16 +50,18 @@ class SubmissionProvider extends SqlProvider<Submission> {
   String tableName() => "submission";
 
   @override
-  List<SqlField> columns() => [
-    SqlField(colId, DataType.integer, isPrimaryKey: true),
-    SqlField(colDate, DataType.string),
-    SqlField(colTitle, DataType.string),
-    SqlField(colDetail, DataType.string),
-    SqlField(colDone, DataType.bool),
-    SqlField(colImportant, DataType.bool),
-    SqlField(colColor, DataType.integer),
-    SqlField(colRepeat, DataType.integer),
-  ];
+  List<SqlField> columns() =>
+      [
+        SqlField(colId, DataType.integer, isPrimaryKey: true),
+        SqlField(colDate, DataType.string),
+        SqlField(colTitle, DataType.string),
+        SqlField(colDetail, DataType.string),
+        SqlField(colDone, DataType.bool),
+        SqlField(colImportant, DataType.bool),
+        SqlField(colColor, DataType.integer),
+        SqlField(colRepeat, DataType.integer),
+        SqlField(colGoogleTasksTaskId, DataType.string, isNonNull: false),
+      ];
 
   @override
   Submission mapToObj(Map map) {
@@ -70,6 +75,7 @@ class SubmissionProvider extends SqlProvider<Submission> {
       important: map[colImportant] == 1,
       color: Color(map[colColor]),
       repeat: Repeat.values[map[colRepeat]],
+      googleTasksTaskId: map[colGoogleTasksTaskId],
     );
   }
 
@@ -84,6 +90,7 @@ class SubmissionProvider extends SqlProvider<Submission> {
       colImportant: data.important == true ? 1 : 0,
       colColor: data.color.value,
       colRepeat: data.repeat.index,
+      colGoogleTasksTaskId: data.googleTasksTaskId,
     };
   }
 
@@ -132,17 +139,22 @@ class SubmissionProvider extends SqlProvider<Submission> {
     await FirestoreProvider.submission.delete(id.toString());
     await DigestiveProvider(db: db).deleteForSubmissionId(id);
     updateWidgets();
+  }
 
-    await googleSignIn.authenticatedClient().then((client) async {
-      if (client != null) {
-        var api = c.CalendarApi(client).events;
+  void deleteGoogleTasks(String? taskId) {
+    if (taskId != null) {
+      googleSignIn.authenticatedClient().then((client) async {
+        if (client != null) {
+          var tasksApi = tasks.TasksApi(client);
 
-        var event = await api.getEventForSubmissionId(id);
-        if (event != null) {
-          api.delete("primary", event.id!);
+          var tasklist =
+              (await tasksApi.tasklists.list(maxResults: 1)).items?.firstOrNull;
+          if (tasklist != null) {
+            tasksApi.tasks.delete(tasklist.id!, taskId);
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   @override

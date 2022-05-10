@@ -317,6 +317,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       tabIndex = index;
     });
+    ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
     _navigatorKey.currentState
         ?.pushReplacement(FadeThroughPageRoute(pages[index]));
   }

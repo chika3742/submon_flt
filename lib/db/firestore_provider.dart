@@ -180,7 +180,9 @@ class FirestoreProvider {
       await userDoc!.set({"schemaVersion": schemaVer}, SetOptions(merge: true));
     } else {
       if (schemaVersion < schemaVer) {
-        // migrate
+        // migrate (server side?)
+        await userDoc!
+            .set({"schemaVersion": schemaVer}, SetOptions(merge: true));
       } else if (schemaVersion > schemaVer) {
         throw SchemaVersionMismatchException(schemaVer, schemaVersion);
       }

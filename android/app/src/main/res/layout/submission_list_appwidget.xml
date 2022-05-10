@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:theme="@style/Theme.AppCompat.DayNight"
     android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/titleBar"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:background="#eee"
+        android:layout_height="40dp"
+        android:background="?android:attr/colorBackgroundFloating"
         android:elevation="4dp"
         android:orientation="horizontal">
 
@@ -29,14 +31,16 @@
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="8dp"
             android:layout_weight="0"
-            android:src="@drawable/outline_add_black_24" />
+            android:src="@drawable/outline_add_black_24"
+            android:tint="?android:attr/colorForeground"
+            tools:ignore="UseAppTint" />
 
     </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#eee">
+        android:background="?android:attr/colorBackground">
 
         <ListView
             android:id="@+id/listView"
@@ -54,6 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="提出物がありません"
+                android:textColor="?android:attr/textColorTertiary"
                 android:textSize="16sp" />
 
         </LinearLayout>
@@ -66,6 +71,7 @@
             android:layout_margin="8dp"
             android:text="ウィジェットを利用するにはログインする必要があります"
             android:textSize="16sp"
+            android:textColor="?android:attr/colorForeground"
             android:visibility="gone" />
 
     </FrameLayout>

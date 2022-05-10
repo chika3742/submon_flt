@@ -1,6 +1,8 @@
+import 'package:collection/collection.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
-import 'package:googleapis/calendar/v3.dart' as c;
+import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:intl/intl.dart';
 import 'package:submon/components/color_picker_dialog.dart';
 import 'package:submon/components/tappable_card.dart';
@@ -11,8 +13,7 @@ import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
 class SubmissionEditor extends StatefulWidget {
-  const SubmissionEditor(
-      {Key? key, this.submissionId, this.initialTitle, this.initialDeadline})
+  const SubmissionEditor({Key? key, this.submissionId, this.initialTitle, this.initialDeadline})
       : super(key: key);
 
   final int? submissionId;
@@ -59,7 +60,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
     }
     if (widget.initialDeadline != null) _date = widget.initialDeadline!;
 
-    canAccessCalendar().then((value) {
+    canAccessTasks().then((value) {
       setState(() {
         _googleCalendarEnabled = value;
       });
@@ -90,7 +91,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                         const SizedBox(width: 8),
                         Text(
                             DateFormat("M月 d日 (E)" + (_addTime ? " HH:mm" : ""),
-                                    "ja_JP")
+                                "ja_JP")
                                 .format(_date),
                             style: const TextStyle(
                                 fontSize: 17, fontWeight: FontWeight.bold))
@@ -157,19 +158,17 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                     value: _writeGoogleCalendar,
                     onChanged: _googleCalendarEnabled == true
                         ? (value) {
-                            setState(() {
-                              _writeGoogleCalendar = value;
-                            });
-                          }
+                      setState(() {
+                        _writeGoogleCalendar = value;
+                      });
+                    }
                         : null,
                   ),
                   GestureDetector(
                     child: Opacity(
                       opacity: _googleCalendarEnabled == true ? 1 : 0.6,
                       child: Text(
-                        widget.submissionId == null
-                            ? "Google カレンダーに追加する"
-                            : "Google カレンダーの予定も更新する",
+                        "Google Tasksに提出物を同期",
                         style: TextStyle(
                           color: _googleCalendarEnabled == true
                               ? null
@@ -183,10 +182,10 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                     ),
                     onTap: _googleCalendarEnabled == true
                         ? () {
-                            setState(() {
-                              _writeGoogleCalendar = !_writeGoogleCalendar;
-                            });
-                          }
+                      setState(() {
+                        _writeGoogleCalendar = !_writeGoogleCalendar;
+                      });
+                    }
                         : null,
                   ),
                   const SizedBox(width: 8),
@@ -270,8 +269,6 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
 
   void save() {
     SubmissionProvider().use((provider) async {
-      var client = await googleSignIn.authenticatedClient();
-      var api = client != null ? c.CalendarApi(client).events : null;
       Submission data;
       if (widget.submissionId != null) {
         data = (await provider.get(widget.submissionId!))!;
@@ -283,67 +280,72 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
       data.date = _date;
       data.color = _color;
 
-      // google calendar event entry
-      var eventRequest = c.Event(
-        summary: "Submon: ${data.title}",
-        description: data.detail,
-        start: c.EventDateTime(
-          date: DateTime(data.date!.year, data.date!.month, data.date!.day),
-        ),
-        end: c.EventDateTime(
-          date: DateTime(data.date!.year, data.date!.month, data.date!.day + 1),
-        ),
-      );
+      // google tasks entry
 
       dynamic result;
       if (widget.submissionId != null) {
         await provider.update(data);
         result = true;
-
-        // update google calendar event
-        if (_writeGoogleCalendar &&
-            _googleCalendarEnabled == true &&
-            api != null) {
-          api.getEventForSubmissionId(widget.submissionId!).then((event) {
-            if (event != null) {
-              api.patch(eventRequest, "primary", event.id!);
-            } else {
-              showSnackBar(
-                Application.globalKey.currentContext!,
-                "Googleカレンダーに登録された予定が見つかりません。作成しますか？",
-                action: SnackBarAction(
-                    label: "作成する",
-                    onPressed: () {
-                      api.insert(
-                          eventRequest
-                            ..extendedProperties = c.EventExtendedProperties(
-                              private: {
-                                "submission_id": widget.submissionId.toString(),
-                              },
-                            ),
-                          "primary");
-                    }),
-              );
-            }
-          });
-        }
       } else {
         result = (await provider.insert(data)).id;
-
-        // insert google calendar event
-        if (_writeGoogleCalendar && _googleCalendarEnabled == true) {
-          api?.insert(
-              eventRequest
-                ..extendedProperties = c.EventExtendedProperties(
-                  private: {
-                    "submission_id": result.toString(),
-                  },
-                ),
-              "primary");
-        }
       }
 
+      if (_writeGoogleCalendar && _googleCalendarEnabled == true) {
+        writeToGoogleTasks(data);
+      }
       Navigator.of(context, rootNavigator: true).maybePop<dynamic>(result);
     });
+  }
+
+  Future<tasks.Task> makeTaskRequest(Submission data) async {
+    var linkData = await FirebaseDynamicLinks.instance
+        .buildShortLink(DynamicLinkParameters(
+      link: Uri.parse("https://app.submon.chikach.net/submission/${data.id}"),
+      uriPrefix: "https://submon.page.link",
+    ));
+    return tasks.Task(
+      id: data.googleTasksTaskId,
+      title: "${data.title} (Submon)",
+      notes: "Submon アプリ内で開く: ${linkData.shortUrl}",
+      due: data.date!.toUtc().toIso8601String(),
+    );
+  }
+
+  Future<void> writeToGoogleTasks(Submission data) async {
+    var client = await googleSignIn.authenticatedClient();
+    if (client == null) {
+      showSnackBar(Application.globalKey.currentContext!,
+          "Google Tasksへの追加に失敗しました。(認証に失敗しました。)");
+      return;
+    }
+
+    var tasksApi = tasks.TasksApi(client);
+
+    try {
+      var tasklist =
+          (await tasksApi.tasklists.list(maxResults: 1)).items?.firstOrNull;
+      if (tasklist == null) {
+        showSnackBar(Application.globalKey.currentContext!,
+            "Google Tasksのタスクリストが存在しません。Tasksアプリでタスクリストを作成してください。");
+        return;
+      }
+
+      if (data.googleTasksTaskId != null) {
+        await tasksApi.tasks.update(
+            await makeTaskRequest(data), tasklist.id!, data.googleTasksTaskId!);
+      } else {
+        var result = await tasksApi.tasks
+            .insert(await makeTaskRequest(data), tasklist.id!);
+
+        await SubmissionProvider().use((provider) async {
+          await provider.update(data..googleTasksTaskId = result.id);
+        });
+      }
+    } catch (e, st) {
+      showSnackBar(
+          Application.globalKey.currentContext!, "Google Tasksへの追加に失敗しました。");
+      debugPrint(e.toString());
+      debugPrintStack(stackTrace: st);
+    }
   }
 }

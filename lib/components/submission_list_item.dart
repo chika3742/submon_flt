@@ -1,13 +1,19 @@
 import 'package:animations/animations.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:submon/components/formatted_date_remaining.dart';
+import 'package:submon/db/digestive.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/pages/submission_detail_page.dart';
 import 'package:submon/utils/ui.dart';
 
+import 'digestive_edit_bottom_sheet.dart';
+
 class SubmissionListItem extends StatefulWidget {
-  const SubmissionListItem(this.item, {Key? key, this.onDone, this.onDelete}) : super(key: key);
+  const SubmissionListItem(this.item, {Key? key, this.onDone, this.onDelete})
+      : super(key: key);
   final Submission item;
   final Function? onDone;
   final Function? onDelete;
@@ -178,6 +184,53 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
                 onTap: () {
                   callback();
                 },
+                onLongPress: () {
+                  showRoundedBottomSheet(
+                    context: context,
+                    useRootNavigator: true,
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.share),
+                          title: const Text("共有"),
+                          onTap: () {
+                            handleContextMenuAction(_ContextMenuAction.share);
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.add),
+                          title: const Text("Digestive を追加"),
+                          onTap: () {
+                            handleContextMenuAction(
+                                _ContextMenuAction.addDigestive);
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.edit),
+                          title: const Text("編集"),
+                          onTap: () {
+                            handleContextMenuAction(_ContextMenuAction.edit);
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.check),
+                          title: const Text("完了にする"),
+                          onTap: () {
+                            handleContextMenuAction(
+                                _ContextMenuAction.makeDone);
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.delete),
+                          title: const Text("削除"),
+                          onTap: () {
+                            handleContextMenuAction(_ContextMenuAction.delete);
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             );
           },
@@ -206,4 +259,62 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
       provider.update(_item);
     });
   }
+
+  Future<void> handleContextMenuAction(_ContextMenuAction action) async {
+    Navigator.of(context, rootNavigator: true).pop(context);
+
+    switch (action) {
+      case _ContextMenuAction.share:
+        showLoadingModal(context);
+
+        var link = await FirebaseDynamicLinks.instance.buildShortLink(
+            DynamicLinkParameters(
+                link:
+                    Uri.parse("https://app.submon.chikach.net/submission-share"
+                        "?title=${widget.item.title}&"
+                        "date=${widget.item.date!.toUtc().toIso8601String()}&"
+                        "detail=${widget.item.detail}&"
+                        "color=${widget.item.color.value}"),
+                uriPrefix: "https://submon.page.link"));
+
+        Navigator.of(context, rootNavigator: true).pop(context);
+
+        Share.share(link.shortUrl.toString());
+        break;
+
+      case _ContextMenuAction.addDigestive:
+        var data = await showRoundedBottomSheet<Digestive>(
+          context: context,
+          title: "Digestive 新規作成",
+          child: DigestiveEditBottomSheet(submissionId: widget.item.id),
+        );
+        if (data != null) {
+          DigestiveProvider().use((provider) async {
+            await provider.insert(data);
+          });
+          showSnackBar(context, "作成しました");
+        }
+        break;
+      case _ContextMenuAction.edit:
+        Navigator.of(context, rootNavigator: true)
+            .pushNamed("/submission/edit", arguments: {
+          "submissionId": widget.item.id,
+        });
+        break;
+      case _ContextMenuAction.makeDone:
+        widget.onDone?.call();
+        break;
+      case _ContextMenuAction.delete:
+        widget.onDelete?.call();
+        break;
+    }
+  }
+}
+
+enum _ContextMenuAction {
+  share,
+  addDigestive,
+  edit,
+  makeDone,
+  delete,
 }
