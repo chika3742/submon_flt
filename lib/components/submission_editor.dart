@@ -288,6 +288,10 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
         result = true;
       } else {
         result = (await provider.insert(data)).id;
+
+        SharedPrefs.use((prefs) {
+          prefs.incrementSubmissionCreationCount();
+        });
       }
 
       if (_writeGoogleCalendar && _googleCalendarEnabled == true) {

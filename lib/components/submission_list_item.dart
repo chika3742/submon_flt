@@ -285,6 +285,7 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
       case _ContextMenuAction.addDigestive:
         var data = await showRoundedBottomSheet<Digestive>(
           context: context,
+          useRootNavigator: true,
           title: "Digestive 新規作成",
           child: DigestiveEditBottomSheet(submissionId: widget.item.id),
         );
