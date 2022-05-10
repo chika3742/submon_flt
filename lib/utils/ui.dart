@@ -136,16 +136,22 @@ void showLoadingModal(BuildContext context) {
       });
 }
 
-void showSelectSheet(BuildContext context, String title, String message,
-    List<SelectSheetAction> actions) {
+void showSelectSheet(
+    {required BuildContext context,
+    String? title,
+    String? message,
+    required List<SelectSheetAction> actions}) {
   if (Platform.isIOS || Platform.isMacOS) {
     showCupertinoModalPopup<void>(
         context: context,
         builder: (context) {
           return CupertinoActionSheet(
-            title: Text(title, style: Theme.of(context).textTheme.titleLarge),
-            message:
-                Text(message, style: Theme.of(context).textTheme.bodyLarge),
+            title: title != null
+                ? Text(title, style: Theme.of(context).textTheme.titleLarge)
+                : null,
+            message: message != null
+                ? Text(message, style: Theme.of(context).textTheme.bodyLarge)
+                : null,
             actions: actions
                 .map((e) => CupertinoActionSheetAction(
                     onPressed: e.onPressed, child: Text(e.title)))
@@ -177,13 +183,15 @@ void showSelectSheet(BuildContext context, String title, String message,
               ),
             ),
             const SizedBox(height: 16),
-            Text(title, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child:
-                  Text(message, style: Theme.of(context).textTheme.bodyLarge),
-            ),
+            if (title != null)
+              Text(title, style: Theme.of(context).textTheme.titleLarge),
+            if (message != null) const SizedBox(height: 16),
+            if (message != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child:
+                    Text(message, style: Theme.of(context).textTheme.bodyLarge),
+              ),
             const SizedBox(height: 16),
             Flex(
               direction: Axis.horizontal,
@@ -246,11 +254,12 @@ Future<T?> showRoundedBottomSheet<T>({
                   color: Theme.of(context).textTheme.bodyText1!.color,
                   borderRadius: BorderRadius.circular(8)),
             ),
-            Text(title!,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold)),
+            if (title != null)
+              Text(title,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
             child,
           ],

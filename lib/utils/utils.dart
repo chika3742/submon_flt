@@ -6,6 +6,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:googleapis/oauth2/v2.dart' as oauth;
@@ -67,6 +68,10 @@ void handleFirebaseError(FirebaseException e, StackTrace stackTrace,
         context,
         "エラー",
         "$message\n\nアカウントがすでに削除されたか、サーバーメンテナンス中である可能性があります。",
+        allowCancel: false,
+        onOKPressed: () {
+          SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        },
       );
       break;
 
@@ -77,7 +82,7 @@ void handleFirebaseError(FirebaseException e, StackTrace stackTrace,
   FirebaseCrashlytics.instance.recordError(e, stackTrace);
 }
 
-Future<bool> canAccessCalendar() async {
+Future<bool> canAccessTasks() async {
   try {
     var client = await googleSignIn.authenticatedClient();
     if (client == null) return false;
@@ -86,12 +91,12 @@ Future<bool> canAccessCalendar() async {
 
     return tokenInfo.scope
             ?.split(" ")
-            .contains("https://www.googleapis.com/auth/calendar.events") ==
+            .contains("https://www.googleapis.com/auth/tasks") ==
         true;
   } on AccessDeniedException catch (e, stackTrace) {
     if (e.message.contains("invalid_token")) {
       await googleSignIn.disconnect();
-      return await canAccessCalendar();
+      return await canAccessTasks();
     }
 
     debugPrint(e.toString());

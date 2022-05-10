@@ -174,12 +174,15 @@ class _RadioBottomSheetState extends State<RadioBottomSheet> {
                   },
                 ))
             .toList(),
-        IconButton(
-          icon: const Icon(Icons.check),
-          onPressed: () {
-            Navigator.pop(context);
-            widget.onSelected?.call(selected);
-          },
+        Padding(
+          padding: const EdgeInsets.only(right: 16.0),
+          child: IconButton(
+            icon: const Icon(Icons.check),
+            onPressed: () {
+              Navigator.pop(context);
+              widget.onSelected?.call(selected);
+            },
+          ),
         ),
         const SizedBox(height: 16),
       ],

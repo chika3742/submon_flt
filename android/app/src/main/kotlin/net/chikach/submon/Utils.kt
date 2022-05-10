@@ -21,10 +21,10 @@ object Utils {
         val diffWeeks = diff / (7L * 24 * 60 * 60 * 1000)
         val diffMonths = diff / (30L * 24 * 60 * 60 * 1000)
         return when {
-            diffMonths > 0 -> "${diffMonths}ヶ月"
-            diffWeeks > 0 -> "${diffWeeks}週間"
-            diffDays > 0 -> "${diffDays}日"
-            else -> "${diffHours}時間"
+            diffMonths > 0 -> "$diffMonths ヶ月"
+            diffWeeks > 0 -> "$diffWeeks 週間"
+            diffDays > 0 -> "$diffDays 日"
+            else -> "$diffHours 時間"
         }
     }
 

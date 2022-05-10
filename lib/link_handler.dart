@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:submon/db/submission.dart';
 import 'package:submon/events.dart';
 import 'package:submon/main.dart';
 import 'package:submon/pages/sign_in_page.dart';
@@ -14,14 +15,24 @@ import 'db/shared_prefs.dart';
 
 StreamSubscription initDynamicLinks() {
   FirebaseDynamicLinks.instance.getInitialLink().then((linkData) {
-    if (linkData != null) handleDynamicLink(linkData.link);
+    if (linkData != null) {
+      handleDynamicLink(linkData.link);
+    }
   });
   return FirebaseDynamicLinks.instance.onLink.listen((linkData) async {
     handleDynamicLink(linkData.link);
   });
 }
 
-void handleDynamicLink(Uri url) async {
+void handleDynamicLink(Uri url) {
+  if (url.toString().startsWith("https://submon.chikach.net/__/auth")) {
+    handleAuthDynamicLink(url);
+  } else if (url.toString().startsWith("https://app.submon.chikach.net")) {
+    handleOpenDynamicLink(url);
+  }
+}
+
+void handleAuthDynamicLink(Uri url) async {
   var context = Application.globalKey.currentContext!;
 
   var auth = FirebaseAuth.instance;
@@ -77,5 +88,41 @@ void handleDynamicLink(Uri url) async {
   } on FirebaseAuthException catch (e) {
     Navigator.of(context, rootNavigator: true).pop(); // dismiss loading modal
     handleAuthError(e, context);
+  }
+}
+
+void handleOpenDynamicLink(Uri url) {
+  var context = Application.globalKey.currentContext!;
+  var paths = url.path.split("/");
+  if (paths[1] == "submission") {
+    Navigator.pushNamed(context, "/submission/detail", arguments: {
+      "id": int.parse(paths[2]),
+    });
+  } else if (paths[1] == "submission-share") {
+    var title = url.queryParameters["title"];
+    var date = url.queryParameters["date"];
+    var detail = url.queryParameters["detail"];
+    var color = url.queryParameters["color"];
+    showSimpleDialog(
+      context,
+      "提出物のシェア",
+      "以下の内容で登録します。よろしいですか？\n\n"
+          "タイトル: $title\n"
+          "期限: $date\n"
+          "詳細: $detail",
+      showCancel: true,
+      onOKPressed: () async {
+        await SubmissionProvider().use((provider) async {
+          var data = await provider.insert(Submission(
+            title: title!,
+            date: DateTime.parse(date!).toLocal(),
+            detail: detail!,
+            color: Color(int.parse(color!)),
+          ));
+          eventBus.fire(SubmissionInserted(data.id!));
+        });
+        showSnackBar(context, "作成しました。");
+      },
+    );
   }
 }

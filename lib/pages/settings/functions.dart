@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/db/sql_provider.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/method_channel/messaging.dart';
@@ -14,7 +15,6 @@ import 'package:submon/pages/sign_in_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 import 'package:time_picker_widget/time_picker_widget.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class FunctionsSettingsPage extends StatefulWidget {
   const FunctionsSettingsPage({Key? key}) : super(key: key);
@@ -152,13 +152,14 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                 } else {
                   showSimpleDialog(context, "確認", "ログアウトしますか？",
                       onOKPressed: () async {
-                    await auth.signOut();
+                        await auth.signOut();
                     await GoogleSignIn().signOut();
+                    SqlProvider.clearAllTables();
                     updateWidgets();
-                  Navigator.pop(context);
-                  Navigator.pushReplacementNamed(context, "welcome");
-                  showSnackBar(context, "ログアウトしました");
-                }, showCancel: true);
+                    Navigator.pop(context);
+                    Navigator.pushReplacementNamed(context, "welcome");
+                    showSnackBar(context, "ログアウトしました");
+                  }, showCancel: true);
               }
             },
           ),
@@ -222,44 +223,40 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
               },
             ),
         ]),
-        SettingsCategory(title: "Googleカレンダー連携", tiles: [
+        SettingsCategory(title: "Google Tasks連携", tiles: [
           SettingsTile(
-              title: _signedInAndScopeGranted != true
-                  ? "Googleカレンダーと連携"
-                  : "Googleカレンダー連携を解除",
-              subtitle: _signedInAndScopeGranted != null
-                  ? (_signedInAndScopeGranted != true
-                      ? "Googleカレンダーへ提出物を同期します。"
-                      : "カレンダー連携を解除します。")
-                  : "連携状態を確認しています...${_signInStateCheckDelayed ? " (この処理に時間がかかっている場合は、アプリ再起動をお試しください。)" : ""}",
-              enabled: _signedInAndScopeGranted != null,
-              trailing: _signedInAndScopeGranted == null
-                  ? const CircularProgressIndicator()
-                  : null,
-              onTap: () async {
-                if (_signedInAndScopeGranted == false) {
-                  dynamic result;
-                  if (googleSignIn.currentUser != null) {
-                    result = await googleSignIn.requestScopes(calendarScopes);
-                  } else {
-                    var r = await googleSignIn.signIn();
-                    if (r == null) return;
-                    result = await googleSignIn.requestScopes(calendarScopes);
-                  }
-
-                  print(result);
-
-                  if (result == true) {
-                    showSnackBar(context, "Googleカレンダーと連携しました。");
-                    setState(() {
-                      _signedInAndScopeGranted = true;
-                    });
-                  }
+            title: _signedInAndScopeGranted != true
+                ? "Google Tasksと連携"
+                : "Google Tasks連携済み",
+            subtitle: _signedInAndScopeGranted != null
+                ? "Google Tasksへ提出物を追加し、Google TasksおよびGoogle カレンダーに表示できます。"
+                : "連携状態を確認しています...${_signInStateCheckDelayed ? " (この処理に時間がかかっている場合は、アプリ再起動をお試しください。)" : ""}",
+            enabled: _signedInAndScopeGranted == false,
+            trailing: _signedInAndScopeGranted == null
+                ? const CircularProgressIndicator()
+                : null,
+            onTap: () async {
+              if (_signedInAndScopeGranted == false) {
+                dynamic result;
+                if (googleSignIn.currentUser != null) {
+                  result = await googleSignIn.requestScopes(scopes);
                 } else {
-                  launchUrlString("https://myaccount.google.com/permissions",
-                      mode: LaunchMode.externalApplication);
+                  var r = await googleSignIn.signIn();
+                  if (r == null) return;
+                  result = await googleSignIn.requestScopes(scopes);
                 }
-              })
+
+                print(result);
+
+                if (result == true) {
+                  showSnackBar(context, "Google Tasksと連携しました。");
+                  setState(() {
+                    _signedInAndScopeGranted = true;
+                  });
+                }
+              }
+            },
+          ),
         ]),
         SettingsCategory(title: "LMS連携 (ログイン中のみ利用できます)", tiles: [
           SettingsTile(
@@ -388,6 +385,6 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
       });
     }
 
-    setSignedInAndScopeGranted(await canAccessCalendar());
+    setSignedInAndScopeGranted(await canAccessTasks());
   }
 }

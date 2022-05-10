@@ -6,6 +6,7 @@ import 'package:submon/components/submission_list_item.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/events.dart';
+import 'package:submon/main.dart';
 import 'package:submon/utils/ui.dart';
 
 class SubmissionList extends StatefulWidget {
@@ -45,6 +46,68 @@ class _SubmissionListState extends State<SubmissionList> {
           _listKey.currentState?.insertItem(index, duration: const Duration());
         });
       });
+
+      if (!widget.done) {
+        SharedPrefs.use((prefs) {
+          if (!prefs.isSubmissionSwipeTipsDisplayed &&
+              items?.isNotEmpty == true) {
+            ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
+              content: Text.rich(
+                const TextSpan(children: [
+                  TextSpan(text: "提出物を完了にするには"),
+                  TextSpan(
+                      text: "右にスワイプ",
+                      style: TextStyle(color: Colors.greenAccent)),
+                  TextSpan(text: "、\n提出物を削除するには"),
+                  TextSpan(
+                      text: "左にスワイプ",
+                      style: TextStyle(color: Colors.redAccent)),
+                  TextSpan(text: "します。"),
+                ]),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              actions: [
+                TextButton(
+                  child: const Text("閉じる"),
+                  onPressed: () {
+                    SharedPrefs.use((prefs) {
+                      prefs.isSubmissionSwipeTipsDisplayed = true;
+                    });
+                    ScaffoldMessenger.of(Application.globalKey.currentContext!)
+                        .hideCurrentMaterialBanner();
+                  },
+                )
+              ],
+            ));
+          }
+
+          if (!prefs.isSubmissionLongPressTipsDisplayed && items!.length >= 3) {
+            ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
+              content: Text.rich(
+                const TextSpan(children: [
+                  TextSpan(text: "提出物を"),
+                  TextSpan(
+                      text: "長押し", style: TextStyle(color: Colors.redAccent)),
+                  TextSpan(text: "で、提出物の共有やその他のメニューが表示されます。"),
+                ]),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              actions: [
+                TextButton(
+                  child: const Text("閉じる"),
+                  onPressed: () {
+                    SharedPrefs.use((prefs) {
+                      prefs.isSubmissionLongPressTipsDisplayed = true;
+                    });
+                    ScaffoldMessenger.of(Application.globalKey.currentContext!)
+                        .hideCurrentMaterialBanner();
+                  },
+                )
+              ],
+            ));
+          }
+        });
+      }
     });
 
     _stream1 = eventBus.on<BottomNavDoubleClickEvent>().listen((event) {
@@ -164,7 +227,10 @@ class _SubmissionListState extends State<SubmissionList> {
 
   void delete(int index) {
     var item = items![index];
+
     SubmissionProvider().use((provider) async {
+      (provider as SubmissionProvider)
+          .deleteGoogleTasks(item.googleTasksTaskId);
       provider.delete(item.id!);
     });
     try {

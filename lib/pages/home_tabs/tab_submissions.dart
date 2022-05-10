@@ -9,7 +9,6 @@ class TabSubmissions extends StatefulWidget {
 }
 
 class _TabSubmissionsState extends State<TabSubmissions> {
-
   @override
   Widget build(BuildContext context) {
     return const SubmissionList();

@@ -1,7 +1,8 @@
 import 'package:sqflite/sqflite.dart';
+import 'package:submon/db/submission.dart';
 import 'package:submon/db/timetable.dart';
 
-const schemaVer = 2;
+const schemaVer = 3;
 
 abstract class SqlProvider<T> {
   SqlProvider({Database? db}) {
@@ -140,6 +141,10 @@ abstract class SqlProvider<T> {
     // await close();
   }
 
+  static Future<void> clearAllTables() async {
+    await deleteDatabase("main.db");
+  }
+
   Future close() => db.close();
 }
 
@@ -148,6 +153,11 @@ Future<void> migrate(Database db, int oldVersion, int newVersion) async {
   if (oldVersion == 1) {
     await db.execute(
         "alter table $tableTimetable add column $colNote integer not null default ''");
+    oldVersion++;
+  }
+  if (oldVersion == 2) {
+    await db.execute(
+        "alter table $tableSubmission add column $colGoogleTasksTaskId string");
     oldVersion++;
   }
 }

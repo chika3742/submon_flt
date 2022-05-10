@@ -202,12 +202,13 @@ class EmailLoginPageState extends State<EmailLoginPage>
             enableEmailForm = true;
           });
           showSelectSheet(
-              context,
-              "ログイン方法の選択",
-              "メールアドレスで新規登録を行います。\nメールアドレスでのログイン方法は2種類存在します。どちらか選択してください。(現状、以後変更できません)\n\n"
+              context: context,
+              title: "ログイン方法の選択",
+              message:
+                  "メールアドレスで新規登録を行います。\nメールアドレスでのログイン方法は2種類存在します。どちらか選択してください。(現状、以後変更できません)\n\n"
                   "・パスワードレス・・・登録したメールアドレスに送信されたリンクを踏むことでログインできます。(推奨)\n"
                   "・一般的なログイン・・・パスワードを利用してログインします。",
-              [
+              actions: [
                 SelectSheetAction("パスワードレス(推奨)", () async {
                   Navigator.pop(context);
                   setState(() {
