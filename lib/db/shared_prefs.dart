@@ -136,6 +136,14 @@ class SharedPrefs {
 
   set timetableHour(int? value) => pref!.setInt("TIMETABLE_HOUR", value!);
 
+  // SUBMISSION_CREATION_COUNT
+  int get submissionCreationCount =>
+      pref!.getInt("SUBMISSION_CREATION_COUNT") ?? 0;
+
+  void incrementSubmissionCreationCount() {
+    pref!.setInt("SUBMISSION_CREATION_COUNT", submissionCreationCount + 1);
+  }
+
   // FIRESTORE_LAST_CHANGED
   DateTime get firestoreLastChanged => DateTime.fromMicrosecondsSinceEpoch(
       pref!.getInt("FIRESTORE_LAST_CHANGED") ?? 0);

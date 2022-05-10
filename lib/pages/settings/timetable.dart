@@ -51,6 +51,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
 
     TimetableClassTimeProvider(context).use((provider) async {
       classTimes = await provider.getAll();
+      setState(() {});
     });
 
     FirestoreProvider.config.then((value) {

@@ -194,6 +194,64 @@ class _HomePageState extends State<HomePage> {
         [],
       ];
     });
+
+    SharedPrefs.use((prefs) {
+      if (!prefs.isSubmissionSwipeTipsDisplayed &&
+          prefs.submissionCreationCount >= 1) {
+        ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
+          content: Text.rich(
+            const TextSpan(children: [
+              TextSpan(text: "提出物を完了にするには"),
+              TextSpan(
+                  text: "右にスワイプ", style: TextStyle(color: Colors.greenAccent)),
+              TextSpan(text: "、\n提出物を削除するには"),
+              TextSpan(
+                  text: "左にスワイプ", style: TextStyle(color: Colors.redAccent)),
+              TextSpan(text: "します。"),
+            ]),
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          actions: [
+            TextButton(
+              child: const Text("閉じる"),
+              onPressed: () {
+                SharedPrefs.use((prefs) {
+                  prefs.isSubmissionSwipeTipsDisplayed = true;
+                });
+                ScaffoldMessenger.of(Application.globalKey.currentContext!)
+                    .hideCurrentMaterialBanner();
+              },
+            )
+          ],
+        ));
+      }
+
+      if (!prefs.isSubmissionLongPressTipsDisplayed &&
+          prefs.submissionCreationCount >= 3) {
+        ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
+          content: Text.rich(
+            const TextSpan(children: [
+              TextSpan(text: "提出物を"),
+              TextSpan(text: "長押し", style: TextStyle(color: Colors.redAccent)),
+              TextSpan(text: "で、提出物の共有やその他のメニューが表示されます。"),
+            ]),
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          actions: [
+            TextButton(
+              child: const Text("閉じる"),
+              onPressed: () {
+                SharedPrefs.use((prefs) {
+                  prefs.isSubmissionLongPressTipsDisplayed = true;
+                });
+                ScaffoldMessenger.of(Application.globalKey.currentContext!)
+                    .hideCurrentMaterialBanner();
+              },
+            )
+          ],
+        ));
+      }
+    });
   }
 
   @override
