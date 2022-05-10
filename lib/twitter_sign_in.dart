@@ -158,7 +158,7 @@ class TwitterSignIn {
 
   Future<AuthResult> waitForUri() async {
     var completer = Completer<AuthResult>();
-    var subscription = const EventChannel(Channels.onUriIntent)
+    var subscription = const EventChannel(EventChannels.twitterSignInUri)
         .receiveBroadcastStream()
         .listen((event) {
       var query = Uri.splitQueryString(event);

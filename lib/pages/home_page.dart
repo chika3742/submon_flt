@@ -11,6 +11,7 @@ import 'package:submon/db/digestive.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
+import 'package:submon/link_handler.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/actions.dart';
 import 'package:submon/method_channel/channels.dart';
@@ -35,8 +36,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
-  StreamSubscription? linkListener;
   StreamSubscription? hideAdListener;
+  StreamSubscription? uriListener;
 
   var tabIndex = 0;
   var _loading = false;
@@ -62,11 +63,6 @@ class _HomePageState extends State<HomePage> {
       FirestoreProvider.saveNotificationToken(token);
     });
 
-    linkListener = eventBus.on<SignedInWithLink>().listen((_) {
-      Navigator.of(context, rootNavigator: true)
-          .popUntil((route) => !route.settings.name!.startsWith("/signIn"));
-    });
-
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
               MediaQuery.of(context).size.width.truncate())
@@ -89,7 +85,8 @@ class _HomePageState extends State<HomePage> {
       });
     });
 
-    initMethodCallHandler();
+    // initMethodCallHandler();
+    initUriHandler();
     fetchData();
 
     SharedPrefs.use((prefs) {
@@ -256,9 +253,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    linkListener?.cancel();
     hideAdListener?.cancel();
     bannerAd?.dispose();
+    uriListener?.cancel();
     super.dispose();
   }
 
@@ -460,7 +457,8 @@ class _HomePageState extends State<HomePage> {
       }
     });
 
-    const MethodChannel(Channels.action).setMethodCallHandler((call) async {
+    const MethodChannel(MethodChannels.action)
+        .setMethodCallHandler((call) async {
       switch (call.method) {
         case "openCreateNewPage":
           createNew();
@@ -474,6 +472,14 @@ class _HomePageState extends State<HomePage> {
         default:
           return UnimplementedError();
       }
+    });
+  }
+
+  void initUriHandler() {
+    uriListener = const EventChannel(EventChannels.uri)
+        .receiveBroadcastStream()
+        .listen((uriString) {
+      handleOpenDynamicLink(Uri.parse(uriString));
     });
   }
 }

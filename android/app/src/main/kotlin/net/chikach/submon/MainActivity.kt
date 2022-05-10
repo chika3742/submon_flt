@@ -38,7 +38,8 @@ const val DEFAULT_CHANNEL = "default"
 const val METHOD_CHANNEL_MAIN = "net.chikach.submon/main"
 const val METHOD_CHANNEL_ACTION = "net.chikach.submon/action"
 const val METHOD_CHANNEL_MESSAGING = "net.chikach.submon/messaging"
-const val EVENT_CHANNEL_URI_INTENT = "net.chikach.submon/uriIntent"
+const val EVENT_CHANNEL_TWITTER_SIGN_IN_URI = "net.chikach.submon/twitterSignInUri"
+const val EVENT_CHANNEL_URI = "net.chikach.submon/uri"
 
 const val REQUEST_CODE_TAKE_PICTURE = 1
 
@@ -46,7 +47,8 @@ class MainActivity : FlutterActivity() {
     private var mainMethodChannelHandler = MainMethodChannelHandler(this)
     private var actionMethodChannelHandler = ActionMethodChannelHandler()
     private var messagingMethodChannelHandler = MessagingMethodChannelHandler()
-    var uriIntentEventSink: EventChannel.EventSink? = null
+    var twitterSignInUriEventSink: EventChannel.EventSink? = null
+    var uriEventSink: EventChannel.EventSink? = null
 
     companion object {
         /**
@@ -84,15 +86,31 @@ class MainActivity : FlutterActivity() {
             setMethodCallHandler(messagingMethodChannelHandler)
         }
 
-        val uriIntentEventChannel =
-            EventChannel(flutterEngine.dartExecutor.binaryMessenger, EVENT_CHANNEL_URI_INTENT)
-        uriIntentEventChannel.setStreamHandler(object : EventChannel.StreamHandler {
+        val twitterSignInUriEventChannel =
+            EventChannel(
+                flutterEngine.dartExecutor.binaryMessenger,
+                EVENT_CHANNEL_TWITTER_SIGN_IN_URI
+            )
+        twitterSignInUriEventChannel.setStreamHandler(object : EventChannel.StreamHandler {
             override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-                uriIntentEventSink = events
+                twitterSignInUriEventSink = events
             }
 
             override fun onCancel(arguments: Any?) {
-                uriIntentEventSink = null
+                twitterSignInUriEventSink = null
+            }
+        })
+
+        EventChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            EVENT_CHANNEL_URI
+        ).setStreamHandler(object : EventChannel.StreamHandler {
+            override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+                uriEventSink = events
+            }
+
+            override fun onCancel(arguments: Any?) {
+                uriEventSink = null
             }
         })
 
@@ -158,7 +176,8 @@ class MainActivity : FlutterActivity() {
             }
 
             intent.data != null -> {
-                uriIntentEventSink?.success(intent.data!!.query)
+                twitterSignInUriEventSink?.success(intent.data!!.query)
+                uriEventSink?.success(intent.data.toString())
             }
         }
     }

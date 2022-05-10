@@ -270,10 +270,13 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
         var link = await FirebaseDynamicLinks.instance.buildShortLink(
             DynamicLinkParameters(
                 link:
-                    Uri.parse("https://app.submon.chikach.net/submission-share"
-                        "?title=${widget.item.title}&"
-                        "date=${widget.item.date!.toUtc().toIso8601String()}&"
-                        "detail=${widget.item.detail}&"
+                    Uri.parse(
+                    "https://app.submon.chikach.net/submission-share"
+                            "?title=${Uri.encodeComponent(widget.item.title)}&"
+                            "date=${widget.item.date!.toUtc().toIso8601String()}&" +
+                        (widget.item.detail != ""
+                            ? "detail=${Uri.encodeComponent(widget.item.detail)}&"
+                            : "") +
                         "color=${widget.item.color.value}"),
                 uriPrefix: "https://submon.page.link"));
 

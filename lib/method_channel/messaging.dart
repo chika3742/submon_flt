@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:submon/method_channel/channels.dart';
 
 class MessagingPlugin {
-  static const _mc = MethodChannel(Channels.messaging);
+  static const _mc = MethodChannel(MethodChannels.messaging);
 
   static Future<NotificationPermissionState?>
       requestNotificationPermission() async {

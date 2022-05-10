@@ -1,12 +1,9 @@
-import 'dart:async';
-
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/browser.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/events.dart';
 import 'package:submon/main.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -20,7 +17,6 @@ class WelcomePage extends StatefulWidget {
 
 class _WelcomePageState extends State<WelcomePage> {
   var _disableStatistics = false;
-  StreamSubscription? linkListener;
   final _scaffoldKey = GlobalKey();
 
   @override
@@ -28,17 +24,6 @@ class _WelcomePageState extends State<WelcomePage> {
     super.initState();
 
     Application.globalKey = _scaffoldKey;
-
-    linkListener = eventBus.on<SignedInWithLink>().listen((_) {
-      Navigator.of(context).popUntil(ModalRoute.withName("welcome"));
-      Navigator.of(context).pushReplacementNamed("/");
-    });
-  }
-
-  @override
-  void dispose() {
-    linkListener?.cancel();
-    super.dispose();
   }
 
   @override
