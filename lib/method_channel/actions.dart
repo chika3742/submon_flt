@@ -9,7 +9,7 @@ class PendingAction {
 }
 
 Future<PendingAction?> getPendingAction() async {
-  const mc = MethodChannel(Channels.action);
+  const mc = MethodChannel(MethodChannels.action);
 
   var action = (await mc.invokeMethod("getPendingAction"));
 

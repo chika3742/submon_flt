@@ -60,22 +60,27 @@ void handleAuthDynamicLink(Uri url) async {
 
   try {
     if (auth.isSignInWithEmailLink(url.toString())) {
-      final pref = SharedPrefs(await SharedPreferences.getInstance());
-      final email = pref.emailForUrlLogin;
-      if (email != null) {
-        var result = await auth.signInWithEmailLink(
-            email: email, emailLink: url.toString());
+      if (auth.currentUser == null) {
+        final pref = SharedPrefs(await SharedPreferences.getInstance());
+        final email = pref.emailForUrlLogin;
+        if (email != null) {
+          var result = await auth.signInWithEmailLink(
+              email: email, emailLink: url.toString());
 
-        await completeLogin(result, context);
-        Navigator.of(context, rootNavigator: true)
-            .pop(); // dismiss loading modal
+          await completeLogin(result, context);
+          Navigator.of(context, rootNavigator: true)
+              .pop(); // dismiss loading modal
 
-        eventBus.fire(SignedInWithLink());
+          Navigator.of(context).popUntil(ModalRoute.withName("welcome"));
+          Navigator.of(context).pushReplacementNamed("/");
 
-        return;
+          return;
+        } else {
+          showSimpleDialog(
+              context, "エラー", "メールアドレスが保存されていません。再度この端末でメールを送信してください。");
+        }
       } else {
-        showSimpleDialog(
-            context, "エラー", "メールアドレスが保存されていません。再度この端末でメールを送信してください。");
+        showSnackBar(context, "既にログインされています。ログアウトしてからお試しください。");
       }
     } else if (codeInfo.operation ==
         ActionCodeInfoOperation.verifyAndChangeEmail) {
@@ -94,35 +99,44 @@ void handleAuthDynamicLink(Uri url) async {
 void handleOpenDynamicLink(Uri url) {
   var context = Application.globalKey.currentContext!;
   var paths = url.path.split("/");
-  if (paths[1] == "submission") {
-    Navigator.pushNamed(context, "/submission/detail", arguments: {
-      "id": int.parse(paths[2]),
-    });
-  } else if (paths[1] == "submission-share") {
-    var title = url.queryParameters["title"];
-    var date = url.queryParameters["date"];
-    var detail = url.queryParameters["detail"];
-    var color = url.queryParameters["color"];
-    showSimpleDialog(
-      context,
-      "提出物のシェア",
-      "以下の内容で登録します。よろしいですか？\n\n"
-          "タイトル: $title\n"
-          "期限: $date\n"
-          "詳細: $detail",
-      showCancel: true,
-      onOKPressed: () async {
-        await SubmissionProvider().use((provider) async {
-          var data = await provider.insert(Submission(
-            title: title!,
-            date: DateTime.parse(date!).toLocal(),
-            detail: detail!,
-            color: Color(int.parse(color!)),
-          ));
-          eventBus.fire(SubmissionInserted(data.id!));
-        });
-        showSnackBar(context, "作成しました。");
-      },
-    );
+
+  switch (paths[1]) {
+    case "submission":
+      Navigator.pushNamed(context, "/submission/detail", arguments: {
+        "id": int.parse(url.queryParameters["id"]!),
+      });
+      break;
+
+    case "submission-share":
+      var title = url.queryParameters["title"];
+      var date = url.queryParameters["date"];
+      var detail = url.queryParameters["detail"] ?? "";
+      var color = url.queryParameters["color"];
+      showSimpleDialog(
+        context,
+        "提出物のシェア",
+        "以下の内容で登録します。よろしいですか？\n\n"
+            "タイトル: $title\n"
+            "期限: ${DateTime.parse(date!).toLocal().toString()}\n"
+            "詳細: $detail",
+        showCancel: true,
+        onOKPressed: () async {
+          await SubmissionProvider().use((provider) async {
+            var data = await provider.insert(Submission(
+              title: title!,
+              date: DateTime.parse(date).toLocal(),
+              detail: detail,
+              color: Color(int.parse(color!)),
+            ));
+            eventBus.fire(SubmissionInserted(data.id!));
+          });
+          showSnackBar(context, "作成しました。");
+        },
+      );
+      break;
+
+    case "create-submission":
+      Navigator.pushNamed(context, "/submission/create", arguments: {});
+      break;
   }
 }

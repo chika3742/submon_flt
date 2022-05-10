@@ -10,7 +10,6 @@ import android.content.Context
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.icu.util.TimeZone
-import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.view.View
@@ -68,12 +67,9 @@ class SubmissionListAppWidgetProvider : AppWidgetProvider() {
                 setOnClickPendingIntent(
                     R.id.addBtn, PendingIntent.getActivity(
                         context, UUID.randomUUID().hashCode(),
-                        Intent(
-                            context,
-                            MainActivity::class.java
-                        ).putExtra(
-                            MainActivity.EXTRA_FLUTTER_ACTION,
-                            Action.openCreateNewPage.name
+                        Intent.parseUri(
+                            "android-app://net.chikach.submon/submon//create-submission",
+                            Intent.URI_ANDROID_APP_SCHEME
                         ),
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )
@@ -157,10 +153,8 @@ class AppWidgetSubmissionListService : RemoteViewsService() {
                         R.id.listItemLayout, Intent()
                             .setAction(ListItemActionBroadcastReceiver.ACTION_LIST_ITEM_CLICK)
                             .putExtra(
-                                MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENTS,
-                                hashMapOf(
-                                    "submissionId" to list[position].id.toInt()
-                                )
+                                ListItemActionBroadcastReceiver.EXTRA_SUBMISSION_ID,
+                                list[position].id.toInt()
                             )
                     )
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -209,22 +203,14 @@ class ListItemActionBroadcastReceiver : BroadcastReceiver() {
                 "appwidget",
                 intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1).toString()
             )
-            val intent1 = Intent(context, MainActivity::class.java)
-                .putExtra(
-                    MainActivity.EXTRA_FLUTTER_ACTION,
-                    Action.openSubmissionDetailPage.name
-                )
-                .putExtra(
-                    MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENTS,
-                    intent.getSerializableExtra(MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENTS)
-                )
-                .putExtra(
-                    AppWidgetManager.EXTRA_APPWIDGET_ID,
-                    intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1)
-                )
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            intent1.data = Uri.parse(intent1.toUri(Intent.URI_INTENT_SCHEME))
-            context.startActivity(intent1)
+            val launchIntent = Intent.parseUri(
+                "android-app://net.chikach.submon/submon//submission?id=${
+                    intent.getIntExtra(
+                        EXTRA_SUBMISSION_ID, -1
+                    )
+                }", Intent.URI_ANDROID_APP_SCHEME
+            ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(launchIntent)
         } else if (intent.action == ACTION_CHECK_BOX_CHANGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (intent.getBooleanExtra(RemoteViews.EXTRA_CHECKED, false)) {
                 val submissionId = intent.getLongExtra(EXTRA_SUBMISSION_ID, -1)
