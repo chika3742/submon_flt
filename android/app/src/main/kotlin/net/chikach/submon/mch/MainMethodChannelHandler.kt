@@ -26,25 +26,23 @@ class MainMethodChannelHandler(private val activity: MainActivity) :
     MethodChannel.MethodCallHandler {
     private var takePictureResult: MethodChannel.Result? = null
     private var pictureFile: File? = null
+    var pendingUri: Uri? = null
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
-            "openWebPage" -> {
-                openWebPage(call, result)
-            }
-            "openCustomTabs" -> {
-                openCustomTabs(call, result)
-            }
-            "updateWidgets" -> {
-                updateWidgets()
-            }
-            "takePictureNative" -> {
-                takePictureNative(result)
-            }
-            else -> {
-                result.notImplemented()
-            }
+            "openWebPage" -> openWebPage(call, result)
+            "openCustomTabs" -> openCustomTabs(call, result)
+            "updateWidgets" -> updateWidgets()
+            "takePictureNative" -> takePictureNative(result)
+            "getPendingUri" -> getPendingUri(result)
+
+            else -> result.notImplemented()
         }
+    }
+
+    private fun getPendingUri(result: MethodChannel.Result) {
+        result.success(pendingUri?.toString())
+        pendingUri = null
     }
 
     /**
