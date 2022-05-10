@@ -3,15 +3,19 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/events.dart';
 import 'package:submon/main.dart';
+import 'package:submon/method_channel/main.dart';
 import 'package:submon/pages/sign_in_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
+import 'db/digestive.dart';
 import 'db/shared_prefs.dart';
+import 'method_channel/channels.dart';
 
 StreamSubscription initDynamicLinks() {
   FirebaseDynamicLinks.instance.getInitialLink().then((linkData) {
@@ -21,6 +25,19 @@ StreamSubscription initDynamicLinks() {
   });
   return FirebaseDynamicLinks.instance.onLink.listen((linkData) async {
     handleDynamicLink(linkData.link);
+  });
+}
+
+StreamSubscription initUriHandler() {
+  getPendingUri().then((uriString) {
+    if (uriString != null) {
+      handleOpenDynamicLink(Uri.parse(uriString));
+    }
+  });
+  return const EventChannel(EventChannels.uri)
+      .receiveBroadcastStream()
+      .listen((uriString) {
+    handleOpenDynamicLink(Uri.parse(uriString));
   });
 }
 
@@ -102,8 +119,17 @@ void handleOpenDynamicLink(Uri url) {
 
   switch (paths[1]) {
     case "submission":
+      var id = url.queryParameters["id"];
+      if (id == null) {
+        showSnackBar(context, "パラメーターが不足しています。");
+        return;
+      }
+      if (int.tryParse(id) == null) {
+        showSnackBar(context, "idが整数ではありません");
+      }
+
       Navigator.pushNamed(context, "/submission/detail", arguments: {
-        "id": int.parse(url.queryParameters["id"]!),
+        "id": int.parse(id),
       });
       break;
 
@@ -112,21 +138,27 @@ void handleOpenDynamicLink(Uri url) {
       var date = url.queryParameters["date"];
       var detail = url.queryParameters["detail"] ?? "";
       var color = url.queryParameters["color"];
+
+      if (title == null || date == null || color == null) {
+        showSnackBar(context, "パラメーターが不足しています。");
+        return;
+      }
+
       showSimpleDialog(
         context,
         "提出物のシェア",
         "以下の内容で登録します。よろしいですか？\n\n"
             "タイトル: $title\n"
-            "期限: ${DateTime.parse(date!).toLocal().toString()}\n"
+            "期限: ${DateTime.parse(date).toLocal().toString()}\n"
             "詳細: $detail",
         showCancel: true,
         onOKPressed: () async {
           await SubmissionProvider().use((provider) async {
             var data = await provider.insert(Submission(
-              title: title!,
+              title: title,
               date: DateTime.parse(date).toLocal(),
               detail: detail,
-              color: Color(int.parse(color!)),
+              color: Color(int.parse(color)),
             ));
             eventBus.fire(SubmissionInserted(data.id!));
           });
@@ -136,7 +168,25 @@ void handleOpenDynamicLink(Uri url) {
       break;
 
     case "create-submission":
-      Navigator.pushNamed(context, "/submission/create", arguments: {});
+      Navigator.pushNamed<int?>(context, "/submission/create", arguments: {})
+          .then((insertedId) {
+        if (insertedId != null) {
+          eventBus.fire(SubmissionInserted(insertedId));
+        }
+      });
+      break;
+
+    case "focus-timer":
+      DigestiveProvider().use((provider) async {
+        var digestive =
+            await provider.get(int.parse(url.queryParameters["digestiveId"]!));
+        if (digestive != null) {
+          Navigator.of(context, rootNavigator: true)
+              .pushNamed("/focus-timer", arguments: {"digestive": digestive});
+        } else {
+          showSnackBar(context, "このDigestiveはすでに削除されています");
+        }
+      });
       break;
   }
 }

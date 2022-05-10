@@ -7,14 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:submon/components/hidable_progress_indicator.dart';
-import 'package:submon/db/digestive.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
 import 'package:submon/link_handler.dart';
 import 'package:submon/main.dart';
-import 'package:submon/method_channel/actions.dart';
-import 'package:submon/method_channel/channels.dart';
 import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/home_tabs/tab_digestive_list.dart';
 import 'package:submon/pages/home_tabs/tab_others.dart';
@@ -410,76 +407,6 @@ class _HomePageState extends State<HomePage> {
 
     setState(() {
       _loading = false;
-    });
-  }
-
-  void initMethodCallHandler() {
-    // actions
-    void createNew() async {
-      var insertedId = await Navigator.of(context, rootNavigator: true)
-          .pushNamed("/submission/create", arguments: {});
-      if (insertedId != null) {
-        eventBus.fire(SubmissionInserted(insertedId as int));
-      }
-    }
-
-    void openSubmissionDetailPage(int id) {
-      Navigator.of(context, rootNavigator: true)
-          .pushNamed("/submission/detail", arguments: {"id": id});
-    }
-
-    void openFocusTimerPage(int digestiveId) {
-      DigestiveProvider().use((provider) async {
-        var digestive = await provider.get(digestiveId);
-        if (digestive != null) {
-          Navigator.of(context, rootNavigator: true)
-              .pushNamed("/focus-timer", arguments: {"digestive": digestive});
-        } else {
-          showSnackBar(context, "このDigestiveはすでに削除されています");
-        }
-      });
-    }
-
-    // init
-    getPendingAction().then((action) {
-      if (action != null) {
-        switch (action.actionName) {
-          case "openCreateNewPage":
-            createNew();
-            break;
-          case "openSubmissionDetailPage":
-            openSubmissionDetailPage(action.arguments!["submissionId"]);
-            break;
-          case "openFocusTimerPage":
-            openFocusTimerPage(action.arguments!["digestiveId"]);
-            break;
-        }
-      }
-    });
-
-    const MethodChannel(MethodChannels.action)
-        .setMethodCallHandler((call) async {
-      switch (call.method) {
-        case "openCreateNewPage":
-          createNew();
-          break;
-        case "openSubmissionDetailPage":
-          openSubmissionDetailPage(call.arguments["submissionId"]);
-          break;
-        case "openFocusTimerPage":
-          openFocusTimerPage(call.arguments["digestiveId"]);
-          break;
-        default:
-          return UnimplementedError();
-      }
-    });
-  }
-
-  void initUriHandler() {
-    uriListener = const EventChannel(EventChannels.uri)
-        .receiveBroadcastStream()
-        .listen((uriString) {
-      handleOpenDynamicLink(Uri.parse(uriString));
     });
   }
 }
