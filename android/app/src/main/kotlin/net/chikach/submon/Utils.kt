@@ -5,9 +5,10 @@ import android.graphics.Color
 import android.icu.text.SimpleDateFormat
 import android.icu.util.TimeZone
 import java.util.*
+import kotlin.math.abs
 
 object Utils {
-    fun getDateDiff(dateString: String, context: Context): Long {
+    fun getDateDiff(dateString: String): Long {
         val date = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sssZ", Locale.US).apply {
             timeZone = TimeZone.getTimeZone("Asia/Tokyo")
         }.parse(dateString)
@@ -15,15 +16,16 @@ object Utils {
     }
 
     fun getDateDiffString(dateString: String, context: Context): String {
-        val diff = getDateDiff(dateString, context)
+        val diff = getDateDiff(dateString)
+
         val diffHours = diff / (60L * 60 * 1000) % 24
         val diffDays = diff / (24L * 60 * 60 * 1000)
         val diffWeeks = diff / (7L * 24 * 60 * 60 * 1000)
         val diffMonths = diff / (30L * 24 * 60 * 60 * 1000)
         return when {
-            diffMonths > 0 -> "$diffMonths ヶ月"
-            diffWeeks > 0 -> "$diffWeeks 週間"
-            diffDays > 0 -> "$diffDays 日"
+            abs(diffMonths) > 0 -> "$diffMonths ヶ月"
+            abs(diffWeeks) > 0 -> "$diffWeeks 週間"
+            abs(diffDays) > 0 -> "$diffDays 日"
             else -> "$diffHours 時間"
         }
     }

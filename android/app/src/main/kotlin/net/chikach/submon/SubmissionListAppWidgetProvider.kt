@@ -19,10 +19,7 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import net.chikach.submon.Utils.getDateDiff
 import net.chikach.submon.Utils.getDateDiffColor
 import net.chikach.submon.Utils.getDateDiffString
@@ -146,7 +143,7 @@ class AppWidgetSubmissionListService : RemoteViewsService() {
                     setTextViewText(R.id.dateTextView, date)
                     setTextColor(
                         R.id.dateTextView,
-                        getDateDiffColor(getDateDiff(list[position].date, context))
+                        getDateDiffColor(getDateDiff(list[position].date))
                     )
                     setTextViewText(R.id.titleTextView, list[position].title)
                     setOnClickFillInIntent(
@@ -196,6 +193,8 @@ class ListItemActionBroadcastReceiver : BroadcastReceiver() {
 
         const val EXTRA_SUBMISSION_ID = "net.chikach.submon.extra.SUBMISSION_ID"
     }
+
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == ACTION_LIST_ITEM_CLICK) {
