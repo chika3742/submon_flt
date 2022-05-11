@@ -20,6 +20,7 @@ const colImportant = "important";
 const colRepeat = "repeat";
 const colColor = "color";
 const colGoogleTasksTaskId = "googleTasksTaskId";
+const colCanvasPlannableId = "canvasPlannableId";
 
 class Submission {
   int? id;
@@ -31,6 +32,7 @@ class Submission {
   Repeat repeat;
   Color color;
   String? googleTasksTaskId;
+  int? canvasPlannableId;
 
   Submission({
     this.id,
@@ -42,6 +44,7 @@ class Submission {
     this.repeat = Repeat.none,
     this.color = Colors.white,
     this.googleTasksTaskId,
+    this.canvasPlannableId,
   });
 }
 
@@ -61,6 +64,7 @@ class SubmissionProvider extends SqlProvider<Submission> {
         SqlField(colColor, DataType.integer),
         SqlField(colRepeat, DataType.integer),
         SqlField(colGoogleTasksTaskId, DataType.string, isNonNull: false),
+        SqlField(colCanvasPlannableId, DataType.integer, isNonNull: false),
       ];
 
   @override
@@ -76,6 +80,7 @@ class SubmissionProvider extends SqlProvider<Submission> {
       color: Color(map[colColor]),
       repeat: Repeat.values[map[colRepeat]],
       googleTasksTaskId: map[colGoogleTasksTaskId],
+      canvasPlannableId: map[colCanvasPlannableId],
     );
   }
 
@@ -91,6 +96,7 @@ class SubmissionProvider extends SqlProvider<Submission> {
       colColor: data.color.value,
       colRepeat: data.repeat.index,
       colGoogleTasksTaskId: data.googleTasksTaskId,
+      colCanvasPlannableId: data.canvasPlannableId,
     };
   }
 

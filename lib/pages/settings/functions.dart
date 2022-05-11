@@ -42,7 +42,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
       setState(() {
         _enableSE = prefs.isSEEnabled;
         _deviceCameraUIShouldBeUsed =
-            Platform.isAndroid ? prefs.deviceCameraUIShouldBeUsed : null;
+            Platform.isAndroid ? prefs.isDeviceCameraUIShouldBeUsed : null;
       });
     });
 
@@ -296,7 +296,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
               value: _deviceCameraUIShouldBeUsed!,
               onChanged: (value) {
                 SharedPrefs.use((prefs) {
-                  prefs.deviceCameraUIShouldBeUsed = value!;
+                  prefs.isDeviceCameraUIShouldBeUsed = value!;
                 });
                 setState(() {
                   _deviceCameraUIShouldBeUsed = value!;

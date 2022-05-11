@@ -599,7 +599,7 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
 
   void _checkShouldTakePictureNative() async {
     SharedPrefs.use((prefs) async {
-      if (prefs.deviceCameraUIShouldBeUsed) {
+      if (prefs.isDeviceCameraUIShouldBeUsed) {
         var result = await takePictureNative();
         if (result != null) {
           setState(() {

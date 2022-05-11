@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:submon/components/timetable.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/timetable.dart' as db;
 import 'package:submon/db/timetable_table.dart';
 import 'package:submon/events.dart';
+import 'package:submon/main.dart';
+import 'package:submon/utils/ui.dart';
 
 class TabTimetable extends StatefulWidget {
   const TabTimetable({Key? key}) : super(key: key);
@@ -17,10 +18,8 @@ class TabTimetable extends StatefulWidget {
 
 class TabTimetableState extends State<TabTimetable> {
   var loading = false;
-  int? timetableCount;
-  bool? timetableBanner1Flag;
   List<TimetableTable> tables = [];
-  String tableId = "main";
+  SharedPrefs? prefs;
 
   Map<int, db.Timetable>? table;
   var bannerKey = GlobalKey();
@@ -30,44 +29,50 @@ class TabTimetableState extends State<TabTimetable> {
   @override
   void initState() {
     super.initState();
-    getTimetableCount();
-    getPref();
+    getTableList();
+
+    SharedPrefs.use((prefs) {
+      setState(() {
+        this.prefs = prefs;
+      });
+
+      if (prefs.isTimetableInsertedOnce && !prefs.isTimetableTipsDisplayed) {
+        var context = Application.globalKey.currentContext!;
+        showMaterialBanner(
+          context,
+          content: const Text("科目を長押しで、その科目の提出物を作成できます。"),
+          actions: [
+            TextButton(
+              child: const Text("閉じる"),
+              onPressed: () {
+                hideMaterialBanner(context);
+              },
+            )
+          ],
+        );
+      }
+    });
 
     listener = eventBus.on<TimetableListChanged>().listen((event) {
       tableKey.currentState?.getTable();
     });
   }
 
-  void getTimetableCount() {
-    db.TimetableProvider().use((provider) async {
-      var count = Sqflite.firstIntValue(await provider.db
-          .rawQuery('SELECT COUNT(*) FROM ${provider.tableName()}'));
-      setState(() {
-        timetableCount = count;
-      });
-    });
-  }
-
-  void getPref() {
-    SharedPrefs.use((prefs) {
-      setState(() {
-        timetableBanner1Flag = prefs.isTimetableBanner1Displayed;
-        tableId = prefs.currentTimetableId;
-      });
-    });
+  void getTableList() {
     TimetableTableProvider().use((provider) async {
       tables = await provider.getAll();
-      if (!tables.any((element) => element.id.toString() == tableId)) {
-        tableId = "main";
+      if (prefs != null &&
+          !tables.any((element) =>
+              element.id.toString() == prefs!.currentTimetableId)) {
+        prefs!.currentTimetableId = "main";
       }
       setState(() {});
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
-    if (timetableBanner1Flag == null) {
+    if (prefs == null) {
       return Container();
     } else {
       return Stack(
@@ -76,43 +81,12 @@ class TabTimetableState extends State<TabTimetable> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AnimatedSize(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOutQuint,
-                child: SizedBox(
-                  height: timetableBanner1Flag == false &&
-                      timetableCount != null &&
-                      timetableCount! >= 1
-                      ? (bannerKey.currentContext?.findRenderObject()
-                  as RenderBox?)
-                      ?.size
-                      .height
-                      : 0,
-                  child: MaterialBanner(
-                    key: bannerKey,
-                    content: const Text("科目を長押しして提出物を作成することもできます"),
-                    forceActionsBelow: true,
-                    actions: [
-                      TextButton(
-                          child: const Text("閉じる"),
-                          onPressed: () {
-                            SharedPrefs.use((prefs) {
-                              prefs.isTimetableBanner1Displayed = true;
-                              setState(() {
-                                timetableBanner1Flag = true;
-                              });
-                            });
-                          })
-                    ],
-                  ),
-                ),
-              ),
               Padding(
                 padding:
-                const EdgeInsets.symmetric(vertical: 4.0, horizontal: 32),
+                    const EdgeInsets.symmetric(vertical: 4.0, horizontal: 32),
                 child: SizedBox(
                   child: DropdownButton<String>(
-                    value: tableId,
+                    value: prefs!.currentTimetableId,
                     enableFeedback: true,
                     items: [
                       const DropdownMenuItem(
@@ -120,18 +94,15 @@ class TabTimetableState extends State<TabTimetable> {
                         child: Text('メイン'),
                       ),
                       ...tables.map((e) => DropdownMenuItem(
-                        value: e.id.toString(),
-                        child: Text(e.title!),
-                      )),
+                            value: e.id.toString(),
+                            child: Text(e.title!),
+                          )),
                     ],
                     onChanged: (value) {
                       setState(() {
-                        tableId = value!;
+                        prefs!.currentTimetableId = value!;
                       });
-                      SharedPrefs.use((prefs) {
-                        prefs.currentTimetableId = value!;
-                        tableKey.currentState?.getTable();
-                      });
+                      tableKey.currentState?.getTable();
                     },
                   ),
                 ),

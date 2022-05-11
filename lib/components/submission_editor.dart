@@ -31,8 +31,8 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
   late DateTime _date;
   Color _color = Colors.white;
   bool _addTime = false;
-  bool _writeGoogleCalendar = false;
-  bool? _googleCalendarEnabled;
+  bool _writeGoogleTasks = false;
+  bool? _googleTasksAvailable;
 
   _SubmissionEditorState() {
     var date = DateTime.now().add(const Duration(days: 1));
@@ -62,13 +62,13 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
 
     canAccessTasks().then((value) {
       setState(() {
-        _googleCalendarEnabled = value;
+        _googleTasksAvailable = value;
       });
     });
 
     SharedPrefs.use((prefs) {
       setState(() {
-        _writeGoogleCalendar = prefs.writeGoogleCalendarByDefault;
+        _writeGoogleTasks = prefs.isWriteToGoogleTasksByDefault;
       });
     });
   }
@@ -77,127 +77,133 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Row(
+        Scrollbar(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
                 children: [
-                  TappableCard(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.event_available),
-                        const SizedBox(width: 8),
-                        Text(
-                            DateFormat("M月 d日 (E)" + (_addTime ? " HH:mm" : ""),
-                                "ja_JP")
-                                .format(_date),
-                            style: const TextStyle(
-                                fontSize: 17, fontWeight: FontWeight.bold))
-                      ],
-                    ),
-                    onTap: showDateTimePickerDialog,
-                  ),
-                  const SizedBox(width: 16),
-                  TappableCard(
-                    child: const Icon(Icons.palette),
-                    color: _color.withOpacity(0.3),
-                    onTap: showColorPickerDialog,
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Checkbox(
-                    value: _addTime,
-                    onChanged: (value) {
-                      setState(() {
-                        _addTime = value!;
-                      });
-                    },
-                  ),
-                  GestureDetector(
-                    child: const Text("時刻を追加する"),
-                    onTap: () {
-                      setState(() {
-                        _addTime = !_addTime;
-                      });
-                    },
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: _titleController,
-                  autofocus: true,
-                  decoration: InputDecoration(
-                    label: const Text("タイトル"),
-                    filled: true,
-                    errorText: _titleError,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: _detailController,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  minLines: 2,
-                  decoration: const InputDecoration(
-                      label: Text("詳細"), border: OutlineInputBorder()),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Switch(
-                    value: _writeGoogleCalendar,
-                    onChanged: _googleCalendarEnabled == true
-                        ? (value) {
-                      setState(() {
-                        _writeGoogleCalendar = value;
-                      });
-                    }
-                        : null,
-                  ),
-                  GestureDetector(
-                    child: Opacity(
-                      opacity: _googleCalendarEnabled == true ? 1 : 0.6,
-                      child: Text(
-                        "Google Tasksに提出物を同期",
-                        style: TextStyle(
-                          color: _googleCalendarEnabled == true
-                              ? null
-                              : Theme.of(context)
-                                  .textTheme
-                                  .bodyText1!
-                                  .color!
-                                  .withOpacity(0.7),
+                  Row(
+                    children: [
+                      TappableCard(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.event_available),
+                            const SizedBox(width: 8),
+                            Text(
+                                DateFormat(
+                                        "M月 d日 (E)" +
+                                            (_addTime ? " HH:mm" : ""),
+                                        "ja_JP")
+                                    .format(_date),
+                                style: const TextStyle(
+                                    fontSize: 17, fontWeight: FontWeight.bold))
+                          ],
                         ),
+                        onTap: showDateTimePickerDialog,
+                      ),
+                      const SizedBox(width: 16),
+                      TappableCard(
+                        child: const Icon(Icons.palette),
+                        color: _color.withOpacity(0.3),
+                        onTap: showColorPickerDialog,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _addTime,
+                        onChanged: (value) {
+                          setState(() {
+                            _addTime = value!;
+                          });
+                        },
+                      ),
+                      GestureDetector(
+                        child: const Text("時刻を追加する"),
+                        onTap: () {
+                          setState(() {
+                            _addTime = !_addTime;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: _titleController,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        label: const Text("タイトル"),
+                        filled: true,
+                        errorText: _titleError,
                       ),
                     ),
-                    onTap: _googleCalendarEnabled == true
-                        ? () {
-                      setState(() {
-                        _writeGoogleCalendar = !_writeGoogleCalendar;
-                      });
-                    }
-                        : null,
                   ),
-                  const SizedBox(width: 8),
-                  if (_googleCalendarEnabled == null)
-                    const SizedBox(
-                      height: 25,
-                      width: 25,
-                      child: CircularProgressIndicator(),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: _detailController,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      minLines: 2,
+                      decoration: const InputDecoration(
+                          label: Text("詳細"), border: OutlineInputBorder()),
                     ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Switch(
+                        value: _writeGoogleTasks,
+                        onChanged: _googleTasksAvailable == true
+                            ? (value) {
+                                setState(() {
+                                  _writeGoogleTasks = value;
+                                });
+                              }
+                            : null,
+                      ),
+                      GestureDetector(
+                        child: Opacity(
+                          opacity: _googleTasksAvailable == true ? 1 : 0.6,
+                          child: Text(
+                            "Google Tasksに提出物を同期",
+                            style: TextStyle(
+                              color: _googleTasksAvailable == true
+                                  ? null
+                                  : Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .color!
+                                      .withOpacity(0.7),
+                            ),
+                          ),
+                        ),
+                        onTap: _googleTasksAvailable == true
+                            ? () {
+                                setState(() {
+                                  _writeGoogleTasks = !_writeGoogleTasks;
+                                });
+                              }
+                            : null,
+                      ),
+                      const SizedBox(width: 8),
+                      if (_googleTasksAvailable == null)
+                        const SizedBox(
+                          height: 25,
+                          width: 25,
+                          child: CircularProgressIndicator(),
+                        ),
+                    ],
+                  ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
         Align(
@@ -290,43 +296,78 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
         result = (await provider.insert(data)).id;
 
         SharedPrefs.use((prefs) {
+          var context = Application.globalKey.currentContext!;
+
           if (!prefs.isSubmissionTipsDisplayed) {
             ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
-              content: Text.rich(
-                const TextSpan(children: [
-                  TextSpan(text: "提出物を完了にするには"),
-                  TextSpan(
-                      text: "右にスワイプ",
-                      style: TextStyle(color: Colors.greenAccent)),
-                  TextSpan(text: "、\n提出物を削除するには"),
-                  TextSpan(
-                      text: "左にスワイプ",
-                      style: TextStyle(color: Colors.redAccent)),
-                  TextSpan(text: "します。\n\n"),
-                  TextSpan(text: "また、提出物を"),
-                  TextSpan(
-                      text: "長押し", style: TextStyle(color: Colors.redAccent)),
-                  TextSpan(text: "で、提出物の共有やその他のメニューが表示されます。"),
-                ]),
-                style: Theme.of(context).textTheme.bodyLarge,
+              content: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text.rich(
+                  const TextSpan(children: [
+                    TextSpan(text: "提出物を完了にするには"),
+                    TextSpan(
+                        text: "右にスワイプ",
+                        style: TextStyle(color: Colors.greenAccent)),
+                    TextSpan(text: "、\n提出物を削除するには"),
+                    TextSpan(
+                        text: "左にスワイプ",
+                        style: TextStyle(color: Colors.redAccent)),
+                    TextSpan(text: "します。\n\n"),
+                    TextSpan(text: "また、提出物を"),
+                    TextSpan(
+                        text: "長押し", style: TextStyle(color: Colors.redAccent)),
+                    TextSpan(text: "で、提出物の共有やその他のメニューが表示されます。"),
+                  ]),
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
               ),
               actions: [
                 TextButton(
                   child: const Text("閉じる"),
                   onPressed: () {
-                    ScaffoldMessenger.of(Application.globalKey.currentContext!)
-                        .hideCurrentMaterialBanner();
+                    hideMaterialBanner(context);
                   },
-                )
+                ),
               ],
             ));
 
             prefs.isSubmissionTipsDisplayed = true;
           }
+
+          if (!prefs.isWriteToGoogleTasksTipsDisplayed && _writeGoogleTasks) {
+            showMaterialBanner(
+              context,
+              content: Text.rich(
+                const TextSpan(children: [
+                  TextSpan(
+                      text:
+                          "今後、「Google Tasksに提出物を同期」をデフォルトにしますか？\n(この設定は「カスタマイズ設定」から変更できます)"),
+                ]),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              actions: [
+                TextButton(
+                  child: const Text("しない"),
+                  onPressed: () {
+                    hideMaterialBanner(context);
+                  },
+                ),
+                TextButton(
+                  child: const Text("する"),
+                  onPressed: () {
+                    hideMaterialBanner(context);
+                    prefs.isWriteToGoogleTasksByDefault = true;
+                  },
+                ),
+              ],
+            );
+
+            prefs.isWriteToGoogleTasksTipsDisplayed = true;
+          }
         });
       }
 
-      if (_writeGoogleCalendar && _googleCalendarEnabled == true) {
+      if (_writeGoogleTasks && _googleTasksAvailable == true) {
         writeToGoogleTasks(data);
       }
       Navigator.of(context, rootNavigator: true).maybePop<dynamic>(result);

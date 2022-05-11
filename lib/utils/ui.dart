@@ -82,6 +82,18 @@ void showSnackBar(BuildContext context, String text,
   ));
 }
 
+void showMaterialBanner(BuildContext context,
+    {required Widget content, required List<Widget> actions}) {
+  ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
+    content: content,
+    actions: actions,
+  ));
+}
+
+void hideMaterialBanner(BuildContext context) {
+  ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+}
+
 Future<T?> showSimpleDialog<T>(
   BuildContext context,
   String title,

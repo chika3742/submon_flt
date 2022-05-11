@@ -10,145 +10,158 @@ class SharedPrefs {
 
   // bool
 
-  // IS_ANALYTICS_ENABLED
-  bool get isAnalyticsEnabled => pref!.getBool("IS_ANALYTICS_ENABLED") ?? true;
+  // isAnalyticsEnabled
+  bool get isAnalyticsEnabled => pref!.getBool("isAnalyticsEnabled") ?? true;
 
   set isAnalyticsEnabled(bool value) =>
-      pref!.setBool("IS_ANALYTICS_ENABLED", value);
+      pref!.setBool("isAnalyticsEnabled", value);
 
-  // IS_SE_ENABLED
-  bool get isSEEnabled => pref!.getBool("IS_SE_ENABLED") ?? true;
+  // isSeEnabled
+  bool get isSEEnabled => pref!.getBool("isSeEnabled") ?? true;
 
-  set isSEEnabled(bool value) => pref!.setBool("IS_SE_ENABLED", value);
+  set isSEEnabled(bool value) => pref!.setBool("isSeEnabled", value);
 
-  // DEVICE_CAMERA_UI_SHOULD_BE_USED
-  bool get deviceCameraUIShouldBeUsed {
+  // isDeviceCameraUIShouldBeUsed
+  bool get isDeviceCameraUIShouldBeUsed {
     if (Platform.isAndroid) {
-      return pref!.getBool("DEVICE_CAMERA_UI_SHOULD_BE_USED") ?? false;
+      return pref!.getBool("isDeviceCameraUIShouldBeUsed") ?? false;
     }
     return false;
   }
 
-  set deviceCameraUIShouldBeUsed(bool value) =>
-      pref!.setBool("DEVICE_CAMERA_UI_SHOULD_BE_USED", value);
+  set isDeviceCameraUIShouldBeUsed(bool value) =>
+      pref!.setBool("isDeviceCameraUIShouldBeUsed", value);
 
-  // IS_TIMETABLE_BANNER_1_DISPLAYED
-  bool get isTimetableBanner1Displayed =>
-      pref!.getBool("IS_TIMETABLE_BANNER_1_DISPLAYED") ?? false;
+  /// 時間割が1回以上挿入されたことを示すフラグ。バナー表示用。
+  bool get isTimetableInsertedOnce =>
+      pref!.getBool("isTimetableInsertedOnce") ?? false;
 
-  set isTimetableBanner1Displayed(bool value) =>
-      pref!.setBool("IS_TIMETABLE_BANNER_1_DISPLAYED", value);
+  set isTimetableInsertedOnce(bool value) =>
+      pref!.setBool("isTimetableInsertedOnce", value);
 
-  // IS_SUBMISSION_TIPS_DISPLAYED
+  /// 「時間割を長押しで・・・」バナー表示フラグ。
+  bool get isTimetableTipsDisplayed =>
+      pref!.getBool("isTimetableTipsDisplayed") ?? false;
+
+  set isTimetableTipsDisplayed(bool value) =>
+      pref!.setBool("isTimetableTipsDisplayed", value);
+
+  // isSubmissionTipsDisplayed
   bool get isSubmissionTipsDisplayed =>
-      pref!.getBool("IS_SUBMISSION_TIPS_DISPLAYED") ?? false;
+      pref!.getBool("isSubmissionTipsDisplayed") ?? false;
 
   set isSubmissionTipsDisplayed(bool value) =>
-      pref!.setBool("IS_SUBMISSION_TIPS_DISPLAYED", value);
+      pref!.setBool("isSubmissionTipsDisplayed", value);
 
-  // IS_CAMERA_PRIVACY_POLICY_DISPLAYED
+  /// Google Tasks同期スイッチのデフォルト設定バナー表示フラグ
+  bool get isWriteToGoogleTasksTipsDisplayed =>
+      pref!.getBool("isWriteToGoogleTasksTipsDisplayed") ?? false;
+
+  set isWriteToGoogleTasksTipsDisplayed(bool value) =>
+      pref!.setBool("isWriteToGoogleTasksTipsDisplayed", value);
+
+  // isCameraPrivacyPolicyDisplayed
   bool get isCameraPrivacyPolicyDisplayed =>
-      pref!.getBool("IS_CAMERA_PRIVACY_POLICY_DISPLAYED") ?? false;
+      pref!.getBool("isCameraPrivacyPolicyDisplayed") ?? false;
 
   set isCameraPrivacyPolicyDisplayed(bool value) =>
-      pref!.setBool("IS_CAMERA_PRIVACY_POLICY_DISPLAYED", value);
+      pref!.setBool("isCameraPrivacyPolicyDisplayed", value);
 
-  // WRITE_GOOGLE_CALENDAR_BY_DEFAULT
-  bool get writeGoogleCalendarByDefault =>
-      pref!.getBool("WRITE_GOOGLE_CALENDAR_BY_DEFAULT") ?? false;
+  /// Google Tasks同期スイッチのデフォルト設定
+  bool get isWriteToGoogleTasksByDefault =>
+      pref!.getBool("isWriteToGoogleTasksByDefault") ?? false;
 
-  set writeGoogleCalendarByDefault(bool value) =>
-      pref!.setBool("WRITE_GOOGLE_CALENDAR_BY_DEFAULT", value);
+  set isWriteToGoogleTasksByDefault(bool value) =>
+      pref!.setBool("isWriteToGoogleTasksByDefault", value);
 
-  // SHOW_TIMETABLE_MENU
-  bool get showTimetableMenu => pref!.getBool("SHOW_TIMETABLE_MENU") ?? true;
+  // showTimetableMenu
+  bool get showTimetableMenu => pref!.getBool("showTimetableMenu") ?? true;
 
   set showTimetableMenu(bool value) =>
-      pref!.setBool("SHOW_TIMETABLE_MENU", value);
+      pref!.setBool("showTimetableMenu", value);
 
-  // SHOW_MEMORIZE_MENU
-  bool get showMemorizeMenu => pref!.getBool("SHOW_MEMORIZE_MENU") ?? true;
+  // showMemorizeMenu
+  bool get showMemorizeMenu => pref!.getBool("showMemorizeMenu") ?? true;
 
-  set showMemorizeMenu(bool value) =>
-      pref!.setBool("SHOW_MEMORIZE_MENU", value);
+  set showMemorizeMenu(bool value) => pref!.setBool("showMemorizeMenu", value);
 
-  // SHOW_REVIEW_BTN
-  bool get showReviewBtn => pref!.getBool("SHOW_REVIEW_BTN") ?? true;
+  // showReviewBtn
+  bool get showReviewBtn => pref!.getBool("showReviewBtn") ?? true;
 
-  set showReviewBtn(bool value) => pref!.setBool("SHOW_REVIEW_BTN", value);
+  set showReviewBtn(bool value) => pref!.setBool("showReviewBtn", value);
 
-  // TIMETABLE_SHOW_SATURDAY
+  // timetableShowSaturday
   bool get timetableShowSaturday =>
-      pref!.getBool("TIMETABLE_SHOW_SATURDAY") ?? true;
+      pref!.getBool("timetableShowSaturday") ?? true;
 
   set timetableShowSaturday(bool value) =>
-      pref!.setBool("TIMETABLE_SHOW_SATURDAY", value);
+      pref!.setBool("timetableShowSaturday", value);
 
-  // TIMETABLE_SHOW_CLASS_TIME
+  // timetableShowClassTime
   bool get timetableShowClassTime =>
-      pref!.getBool("TIMETABLE_SHOW_CLASS_TIME") ?? true;
+      pref!.getBool("timetableShowClassTime") ?? true;
 
   set timetableShowClassTime(bool value) =>
-      pref!.setBool("TIMETABLE_SHOW_CLASS_TIME", value);
+      pref!.setBool("timetableShowClassTime", value);
 
-  // TIMETABLE_SHOW_TIME_MARKER
+  // timetableShowTimeMarker
   bool get timetableShowTimeMarker =>
-      pref!.getBool("TIMETABLE_SHOW_TIME_MARKER") ?? true;
+      pref!.getBool("timetableShowTimeMarker") ?? true;
 
   set timetableShowTimeMarker(bool value) =>
-      pref!.setBool("TIMETABLE_SHOW_TIME_MARKER", value);
+      pref!.setBool("timetableShowTimeMarker", value);
 
   // String
 
-  // EMAIL_FOR_URL_SIGN_IN
-  String? get emailForUrlLogin => pref!.getString("EMAIL_FOR_URL_SIGN_IN");
+  // emailForUrlSignIn
+  String? get emailForUrlLogin => pref!.getString("emailForUrlSignIn");
 
   set emailForUrlLogin(String? value) =>
-      pref!.setString("EMAIL_FOR_URL_SIGN_IN", value!);
+      pref!.setString("emailForUrlSignIn", value!);
 
-  // CURRENT_TIMETABLE_ID
+  // currentTimetableId
   String get currentTimetableId =>
-      pref!.getString("CURRENT_TIMETABLE_ID") ?? "main";
+      pref!.getString("currentTimetableId") ?? "main";
 
   set currentTimetableId(String value) =>
-      pref!.setString("CURRENT_TIMETABLE_ID", value);
+      pref!.setString("currentTimetableId", value);
 
   // string list
 
-  // TIMETABLE_HISTORY
+  // timetableHistory
   List<String> get timetableHistory =>
-      pref!.getStringList("TIMETABLE_HISTORY") ?? [];
+      pref!.getStringList("timetableHistory") ?? [];
 
   set timetableHistory(List<String> value) =>
-      pref!.setStringList("TIMETABLE_HISTORY", value);
+      pref!.setStringList("timetableHistory", value);
 
   // int
 
-  // TIMETABLE_HOUR
-  int get timetableHour => pref!.getInt("TIMETABLE_HOUR") ?? 6;
+  // timetableHour
+  int get timetableHour => pref!.getInt("timetableHour") ?? 6;
 
-  set timetableHour(int? value) => pref!.setInt("TIMETABLE_HOUR", value!);
+  set timetableHour(int? value) => pref!.setInt("timetableHour", value!);
 
-  // SUBMISSION_CREATION_COUNT
+  // submissionCreationCount
   int get submissionCreationCount =>
-      pref!.getInt("SUBMISSION_CREATION_COUNT") ?? 0;
+      pref!.getInt("submissionCreationCount") ?? 0;
 
   void incrementSubmissionCreationCount() {
-    pref!.setInt("SUBMISSION_CREATION_COUNT", submissionCreationCount + 1);
+    pref!.setInt("submissionCreationCount", submissionCreationCount + 1);
   }
 
-  // FIRESTORE_LAST_CHANGED
+  // firestoreLastChanged
   DateTime get firestoreLastChanged => DateTime.fromMicrosecondsSinceEpoch(
-      pref!.getInt("FIRESTORE_LAST_CHANGED") ?? 0);
+      pref!.getInt("firestoreLastChanged") ?? 0);
 
   set firestoreLastChanged(DateTime? value) => value != null
-      ? pref!.setInt("FIRESTORE_LAST_CHANGED", value.microsecondsSinceEpoch)
-      : pref!.remove("FIRESTORE_LAST_CHANGED");
+      ? pref!.setInt("firestoreLastChanged", value.microsecondsSinceEpoch)
+      : pref!.remove("firestoreLastChanged");
 
-  // REMINDER_TIME_
+  // reminderTime_
   TimeOfDay? get reminderTime {
-    final hour = pref!.getInt("REMINDER_TIME_HOUR");
-    final minute = pref!.getInt("REMINDER_TIME_MINUTE");
+    final hour = pref!.getInt("reminderTimeHour");
+    final minute = pref!.getInt("reminderTimeMinute");
     if (hour == null || minute == null) {
       return null;
     } else {
@@ -158,18 +171,18 @@ class SharedPrefs {
 
   set reminderTime(TimeOfDay? value) {
     if (value != null) {
-      pref!.setInt("REMINDER_TIME_HOUR", value.hour);
-      pref!.setInt("REMINDER_TIME_MINUTE", value.minute);
+      pref!.setInt("reminderTimeHour", value.hour);
+      pref!.setInt("reminderTimeMinute", value.minute);
     } else {
-      pref!.remove("REMINDER_TIME_HOUR");
-      pref!.remove("REMINDER_TIME_MINUTE");
+      pref!.remove("reminderTimeHour");
+      pref!.remove("reminderTimeMinute");
     }
   }
 
-  // TIMETABLE_NOTIFICATION_TIME_
+  // timetableNotificationTime_
   TimeOfDay? get timetableNotificationTime {
-    final hour = pref!.getInt("TIMETABLE_NOTIFICATION_TIME_HOUR");
-    final minute = pref!.getInt("TIMETABLE_NOTIFICATION_TIME_MINUTE");
+    final hour = pref!.getInt("timetableNotificationTimeHour");
+    final minute = pref!.getInt("timetableNotificationTimeMinute");
     if (hour == null || minute == null) {
       return null;
     } else {
@@ -179,11 +192,11 @@ class SharedPrefs {
 
   set timetableNotificationTime(TimeOfDay? value) {
     if (value != null) {
-      pref!.setInt("TIMETABLE_NOTIFICATION_TIME_HOUR", value.hour);
-      pref!.setInt("TIMETABLE_NOTIFICATION_TIME_MINUTE", value.minute);
+      pref!.setInt("timetableNotificationTimeHour", value.hour);
+      pref!.setInt("timetableNotificationTimeMinute", value.minute);
     } else {
-      pref!.remove("TIMETABLE_NOTIFICATION_TIME_HOUR");
-      pref!.remove("TIMETABLE_NOTIFICATION_TIME_MINUTE");
+      pref!.remove("timetableNotificationTimeHour");
+      pref!.remove("timetableNotificationTimeMinute");
     }
   }
 
