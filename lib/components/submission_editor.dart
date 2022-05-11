@@ -290,7 +290,39 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
         result = (await provider.insert(data)).id;
 
         SharedPrefs.use((prefs) {
-          prefs.incrementSubmissionCreationCount();
+          if (!prefs.isSubmissionTipsDisplayed) {
+            ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
+              content: Text.rich(
+                const TextSpan(children: [
+                  TextSpan(text: "提出物を完了にするには"),
+                  TextSpan(
+                      text: "右にスワイプ",
+                      style: TextStyle(color: Colors.greenAccent)),
+                  TextSpan(text: "、\n提出物を削除するには"),
+                  TextSpan(
+                      text: "左にスワイプ",
+                      style: TextStyle(color: Colors.redAccent)),
+                  TextSpan(text: "します。\n\n"),
+                  TextSpan(text: "また、提出物を"),
+                  TextSpan(
+                      text: "長押し", style: TextStyle(color: Colors.redAccent)),
+                  TextSpan(text: "で、提出物の共有やその他のメニューが表示されます。"),
+                ]),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              actions: [
+                TextButton(
+                  child: const Text("閉じる"),
+                  onPressed: () {
+                    ScaffoldMessenger.of(Application.globalKey.currentContext!)
+                        .hideCurrentMaterialBanner();
+                  },
+                )
+              ],
+            ));
+
+            prefs.isSubmissionTipsDisplayed = true;
+          }
         });
       }
 

@@ -218,7 +218,7 @@ class _SignInPageState extends State<SignInPage> {
                     if (Platform.isIOS)
                       Text(
                           "「Googleでログイン」もしくは「Twitterでログイン」をタップすると、「あなたに関する情報を共有することを許可します」"
-                          "という内容のダイアログが表示されます。\nここでいう「情報」はログインのみに使用する情報ですので、"
+                          "という内容のダイアログが表示されます。\nここでいう「あなたに関する情報」はログインに使用する情報のみですので、"
                           "ログインする場合は「続ける」をタップしてください。",
                           style: TextStyle(
                               fontSize: 14,
@@ -390,11 +390,7 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Future<UserCredential> signInWithCredential(AuthCredential credential) async {
-    // if (widget.forMigration) {
-    //   return FirebaseAuth.instanceFor(app: Firebase.app("old")).signInWithCredential(credential);
-    // } else {
     return FirebaseAuth.instance.signInWithCredential(credential);
-    // }
   }
 
   void handleCredentialError(FirebaseAuthException e) {
@@ -491,6 +487,8 @@ Future<void> completeLogin(UserCredential result, BuildContext context) async {
       showSnackBar(context, "ログインしました");
     } on FirebaseException catch (e) {
       if (e.code == "permission-denied") {
+        showSnackBar(context, "アカウントを作成しています。しばらくお待ち下さい・・・",
+            duration: const Duration(seconds: 10));
         await FirestoreProvider.initializeUser();
         showSnackBar(context, "アカウントを作成しました");
       } else {

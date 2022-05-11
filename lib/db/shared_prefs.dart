@@ -39,19 +39,12 @@ class SharedPrefs {
   set isTimetableBanner1Displayed(bool value) =>
       pref!.setBool("IS_TIMETABLE_BANNER_1_DISPLAYED", value);
 
-  // IS_SUBMISSION_SWIPE_TIPS_DISPLAYED
-  bool get isSubmissionSwipeTipsDisplayed =>
-      pref!.getBool("IS_SUBMISSION_SWIPE_TIPS_DISPLAYED") ?? false;
+  // IS_SUBMISSION_TIPS_DISPLAYED
+  bool get isSubmissionTipsDisplayed =>
+      pref!.getBool("IS_SUBMISSION_TIPS_DISPLAYED") ?? false;
 
-  set isSubmissionSwipeTipsDisplayed(bool value) =>
-      pref!.setBool("IS_SUBMISSION_SWIPE_TIPS_DISPLAYED", value);
-
-  // IS_SUBMISSION_LONG_PRESS_TIPS_DISPLAYED
-  bool get isSubmissionLongPressTipsDisplayed =>
-      pref!.getBool("IS_SUBMISSION_LONG_PRESS_TIPS_DISPLAYED") ?? false;
-
-  set isSubmissionLongPressTipsDisplayed(bool value) =>
-      pref!.setBool("IS_SUBMISSION_LONG_PRESS_TIPS_DISPLAYED", value);
+  set isSubmissionTipsDisplayed(bool value) =>
+      pref!.setBool("IS_SUBMISSION_TIPS_DISPLAYED", value);
 
   // IS_CAMERA_PRIVACY_POLICY_DISPLAYED
   bool get isCameraPrivacyPolicyDisplayed =>

@@ -32,62 +32,22 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                         it.addAction(
                             NotificationCompat.Action(
                                 null, "新規作成",
-                                createActivityPendingIntent(
-                                    Intent(this, MainActivity::class.java)
-                                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                        .putExtra(
-                                            MainActivity.EXTRA_FLUTTER_ACTION,
-                                            Action.openCreateNewPage.name
-                                        )
-                                )
+                                createActivityPendingIntentForUri("/create-submission")
                             )
                         )
                     }
                     TIMETABLE_CHANNEL -> {
                         it.setAutoCancel(true)
-                        it.setContentIntent(
-                            createActivityPendingIntent(
-                                Intent(
-                                    this,
-                                    MainActivity::class.java
-                                )
-                            )
-                        )
+                        createActivityPendingIntentForUri("/tab/timetable")
                     }
                     DO_TIME_CHANNEL -> {
                         it.setContentIntent(
-                            createActivityPendingIntent(
-                                Intent(this, MainActivity::class.java)
-                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                    .putExtra(
-                                        MainActivity.EXTRA_FLUTTER_ACTION,
-                                        Action.openSubmissionDetailPage.name
-                                    )
-                                    .putExtra(
-                                        MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENTS,
-                                        hashMapOf(
-                                            "submissionId" to data["submissionId"]?.toInt(),
-                                        )
-                                    )
-                            )
+                            createActivityPendingIntentForUri("/submission?id=${data["submissionId"]}")
                         )
                         it.addAction(
                             NotificationCompat.Action(
                                 null, "集中タイマー",
-                                createActivityPendingIntent(
-                                    Intent(this, MainActivity::class.java)
-                                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                        .putExtra(
-                                            MainActivity.EXTRA_FLUTTER_ACTION,
-                                            Action.openFocusTimerPage.name
-                                        )
-                                        .putExtra(
-                                            MainActivity.EXTRA_FLUTTER_ACTION_ARGUMENTS,
-                                            hashMapOf(
-                                                "digestiveId" to data["digestiveId"]?.toInt(),
-                                            )
-                                        )
-                                )
+                                createActivityPendingIntentForUri("/focus-timer?digestiveId=${data["digestiveId"]}")
                             )
                         )
                         it.addAction(
@@ -114,9 +74,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         notificationManager.notify(notificationId, notification)
     }
 
-    private fun createActivityPendingIntent(intent: Intent): PendingIntent {
+    private fun createActivityPendingIntentForUri(afterPath: String): PendingIntent {
         return PendingIntent.getActivity(
-            this, UUID.randomUUID().hashCode(), intent,
+            this, UUID.randomUUID().hashCode(),
+            Intent.parseUri(
+                "android-app://${packageName}/submon/${afterPath}",
+                Intent.URI_ANDROID_APP_SCHEME
+            )
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
     }
