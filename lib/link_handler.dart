@@ -168,10 +168,10 @@ void handleOpenDynamicLink(Uri url) {
       break;
 
     case "create-submission":
-      Navigator.pushNamed<int?>(context, "/submission/create", arguments: {})
+      Navigator.pushNamed(context, "/submission/create", arguments: {})
           .then((insertedId) {
         if (insertedId != null) {
-          eventBus.fire(SubmissionInserted(insertedId));
+          eventBus.fire(SubmissionInserted(insertedId as int));
         }
       });
       break;

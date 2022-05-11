@@ -91,6 +91,9 @@ class TimetableProvider extends SqlProvider<Timetable> {
   Future<Timetable> insert(Timetable data) async {
     if (currentTableId != "main") data.tableId = int.parse(currentTableId);
     await deleteLocal(data.cellId);
+    SharedPrefs.use((prefs) {
+      prefs.isTimetableInsertedOnce = true;
+    });
     return await super.insert(data);
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:submon/db/timetable.dart';
+import 'package:submon/pages/timetable_edit_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
@@ -54,7 +55,7 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
                   await provider.delete(
                       getTimetableCellId(widget.period, widget.weekDay));
                 });
-                Navigator.pop(context);
+                Navigator.pop(context, FieldValue.unselect);
                 eventBus.fire(TimetableListChanged());
               },
             ),
@@ -153,7 +154,7 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
       await provider.insert(data);
     });
 
-    Navigator.pop(context);
+    Navigator.pop(context, _subjectController.text);
 
     eventBus.fire(TimetableListChanged());
   }

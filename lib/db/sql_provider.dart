@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/db/timetable.dart';
 
-const schemaVer = 3;
+const schemaVer = 4;
 
 abstract class SqlProvider<T> {
   SqlProvider({Database? db}) {
@@ -158,6 +158,11 @@ Future<void> migrate(Database db, int oldVersion, int newVersion) async {
   if (oldVersion == 2) {
     await db.execute(
         "alter table $tableSubmission add column $colGoogleTasksTaskId string");
+    oldVersion++;
+  }
+  if (oldVersion == 3) {
+    await db.execute(
+        "alter table $tableSubmission add column $colCanvasPlannableId string");
     oldVersion++;
   }
 }

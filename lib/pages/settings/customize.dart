@@ -85,10 +85,10 @@ class _CustomizeSettingsPageState extends State<CustomizeSettingsPage> {
               SwitchSettingsTile(
                 title: "Googleカレンダー追加/編集",
                 subtitle: "デフォルトで追加/編集がオンになります",
-                value: prefs!.writeGoogleCalendarByDefault,
+                value: prefs!.isWriteToGoogleTasksByDefault,
                 onChanged: (value) {
                   setState(() {
-                    prefs!.writeGoogleCalendarByDefault = value;
+                    prefs!.isWriteToGoogleTasksByDefault = value;
                   });
                 },
               )
