@@ -9,14 +9,12 @@ import FirebaseFirestore
 import WidgetKit
 
 let notifChannel = "submon/notification"
-let actionsChannel = "submon/actions"
 
 @available(iOS 13.0, *)
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
     
     var viewController: FlutterViewController?
-    var actionMethodChannelHandler: ActionMethodChannelHandler?
     
     override func application(
         _ application: UIApplication,
@@ -32,8 +30,6 @@ let actionsChannel = "submon/actions"
         viewController = window?.rootViewController as? FlutterViewController
         
         MainMethodChannelHandler(viewController: viewController!).register()
-        actionMethodChannelHandler = ActionMethodChannelHandler(viewController: viewController!)
-        actionMethodChannelHandler?.register()
         MessagingMethodChannelHandler(viewController: viewController!, appDelegate: self).register()
         
         initNotificationCategories()

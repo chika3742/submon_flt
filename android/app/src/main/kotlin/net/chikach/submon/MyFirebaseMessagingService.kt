@@ -29,6 +29,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .also {
                 when (channelId) {
                     REMINDER_CHANNEL -> {
+                        it.setContentIntent(
+                            createActivityPendingIntentForUri("")
+                        )
                         it.addAction(
                             NotificationCompat.Action(
                                 null, "新規作成",

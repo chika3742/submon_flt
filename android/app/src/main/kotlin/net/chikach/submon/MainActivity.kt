@@ -50,6 +50,9 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
+        if (intent.data != null) {
+            mainMethodChannelHandler.pendingUri = intent.data
+        }
 
         // main method channel
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_MAIN).apply {
