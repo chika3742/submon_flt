@@ -42,8 +42,8 @@ const val EVENT_CHANNEL_URI = "net.chikach.submon/uri"
 const val REQUEST_CODE_TAKE_PICTURE = 1
 
 class MainActivity : FlutterActivity() {
-    private var mainMethodChannelHandler = MainMethodChannelHandler(this)
-    private var messagingMethodChannelHandler = MessagingMethodChannelHandler()
+    private val mainMethodChannelHandler = MainMethodChannelHandler(this)
+    private val messagingMethodChannelHandler = MessagingMethodChannelHandler()
     var twitterSignInUriEventSink: EventChannel.EventSink? = null
     var uriEventSink: EventChannel.EventSink? = null
 

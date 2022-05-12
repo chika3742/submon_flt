@@ -10,6 +10,7 @@ import 'package:submon/components/hidable_progress_indicator.dart';
 import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/method_channel/main.dart';
 import 'package:submon/utils/utils.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -140,9 +141,8 @@ class _TabOthersState extends State<TabOthers> {
                     subtitle: "サービスに関するお知らせを掲載しています。",
                     leading: const Icon(Icons.newspaper),
                     onTap: () {
-                      launchUrlString(
-                          "https://www.chikach.net/category/submon-info/",
-                          mode: LaunchMode.externalApplication);
+                      openWebPage("お知らせ",
+                          "https://www.chikach.net/category/submon-info/");
                     },
                   ),
                 ],

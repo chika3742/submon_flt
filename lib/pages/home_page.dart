@@ -11,7 +11,6 @@ import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
 import 'package:submon/link_handler.dart';
-import 'package:submon/main.dart';
 import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/home_tabs/tab_digestive_list.dart';
 import 'package:submon/pages/home_tabs/tab_others.dart';
@@ -35,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
   StreamSubscription? hideAdListener;
   StreamSubscription? uriListener;
+  StreamSubscription? dynamicLinksListener;
 
   var tabIndex = 0;
   var _loading = false;
@@ -53,8 +53,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-
-    Application.globalKey = _scaffoldKey;
 
     MessagingPlugin.getToken().then((token) {
       FirestoreProvider.saveNotificationToken(token);
@@ -83,7 +81,8 @@ class _HomePageState extends State<HomePage> {
     });
 
     // initMethodCallHandler();
-    initUriHandler();
+    uriListener = initUriHandler();
+    dynamicLinksListener = initDynamicLinks();
     fetchData();
 
     SharedPrefs.use((prefs) {
@@ -195,6 +194,7 @@ class _HomePageState extends State<HomePage> {
     hideAdListener?.cancel();
     bannerAd?.dispose();
     uriListener?.cancel();
+    dynamicLinksListener?.cancel();
     super.dispose();
   }
 

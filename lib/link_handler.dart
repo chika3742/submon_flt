@@ -17,6 +17,17 @@ import 'db/digestive.dart';
 import 'db/shared_prefs.dart';
 import 'method_channel/channels.dart';
 
+StreamSubscription initSignInDynamicLinks() {
+  FirebaseDynamicLinks.instance.getInitialLink().then((linkData) {
+    if (linkData != null) {
+      handleSignInDynamicLink(linkData.link);
+    }
+  });
+  return FirebaseDynamicLinks.instance.onLink.listen((linkData) async {
+    handleSignInDynamicLink(linkData.link);
+  });
+}
+
 StreamSubscription initDynamicLinks() {
   FirebaseDynamicLinks.instance.getInitialLink().then((linkData) {
     if (linkData != null) {
@@ -31,25 +42,32 @@ StreamSubscription initDynamicLinks() {
 StreamSubscription initUriHandler() {
   getPendingUri().then((uriString) {
     if (uriString != null) {
-      handleOpenDynamicLink(Uri.parse(uriString));
+      handleOpenUri(Uri.parse(uriString));
     }
   });
   return const EventChannel(EventChannels.uri)
       .receiveBroadcastStream()
       .listen((uriString) {
-    handleOpenDynamicLink(Uri.parse(uriString));
+    handleOpenUri(Uri.parse(uriString));
   });
 }
 
 void handleDynamicLink(Uri url) {
   if (url.toString().startsWith("https://submon.chikach.net/__/auth")) {
-    handleAuthDynamicLink(url);
+    handleAuthUri(url, [AuthUriMode.verifyAndChangeEmail]);
   } else if (url.toString().startsWith("https://app.submon.chikach.net")) {
-    handleOpenDynamicLink(url);
+    handleOpenUri(url);
   }
 }
 
-void handleAuthDynamicLink(Uri url) async {
+void handleSignInDynamicLink(Uri url) {
+  if (url.toString().startsWith("https://submon.chikach.net/__/auth")) {
+    handleAuthUri(url,
+        [AuthUriMode.signInWithEmailLink, AuthUriMode.verifyAndChangeEmail]);
+  }
+}
+
+void handleAuthUri(Uri url, List<AuthUriMode> acceptableMode) async {
   var context = Application.globalKey.currentContext!;
 
   var auth = FirebaseAuth.instance;
@@ -76,7 +94,8 @@ void handleAuthDynamicLink(Uri url) async {
   }
 
   try {
-    if (auth.isSignInWithEmailLink(url.toString())) {
+    if (acceptableMode.contains(AuthUriMode.signInWithEmailLink) &&
+        auth.isSignInWithEmailLink(url.toString())) {
       if (auth.currentUser == null) {
         final pref = SharedPrefs(await SharedPreferences.getInstance());
         final email = pref.emailForUrlLogin;
@@ -99,8 +118,8 @@ void handleAuthDynamicLink(Uri url) async {
       } else {
         showSnackBar(context, "既にログインされています。ログアウトしてからお試しください。");
       }
-    } else if (codeInfo.operation ==
-        ActionCodeInfoOperation.verifyAndChangeEmail) {
+    } else if (acceptableMode.contains(AuthUriMode.verifyAndChangeEmail) &&
+        codeInfo.operation == ActionCodeInfoOperation.verifyAndChangeEmail) {
       await auth.applyActionCode(code);
       await auth.signOut();
       Navigator.of(context, rootNavigator: true).pop(); // dismiss loading modal
@@ -113,8 +132,8 @@ void handleAuthDynamicLink(Uri url) async {
   }
 }
 
-void handleOpenDynamicLink(Uri url) {
-  var context = Application.globalKey.currentContext!;
+void handleOpenUri(Uri url, {BuildContext? alterContext}) {
+  var context = Application.globalKey.currentContext ?? alterContext!;
   var paths = url.path.split("/");
 
   switch (paths[1]) {
@@ -189,4 +208,9 @@ void handleOpenDynamicLink(Uri url) {
       });
       break;
   }
+}
+
+enum AuthUriMode {
+  signInWithEmailLink,
+  verifyAndChangeEmail,
 }
