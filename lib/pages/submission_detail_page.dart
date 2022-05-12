@@ -28,8 +28,12 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
   @override
   void initState() {
     super.initState();
-    SubmissionProvider().use((provider) {
-      provider.get(widget.submissionId).then((value) {
+    SubmissionProvider().use((provider) async {
+      await provider.get(widget.submissionId).then((value) {
+        if (value == null) {
+          showSnackBar(context, "提出物が見つかりません");
+          Navigator.pop(context);
+        }
         setState(() {
           item = value;
         });
