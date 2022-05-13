@@ -32,6 +32,7 @@
 		C7AA489927454DC6009C440D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7AA489827454DC6009C440D /* GoogleService-Info.plist */; };
 		C7B6BD5B27C87778004F1EA9 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B6BD5A27C87778004F1EA9 /* Extension.swift */; };
 		C7E5AEBA277ED5B9009058C9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7AA489827454DC6009C440D /* GoogleService-Info.plist */; };
+		C7E9623F282CBA3800A4C98A /* UriEventChannelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E9623E282CBA3800A4C98A /* UriEventChannelHandler.swift */; };
 		C7F285B127697B670067BB87 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = C7F285B027697B670067BB87 /* GeneratedPluginRegistrant.m */; };
 /* End PBXBuildFile section */
 
@@ -107,6 +108,7 @@
 		C7AA489827454DC6009C440D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C7B6BD5A27C87778004F1EA9 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		C7E5AEBB277ED825009058C9 /* WidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WidgetsExtension.entitlements; sourceTree = "<group>"; };
+		C7E9623E282CBA3800A4C98A /* UriEventChannelHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UriEventChannelHandler.swift; sourceTree = "<group>"; };
 		C7F285B027697B670067BB87 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		DEB1C5AD33F8294D1BDF9B44 /* Pods-SubmissionListWidgetExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubmissionListWidgetExtension.release.xcconfig"; path = "Target Support Files/Pods-SubmissionListWidgetExtension/Pods-SubmissionListWidgetExtension.release.xcconfig"; sourceTree = "<group>"; };
 		E5EFBF37F7BBFB6B9779674E /* Pods-SubmissionListWidgetExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubmissionListWidgetExtension.debug.xcconfig"; path = "Target Support Files/Pods-SubmissionListWidgetExtension/Pods-SubmissionListWidgetExtension.debug.xcconfig"; sourceTree = "<group>"; };
@@ -202,7 +204,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
-				C778404F27E425A800291495 /* MethodChannelHandler */,
+				C778404F27E425A800291495 /* ChannelHandler */,
 				C7448BAF277F0F2A0053FE44 /* Info-Debug.plist */,
 				C7448BAE277F0F2A0053FE44 /* Info-Release.plist */,
 				C759CFCA2775AE600026B907 /* Runner.entitlements */,
@@ -218,13 +220,14 @@
 			path = Runner;
 			sourceTree = "<group>";
 		};
-		C778404F27E425A800291495 /* MethodChannelHandler */ = {
+		C778404F27E425A800291495 /* ChannelHandler */ = {
 			isa = PBXGroup;
 			children = (
 				C778404D27E41FFA00291495 /* MainMethodChannelHandler.swift */,
 				C778405027E4281B00291495 /* MessagingMethodChannelHandler.swift */,
+				C7E9623E282CBA3800A4C98A /* UriEventChannelHandler.swift */,
 			);
-			path = MethodChannelHandler;
+			path = ChannelHandler;
 			sourceTree = "<group>";
 		};
 		C79CBA5B277E7C0E00D62ECE /* Widgets */ = {
@@ -469,6 +472,7 @@
 			files = (
 				C778405127E4281B00291495 /* MessagingMethodChannelHandler.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
+				C7E9623F282CBA3800A4C98A /* UriEventChannelHandler.swift in Sources */,
 				C79CBA63277E7C0F00D62ECE /* Widgets.intentdefinition in Sources */,
 				C778404E27E41FFA00291495 /* MainMethodChannelHandler.swift in Sources */,
 				C7F285B127697B670067BB87 /* GeneratedPluginRegistrant.m in Sources */,
