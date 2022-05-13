@@ -207,6 +207,19 @@ void handleOpenUri(Uri url, {BuildContext? alterContext}) {
         }
       });
       break;
+
+    case "tab":
+      Future.delayed(const Duration(milliseconds: 500), () {
+        switch (paths[2]) {
+          case "digestive":
+            eventBus.fire(SwitchBottomNav(1));
+            break;
+          case "timetable":
+            eventBus.fire(SwitchBottomNav(2));
+            break;
+        }
+      });
+      break;
   }
 }
 

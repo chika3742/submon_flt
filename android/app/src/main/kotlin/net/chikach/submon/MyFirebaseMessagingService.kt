@@ -41,7 +41,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     }
                     TIMETABLE_CHANNEL -> {
                         it.setAutoCancel(true)
-                        createActivityPendingIntentForUri("/tab/timetable")
+                        it.setContentIntent(createActivityPendingIntentForUri("/tab/timetable"))
                     }
                     DO_TIME_CHANNEL -> {
                         it.setContentIntent(

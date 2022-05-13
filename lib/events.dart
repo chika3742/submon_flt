@@ -28,8 +28,14 @@ class MemorizeCardAddButtonPressed {}
 
 class DigestiveAddButtonPressed {}
 
-class SubmissionDetailPageOpened {
-  bool opened;
+class SetAdHidden {
+  bool hidden;
 
-  SubmissionDetailPageOpened(this.opened);
+  SetAdHidden(this.hidden);
+}
+
+class SwitchBottomNav {
+  int index;
+
+  SwitchBottomNav(this.index);
 }

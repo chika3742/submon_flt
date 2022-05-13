@@ -189,14 +189,14 @@ class _TabMemorizeCardState extends State<TabMemorizeCard>
                       Platform.isIOS) {
                     _popRoot();
 
-                    eventBus.fire(SubmissionDetailPageOpened(true));
+                    eventBus.fire(SetAdHidden(true));
                     // カメラを表示
                     await Navigator.of(context, rootNavigator: true)
                         .pushNamed("/memorize_card/camera", arguments: {
                       "folderId": id,
                     });
 
-                    eventBus.fire(SubmissionDetailPageOpened(false));
+                    eventBus.fire(SetAdHidden(false));
                   } else {
                     showSimpleDialog(
                       context,

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="digestive_shortcut_label">Digestive</string>
+    <string name="timetable_shortcut_label">時間割表</string>
+</resources>
