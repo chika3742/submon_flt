@@ -67,6 +67,10 @@
                     android:host="submon.page.link"
                     android:scheme="https" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
 
         <activity

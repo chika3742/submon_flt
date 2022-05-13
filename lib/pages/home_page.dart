@@ -35,6 +35,7 @@ class _HomePageState extends State<HomePage> {
   StreamSubscription? hideAdListener;
   StreamSubscription? uriListener;
   StreamSubscription? dynamicLinksListener;
+  StreamSubscription? switchBottomNavListener;
 
   var tabIndex = 0;
   var _loading = false;
@@ -74,15 +75,19 @@ class _HomePageState extends State<HomePage> {
       });
     });
 
-    hideAdListener = eventBus.on<SubmissionDetailPageOpened>().listen((event) {
+    hideAdListener = eventBus.on<SetAdHidden>().listen((event) {
       setState(() {
-        _hideAd = event.opened;
+        _hideAd = event.hidden;
       });
     });
 
     // initMethodCallHandler();
     uriListener = initUriHandler();
     dynamicLinksListener = initDynamicLinks();
+    switchBottomNavListener = eventBus.on<SwitchBottomNav>().listen((event) {
+      onBottomNavTap(event.index);
+    });
+
     fetchData();
 
     SharedPrefs.use((prefs) {
@@ -195,6 +200,7 @@ class _HomePageState extends State<HomePage> {
     bannerAd?.dispose();
     uriListener?.cancel();
     dynamicLinksListener?.cancel();
+    switchBottomNavListener?.cancel();
     super.dispose();
   }
 
