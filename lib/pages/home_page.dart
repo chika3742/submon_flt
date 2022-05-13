@@ -85,7 +85,12 @@ class _HomePageState extends State<HomePage> {
     uriListener = initUriHandler();
     dynamicLinksListener = initDynamicLinks();
     switchBottomNavListener = eventBus.on<SwitchBottomNav>().listen((event) {
-      onBottomNavTap(event.index);
+      Timer.periodic(const Duration(milliseconds: 50), (timer) {
+        if (_navigatorKey.currentState != null) {
+          onBottomNavTap(event.index);
+          timer.cancel();
+        }
+      });
     });
 
     fetchData();
