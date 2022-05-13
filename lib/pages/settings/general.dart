@@ -64,7 +64,8 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
                 },
               ),
             SettingsTile(
-              title: "ヘルプ",
+              title: "Q&A (よくあると思う質問)",
+              subtitle: "他にも質問があれば、リンク先ページにコメントしていただければ回答追記するかも",
               leading: const Icon(Icons.help),
               onTap: () {
                 openWebPage("ヘルプ", "https://www.chikach.net/submon-help/");

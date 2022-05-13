@@ -8,13 +8,12 @@ import FirebaseAuth
 import FirebaseFirestore
 import WidgetKit
 
-let notifChannel = "submon/notification"
-
 @available(iOS 13.0, *)
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
     
     var viewController: FlutterViewController?
+    var uriEvent: UriEventChannelHandler?
     
     override func application(
         _ application: UIApplication,
@@ -32,6 +31,8 @@ let notifChannel = "submon/notification"
         MainMethodChannelHandler(viewController: viewController!).register()
         MessagingMethodChannelHandler(viewController: viewController!, appDelegate: self).register()
         
+        uriEvent = UriEventChannelHandler(binaryMessenger: viewController!.binaryMessenger)
+        
         initNotificationCategories()
         
         Messaging.messaging().delegate = self
@@ -42,7 +43,7 @@ let notifChannel = "submon/notification"
     }
     
     override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        actionMethodChannelHandler?.invokeAction(actionName: url.host!, arguments: url.queryParams())
+        uriEvent?.eventSink?(url.absoluteString)
         return true
     }
     
@@ -52,7 +53,18 @@ let notifChannel = "submon/notification"
     
     override func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         // TODO: Separate on notification action tapped from on notification content tapped
-        actionMethodChannelHandler?.invokeAction(actionName: response.actionIdentifier, arguments: response.notification.request.content.userInfo as! [String: String])
+        let userInfo = response.notification.request.content.userInfo
+        print(userInfo)
+        
+        switch response.notification.request.content.categoryIdentifier {
+        case "reminder":
+            if response.actionIdentifier == "openCreateNewPage" {
+                UIApplication.shared.open(URL(string: "submon:///create-submission")!, options: [:], completionHandler: nil)
+            }
+            break;
+        default: break
+            
+        }
         completionHandler()
     }
     

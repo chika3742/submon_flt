@@ -8,7 +8,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:googleapis/oauth2/v2.dart' as oauth;
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:submon/main.dart';
@@ -128,17 +127,6 @@ void createNewSubmissionForTimetable(
     "initialTitle": name,
     "initialDeadline": deadline,
   });
-}
-
-extension SubmissionExtension on calendar.EventsResource {
-  Future<calendar.Event?> getEventForSubmissionId(int submissionId) async {
-    var events = await list("primary",
-        maxResults: 1,
-        privateExtendedProperty: ["submission_id=$submissionId"]);
-    if (events.items == null || events.items!.isEmpty) return null;
-
-    return events.items!.first;
-  }
 }
 
 enum AdUnit {

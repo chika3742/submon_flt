@@ -185,7 +185,7 @@ struct SubmissionListWidgetEntryView : View {
                     }
                     Spacer()
                     if (family != .systemSmall) {
-                        Link(destination: URL(string: "submon://createNew")!) {
+                        Link(destination: URL(string: "submon://create-submission")!) {
                         Image( "outline_add_black_24pt")
                             .frame(width: 50, height: 50, alignment: .center)
                             .tint(.white)

@@ -8,7 +8,6 @@ import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/sql_provider.dart';
-import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/sign_in_page.dart';
@@ -29,10 +28,8 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
   TimeOfDay? _reminderTime;
   bool _loadingReminderTime = true;
   Timer? _signInStateCheckTimer;
-  bool _signInStateCheckDelayed = false;
   bool? _deviceCameraUIShouldBeUsed;
 
-  bool? _signedInAndScopeGranted;
   StreamSubscription? _accountListener;
 
   @override
@@ -56,21 +53,6 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
       setState(() {
         _loadingReminderTime = false;
       });
-    });
-
-    googleSignIn.isSignedIn().then((signedIn) {
-      if (signedIn) {
-        _signInStateCheckTimer = Timer(const Duration(seconds: 5), () {
-          setState(() {
-            _signInStateCheckDelayed = true;
-          });
-        });
-        _checkSignedInAndScopeGranted();
-      } else {
-        setState(() {
-          _signedInAndScopeGranted = false;
-        });
-      }
     });
   }
 
@@ -225,36 +207,12 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
         ]),
         SettingsCategory(title: "Google Tasks連携", tiles: [
           SettingsTile(
-            title: _signedInAndScopeGranted != true
-                ? "Google Tasksと連携"
-                : "Google Tasks連携済み",
-            subtitle: _signedInAndScopeGranted != null
-                ? "Google Tasksへ提出物を追加し、Google TasksおよびGoogle カレンダーに表示できます。"
-                : "連携状態を確認しています...${_signInStateCheckDelayed ? " (この処理に時間がかかっている場合は、アプリ再起動をお試しください。)" : ""}",
-            enabled: _signedInAndScopeGranted == false,
-            trailing: _signedInAndScopeGranted == null
-                ? const CircularProgressIndicator()
-                : null,
+            title: "Google Tasks連携設定",
+            subtitle:
+                "Google Tasksへ提出物を追加し、Google TasksおよびGoogle カレンダーに表示できます。",
             onTap: () async {
-              if (_signedInAndScopeGranted == false) {
-                dynamic result;
-                if (googleSignIn.currentUser != null) {
-                  result = await googleSignIn.requestScopes(scopes);
-                } else {
-                  var r = await googleSignIn.signIn();
-                  if (r == null) return;
-                  result = await googleSignIn.requestScopes(scopes);
-                }
-
-                print(result);
-
-                if (result == true) {
-                  showSnackBar(context, "Google Tasksと連携しました。");
-                  setState(() {
-                    _signedInAndScopeGranted = true;
-                  });
-                }
-              }
+              Navigator.pushNamed(
+                  context, "/settings/functions/link-with-google-tasks");
             },
           ),
         ]),
@@ -376,15 +334,5 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
     return !currentUser.isAnonymous &&
         currentUser.providerData.first.providerId ==
             EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD;
-  }
-
-  Future<void> _checkSignedInAndScopeGranted() async {
-    void setSignedInAndScopeGranted(bool value) {
-      setState(() {
-        _signedInAndScopeGranted = value;
-      });
-    }
-
-    setSignedInAndScopeGranted(await canAccessTasks());
   }
 }
