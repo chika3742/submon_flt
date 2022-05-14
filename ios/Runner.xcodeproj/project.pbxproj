@@ -15,6 +15,7 @@
 		9FEC70D669B39EDA21B28813 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54DE1AA03065D56C55E4F359 /* Pods_Runner.framework */; };
 		C7448BB0277F0F2A0053FE44 /* Info-Release.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7448BAE277F0F2A0053FE44 /* Info-Release.plist */; };
 		C7448BB1277F0F2A0053FE44 /* Info-Debug.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7448BAF277F0F2A0053FE44 /* Info-Debug.plist */; };
+		C746E0B9282EBEC80011F0ED /* GoogleService-Info-release.plist in Resources */ = {isa = PBXBuildFile; fileRef = C746E0B8282EBEC80011F0ED /* GoogleService-Info-release.plist */; };
 		C778404E27E41FFA00291495 /* MainMethodChannelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C778404D27E41FFA00291495 /* MainMethodChannelHandler.swift */; };
 		C778405127E4281B00291495 /* MessagingMethodChannelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C778405027E4281B00291495 /* MessagingMethodChannelHandler.swift */; };
 		C778405527E46D1A00291495 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C778405427E46D1A00291495 /* Extensions.swift */; };
@@ -29,9 +30,9 @@
 		C79CBA73277E87DD00D62ECE /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = C79CBA72277E87DD00D62ECE /* FirebaseAnalytics */; };
 		C79CBA75277E87DD00D62ECE /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C79CBA74277E87DD00D62ECE /* FirebaseAuth */; };
 		C79CBA79277E880700D62ECE /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = C79CBA78277E880700D62ECE /* FirebaseFirestore */; };
-		C7AA489927454DC6009C440D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7AA489827454DC6009C440D /* GoogleService-Info.plist */; };
+		C7AA489927454DC6009C440D /* GoogleService-Info-debug.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7AA489827454DC6009C440D /* GoogleService-Info-debug.plist */; };
 		C7B6BD5B27C87778004F1EA9 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B6BD5A27C87778004F1EA9 /* Extension.swift */; };
-		C7E5AEBA277ED5B9009058C9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7AA489827454DC6009C440D /* GoogleService-Info.plist */; };
+		C7E5AEBA277ED5B9009058C9 /* GoogleService-Info-debug.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7AA489827454DC6009C440D /* GoogleService-Info-debug.plist */; };
 		C7E9623F282CBA3800A4C98A /* UriEventChannelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E9623E282CBA3800A4C98A /* UriEventChannelHandler.swift */; };
 		C7F285B127697B670067BB87 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = C7F285B027697B670067BB87 /* GeneratedPluginRegistrant.m */; };
 /* End PBXBuildFile section */
@@ -91,6 +92,7 @@
 		C7240197277C61EE00904765 /* FirebaseCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7448BAE277F0F2A0053FE44 /* Info-Release.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-Release.plist"; sourceTree = "<group>"; };
 		C7448BAF277F0F2A0053FE44 /* Info-Debug.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-Debug.plist"; sourceTree = "<group>"; };
+		C746E0B8282EBEC80011F0ED /* GoogleService-Info-release.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info-release.plist"; sourceTree = SOURCE_ROOT; };
 		C759CFCA2775AE600026B907 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		C759CFCB2775AFF90026B907 /* SubmissionListWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SubmissionListWidgetExtension.entitlements; sourceTree = "<group>"; };
 		C778404D27E41FFA00291495 /* MainMethodChannelHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMethodChannelHandler.swift; sourceTree = "<group>"; };
@@ -105,7 +107,7 @@
 		C79CBA5F277E7C0F00D62ECE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C79CBA61277E7C0F00D62ECE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C79CBA6B277E7C4F00D62ECE /* SubmissionListWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmissionListWidget.swift; sourceTree = "<group>"; };
-		C7AA489827454DC6009C440D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		C7AA489827454DC6009C440D /* GoogleService-Info-debug.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-debug.plist"; sourceTree = "<group>"; };
 		C7B6BD5A27C87778004F1EA9 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		C7E5AEBB277ED825009058C9 /* WidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WidgetsExtension.entitlements; sourceTree = "<group>"; };
 		C7E9623E282CBA3800A4C98A /* UriEventChannelHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UriEventChannelHandler.swift; sourceTree = "<group>"; };
@@ -182,7 +184,8 @@
 				C7E5AEBB277ED825009058C9 /* WidgetsExtension.entitlements */,
 				C79CBA52277E719F00D62ECE /* DoTimeListWidgetExtension.entitlements */,
 				C759CFCB2775AFF90026B907 /* SubmissionListWidgetExtension.entitlements */,
-				C7AA489827454DC6009C440D /* GoogleService-Info.plist */,
+				C7AA489827454DC6009C440D /* GoogleService-Info-debug.plist */,
+				C746E0B8282EBEC80011F0ED /* GoogleService-Info-release.plist */,
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
 				C79CBA5B277E7C0E00D62ECE /* Widgets */,
@@ -250,6 +253,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 97C147051CF9000F007C117D /* Build configuration list for PBXNativeTarget "Runner" */;
 			buildPhases = (
+				C746E0BA282EC0D40011F0ED /* ShellScript */,
 				7F781D135B6B452987EC95E5 /* [CP] Check Pods Manifest.lock */,
 				9740EEB61CF901F6004384FC /* Run Script */,
 				97C146EA1CF9000F007C117D /* Sources */,
@@ -344,8 +348,9 @@
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				C7448BB1277F0F2A0053FE44 /* Info-Debug.plist in Resources */,
 				C7448BB0277F0F2A0053FE44 /* Info-Release.plist in Resources */,
-				C7AA489927454DC6009C440D /* GoogleService-Info.plist in Resources */,
+				C7AA489927454DC6009C440D /* GoogleService-Info-debug.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
+				C746E0B9282EBEC80011F0ED /* GoogleService-Info-release.plist in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -355,7 +360,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C79CBA60277E7C0F00D62ECE /* Assets.xcassets in Resources */,
-				C7E5AEBA277ED5B9009058C9 /* GoogleService-Info.plist in Resources */,
+				C7E5AEBA277ED5B9009058C9 /* GoogleService-Info-debug.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -428,6 +433,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
+		};
+		C746E0BA282EC0D40011F0ED /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "PATH_TO_GOOGLE_PLISTS=\"${PROJECT_DIR}\"\n\ncase \"${CONFIGURATION}\" in\n\"Debug\" )\ncp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info-debug.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" ;;\n\"Profile\" )\ncp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info-debug.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" ;;\n\"Release\" )\ncp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info-release.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" ;;\n\n*)\n;;\nesac\n";
 		};
 		C7AA489A2745542C009C440D /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -752,6 +774,7 @@
 					"@executable_path/Frameworks",
 				);
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_SWIFT_FLAGS = "$(inherited) RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = net.chikach.submon;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
