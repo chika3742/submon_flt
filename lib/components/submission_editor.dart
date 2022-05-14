@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:googleapis/tasks/v1.dart' as tasks;
@@ -298,6 +299,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
         SharedPrefs.use((prefs) {
           var context = Application.globalKey.currentContext!;
 
+          // submission tips banner
           if (!prefs.isSubmissionTipsDisplayed) {
             ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
               content: Padding(
@@ -334,6 +336,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
             prefs.isSubmissionTipsDisplayed = true;
           }
 
+          // google tasks default tips banner
           if (!prefs.isWriteToGoogleTasksTipsDisplayed && _writeGoogleTasks) {
             showMaterialBanner(
               context,
@@ -365,6 +368,8 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
             prefs.isWriteToGoogleTasksTipsDisplayed = true;
           }
         });
+
+        FirebaseAnalytics.instance.logEvent(name: "create_submission");
       }
 
       if (_writeGoogleTasks && _googleTasksAvailable == true) {

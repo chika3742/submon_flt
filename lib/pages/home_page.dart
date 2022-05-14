@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -87,7 +88,12 @@ class _HomePageState extends State<HomePage> {
     switchBottomNavListener = eventBus.on<SwitchBottomNav>().listen((event) {
       Timer.periodic(const Duration(milliseconds: 50), (timer) {
         if (_navigatorKey.currentState != null) {
-          onBottomNavTap(event.index);
+          var index = _bottomNavItems.indexWhere((e) => e.id == event.id);
+          if (index != -1) {
+            onBottomNavTap(index);
+          } else {
+            showSnackBar(context, "この機能は無効化されています。カスタマイズ設定から有効化してください。");
+          }
           timer.cancel();
         }
       });
@@ -315,6 +321,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void onBottomNavTap(int index) {
+    if (index < 0) return;
     if (tabIndex == index) {
       eventBus.fire(BottomNavDoubleClickEvent(index));
       return;
@@ -324,6 +331,8 @@ class _HomePageState extends State<HomePage> {
     });
     _navigatorKey.currentState
         ?.pushReplacement(FadeThroughPageRoute(pages[index]));
+    FirebaseAnalytics.instance
+        .logScreenView(screenName: "/tab/${_bottomNavItems[index].id.name}");
   }
 
   void fetchData() async {

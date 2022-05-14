@@ -9,6 +9,7 @@ import 'package:submon/db/submission.dart';
 import 'package:submon/events.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
+import 'package:submon/pages/home_page.dart';
 import 'package:submon/pages/sign_in_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
@@ -211,10 +212,10 @@ void handleOpenUri(Uri url, {BuildContext? alterContext}) {
     case "tab":
       switch (paths[2]) {
         case "digestive":
-          eventBus.fire(SwitchBottomNav(1));
+          eventBus.fire(SwitchBottomNav(BottomNavItemId.digestive));
           break;
         case "timetable":
-          eventBus.fire(SwitchBottomNav(2));
+          eventBus.fire(SwitchBottomNav(BottomNavItemId.timetable));
           break;
       }
       break;

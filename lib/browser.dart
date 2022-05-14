@@ -5,7 +5,7 @@ void openTermsOfUse() {
 }
 
 void openPrivacyPolicy() {
-  openWebPage("プライバシーポリシー", "https://www.chikach.net/nonav/submon-privacy/");
+  openWebPage("プライバシーポリシー", "https://www.chikach.net/nonav/submon-privacy-2/");
 }
 
 void openChangelog() {

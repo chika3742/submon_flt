@@ -1,4 +1,5 @@
 import 'package:animations/animations.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -59,6 +60,7 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
       onDismissed: (direction) async {
         if (direction == DismissDirection.startToEnd) {
           widget.onDone?.call();
+          _logMarkedAsDone("swipe");
         } else if (direction == DismissDirection.endToStart) {
           widget.onDelete?.call();
         }
@@ -183,6 +185,8 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
                 ),
                 onTap: () {
                   callback();
+                  FirebaseAnalytics.instance
+                      .logSelectItem(itemListName: "submission_list");
                 },
                 onLongPress: () {
                   showRoundedBottomSheet(
@@ -195,6 +199,11 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
                           title: const Text("共有"),
                           onTap: () {
                             handleContextMenuAction(_ContextMenuAction.share);
+                            FirebaseAnalytics.instance.logShare(
+                              contentType: "submission",
+                              itemId: widget.item.id.toString(),
+                              method: "longPressMenu",
+                            );
                           },
                         ),
                         ListTile(
@@ -307,10 +316,25 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
         break;
       case _ContextMenuAction.makeDone:
         widget.onDone?.call();
+        _logMarkedAsDone("longPressMenu");
         break;
       case _ContextMenuAction.delete:
         widget.onDelete?.call();
         break;
+    }
+  }
+
+  void _logMarkedAsDone(String method) {
+    if (!widget.item.done) {
+      FirebaseAnalytics.instance
+          .logEvent(name: "marked_submission_as_done", parameters: {
+        "method": method,
+      });
+    } else {
+      FirebaseAnalytics.instance
+          .logEvent(name: "unmarked_submission_as_done", parameters: {
+        "method": method,
+      });
     }
   }
 }
