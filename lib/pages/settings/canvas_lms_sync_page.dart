@@ -1,4 +1,5 @@
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:submon/components/color_picker_dialog.dart';
@@ -19,6 +20,7 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
   int? _currentUniversityId;
   final _accessTokenController = TextEditingController();
   final _scrollController = ScrollController();
+  List<UniversityLms> universities = [];
 
   CanvasLms? canvas;
 
@@ -28,6 +30,9 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
       showLoadingModal(context);
 
       try {
+        universities = await UniversityLms.fetch();
+        setState(() {});
+
         var canvas = (await FirestoreProvider.config)?.lms?.canvas;
         if (canvas != null) {
           setState(() {
@@ -35,8 +40,9 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
             this.canvas = canvas;
           });
         }
-      } catch (e) {
+      } catch (e, stack) {
         debugPrint(e.toString());
+        debugPrintStack(stackTrace: stack);
         showSnackBar(context, "連携状態の取得に失敗しました");
       }
       Navigator.pop(context);
@@ -85,7 +91,7 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
                       Image.asset("assets/img/canvaslms_guide_5.jpg"),
                       const SizedBox(height: 32),
                       DropdownButtonFormField<int>(
-                        items: UniversityLms.getDropdownItemList(),
+                        items: _buildDropdownItemList(),
                         value: _currentUniversityId,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -147,7 +153,7 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
                         SettingsTile(
                           title: "連携状態",
                           subtitle:
-                              "連携中 (${UniversityLms.list.firstWhere((e) => e.id == canvas!.universityId, orElse: () => const UniversityLms(0, "")).name})",
+                              "連携中 (${universities.firstWhereOrNull((e) => e.id == canvas!.universityId)?.name})",
                         ),
                         SettingsTile(
                           title: "最終同期",
@@ -282,6 +288,15 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
       Navigator.pop(context);
     }
   }
+
+  List<DropdownMenuItem<int>> _buildDropdownItemList() {
+    return universities.map<DropdownMenuItem<int>>((e) {
+      return DropdownMenuItem<int>(
+        value: e.id,
+        child: Text(e.name),
+      );
+    }).toList();
+  }
 }
 
 class UniversityLms {
@@ -290,18 +305,16 @@ class UniversityLms {
 
   const UniversityLms(this.id, this.name);
 
-  static const List<UniversityLms> list = [
-    UniversityLms(0, "Canvas (canvas.instructure.com)"),
-    UniversityLms(1, "岐阜大学 (AiMS Gifu)"),
-    UniversityLms(2, "慶應義塾大学 (K-LMS)"),
-  ];
+  static Future<List<UniversityLms>> fetch() async {
+    var res = await FirebaseFunctions.instanceFor(region: "asia-northeast1")
+        .httpsCallable("getUniversities")();
 
-  static List<DropdownMenuItem<int>> getDropdownItemList() {
-    return list.map<DropdownMenuItem<int>>((e) {
-      return DropdownMenuItem<int>(
-        value: e.id,
-        child: Text(e.name),
-      );
-    }).toList();
+    return res.data
+        .map<UniversityLms>((e) => UniversityLms.fromJson(Map.from(e)))
+        .toList();
   }
+
+  UniversityLms.fromJson(Map<String, dynamic> map)
+      : id = map["id"],
+        name = map["name"];
 }

@@ -1,4 +1,5 @@
 import 'package:event_bus/event_bus.dart';
+import 'package:submon/pages/home_page.dart';
 
 final eventBus = EventBus();
 
@@ -35,7 +36,7 @@ class SetAdHidden {
 }
 
 class SwitchBottomNav {
-  int index;
+  BottomNavItemId id;
 
-  SwitchBottomNav(this.index);
+  SwitchBottomNav(this.id);
 }

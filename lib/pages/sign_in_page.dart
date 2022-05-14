@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -484,12 +485,16 @@ Future<void> completeLogin(UserCredential result, BuildContext context) async {
       var doc =
           FirebaseFirestore.instance.collection("users").doc(result.user!.uid);
       await doc.get();
+      FirebaseAnalytics.instance
+          .logLogin(loginMethod: result.credential!.providerId);
       showSnackBar(context, "ログインしました");
     } on FirebaseException catch (e) {
       if (e.code == "permission-denied") {
         showSnackBar(context, "アカウントを作成しています。しばらくお待ち下さい・・・",
             duration: const Duration(seconds: 10));
         await FirestoreProvider.initializeUser();
+        FirebaseAnalytics.instance
+            .logSignUp(signUpMethod: result.credential!.providerId);
         showSnackBar(context, "アカウントを作成しました");
       } else {
         rethrow;

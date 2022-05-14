@@ -140,6 +140,7 @@ class _SubmissionListState extends State<SubmissionList> {
     if (!widget.done && _enableSE == true) {
       _audioCache.play("audio/decision28.mp3");
     }
+
     showSnackBar(context, !widget.done ? "完了にしました" : "完了を外しました", action: SnackBarAction(
       label: "元に戻す",
       textColor: Colors.pinkAccent,
