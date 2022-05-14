@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:submon/components/color_picker_dialog.dart';
@@ -7,6 +10,7 @@ import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:http/http.dart' as http;
 
 class CanvasLmsSyncPage extends StatefulWidget {
   const CanvasLmsSyncPage({Key? key}) : super(key: key);
@@ -70,9 +74,9 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
                       const SizedBox(height: 16),
                       Text(
                         '大学等で利用するCanvas LMS(※)を Submon に連携することが出来ます。'
-                        '月曜日〜土曜日の18:00にCanvasに登録された提出物を同期し、Submonに自動的に追加します。\n\n'
-                        '以下から大学名を選択し、以下の方法で取得したアクセストークンを貼り付けてください。(提出物の同期以外の目的でこのアクセストークンを利用することはありません。)\n\n'
-                        '※大学によって通称が異なります(例えば岐阜大学なら「AiMS Gifu」など)。',
+                            '月曜日〜土曜日の18:00にCanvasに登録された提出物を同期し、Submonに自動的に追加します。\n\n'
+                            '以下から大学名を選択し、以下の方法で取得したアクセストークンを貼り付けてください。(提出物の同期以外の目的でこのアクセストークンを利用することはありません。)\n\n'
+                            '※大学によって通称が異なります(例えば岐阜大学なら「AiMS Gifu」など)。',
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       const SizedBox(height: 32),
@@ -153,7 +157,7 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
                         SettingsTile(
                           title: "連携状態",
                           subtitle:
-                              "連携中 (${universities.firstWhereOrNull((e) => e.id == canvas!.universityId)?.name})",
+                          "連携中 (${universities.firstWhereOrNull((e) => e.id == canvas!.universityId)?.name})",
                         ),
                         SettingsTile(
                           title: "最終同期",
@@ -167,20 +171,20 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
                             showSimpleDialog(context, "注意",
                                 "本機能は短時間に何度も実行しないでください。\n\n今すぐ同期しますか？",
                                 showCancel: true, onOKPressed: () async {
-                              showLoadingModal(context);
-                              try {
-                                await FirebaseFunctions.instanceFor(
+                                  showLoadingModal(context);
+                                  try {
+                                    await FirebaseFunctions.instanceFor(
                                         region: "asia-northeast1")
-                                    .httpsCallable("canvasSyncNow")();
-                                Navigator.pop(context);
-                                showSimpleDialog(context, "完了",
-                                    "同期リクエストを送信しました。結果は本画面でご確認ください。");
-                              } catch (e) {
-                                Navigator.pop(context);
-                                showSimpleDialog(context, "エラー", "エラーが発生しました。");
-                                print(e);
-                              }
-                            });
+                                        .httpsCallable("canvasSyncNow")();
+                                    Navigator.pop(context);
+                                    showSimpleDialog(context, "完了",
+                                        "同期リクエストを送信しました。結果は本画面でご確認ください。");
+                                  } catch (e) {
+                                    Navigator.pop(context);
+                                    showSimpleDialog(context, "エラー", "エラーが発生しました。");
+                                    print(e);
+                                  }
+                                });
                           },
                         ),
                         SettingsTile(
@@ -192,7 +196,7 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
                                 builder: (_) {
                                   return ColorPickerDialog(
                                       initialColor:
-                                          Color(canvas!.submissionColor));
+                                      Color(canvas!.submissionColor));
                                 },
                               );
                               if (result != null) {
@@ -206,7 +210,7 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
                         SettingsTile(
                             title: "同期除外リストのクリア",
                             subtitle:
-                                "提出物を削除すると自動的に除外リストに登録されます。このリストをクリアすると、次回同期時に追加されるようになります。",
+                            "提出物を削除すると自動的に除外リストに登録されます。このリストをクリアすると、次回同期時に追加されるようになります。",
                             onTap: () {
                               showSimpleDialog(
                                   context, "確認", "同期除外リストをクリアしますか？",
@@ -224,13 +228,13 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
                               showSimpleDialog(context, "確認",
                                   "連携を解除しますか？\n※アクセストークンを再生成する必要があります",
                                   showCancel: true, onOKPressed: () async {
-                                showLoadingModal(context);
-                                await FirestoreProvider.disconnectCanvasLms();
-                                Navigator.pop(context);
-                                setState(() {
-                                  connected = false;
-                                });
-                              });
+                                    showLoadingModal(context);
+                                    await FirestoreProvider.disconnectCanvasLms();
+                                    Navigator.pop(context);
+                                    setState(() {
+                                      connected = false;
+                                    });
+                                  });
                             }),
                         SettingsTile(
                           subtitle: "同期は月〜土(18:00)に行われます",
@@ -259,9 +263,9 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
 
     try {
       var result =
-          await FirebaseFunctions.instanceFor(region: "asia-northeast1")
-              .httpsCallable("validateCanvasAccessToken")
-              .call({
+      await FirebaseFunctions.instanceFor(region: "asia-northeast1")
+          .httpsCallable("validateCanvasAccessToken")
+          .call({
         "universityId": _currentUniversityId,
         "accessToken": _accessTokenController.text,
       });
@@ -306,10 +310,18 @@ class UniversityLms {
   const UniversityLms(this.id, this.name);
 
   static Future<List<UniversityLms>> fetch() async {
-    var res = await FirebaseFunctions.instanceFor(region: "asia-northeast1")
-        .httpsCallable("getUniversities")();
+    String url;
+    if (kReleaseMode) {
+      url =
+          "https://asia-northeast1-submon-prod.cloudfunctions.net/getUniversities";
+    } else {
+      url =
+          "https://asia-northeast1-submon-mgr.cloudfunctions.net/getUniversities";
+    }
+    var res = await http.get(Uri.parse(url));
 
-    return res.data
+    return const JsonDecoder()
+        .convert(res.body)
         .map<UniversityLms>((e) => UniversityLms.fromJson(Map.from(e)))
         .toList();
   }
