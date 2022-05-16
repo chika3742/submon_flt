@@ -281,8 +281,8 @@ class _SignInPageState extends State<SignInPage> {
       } else {
         return await signInWithCredential(cred);
       }
-    } on FirebaseAuthException catch (e) {
-      handleCredentialError(e);
+    } on FirebaseAuthException catch (e, stack) {
+      handleCredentialError(e, stack);
     } on PlatformException catch (e, stackTrace) {
       print(e);
       print(stackTrace);
@@ -334,8 +334,8 @@ class _SignInPageState extends State<SignInPage> {
       } else {
         return await signInWithCredential(cred);
       }
-    } on FirebaseAuthException catch (e) {
-      handleCredentialError(e);
+    } on FirebaseAuthException catch (e, stack) {
+      handleCredentialError(e, stack);
     } catch (e, stackTrace) {
       print(e);
       print(stackTrace);
@@ -381,8 +381,8 @@ class _SignInPageState extends State<SignInPage> {
       } else {
         return await signInWithCredential(cred);
       }
-    } on FirebaseAuthException catch (e) {
-      handleCredentialError(e);
+    } on FirebaseAuthException catch (e, stack) {
+      handleCredentialError(e, stack);
       setState(() {
         loading = true;
       });
@@ -394,7 +394,7 @@ class _SignInPageState extends State<SignInPage> {
     return FirebaseAuth.instance.signInWithCredential(credential);
   }
 
-  void handleCredentialError(FirebaseAuthException e) {
+  void handleCredentialError(FirebaseAuthException e, StackTrace stack) {
     switch (e.code) {
       case "account-exists-with-different-credential":
         showSnackBar(context, "このアカウントに紐付けられたメールアドレスのユーザーが既に存在します。");
@@ -404,7 +404,7 @@ class _SignInPageState extends State<SignInPage> {
         showSnackBar(context, "エラー: 資格情報が無効です");
         break;
       default:
-        handleAuthError(e, context);
+        handleAuthError(e, stack, context);
     }
   }
 
@@ -440,8 +440,9 @@ class _SignInPageState extends State<SignInPage> {
                     email: currentUser.email!,
                     actionCodeSettings: actionCodeSettings());
                 showSnackBar(context, "送信しました");
-              } catch (e) {
+              } catch (e, stack) {
                 showSnackBar(context, "エラーが発生しました");
+                recordErrorToCrashlytics(e, stack);
               }
               Navigator.pop(context); // Close Loading modal
               Navigator.pop(context); // Close sign in page
@@ -464,13 +465,13 @@ class _SignInPageState extends State<SignInPage> {
           }
 
           Navigator.pop(context, result != null && result.user != null);
-        } on FirebaseAuthException catch (e) {
+        } on FirebaseAuthException catch (e, stack) {
           switch (e.code) {
             case "user-mismatch":
               showSnackBar(context, "ユーザーがログインされているものと一致しません");
               break;
             default:
-              handleAuthError(e, context);
+              handleAuthError(e, stack, context);
           }
           Navigator.pop(context);
         }

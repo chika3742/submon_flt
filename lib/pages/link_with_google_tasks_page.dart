@@ -111,8 +111,9 @@ class _LinkWithGoogleTasksPageState extends State<LinkWithGoogleTasksPage> {
                             googleTasksAvailable = false;
                           });
                           showSnackBar(context, "連携を解除しました。");
-                        } catch (e) {
+                        } catch (e, stack) {
                           showSnackBar(context, "エラーが発生しました。");
+                          recordErrorToCrashlytics(e, stack);
                         } finally {
                           Navigator.pop(context);
                         }

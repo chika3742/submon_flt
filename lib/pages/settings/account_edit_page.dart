@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
@@ -142,7 +143,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
 
       showSnackBar(context, "送信しました。ご確認ください。");
       Navigator.pop(context);
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e, stack) {
       switch (e.code) {
         case "invalid-email":
           _form1Error = "メールアドレスの形式が正しくありません";
@@ -156,10 +157,11 @@ class _AccountEditPageState extends State<AccountEditPage> {
           if (result == true) await changeEmail();
           break;
         default:
-          handleAuthError(e, context);
+          handleAuthError(e, stack, context);
       }
-    } catch (e) {
+    } catch (e, stack) {
       showSnackBar(context, "エラーが発生しました");
+      recordErrorToCrashlytics(e, stack);
     }
     setState(() {
       _loading = false;
@@ -188,8 +190,8 @@ class _AccountEditPageState extends State<AccountEditPage> {
 
       showSnackBar(context, "送信しました。ご確認ください。");
       Navigator.pop(context);
-    } on FirebaseAuthException catch (e) {
-      handleAuthError(e, context);
+    } on FirebaseAuthException catch (e, stack) {
+      handleAuthError(e, stack, context);
     }
     setState(() {
       _loading = false;
@@ -231,8 +233,8 @@ class _AccountEditPageState extends State<AccountEditPage> {
           .updateDisplayName(_form1Controller.text);
       Navigator.pop(context);
       showSnackBar(context, "変更しました");
-    } on FirebaseAuthException catch (e) {
-      handleAuthError(e, context);
+    } on FirebaseAuthException catch (e, stack) {
+      handleAuthError(e, stack, context);
     }
 
     setState(() {
@@ -276,7 +278,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
 
       showSnackBar(context, "アカウントを削除しました。");
       backToWelcomePage(context);
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e, stack) {
       if (e.code == "requires-recent-login") {
         showSnackBar(context, "セキュリティのため再ログインが必要です。");
         var result = await Navigator.pushNamed(context, "/signIn", arguments: {
@@ -285,9 +287,12 @@ class _AccountEditPageState extends State<AccountEditPage> {
         if (result == true) {
           await executeAccountDeletion();
         }
+      } else {
+        handleAuthError(e, stack, context);
       }
-    } catch (e) {
+    } catch (e, stack) {
       showSnackBar(context, "アカウントの削除に失敗しました。");
+      recordErrorToCrashlytics(e, stack);
     }
   }
 }

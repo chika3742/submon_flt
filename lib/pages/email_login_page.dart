@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/main.dart';
 import 'package:submon/utils/ui.dart';
 
 import '../utils/utils.dart';
@@ -108,8 +110,8 @@ class EmailLoginPageState extends State<EmailLoginPage>
                                 )),
                             const SizedBox(height: 8),
                             OutlinedButton(
-                              child: const Text("パスワードを忘れた場合"),
                               onPressed: onPWForgot,
+                              child: const Text("パスワードを忘れた場合"),
                             )
                           ],
                         ),
@@ -130,7 +132,6 @@ class EmailLoginPageState extends State<EmailLoginPage>
                       child: SizedBox(
                         width: 80,
                         child: OutlinedButton(
-                          child: const Text("戻る"),
                           onPressed: processing
                               ? null
                               : () {
@@ -144,13 +145,14 @@ class EmailLoginPageState extends State<EmailLoginPage>
                                     Navigator.pop(context);
                                   }
                                 },
+                          child: const Text("戻る"),
                         ),
                       ),
                     ),
                     const Spacer(),
                     ElevatedButton(
-                      child: const Text("次へ"),
                       onPressed: processing ? null : next,
+                      child: const Text("次へ"),
                     ),
                   ],
                 ),
@@ -218,7 +220,9 @@ class EmailLoginPageState extends State<EmailLoginPage>
 
                   try {
                     await sendSignInEmail();
-                  } catch (e) {
+                  } catch (e, st) {
+                    Navigator.pop(context);
+                    FirebaseCrashlytics.instance.recordError(e, st);
                     showSnackBar(context, "エラーが発生しました。");
                   }
 
@@ -273,7 +277,7 @@ class EmailLoginPageState extends State<EmailLoginPage>
           Navigator.of(context).pop(result);
         }
       }
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e, stack) {
       switch (e.code) {
         case 'invalid-email':
           setState(() {
@@ -295,7 +299,7 @@ class EmailLoginPageState extends State<EmailLoginPage>
             enableEmailForm = false;
             enablePWForm = false;
           });
-          handleAuthError(e, context);
+          handleAuthError(e, stack, context);
           break;
       }
     }
@@ -322,10 +326,10 @@ class EmailLoginPageState extends State<EmailLoginPage>
       prefs.emailForUrlLogin = emailController.text;
     });
 
-    Navigator.pop(context);
+    Navigator.pop(Application.globalKey.currentContext!);
 
     showSimpleDialog(
-        context,
+        Application.globalKey.currentContext!,
         "完了",
         "メールを入力されたアドレスに送信しました。受信したメールのリンクをタップしてログインしてください。\n\n"
             "※メールは「chikach.net」ドメインから送信されます。迷惑メールに振り分けられていないかご確認ください。",
@@ -348,8 +352,8 @@ class EmailLoginPageState extends State<EmailLoginPage>
             email: emailController.text,
             actionCodeSettings: actionCodeSettings());
         showSnackBar(context, "送信しました。ご確認ください。");
-      } on FirebaseAuthException catch (e) {
-        handleAuthError(e, context);
+      } on FirebaseAuthException catch (e, stack) {
+        handleAuthError(e, stack, context);
       } finally {
         setState(() {
           processing = false;
@@ -459,7 +463,7 @@ class _EmailRegisterPageState extends State<EmailRegisterPage> {
 
       showSnackBar(context, "アカウントを作成しました");
       Navigator.pop(context, result);
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e, stack) {
       setState(() {
         _loading = false;
       });
@@ -468,7 +472,7 @@ class _EmailRegisterPageState extends State<EmailRegisterPage> {
           showSnackBar(context, "パスワードが短すぎます。最低6文字で指定してください。");
           break;
         default:
-          handleAuthError(e, context);
+          handleAuthError(e, stack, context);
           break;
       }
     }

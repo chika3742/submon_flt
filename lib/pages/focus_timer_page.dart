@@ -396,11 +396,11 @@ class _FocusTimerPageState extends State<FocusTimerPage>
       _timerFinished = false;
     });
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
-      try {
+      if (mounted) {
         setState(() {
           _remainingTime -= const Duration(seconds: 1);
         });
-      } catch (e) {}
+      }
       if (_remainingTime.inSeconds == 0) {
         _stopTimer();
         _disableDnd();
@@ -421,11 +421,11 @@ class _FocusTimerPageState extends State<FocusTimerPage>
     _stopTimer();
     _disableDnd();
     _breakTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
-      try {
+      if (mounted) {
         setState(() {
           _breakRemainingTime -= const Duration(seconds: 1);
         });
-      } catch (e) {}
+      }
       if (_breakRemainingTime.inSeconds == 0) {
         _stopBreakTimer();
         _startBlinkTimer();
@@ -440,21 +440,21 @@ class _FocusTimerPageState extends State<FocusTimerPage>
 
   void _startBlinkTimer() {
     _blinkTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      try {
+      if (mounted) {
         setState(() {
           _displayTimer = !_displayTimer;
         });
-      } catch (e) {}
+      }
     });
   }
 
   void _stopBlinkTimer() {
     _blinkTimer?.cancel();
-    try {
+    if (mounted) {
       setState(() {
         _displayTimer = true;
       });
-    } catch (e) {}
+    }
   }
 
   String _getTimerString(Duration timer) {

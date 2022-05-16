@@ -141,11 +141,12 @@ class _SubmissionListState extends State<SubmissionList> {
       _audioCache.play("audio/decision28.mp3");
     }
 
-    showSnackBar(context, !widget.done ? "完了にしました" : "完了を外しました", action: SnackBarAction(
-      label: "元に戻す",
-      textColor: Colors.pinkAccent,
-      onPressed: () {
-        try {
+    showSnackBar(context, !widget.done ? "完了にしました" : "完了を外しました",
+        action: SnackBarAction(
+          label: "元に戻す",
+          textColor: Colors.pinkAccent,
+          onPressed: () {
+            try {
               setState(() {
                 var actualIndex =
                     items!.length <= index ? items!.length : index;
@@ -174,16 +175,19 @@ class _SubmissionListState extends State<SubmissionList> {
     try {
       setState(() {
         items!.removeAt(index);
-        _listKey.currentState?.removeItem(index, (context, animation) => Container(), duration: const Duration(milliseconds: 1));
+        _listKey.currentState?.removeItem(
+            index, (context, animation) => Container(),
+            duration: const Duration(milliseconds: 1));
       });
     } catch (e) {
       print(e);
     }
-    showSnackBar(context, "削除しました", action: SnackBarAction(
-      label: "元に戻す",
-      textColor: Colors.pinkAccent,
-      onPressed: () {
-        setState(() {
+    showSnackBar(context, "削除しました",
+        action: SnackBarAction(
+          label: "元に戻す",
+          textColor: Colors.pinkAccent,
+          onPressed: () {
+            setState(() {
               var actualIndex = items!.length <= index ? items!.length : index;
               items!.insert(actualIndex, item);
               _listKey.currentState?.insertItem(actualIndex);
@@ -192,6 +196,6 @@ class _SubmissionListState extends State<SubmissionList> {
               });
             });
           },
-    ));
+        ));
   }
 }

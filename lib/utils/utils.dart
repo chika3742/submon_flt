@@ -37,7 +37,8 @@ ActionCodeSettings actionCodeSettings([String url = "https://chikach.net"]) {
   );
 }
 
-void handleAuthError(FirebaseAuthException e, BuildContext context) {
+void handleAuthError(
+    FirebaseAuthException e, StackTrace stack, BuildContext context) {
   switch (e.code) {
     case "user-not-found":
       showSnackBar(context, "ユーザーが見つかりません。既に削除された可能性があります。");
@@ -54,7 +55,8 @@ void handleAuthError(FirebaseAuthException e, BuildContext context) {
       break;
     default:
       showSnackBar(context, "エラーが発生しました。(${e.code})",
-          duration: const Duration(minutes: 1));
+          duration: const Duration(seconds: 30));
+      recordErrorToCrashlytics(e, stack);
   }
   debugPrint(e.message);
 }
@@ -127,6 +129,10 @@ void createNewSubmissionForTimetable(
     "initialTitle": name,
     "initialDeadline": deadline,
   });
+}
+
+void recordErrorToCrashlytics(dynamic exception, StackTrace stackTrace) {
+  FirebaseCrashlytics.instance.recordError(exception, stackTrace);
 }
 
 enum AdUnit {
