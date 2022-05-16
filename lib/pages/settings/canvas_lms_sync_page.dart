@@ -4,13 +4,15 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:submon/components/color_picker_dialog.dart';
 import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:http/http.dart' as http;
+
+import '../../utils/utils.dart';
 
 class CanvasLmsSyncPage extends StatefulWidget {
   const CanvasLmsSyncPage({Key? key}) : super(key: key);
@@ -173,18 +175,18 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
                                 showCancel: true, onOKPressed: () async {
                                   showLoadingModal(context);
                                   try {
-                                    await FirebaseFunctions.instanceFor(
+                                await FirebaseFunctions.instanceFor(
                                         region: "asia-northeast1")
-                                        .httpsCallable("canvasSyncNow")();
-                                    Navigator.pop(context);
-                                    showSimpleDialog(context, "完了",
-                                        "同期リクエストを送信しました。結果は本画面でご確認ください。");
-                                  } catch (e) {
-                                    Navigator.pop(context);
-                                    showSimpleDialog(context, "エラー", "エラーが発生しました。");
-                                    print(e);
-                                  }
-                                });
+                                    .httpsCallable("canvasSyncNow")();
+                                Navigator.pop(context);
+                                showSimpleDialog(context, "完了",
+                                    "同期リクエストを送信しました。結果は本画面でご確認ください。");
+                              } catch (e, stack) {
+                                Navigator.pop(context);
+                                showSimpleDialog(context, "エラー", "エラーが発生しました。");
+                                recordErrorToCrashlytics(e, stack);
+                              }
+                            });
                           },
                         ),
                         SettingsTile(

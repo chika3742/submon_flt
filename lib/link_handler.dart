@@ -80,7 +80,7 @@ void handleAuthUri(Uri url, List<AuthUriMode> acceptableMode) async {
   ActionCodeInfo codeInfo;
   try {
     codeInfo = await auth.checkActionCode(code);
-  } on FirebaseAuthException catch (e) {
+  } on FirebaseAuthException catch (e, stack) {
     Navigator.of(context).pop();
     switch (e.code) {
       case "invalid-action-code":
@@ -88,7 +88,7 @@ void handleAuthUri(Uri url, List<AuthUriMode> acceptableMode) async {
         showSnackBar(context, "このリンクは無効です。期限が切れたか、形式が正しくありません。");
         break;
       default:
-        handleAuthError(e, context);
+        handleAuthError(e, stack, context);
         break;
     }
     return;
@@ -127,9 +127,9 @@ void handleAuthUri(Uri url, List<AuthUriMode> acceptableMode) async {
       showSnackBar(context, "メールアドレスの変更が完了しました。再度ログインが必要となります。");
       Navigator.pushNamed(context, "/signIn");
     }
-  } on FirebaseAuthException catch (e) {
+  } on FirebaseAuthException catch (e, stack) {
     Navigator.of(context, rootNavigator: true).pop(); // dismiss loading modal
-    handleAuthError(e, context);
+    handleAuthError(e, stack, context);
   }
 }
 

@@ -5,7 +5,6 @@ import 'dart:ui' as ui;
 
 import 'package:camera/camera.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
@@ -20,6 +19,7 @@ import 'package:submon/utils/text_recognized_candidate_painter.dart';
 import 'package:submon/utils/ui.dart';
 
 import '../../main.dart';
+import '../../utils/utils.dart';
 
 const policyDialogTitle = "プライバシーポリシー";
 const policyDialogContent = "是非最後までお読みください。\n\n"
@@ -587,8 +587,9 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
         _isPickingMode = true;
       });
       recognizeText(imageFile);
-    } catch (e) {
+    } catch (e, stack) {
       showSnackBar(context, "エラーが発生しました");
+      recordErrorToCrashlytics(e, stack);
     } finally {
       timer.cancel();
       setState(() {
@@ -671,7 +672,7 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
         }
       });
     } catch (e, stack) {
-      FirebaseCrashlytics.instance.recordError(e, stack);
+      recordErrorToCrashlytics(e, stack);
       showSimpleDialog(
         context,
         "エラー",

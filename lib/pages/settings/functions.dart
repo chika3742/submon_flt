@@ -307,15 +307,17 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
         });
         showSnackBar(context, "パスワードレス アカウントでパスワードの変更はできません");
       }
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e, stack) {
       Navigator.pop(context);
       if (e.code == "user-not-found") {
         showSnackBar(context, "ユーザーが見つかりません。再度ログインしてください。");
       } else {
         showSnackBar(context, "アカウント状態の取得に失敗しました (Code: ${e.code})");
       }
-    } catch (e) {
+      handleAuthError(e, stack, context);
+    } catch (e, stack) {
       showSnackBar(context, "エラーが発生しました");
+      recordErrorToCrashlytics(e, stack);
     }
   }
 
