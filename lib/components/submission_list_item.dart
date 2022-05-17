@@ -9,6 +9,7 @@ import 'package:submon/db/digestive.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/pages/submission_detail_page.dart';
 import 'package:submon/utils/ui.dart';
+import 'package:submon/utils/utils.dart';
 
 import 'digestive_edit_bottom_sheet.dart';
 
@@ -20,10 +21,10 @@ class SubmissionListItem extends StatefulWidget {
   final Function? onDelete;
 
   @override
-  _SubmissionListItemState createState() => _SubmissionListItemState();
+  SubmissionListItemState createState() => SubmissionListItemState();
 }
 
-class _SubmissionListItemState extends State<SubmissionListItem> {
+class SubmissionListItemState extends State<SubmissionListItem> {
   var _weekView = true;
   late Submission _item;
 
@@ -69,6 +70,7 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
         elevation: 4,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(16))),
+        margin: const EdgeInsets.all(8),
         child: OpenContainer(
           useRootNavigator: true,
           routeSettings: const RouteSettings(name: "/submission/detail"),
@@ -255,7 +257,6 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
           openBuilder: (context, cb) => SubmissionDetailPage(widget.item.id!),
           transitionDuration: const Duration(milliseconds: 300),
         ),
-        margin: const EdgeInsets.all(8),
       ),
     );
   }
@@ -276,20 +277,18 @@ class _SubmissionListItemState extends State<SubmissionListItem> {
       case _ContextMenuAction.share:
         showLoadingModal(context);
 
-        var link = await FirebaseDynamicLinks.instance.buildShortLink(
-            DynamicLinkParameters(
-                link:
-                    Uri.parse(
-                    "https://app.submon.chikach.net/submission-share"
-                            "?title=${Uri.encodeComponent(widget.item.title)}&"
-                            "date=${widget.item.date!.toUtc().toIso8601String()}&" +
-                        (widget.item.detail != ""
-                            ? "detail=${Uri.encodeComponent(widget.item.detail)}&"
-                            : "") +
-                        "color=${widget.item.color.value}"),
-                uriPrefix: "https://submon.page.link"));
+        var link = await FirebaseDynamicLinks.instance
+            .buildShortLink(DynamicLinkParameters(
+                link: Uri.parse(getAppUrl("/submission-sharing"
+                    "?title=${Uri.encodeComponent(widget.item.title)}"
+                    "&date=${widget.item.date!.toUtc().toIso8601String()}"
+                    "${widget.item.detail != "" ? "&detail=${Uri.encodeComponent(widget.item.detail)}" : ""}"
+                    "&color=${widget.item.color.value}")),
+                uriPrefix: getDynamicLinkDomain(withScheme: true)));
 
-        Navigator.of(context, rootNavigator: true).pop(context);
+        if (mounted) {
+          Navigator.of(context, rootNavigator: true).pop(context);
+        }
 
         Share.share(link.shortUrl.toString());
         break;
