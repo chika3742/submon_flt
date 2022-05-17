@@ -382,9 +382,8 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
   Future<tasks.Task> makeTaskRequest(Submission data) async {
     var linkData = await FirebaseDynamicLinks.instance
         .buildShortLink(DynamicLinkParameters(
-      link:
-          Uri.parse("https://app.submon.chikach.net/submission?id=${data.id}"),
-      uriPrefix: "https://submon.page.link",
+      link: Uri.parse(getAppUrl("/submission?id=${data.id}")),
+      uriPrefix: getDynamicLinkDomain(withScheme: true),
     ));
     return tasks.Task(
       id: data.googleTasksTaskId,

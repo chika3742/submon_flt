@@ -33,8 +33,24 @@ ActionCodeSettings actionCodeSettings([String url = "https://chikach.net"]) {
     androidPackageName: "net.chikach.submon",
     iOSBundleId: "net.chikach.submon",
     handleCodeInApp: true,
-    dynamicLinkDomain: "submon.page.link",
+    dynamicLinkDomain: getDynamicLinkDomain(),
   );
+}
+
+String getDynamicLinkDomain({bool withScheme = false}) {
+  if (kReleaseMode) {
+    return "${withScheme ? "https://" : ""}s.chikach.net";
+  } else {
+    return "${withScheme ? "https://" : ""}dev.s.chikach.net";
+  }
+}
+
+String getAppUrl(String path) {
+  if (kReleaseMode) {
+    return "https://app.submon.chikach.net$path";
+  } else {
+    return "https://dev.app.submon.chikach.net$path";
+  }
 }
 
 void handleAuthError(
