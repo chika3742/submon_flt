@@ -39,17 +39,17 @@ ActionCodeSettings actionCodeSettings([String url = "https://chikach.net"]) {
 
 String getDynamicLinkDomain({bool withScheme = false}) {
   if (kReleaseMode) {
-    return "${withScheme ? "https://" : ""}s.chikach.net";
+    return "${withScheme ? "https://" : ""}open.submon.app";
   } else {
-    return "${withScheme ? "https://" : ""}dev.s.chikach.net";
+    return "${withScheme ? "https://" : ""}dev.open.submon.app";
   }
 }
 
 String getAppUrl(String path) {
   if (kReleaseMode) {
-    return "https://app.submon.chikach.net$path";
+    return "https://submon.app$path";
   } else {
-    return "https://dev.app.submon.chikach.net$path";
+    return "https://dev.submon.app$path";
   }
 }
 

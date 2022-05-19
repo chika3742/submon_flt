@@ -4,8 +4,10 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:submon/method_channel/channels.dart';
 import 'package:submon/utils/ui.dart';
@@ -23,6 +25,26 @@ class TwitterSignIn {
       required this.apiSecret,
       required this.redirectUri,
       required this.context});
+
+  static TwitterSignIn getInstance(BuildContext context) {
+    String apiKey;
+    String apiSecret;
+
+    if (kReleaseMode) {
+      apiKey = dotenv.env["TWITTER_API_KEY"]!;
+      apiSecret = dotenv.env["TWITTER_API_SECRET"]!;
+    } else {
+      apiKey = dotenv.env["TWITTER_API_KEY_DEV"]!;
+      apiSecret = dotenv.env["TWITTER_API_SECRET_DEV"]!;
+    }
+
+    return TwitterSignIn(
+      apiKey: apiKey,
+      apiSecret: apiSecret,
+      redirectUri: "submon://",
+      context: context,
+    );
+  }
 
   Future<TwitterAuthResult?> signIn() async {
     var modalShown = true;
