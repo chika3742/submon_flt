@@ -10,7 +10,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -53,17 +52,6 @@ class _SignInPageState extends State<SignInPage> {
     if (widget.reAuth) {
       reAuth();
     }
-    // if (widget.forMigration) {
-    //   Firebase.initializeApp(
-    //       name: "old",
-    //       options: const FirebaseOptions(
-    //         apiKey: "***REMOVED***",
-    //         appId: "1:218237880785:android:4ec8e02f50fe7dcd",
-    //         messagingSenderId: "218237880785",
-    //         projectId: "mydatauploader",
-    //       )
-    //   );
-    // }
   }
 
   @override
@@ -346,12 +334,7 @@ class _SignInPageState extends State<SignInPage> {
 
   // sign in with twitter
   Future<UserCredential?> signInWithTwitter() async {
-    var authResult = await TwitterSignIn(
-      apiKey: dotenv.env["TWITTER_API_KEY"]!,
-      apiSecret: dotenv.env["TWITTER_API_SECRET"]!,
-      redirectUri: "submon://",
-      context: context,
-    ).signIn();
+    var authResult = await TwitterSignIn.getInstance(context).signIn();
 
     if (authResult?.errorMessage != null) {
       showSnackBar(context, authResult!.errorMessage!);
@@ -384,7 +367,7 @@ class _SignInPageState extends State<SignInPage> {
     } on FirebaseAuthException catch (e, stack) {
       handleCredentialError(e, stack);
       setState(() {
-        loading = true;
+        loading = false;
       });
       return null;
     }
