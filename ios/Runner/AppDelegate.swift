@@ -86,14 +86,6 @@ import WidgetKit
     }
     
     private func openUrl(path: String) {
-        let domain: String
-        #if RELEASE
-            domain = "open.submon.app"
-        #else
-            domain = "dev.open.submon.app"
-        #endif
-        
-                
         UIApplication.shared.open(URL(string: "submon://\(path)")!, options: [:], completionHandler: nil)
     }
     
