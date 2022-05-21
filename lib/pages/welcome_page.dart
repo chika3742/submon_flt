@@ -121,11 +121,11 @@ class _WelcomePageState extends State<WelcomePage> {
                   children: const [
                     OutlinedButton(
                       child: Text('利用規約'),
-                      onPressed: openTermsOfUse,
+                      onPressed: Browser.openTermsOfUse,
                     ),
                     OutlinedButton(
                       child: Text('プライバシーポリシー'),
-                      onPressed: openPrivacyPolicy,
+                      onPressed: Browser.openPrivacyPolicy,
                     ),
                   ],
                 ),

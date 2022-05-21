@@ -1,16 +1,12 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:crypto/crypto.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -22,8 +18,10 @@ import 'package:submon/twitter_sign_in.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
+import '../apple_sign_in.dart';
 import '../db/firestore_provider.dart';
 import '../method_channel/messaging.dart';
+import '../utils/dynamic_links.dart';
 
 class SignInPage extends StatefulWidget {
   SignInPage({Key? key, dynamic arguments})
@@ -77,19 +75,19 @@ class _SignInPageState extends State<SignInPage> {
                     Row(
                       children: [
                         TextButton(
+                          onPressed: Browser.openTermsOfUse,
                           child: Text("利用規約",
                               style: TextStyle(
                                   color:
                                       Theme.of(context).colorScheme.secondary)),
-                          onPressed: openTermsOfUse,
                         ),
                         const SizedBox(width: 16),
                         TextButton(
+                          onPressed: Browser.openPrivacyPolicy,
                           child: Text("プライバシーポリシー",
                               style: TextStyle(
                                   color:
                                       Theme.of(context).colorScheme.secondary)),
-                          onPressed: openPrivacyPolicy,
                         ),
                       ],
                     ),
@@ -115,94 +113,25 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                     const SizedBox(height: 32),
                     if (Platform.isIOS || Platform.isMacOS)
-                      SizedBox(
-                        width: 250,
-                        height: 50,
-                        child: ElevatedButton.icon(
-                          icon: SvgPicture.asset(
-                            "assets/vector/apple.svg",
-                            color: Colors.white,
-                          ),
-                          style: ElevatedButton.styleFrom(
-                              primary: Colors.blueGrey),
-                          label: const Text("Appleでログイン",
-                              style: TextStyle(color: Colors.white)),
-                          onPressed: !loading && !widget.reAuth
-                              ? () {
-                                  showPlatformDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return PlatformAlertDialog(
-                                          title: const Text("注意"),
-                                          content: const Text(
-                                              "現在、Android版ではAppleログインをご利用いただけません。"
-                                              "そのため、Android端末にデータ移行することができません。続行しますか？"),
-                                          actions: [
-                                            PlatformTextButton(
-                                                child: const Text("Cancel"),
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                }),
-                                            PlatformTextButton(
-                                                child: const Text("OK"),
-                                                onPressed: () async {
-                                                  Navigator.pop(context);
-                                                  wrapSignIn(signInWithApple);
-                                                }),
-                                          ],
-                                        );
-                                      });
-                                }
-                              : null,
-                        ),
+                      Column(
+                        children: [
+                          _buildAppleSignInButton(),
+                          const SizedBox(height: 16),
+                          _buildGoogleSignInButton(),
+                          const SizedBox(height: 16),
+                          _buildTwitterSignInButton(),
+                        ],
+                      )
+                    else
+                      Column(
+                        children: [
+                          _buildGoogleSignInButton(),
+                          const SizedBox(height: 16),
+                          _buildTwitterSignInButton(),
+                          const SizedBox(height: 16),
+                          _buildAppleSignInButton(),
+                        ],
                       ),
-                    if (Platform.isIOS || Platform.isMacOS)
-                      const SizedBox(height: 16),
-                    SizedBox(
-                      width: 250,
-                      height: 50,
-                      child: ElevatedButton.icon(
-                        icon: SvgPicture.asset(
-                          "assets/vector/google.svg",
-                        ),
-                        style: ElevatedButton.styleFrom(primary: Colors.white),
-                        label: const Text("Googleでログイン",
-                            style: TextStyle(color: Colors.black)),
-                        onPressed: !loading && !widget.reAuth
-                            ? () {
-                                wrapSignIn(signInWithGoogle);
-                              }
-                            : null,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: 250,
-                      height: 50,
-                      child: ElevatedButton.icon(
-                        icon: SvgPicture.asset(
-                          "assets/vector/twitter.svg",
-                          color: Colors.white,
-                        ),
-                        style: ElevatedButton.styleFrom(
-                            primary: const Color(0xff1da1f2)),
-                        label: Text("Twitterでログイン",
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelLarge
-                                ?.copyWith(color: Colors.white)),
-                        onPressed: !loading && !widget.reAuth
-                            ? () async {
-                                var result = await signInWithTwitter();
-
-                                if (result != null) {
-                                  await completeLogin(result, context);
-                                  Navigator.pop(context, true);
-                                }
-                              }
-                            : null,
-                      ),
-                    ),
                     const SizedBox(height: 24),
                     if (Platform.isIOS)
                       Text(
@@ -215,19 +144,80 @@ class _SignInPageState extends State<SignInPage> {
                                   .primaryTextTheme
                                   .bodyText1!
                                   .color)),
-                    if (Platform.isAndroid)
-                      const Text(
-                          "現在、ライブラリの不具合のためAndroidにおけるAppleログインの実装を見送っております。",
-                          style: TextStyle(fontSize: 14)),
-                    const SizedBox(height: 8),
-                    // const Text(
-                    //     "現在、ライブラリの不具合のためTwitterログインは利用できません。以前までTwitterログインをご利用になられていた方は恐れ入りますが、しばらくの間は以前のアプリをご利用ください。"),
                   ],
                 ),
               ),
             ],
           ),
         ));
+  }
+
+  Widget _buildAppleSignInButton() {
+    return SizedBox(
+      width: 250,
+      height: 50,
+      child: ElevatedButton.icon(
+        icon: SvgPicture.asset(
+          "assets/vector/apple.svg",
+          color: Colors.white,
+        ),
+        style: ElevatedButton.styleFrom(primary: Colors.blueGrey),
+        label: const Text("Appleでログイン", style: TextStyle(color: Colors.white)),
+        onPressed: !loading && !widget.reAuth
+            ? () {
+                wrapSignIn(signInWithApple);
+              }
+            : null,
+      ),
+    );
+  }
+
+  Widget _buildGoogleSignInButton() {
+    return SizedBox(
+      width: 250,
+      height: 50,
+      child: ElevatedButton.icon(
+        icon: SvgPicture.asset(
+          "assets/vector/google.svg",
+        ),
+        style: ElevatedButton.styleFrom(primary: Colors.white),
+        label: const Text("Googleでログイン", style: TextStyle(color: Colors.black)),
+        onPressed: !loading && !widget.reAuth
+            ? () {
+                wrapSignIn(signInWithGoogle);
+              }
+            : null,
+      ),
+    );
+  }
+
+  Widget _buildTwitterSignInButton() {
+    return SizedBox(
+      width: 250,
+      height: 50,
+      child: ElevatedButton.icon(
+        icon: SvgPicture.asset(
+          "assets/vector/twitter.svg",
+          color: Colors.white,
+        ),
+        style: ElevatedButton.styleFrom(primary: const Color(0xff1da1f2)),
+        label: Text("Twitterでログイン",
+            style: Theme.of(context)
+                .textTheme
+                .labelLarge
+                ?.copyWith(color: Colors.white)),
+        onPressed: !loading && !widget.reAuth
+            ? () async {
+                var result = await signInWithTwitter();
+
+                if (result != null) {
+                  await completeLogin(result, context);
+                  Navigator.pop(context, true);
+                }
+              }
+            : null,
+      ),
+    );
   }
 
   void wrapSignIn(Future<UserCredential?> Function() signInFunc) async {
@@ -281,37 +271,46 @@ class _SignInPageState extends State<SignInPage> {
 
   // sign in with apple
 
-  String generateNonce([int length = 32]) {
-    const charset =
-        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
-    final random = Random.secure();
-    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
-        .join();
-  }
-
-  String sha256ofString(String input) {
-    final bytes = utf8.encode(input);
-    final digest = sha256.convert(bytes);
-    return digest.toString();
-  }
-
   Future<UserCredential?> signInWithApple() async {
     final rawNonce = generateNonce();
-    final nonce = sha256ofString(rawNonce);
+    final state = generateNonce();
+    final nonce = AppleSignIn.sha256ofString(rawNonce);
 
     try {
-      final appleCredential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-        nonce: nonce,
-      );
+      AuthorizationCredentialAppleID appleCredential;
+      if (Platform.isIOS || Platform.isMacOS) {
+        appleCredential = await SignInWithApple.getAppleIDCredential(
+            scopes: [
+              AppleIDAuthorizationScopes.email,
+              AppleIDAuthorizationScopes.fullName,
+            ],
+            nonce: nonce,
+            state: state,
+            webAuthenticationOptions: WebAuthenticationOptions(
+                clientId: "net.chikach.submon.asi",
+                redirectUri: Uri.parse(
+                    "https://asia-northeast1-submon-mgr.cloudfunctions.net/appleSignInRedirector")));
+      } else {
+        setState(() {
+          loading = false;
+        });
+        appleCredential =
+            (await AppleSignIn().signIn(state: state, nonce: nonce))!;
+      }
+
+      if (state != appleCredential.state) {
+        showSnackBar(context, "State mismatch.");
+        return null;
+      }
+
+      setState(() {
+        loading = true;
+      });
 
       final cred = OAuthProvider("apple.com").credential(
-        idToken: appleCredential.identityToken,
-        rawNonce: rawNonce,
-      );
+          accessToken: appleCredential.authorizationCode,
+          idToken: appleCredential.identityToken,
+          rawNonce: rawNonce);
 
       if (widget.reAuth) {
         return await FirebaseAuth.instance.currentUser!
@@ -421,7 +420,8 @@ class _SignInPageState extends State<SignInPage> {
               try {
                 await auth.sendSignInLinkToEmail(
                     email: currentUser.email!,
-                    actionCodeSettings: actionCodeSettings());
+                    actionCodeSettings:
+                        actionCodeSettings(getAppDomain("", withScheme: true)));
                 showSnackBar(context, "送信しました");
               } catch (e, stack) {
                 showSnackBar(context, "エラーが発生しました");
@@ -469,17 +469,17 @@ Future<void> completeLogin(UserCredential result, BuildContext context) async {
       var doc =
           FirebaseFirestore.instance.collection("users").doc(result.user!.uid);
       await doc.get();
-      FirebaseAnalytics.instance
-          .logLogin(loginMethod: result.credential!.providerId);
+      FirebaseAnalytics.instance.logLogin(
+          loginMethod: result.additionalUserInfo?.providerId ?? "unknown");
       showSnackBar(context, "ログインしました");
     } on FirebaseException catch (e) {
       if (e.code == "permission-denied") {
         showSnackBar(context, "アカウントを作成しています。しばらくお待ち下さい・・・",
             duration: const Duration(seconds: 10));
         await FirestoreProvider.initializeUser();
-        FirebaseAnalytics.instance
-            .logSignUp(signUpMethod: result.credential!.providerId);
         showSnackBar(context, "アカウントを作成しました");
+        FirebaseAnalytics.instance.logSignUp(
+            signUpMethod: result.additionalUserInfo?.providerId ?? "unknown");
       } else {
         rethrow;
       }
@@ -488,7 +488,7 @@ Future<void> completeLogin(UserCredential result, BuildContext context) async {
     MessagingPlugin.getToken().then((token) {
       FirestoreProvider.saveNotificationToken(token);
     });
-    updateWidgets();
+    MainMethodPlugin.updateWidgets();
     SharedPrefs.use((prefs) {
       prefs.firestoreLastChanged = null;
     });

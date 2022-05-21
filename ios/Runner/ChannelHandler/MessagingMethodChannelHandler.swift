@@ -24,13 +24,7 @@ class MessagingMethodChannelHandler {
             requestNotificationPermission(result: result)
             break
         case "getToken":
-            Messaging.messaging().token(completion: { (token, error) in
-                if error != nil {
-                    result(nil)
-                } else if let token = token {
-                    result(token)
-                }
-            })
+            getToken(result: result)
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -47,6 +41,16 @@ class MessagingMethodChannelHandler {
                 result(NotificationPermissionState.denied.rawValue)
             }
         }
+    }
+    
+    private func getToken(result: @escaping FlutterResult) {
+        Messaging.messaging().token(completion: { (token, error) in
+            if error != nil {
+                result(error)
+            } else if let token = token {
+                result(token)
+            }
+        })
     }
 }
 

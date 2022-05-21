@@ -15,6 +15,8 @@ class UriEventChannelHandler: NSObject {
     
     init(binaryMessenger: FlutterBinaryMessenger) {
         channel = FlutterEventChannel(name: channelName, binaryMessenger: binaryMessenger)
+        super.init()
+        channel.setStreamHandler(self)
     }
 }
 

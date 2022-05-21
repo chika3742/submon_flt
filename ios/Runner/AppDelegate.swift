@@ -55,17 +55,36 @@ import WidgetKit
         // TODO: Separate on notification action tapped from on notification content tapped
         let userInfo = response.notification.request.content.userInfo
         print(userInfo)
+        print("Action identifier: \(response.actionIdentifier)")
         
         switch response.notification.request.content.categoryIdentifier {
         case "reminder":
             if response.actionIdentifier == "openCreateNewPage" {
-                UIApplication.shared.open(URL(string: "submon:///create-submission")!, options: [:], completionHandler: nil)
+                openUrl(url: "submon:///create-submission")
             }
             break;
-        default: break
             
+        case "digestive":
+            if response.actionIdentifier == "openFocusTimer" {
+                openUrl(url: "submon:///focus-timer?digestiveId=\(userInfo["digestiveId"])")
+            } else {
+                if (userInfo["submissionId"] as? String? != "-1") {
+                    openUrl(url: "submon:///submission?id=\(userInfo["submissionId"])")
+                } else {
+                    openUrl(url: "submon:///tab/digestive")
+                }
+            }
+            
+        case "timetable":
+            openUrl(url: "submon:///tab/timetable")
+            
+        default: break
         }
         completionHandler()
+    }
+    
+    private func openUrl(url: String) {
+        UIApplication.shared.open(URL(string: url)!, options: [:], completionHandler: nil)
     }
     
     func initNotificationCategories() {
@@ -78,7 +97,6 @@ import WidgetKit
             UNNotificationCategory(identifier: "timetable", actions: [], intentIdentifiers: [], options: []),
             UNNotificationCategory(identifier: "digestive", actions: [
                 UNNotificationAction(identifier: "openFocusTimerPage", title: "集中タイマー", options: [.foreground]),
-                UNNotificationAction(identifier: "deleteDigestive", title: "Digestiveを削除", options: []),
             ], intentIdentifiers: [], options: [])
         ])
         

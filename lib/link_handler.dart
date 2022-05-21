@@ -11,6 +11,7 @@ import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/pages/home_page.dart';
 import 'package:submon/pages/sign_in_page.dart';
+import 'package:submon/utils/dynamic_links.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
@@ -41,54 +42,81 @@ StreamSubscription initDynamicLinks() {
 }
 
 StreamSubscription initUriHandler() {
-  getPendingUri().then((uriString) {
+  MainMethodPlugin.getPendingUri().then((uriString) {
     if (uriString != null) {
-      handleOpenUri(Uri.parse(uriString));
+      handleDynamicLink(Uri.parse(uriString));
     }
   });
   return const EventChannel(EventChannels.uri)
       .receiveBroadcastStream()
       .listen((uriString) {
-    handleOpenUri(Uri.parse(uriString));
+    handleDynamicLink(Uri.parse(uriString));
   });
 }
 
 void handleDynamicLink(Uri url) {
-  if (url.toString().startsWith("https://submon.chikach.net/__/auth")) {
-    handleAuthUri(url, [AuthUriMode.verifyAndChangeEmail]);
-  } else if (url.toString().startsWith("https://app.submon.chikach.net")) {
-    handleOpenUri(url);
+  if (url.host == getAppDomain("") || url.scheme == "submon") {
+    switch (url.path) {
+      case "/__/auth/action":
+        handleAuthUri(url, [AuthUriMode.verifyAndChangeEmail]);
+        break;
+
+      case "/submission":
+        openSubmission(url);
+        break;
+      case "/submission-sharing":
+        showSubmissionSharingDialog(url);
+        break;
+      case "/create-submission":
+        openCreateSubmissionPage();
+        break;
+      case "/focus-timer":
+        openFocusTimer(url);
+        break;
+      case "/tab":
+        setDefaultTab(url);
+        break;
+    }
   }
 }
 
 void handleSignInDynamicLink(Uri url) {
-  if (url.toString().startsWith("https://submon.chikach.net/__/auth")) {
-    handleAuthUri(url,
-        [AuthUriMode.signInWithEmailLink, AuthUriMode.verifyAndChangeEmail]);
+  if (url.host == getAppDomain("") || url.scheme == "submon") {
+    switch (url.path) {
+      case "/__/auth/action":
+        handleAuthUri(url, [
+          AuthUriMode.verifyAndChangeEmail,
+          AuthUriMode.signInWithEmailLink
+        ]);
+        break;
+
+      case "/asi-callback":
+        eventBus.fire(AppleSignInResult(url));
+        break;
+    }
   }
 }
 
 void handleAuthUri(Uri url, List<AuthUriMode> acceptableMode) async {
-  var context = Application.globalKey.currentContext!;
-
+  var navigator = Navigator.of(globalContext!, rootNavigator: true);
   var auth = FirebaseAuth.instance;
   var code = url.queryParameters["oobCode"];
   if (code == null) return;
 
-  showLoadingModal(context);
+  showLoadingModal(globalContext!);
 
   ActionCodeInfo codeInfo;
   try {
     codeInfo = await auth.checkActionCode(code);
   } on FirebaseAuthException catch (e, stack) {
-    Navigator.of(context).pop();
+    navigator.pop();
     switch (e.code) {
       case "invalid-action-code":
       case "firebase_auth/invalid-action-code":
-        showSnackBar(context, "このリンクは無効です。期限が切れたか、形式が正しくありません。");
+        showSnackBar(globalContext!, "このリンクは無効です。期限が切れたか、形式が正しくありません。");
         break;
       default:
-        handleAuthError(e, stack, context);
+        handleAuthError(e, stack, globalContext!);
         break;
     }
     return;
@@ -104,120 +132,117 @@ void handleAuthUri(Uri url, List<AuthUriMode> acceptableMode) async {
           var result = await auth.signInWithEmailLink(
               email: email, emailLink: url.toString());
 
-          await completeLogin(result, context);
-          Navigator.of(context, rootNavigator: true)
-              .pop(); // dismiss loading modal
+          await completeLogin(result, globalContext!);
+          navigator.pop(); // dismiss loading modal
 
-          Navigator.of(context).popUntil(ModalRoute.withName("welcome"));
-          Navigator.of(context).pushReplacementNamed("/");
+          navigator.popUntil(ModalRoute.withName("welcome"));
+          navigator.pushReplacementNamed("/");
 
           return;
         } else {
           showSimpleDialog(
-              context, "エラー", "メールアドレスが保存されていません。再度この端末でメールを送信してください。");
+              globalContext!, "エラー", "メールアドレスが保存されていません。再度この端末でメールを送信してください。");
         }
       } else {
-        showSnackBar(context, "既にログインされています。ログアウトしてからお試しください。");
+        showSnackBar(globalContext!, "既にログインされています。ログアウトしてからお試しください。");
       }
     } else if (acceptableMode.contains(AuthUriMode.verifyAndChangeEmail) &&
         codeInfo.operation == ActionCodeInfoOperation.verifyAndChangeEmail) {
       await auth.applyActionCode(code);
       await auth.signOut();
-      Navigator.of(context, rootNavigator: true).pop(); // dismiss loading modal
-      showSnackBar(context, "メールアドレスの変更が完了しました。再度ログインが必要となります。");
-      Navigator.pushNamed(context, "/signIn");
+      navigator.pop(); // dismiss loading modal
+      showSnackBar(globalContext!, "メールアドレスの変更が完了しました。再度ログインが必要となります。");
+      navigator.pushReplacementNamed("welcome");
+    } else {
+      navigator.pop();
     }
   } on FirebaseAuthException catch (e, stack) {
-    Navigator.of(context, rootNavigator: true).pop(); // dismiss loading modal
-    handleAuthError(e, stack, context);
+    navigator.pop(); // dismiss loading modal
+    handleAuthError(e, stack, globalContext!);
   }
 }
 
-void handleOpenUri(Uri url, {BuildContext? alterContext}) {
-  var context = Application.globalKey.currentContext ?? alterContext!;
-  var paths = url.path.split("/");
+void openSubmission(Uri url) {
+  var id = url.queryParameters["id"];
+  var context = globalContext!;
+  if (id == null) {
+    showSnackBar(context, "パラメーターが不足しています。");
+    return;
+  }
+  if (int.tryParse(id) == null) {
+    showSnackBar(context, "idが整数ではありません");
+  }
 
-  switch (paths[1]) {
-    case "submission":
-      var id = url.queryParameters["id"];
-      if (id == null) {
-        showSnackBar(context, "パラメーターが不足しています。");
-        return;
-      }
-      if (int.tryParse(id) == null) {
-        showSnackBar(context, "idが整数ではありません");
-      }
+  Navigator.pushNamed(context, "/submission/detail", arguments: {
+    "id": int.parse(id),
+  });
+}
 
-      Navigator.pushNamed(context, "/submission/detail", arguments: {
-        "id": int.parse(id),
+void showSubmissionSharingDialog(Uri url) {
+  var title = url.queryParameters["title"];
+  var date = url.queryParameters["date"];
+  var detail = url.queryParameters["detail"] ?? "";
+  var color = url.queryParameters["color"];
+
+  var context = globalContext!;
+
+  if (title == null || date == null || color == null) {
+    showSnackBar(context, "パラメーターが不足しています。");
+    return;
+  }
+
+  showSimpleDialog(
+    context,
+    "提出物のシェア",
+    "以下の内容で登録します。よろしいですか？\n\n"
+        "タイトル: $title\n"
+        "期限: ${DateTime.parse(date).toLocal().toString()}\n"
+        "詳細: $detail",
+    showCancel: true,
+    onOKPressed: () async {
+      await SubmissionProvider().use((provider) async {
+        var data = await provider.insert(Submission(
+          title: title,
+          date: DateTime.parse(date).toLocal(),
+          detail: detail,
+          color: Color(int.parse(color)),
+        ));
+        eventBus.fire(SubmissionInserted(data.id!));
       });
+      showSnackBar(globalContext!, "作成しました。");
+    },
+  );
+}
+
+void openCreateSubmissionPage() {
+  Navigator.pushNamed(globalContext!, "/submission/create", arguments: {})
+      .then((insertedId) {
+    if (insertedId != null) {
+      eventBus.fire(SubmissionInserted(insertedId as int));
+    }
+  });
+}
+
+void openFocusTimer(Uri url) {
+  DigestiveProvider().use((provider) async {
+    var digestive =
+        await provider.get(int.parse(url.queryParameters["digestiveId"]!));
+    if (digestive != null) {
+      Navigator.of(globalContext!, rootNavigator: true)
+          .pushNamed("/focus-timer", arguments: {"digestive": digestive});
+    } else {
+      showSnackBar(globalContext!, "このDigestiveはすでに削除されています");
+    }
+  });
+}
+
+void setDefaultTab(Uri url) {
+  switch (url.path.split("/")[2]) {
+    case "digestive":
+      eventBus.fire(SwitchBottomNav(BottomNavItemId.digestive));
       break;
-
-    case "submission-share":
-      var title = url.queryParameters["title"];
-      var date = url.queryParameters["date"];
-      var detail = url.queryParameters["detail"] ?? "";
-      var color = url.queryParameters["color"];
-
-      if (title == null || date == null || color == null) {
-        showSnackBar(context, "パラメーターが不足しています。");
-        return;
-      }
-
-      showSimpleDialog(
-        context,
-        "提出物のシェア",
-        "以下の内容で登録します。よろしいですか？\n\n"
-            "タイトル: $title\n"
-            "期限: ${DateTime.parse(date).toLocal().toString()}\n"
-            "詳細: $detail",
-        showCancel: true,
-        onOKPressed: () async {
-          await SubmissionProvider().use((provider) async {
-            var data = await provider.insert(Submission(
-              title: title,
-              date: DateTime.parse(date).toLocal(),
-              detail: detail,
-              color: Color(int.parse(color)),
-            ));
-            eventBus.fire(SubmissionInserted(data.id!));
-          });
-          showSnackBar(context, "作成しました。");
-        },
-      );
-      break;
-
-    case "create-submission":
-      Navigator.pushNamed(context, "/submission/create", arguments: {})
-          .then((insertedId) {
-        if (insertedId != null) {
-          eventBus.fire(SubmissionInserted(insertedId as int));
-        }
-      });
-      break;
-
-    case "focus-timer":
-      DigestiveProvider().use((provider) async {
-        var digestive =
-            await provider.get(int.parse(url.queryParameters["digestiveId"]!));
-        if (digestive != null) {
-          Navigator.of(context, rootNavigator: true)
-              .pushNamed("/focus-timer", arguments: {"digestive": digestive});
-        } else {
-          showSnackBar(context, "このDigestiveはすでに削除されています");
-        }
-      });
-      break;
-
-    case "tab":
-      switch (paths[2]) {
-        case "digestive":
-          eventBus.fire(SwitchBottomNav(BottomNavItemId.digestive));
-          break;
-        case "timetable":
-          eventBus.fire(SwitchBottomNav(BottomNavItemId.timetable));
-          break;
-      }
+    case "timetable":
+      eventBus.fire(SwitchBottomNav(BottomNavItemId.timetable));
       break;
   }
 }

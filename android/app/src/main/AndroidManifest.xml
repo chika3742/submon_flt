@@ -49,6 +49,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -57,6 +58,7 @@
 
                 <data android:scheme="submon" />
             </intent-filter>
+
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -64,13 +66,24 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="submon.page.link"
-                    android:scheme="https" />
+                        android:host="${appLinkHostName}"
+                        android:scheme="https" />
+            </intent-filter>
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                        android:scheme="signinwithapple"
+                        android:path="callback" />
             </intent-filter>
 
             <meta-data
-                android:name="android.app.shortcuts"
-                android:resource="@xml/shortcuts" />
+                    android:name="android.app.shortcuts"
+                    android:resource="@xml/shortcuts" />
         </activity>
 
         <activity
@@ -93,7 +106,7 @@
                 android:exported="false" />
 
         <receiver
-                android:name=".DoneDoTimeBroadcastReceiver"
+                android:name=".DoneDigestiveBroadcastReceiver"
                 android:exported="false" />
 
         <service

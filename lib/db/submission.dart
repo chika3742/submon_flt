@@ -137,14 +137,14 @@ class SubmissionProvider extends SqlProvider<Submission> {
     await FirestoreProvider.submission
         .set(data.id.toString(), objToMap(data), SetOptions(merge: true));
     // NotificationMethodChannel.registerReminder();
-    updateWidgets();
+    MainMethodPlugin.updateWidgets();
   }
 
   @override
   Future<void> deleteFirestore(int id) async {
     await FirestoreProvider.submission.delete(id.toString());
     await DigestiveProvider(db: db).deleteForSubmissionId(id);
-    updateWidgets();
+    MainMethodPlugin.updateWidgets();
   }
 
   void deleteGoogleTasks(String? taskId) {

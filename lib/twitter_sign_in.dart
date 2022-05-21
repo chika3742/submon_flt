@@ -56,14 +56,14 @@ class TwitterSignIn {
       modalShown = false;
 
       AuthResult authResult;
-      final url = "https://api.twitter.com/oauth/authorize?oauth_token=" +
-          reqToken!.oauthToken;
+      final url =
+          "https://api.twitter.com/oauth/authorize?oauth_token=${reqToken!.oauthToken}";
 
       if (Platform.isAndroid) {
-        openCustomTabs(url);
+        MainMethodPlugin.openCustomTabs(url);
         authResult = await waitForUri();
       } else {
-        var brResult = await openCustomTabs(url);
+        var brResult = await MainMethodPlugin.openCustomTabs(url);
         if (brResult != null) {
           var query = Uri.parse(brResult).queryParameters;
           authResult =
@@ -180,7 +180,7 @@ class TwitterSignIn {
 
   Future<AuthResult> waitForUri() async {
     var completer = Completer<AuthResult>();
-    var subscription = const EventChannel(EventChannels.twitterSignInUri)
+    var subscription = const EventChannel(EventChannels.signInUri)
         .receiveBroadcastStream()
         .listen((event) {
       var query = Uri.splitQueryString(event);

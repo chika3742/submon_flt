@@ -11,6 +11,7 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import net.chikach.submon.mch.MainMethodChannelHandler
 import net.chikach.submon.mch.MessagingMethodChannelHandler
+import net.chikach.submon.mch.REQUEST_CODE_CUSTOM_TABS
 
 val chromiumBrowserPackages = listOf(
     "com.android.chrome",
@@ -34,9 +35,8 @@ const val DO_TIME_CHANNEL = "digestive"
 const val DEFAULT_CHANNEL = "default"
 
 const val METHOD_CHANNEL_MAIN = "net.chikach.submon/main"
-const val METHOD_CHANNEL_ACTION = "net.chikach.submon/action"
 const val METHOD_CHANNEL_MESSAGING = "net.chikach.submon/messaging"
-const val EVENT_CHANNEL_TWITTER_SIGN_IN_URI = "net.chikach.submon/twitterSignInUri"
+const val EVENT_CHANNEL_SIGN_IN_URI = "net.chikach.submon/signInUri"
 const val EVENT_CHANNEL_URI = "net.chikach.submon/uri"
 
 const val REQUEST_CODE_TAKE_PICTURE = 1
@@ -66,7 +66,7 @@ class MainActivity : FlutterActivity() {
         val twitterSignInUriEventChannel =
             EventChannel(
                 flutterEngine.dartExecutor.binaryMessenger,
-                EVENT_CHANNEL_TWITTER_SIGN_IN_URI
+                EVENT_CHANNEL_SIGN_IN_URI
             )
         twitterSignInUriEventChannel.setStreamHandler(object : EventChannel.StreamHandler {
             override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
@@ -137,6 +137,9 @@ class MainActivity : FlutterActivity() {
         when (requestCode) {
             REQUEST_CODE_TAKE_PICTURE -> {
                 mainMethodChannelHandler.takePictureCallback(resultCode)
+            }
+            REQUEST_CODE_CUSTOM_TABS -> {
+                mainMethodChannelHandler.completeCustomTabs()
             }
         }
     }
