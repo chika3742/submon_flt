@@ -1,6 +1,5 @@
 import 'package:animations/animations.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
@@ -8,6 +7,7 @@ import 'package:submon/components/formatted_date_remaining.dart';
 import 'package:submon/db/digestive.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/pages/submission_detail_page.dart';
+import 'package:submon/utils/dynamic_links.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
@@ -135,7 +135,8 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                         ),
                         const Spacer(),
                         Padding(
-                          padding: const EdgeInsets.only(left: 8, right: 8, top: 4),
+                          padding:
+                              const EdgeInsets.only(left: 8, right: 8, top: 4),
                           child: Row(
                             children: [
                               InkWell(
@@ -145,7 +146,9 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                                   });
                                 },
                                 borderRadius: BorderRadius.circular(4),
-                                child: FormattedDateRemaining(_item.date!.difference(DateTime.now()), weekView: _weekView),
+                                child: FormattedDateRemaining(
+                                    _item.date!.difference(DateTime.now()),
+                                    weekView: _weekView),
                               ),
                               const SizedBox(
                                 width: 8,
@@ -161,7 +164,8 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                       children: [
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 8, bottom: 8, right: 8),
+                            padding: const EdgeInsets.only(
+                                left: 8, bottom: 8, right: 8),
                             child: Text(
                               _item.title,
                               style: const TextStyle(
@@ -277,20 +281,21 @@ class SubmissionListItemState extends State<SubmissionListItem> {
       case _ContextMenuAction.share:
         showLoadingModal(context);
 
-        var link = await FirebaseDynamicLinks.instance
-            .buildShortLink(DynamicLinkParameters(
-                link: Uri.parse(getAppUrl("/submission-sharing"
-                    "?title=${Uri.encodeComponent(widget.item.title)}"
-                    "&date=${widget.item.date!.toUtc().toIso8601String()}"
-                    "${widget.item.detail != "" ? "&detail=${Uri.encodeComponent(widget.item.detail)}" : ""}"
-                    "&color=${widget.item.color.value}")),
-                uriPrefix: getDynamicLinkDomain(withScheme: true)));
-
-        if (mounted) {
-          Navigator.of(context, rootNavigator: true).pop(context);
-        }
-
-        Share.share(link.shortUrl.toString());
+        buildShortDynamicLink("/submission-sharing"
+                "?title=${Uri.encodeComponent(widget.item.title)}"
+                "&date=${widget.item.date!.toUtc().toIso8601String()}"
+                "${widget.item.detail != "" ? "&detail=${Uri.encodeComponent(widget.item.detail)}" : ""}"
+                "&color=${widget.item.color.value}")
+            .then((link) {
+          Share.share(link.shortUrl.toString());
+        }).onError((error, stackTrace) {
+          showSnackBar(context, "エラーが発生しました。");
+          recordErrorToCrashlytics(error, stackTrace);
+        }).whenComplete(() {
+          if (mounted) {
+            Navigator.of(context, rootNavigator: true).pop(context);
+          }
+        });
         break;
 
       case _ContextMenuAction.addDigestive:

@@ -40,3 +40,9 @@ class SwitchBottomNav {
 
   SwitchBottomNav(this.id);
 }
+
+class AppleSignInResult {
+  Uri url;
+
+  AppleSignInResult(this.url);
+}

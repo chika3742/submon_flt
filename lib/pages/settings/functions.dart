@@ -137,7 +137,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                         await auth.signOut();
                     await GoogleSignIn().signOut();
                     SqlProvider.clearAllTables();
-                    updateWidgets();
+                    MainMethodPlugin.updateWidgets();
                     Navigator.pop(context);
                     Navigator.pushReplacementNamed(context, "welcome");
                     showSnackBar(context, "ログアウトしました");

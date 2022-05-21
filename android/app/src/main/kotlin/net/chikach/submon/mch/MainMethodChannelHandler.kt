@@ -10,11 +10,15 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
+import android.os.Build
 import android.os.Handler
 import android.provider.MediaStore
+import android.view.View
+import android.view.WindowInsets
+import android.view.WindowInsetsController
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -22,19 +26,36 @@ import net.chikach.submon.*
 import java.io.File
 import java.io.FileOutputStream
 
+const val REQUEST_CODE_CUSTOM_TABS = 15
+
 class MainMethodChannelHandler(private val activity: MainActivity) :
     MethodChannel.MethodCallHandler {
     private var takePictureResult: MethodChannel.Result? = null
     private var pictureFile: File? = null
     var pendingUri: Uri? = null
+    private var openWebPageResult: MethodChannel.Result? = null
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "openWebPage" -> openWebPage(call, result)
             "openCustomTabs" -> openCustomTabs(call, result)
-            "updateWidgets" -> updateWidgets()
+            "updateWidgets" -> {
+                updateWidgets(); result.success(null)
+            }
             "takePictureNative" -> takePictureNative(result)
             "getPendingUri" -> getPendingUri(result)
+            "enableWakeLock" -> {
+                enableWakeLock(); result.success(null)
+            }
+            "disableWakeLock" -> {
+                disableWakeLock(); result.success(null)
+            }
+            "enterFullscreen" -> {
+                enterFullscreen(); result.success(null)
+            }
+            "exitFullscreen" -> {
+                exitFullscreen(); result.success(null)
+            }
 
             else -> result.notImplemented()
         }
@@ -97,8 +118,13 @@ class MainMethodChannelHandler(private val activity: MainActivity) :
                 return
             }
         }
-        ctIntent.launchUrl(activity, Uri.parse(call.argument("url")))
+        ctIntent.intent.data = Uri.parse(call.argument("url"))
+        activity.startActivityForResult(ctIntent.intent, REQUEST_CODE_CUSTOM_TABS)
         result.success(null)
+    }
+
+    fun completeCustomTabs() {
+//        openWebPageResult?.success(null)
     }
 
     /**
@@ -151,21 +177,6 @@ class MainMethodChannelHandler(private val activity: MainActivity) :
             var width = bmp.width
             var height = bmp.height
             val matrix = Matrix()
-//            val exifInterface = ExifInterface(pictureFile!!.path)
-//            when (exifInterface.getAttribute(ExifInterface.TAG_ORIENTATION)) {
-//                "1" -> {
-//                    matrix.postRotate(90F)
-//                }
-//                "6" -> {
-//                    matrix.postRotate(0F)
-//                }
-//                "3" -> {
-//                    matrix.postRotate(90F)
-//                }
-//                "8" -> {
-//                    matrix.postRotate(270F)
-//                }
-//            }
             if (height > width) {
                 if (width > (height * (9 / 16.0)).toInt()) {
                     width = (height * (9 / 16.0)).toInt()
@@ -190,5 +201,32 @@ class MainMethodChannelHandler(private val activity: MainActivity) :
             takePictureResult?.success(null)
         }
         takePictureResult = null
+    }
+
+    private fun enableWakeLock() {
+        activity.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    }
+
+    private fun disableWakeLock() {
+        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    }
+
+    private fun enterFullscreen() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            activity.window.decorView.windowInsetsController?.hide(WindowInsets.Type.statusBars())
+            activity.window.decorView.windowInsetsController?.systemBarsBehavior =
+                WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        } else {
+            activity.window.decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_IMMERSIVE or View.SYSTEM_UI_FLAG_FULLSCREEN
+        }
+    }
+
+    private fun exitFullscreen() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            activity.window.decorView.windowInsetsController?.show(WindowInsets.Type.statusBars())
+        } else {
+            activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
+        }
     }
 }

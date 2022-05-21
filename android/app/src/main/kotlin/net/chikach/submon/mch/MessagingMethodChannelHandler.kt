@@ -11,11 +11,7 @@ class MessagingMethodChannelHandler : MethodChannel.MethodCallHandler {
                 requestNotificationPermission(result)
             }
             "getToken" -> {
-                FirebaseMessaging.getInstance().token.addOnSuccessListener {
-                    result.success(it)
-                }.addOnFailureListener {
-                    result.error("unknown", it.message, null)
-                }
+                getToken(result)
             }
             else -> result.notImplemented()
         }
@@ -23,6 +19,14 @@ class MessagingMethodChannelHandler : MethodChannel.MethodCallHandler {
 
     private fun requestNotificationPermission(result: MethodChannel.Result) {
         result.success(NotificationPermissionState.GRANTED.ordinal)
+    }
+
+    private fun getToken(result: MethodChannel.Result) {
+        FirebaseMessaging.getInstance().token.addOnSuccessListener {
+            result.success(it)
+        }.addOnFailureListener {
+            result.error("unknown", it.message, null)
+        }
     }
 
     enum class NotificationPermissionState {

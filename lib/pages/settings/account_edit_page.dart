@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
 import '../../db/sql_provider.dart';
+import '../../utils/dynamic_links.dart';
 
 class AccountEditPage extends StatefulWidget {
   const AccountEditPage(this.type, {Key? key}) : super(key: key);
@@ -106,10 +106,12 @@ class _AccountEditPageState extends State<AccountEditPage> {
   // Change email
   Widget buildChangeEmail() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Text("メールアドレスを変更します。\n\n"
+      Text(
+          "メールアドレスを変更します。\n\n"
           "新しいメールアドレスを入力して「送信」をタップすると、新しいメールアドレスに確認URLが送信されます。このURLをタップすることで、メールアドレスの変更が完了します。\n"
           "「送信」をタップするだけでは変更は完了しませんのでご注意ください。\n\n"
-          "※メールは「chikach.net」ドメインから送信されます。迷惑メールに振り分けられていないか確認してください。"),
+          "※メールは「submon.app」ドメインから送信されます。迷惑メールに振り分けられていないか確認してください。",
+          style: Theme.of(context).textTheme.bodyLarge),
       const SizedBox(height: 16),
       TextFormField(
         controller: _form1Controller,
@@ -138,8 +140,8 @@ class _AccountEditPageState extends State<AccountEditPage> {
     });
 
     try {
-      await FirebaseAuth.instance.currentUser!
-          .verifyBeforeUpdateEmail(_form1Controller.text);
+      await FirebaseAuth.instance.currentUser!.verifyBeforeUpdateEmail(
+          _form1Controller.text, actionCodeSettings(getAppDomain("")));
 
       showSnackBar(context, "送信しました。ご確認ください。");
       Navigator.pop(context);
@@ -170,14 +172,12 @@ class _AccountEditPageState extends State<AccountEditPage> {
 
   // Change password
   Widget buildChangePassword() {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text("パスワードを変更します。\n\n"
-              "「送信」をタップすると、登録されているメールアドレスにパスワード変更URLが記載されたメールを送信します。"
-              "このURLをタップすることでパスワードを変更できます。\n\n"
-              "※メールは「chikach.net」ドメインから届きます。迷惑メールに振り分けられていないかご確認ください。"),
-        ]);
+    return Text(
+        "パスワードを変更します。\n\n"
+        "「送信」をタップすると、登録されているメールアドレスにパスワード変更URLが記載されたメールを送信します。"
+        "このURLをタップすることでパスワードを変更できます。\n\n"
+        "※メールは「submon.app」ドメインから届きます。迷惑メールに振り分けられていないかご確認ください。",
+        style: Theme.of(context).textTheme.bodyLarge);
   }
 
   Future<void> changePassword() async {

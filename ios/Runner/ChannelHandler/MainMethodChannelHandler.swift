@@ -33,6 +33,9 @@ class MainMethodChannelHandler : NSObject {
             updateWidgets()
             result(nil)
             break
+        case "getPendingUri":
+            result(nil)
+            break
         default:
             result(FlutterMethodNotImplemented)
         }

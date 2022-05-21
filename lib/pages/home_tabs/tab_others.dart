@@ -4,15 +4,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:in_app_review/in_app_review.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:submon/components/hidable_progress_indicator.dart';
 import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/method_channel/main.dart';
 import 'package:submon/utils/utils.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+
+import '../../browser.dart';
 
 class TabOthers extends StatefulWidget {
   const TabOthers({Key? key}) : super(key: key);
@@ -106,7 +106,7 @@ class _TabOthersState extends State<TabOthers> {
                       subtitle: "全体的なアプリ評価はこちら。",
                       leading: const Icon(Icons.star),
                       onTap: () {
-                        InAppReview.instance.openStoreListing();
+                        Browser.openStoreListing();
                       },
                     ),
                   SettingsTile(
@@ -115,23 +115,24 @@ class _TabOthersState extends State<TabOthers> {
                     leading: const Icon(Icons.rate_review),
                     onTap: () async {
                       var deviceInfoPlugin = DeviceInfoPlugin();
-                      var deviceNameVer = "";
+                      var deviceNameAndVer = "";
 
                       // TODO: macOS / Windows
                       if (Platform.isAndroid) {
                         var info = await deviceInfoPlugin.androidInfo;
-                        deviceNameVer =
+                        deviceNameAndVer =
                             "${info.model} / Android ${info.version.release}";
                       } else if (Platform.isIOS) {
                         var info = await deviceInfoPlugin.iosInfo;
-                        deviceNameVer =
+                        deviceNameAndVer =
                             "${info.utsname.machine} / iOS ${info.systemVersion}";
                       }
 
                       var appVer = (await PackageInfo.fromPlatform()).version;
 
                       var url =
-                          "https://docs.google.com/forms/d/e/1FAIpQLSeb0kHMcYWkl8LDpiS6NqoViuU5DHL8FcRRBHyMXXSzhiCx3Q/viewform?usp=pp_url&entry.1179597929=$deviceNameVer&entry.1250051436=$appVer";
+                          "https://docs.google.com/forms/d/e/1FAIpQLSeb0kHMcYWkl8LDpiS6NqoViuU5DHL8FcRRBHyMXXSzhiCx3Q/viewform?usp=pp_url&entry.1179597929=${Uri.encodeQueryComponent(deviceNameAndVer)}&entry.1250051436=${Uri.encodeQueryComponent(appVer)}";
+                      print(url);
                       launchUrlString(url,
                           mode: LaunchMode.externalApplication);
                     },
@@ -141,8 +142,7 @@ class _TabOthersState extends State<TabOthers> {
                     subtitle: "サービスに関するお知らせを掲載しています。",
                     leading: const Icon(Icons.newspaper),
                     onTap: () {
-                      openWebPage("お知らせ",
-                          "https://www.chikach.net/category/submon-info/");
+                      Browser.openInfo();
                     },
                   ),
                 ],

@@ -2,15 +2,15 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dnd/flutter_dnd.dart';
-import 'package:fullscreen/fullscreen.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:submon/db/digestive.dart';
 import 'package:submon/db/submission.dart';
+import 'package:submon/method_channel/main.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
-import 'package:wakelock/wakelock.dart';
 
 const addMinutes = 20;
 const breakMinutes = 10;
@@ -64,7 +64,9 @@ class _FocusTimerPageState extends State<FocusTimerPage>
 
     _audioCache.load("audio/alarm.mp3");
 
-    FullScreen.enterFullScreen(FullScreenMode.EMERSIVE_STICKY);
+    if (!kIsWeb && Platform.isAndroid) {
+      MainMethodPlugin.enterFullscreen();
+    }
 
     _checkDndAccessGranted();
 
@@ -88,8 +90,10 @@ class _FocusTimerPageState extends State<FocusTimerPage>
     _stopBreakTimer();
     _stopBlinkTimer();
     _alarmPlayer?.stop();
-    Wakelock.disable();
-    FullScreen.exitFullScreen();
+    MainMethodPlugin.disableWakeLock();
+    if (!kIsWeb && Platform.isAndroid) {
+      MainMethodPlugin.exitFullscreen();
+    }
     if (Platform.isAndroid) {
       FlutterDnd.setInterruptionFilter(FlutterDnd.INTERRUPTION_FILTER_ALL);
     }
@@ -208,18 +212,19 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                               ),
                             ),
                             const SizedBox(height: 8),
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Checkbox(
-                                  value: _isEnableDnd,
-                                  onChanged: _dndAccessGranted == true
-                                      ? (value) {
-                                          setState(() {
-                                            _isEnableDnd = !_isEnableDnd;
-                                          });
-                                        }
-                                      : null,
+                            if (_dndAccessGranted != null)
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Checkbox(
+                                    value: _isEnableDnd,
+                                    onChanged: _dndAccessGranted == true
+                                        ? (value) {
+                                            setState(() {
+                                              _isEnableDnd = !_isEnableDnd;
+                                            });
+                                          }
+                                        : null,
                                 ),
                                 Flexible(
                                   child: GestureDetector(
@@ -258,13 +263,6 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                     )
                                   ],
                                 ),
-                              ),
-                            if (_dndAccessGranted == null)
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                child: Text('Android以外では利用できません。',
-                                    style: Theme.of(context).textTheme.caption),
                               ),
                           ],
                         ),
@@ -388,7 +386,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
   }
 
   void _startTimer() {
-    Wakelock.enable();
+    MainMethodPlugin.enableWakeLock();
     _enableDnd();
     _stopBreakTimer();
     _stopBlinkTimer();

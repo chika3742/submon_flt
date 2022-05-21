@@ -601,7 +601,7 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
   void _checkShouldTakePictureNative() async {
     SharedPrefs.use((prefs) async {
       if (prefs.isDeviceCameraUIShouldBeUsed) {
-        var result = await takePictureNative();
+        var result = await MainMethodPlugin.takePictureNative();
         if (result != null) {
           setState(() {
             _isPickingMode = true;

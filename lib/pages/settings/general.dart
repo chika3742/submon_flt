@@ -4,7 +4,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:submon/browser.dart';
 import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/method_channel/main.dart';
 
 class GeneralSettingsPage extends StatefulWidget {
   const GeneralSettingsPage({Key? key}) : super(key: key);
@@ -44,7 +43,7 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
             SettingsTile(
               title: "更新履歴・開発進捗",
               onTap: () {
-                openChangelog();
+                Browser.openChangelog();
               },
             ),
             if (_analyticsEnabled != null)
@@ -68,7 +67,7 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
               subtitle: "他にも質問があれば、リンク先ページにコメントしていただければ回答追記するかも",
               leading: const Icon(Icons.help),
               onTap: () {
-                openWebPage("ヘルプ", "https://www.chikach.net/submon-help/");
+                Browser.openHelp();
               },
             ),
           ],
@@ -79,13 +78,13 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
             SettingsTile(
               title: "利用規約",
               onTap: () {
-                openTermsOfUse();
+                Browser.openTermsOfUse();
               },
             ),
             SettingsTile(
               title: "プライバシーポリシー",
               onTap: () {
-                openPrivacyPolicy();
+                Browser.openPrivacyPolicy();
               },
             ),
             SettingsTile(

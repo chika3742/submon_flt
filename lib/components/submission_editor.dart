@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:intl/intl.dart';
@@ -10,6 +9,7 @@ import 'package:submon/components/tappable_card.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/main.dart';
+import 'package:submon/utils/dynamic_links.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
@@ -380,11 +380,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
   }
 
   Future<tasks.Task> makeTaskRequest(Submission data) async {
-    var linkData = await FirebaseDynamicLinks.instance
-        .buildShortLink(DynamicLinkParameters(
-      link: Uri.parse(getAppUrl("/submission?id=${data.id}")),
-      uriPrefix: getDynamicLinkDomain(withScheme: true),
-    ));
+    var linkData = await buildShortDynamicLink("/submission?id=${data.id}");
     return tasks.Task(
       id: data.googleTasksTaskId,
       title: "${data.title} (Submon)",

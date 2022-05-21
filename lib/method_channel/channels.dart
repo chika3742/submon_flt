@@ -4,6 +4,6 @@ class MethodChannels {
 }
 
 class EventChannels {
-  static const twitterSignInUri = "net.chikach.submon/twitterSignInUri";
+  static const signInUri = "net.chikach.submon/signInUri";
   static const uri = "net.chikach.submon/uri";
 }

@@ -27,32 +27,6 @@ int getTimetableCellId(int period, int weekday) {
   return period * 6 + weekday;
 }
 
-ActionCodeSettings actionCodeSettings([String url = "https://chikach.net"]) {
-  return ActionCodeSettings(
-    url: url,
-    androidPackageName: "net.chikach.submon",
-    iOSBundleId: "net.chikach.submon",
-    handleCodeInApp: true,
-    dynamicLinkDomain: getDynamicLinkDomain(),
-  );
-}
-
-String getDynamicLinkDomain({bool withScheme = false}) {
-  if (kReleaseMode) {
-    return "${withScheme ? "https://" : ""}open.submon.app";
-  } else {
-    return "${withScheme ? "https://" : ""}dev.open.submon.app";
-  }
-}
-
-String getAppUrl(String path) {
-  if (kReleaseMode) {
-    return "https://submon.app$path";
-  } else {
-    return "https://dev.submon.app$path";
-  }
-}
-
 void handleAuthError(
     FirebaseAuthException e, StackTrace stack, BuildContext context) {
   switch (e.code) {
@@ -68,6 +42,8 @@ void handleAuthError(
     case "user-token-expired":
       showSnackBar(context, "トークンの有効期限が切れました。再度ログインする必要があります。");
       FirebaseAuth.instance.signOut();
+      Application.globalKey.currentState
+          ?.pushReplacementNamed("welcome", arguments: {});
       break;
     default:
       showSnackBar(context, "エラーが発生しました。(${e.code})",

@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/main.dart';
 import 'package:submon/utils/ui.dart';
 
+import '../utils/dynamic_links.dart';
 import '../utils/utils.dart';
 
 class EmailLoginPage extends StatefulWidget {
@@ -218,13 +218,7 @@ class EmailLoginPageState extends State<EmailLoginPage>
                     enableEmailForm = false;
                   });
 
-                  try {
-                    await sendSignInEmail();
-                  } catch (e, st) {
-                    Navigator.pop(context);
-                    FirebaseCrashlytics.instance.recordError(e, st);
-                    showSnackBar(context, "エラーが発生しました。");
-                  }
+                  sendSignInEmail();
 
                   setState(() {
                     processing = false;
@@ -250,7 +244,7 @@ class EmailLoginPageState extends State<EmailLoginPage>
         } else if (result.first ==
             EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD) {
           // パスワードレスサインイン
-          await sendSignInEmail();
+          sendSignInEmail();
         } else {
           // その他(ソーシャルログイン)
           setState(() {
@@ -314,43 +308,47 @@ class EmailLoginPageState extends State<EmailLoginPage>
         curve: show ? Curves.easeOutQuint : Curves.easeInQuint);
   }
 
-  Future<void> sendSignInEmail() async {
+  void sendSignInEmail() {
     showLoadingModal(context);
 
-    await FirebaseAuth.instance.sendSignInLinkToEmail(
-        email: emailController.text,
-        actionCodeSettings:
-            actionCodeSettings("https://chikach.net/submon-signin/"));
-
-    SharedPrefs.use((prefs) {
-      prefs.emailForUrlLogin = emailController.text;
+    FirebaseAuth.instance
+        .sendSignInLinkToEmail(
+      email: emailController.text,
+      actionCodeSettings:
+          actionCodeSettings(getAppDomain("", withScheme: true)),
+    )
+        .whenComplete(() {
+      Navigator.pop(Application.globalKey.currentContext!);
+    }).then((value) {
+      SharedPrefs.use((prefs) {
+        prefs.emailForUrlLogin = emailController.text;
+      });
+      showSimpleDialog(
+          Application.globalKey.currentContext!,
+          "完了",
+          "メールを入力されたアドレスに送信しました。受信したメールのリンクをタップしてログインしてください。\n\n"
+              "※メールは「submon.app」ドメインから送信されます。迷惑メールに振り分けられていないかご確認ください。",
+          onOKPressed: () {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      }, allowCancel: false);
+    }).onError((error, stackTrace) {
+      showSnackBar(context, "エラーが発生しました。");
+      recordErrorToCrashlytics(error, stackTrace);
     });
-
-    Navigator.pop(Application.globalKey.currentContext!);
-
-    showSimpleDialog(
-        Application.globalKey.currentContext!,
-        "完了",
-        "メールを入力されたアドレスに送信しました。受信したメールのリンクをタップしてログインしてください。\n\n"
-            "※メールは「chikach.net」ドメインから送信されます。迷惑メールに振り分けられていないかご確認ください。",
-        onOKPressed: () {
-      Navigator.pop(context);
-      Navigator.pop(context);
-    }, allowCancel: false);
   }
 
   void onPWForgot() {
     showSimpleDialog(context, "パスワードを忘れた場合",
-        "下のOKボタンを押すと入力されたメールアドレス宛にパスワードリセット用のURLを送信します。そのURLを開いてパスワードをリセットしてください。\n\n※メールは「chikach.net」というドメインから届きます。迷惑メール設定をしている場合はご注意ください。",
+        "下のOKボタンを押すと入力されたメールアドレス宛にパスワードリセット用のURLを送信します。そのURLを開いてパスワードをリセットしてください。\n\n※メールは「submon.app」というドメインから届きます。迷惑メール設定をしている場合はご注意ください。",
         onOKPressed: () async {
       setState(() {
         processing = true;
         enablePWForm = false;
       });
       try {
-        await FirebaseAuth.instance.sendPasswordResetEmail(
-            email: emailController.text,
-            actionCodeSettings: actionCodeSettings());
+        await FirebaseAuth.instance
+            .sendPasswordResetEmail(email: emailController.text);
         showSnackBar(context, "送信しました。ご確認ください。");
       } on FirebaseAuthException catch (e, stack) {
         handleAuthError(e, stack, context);
