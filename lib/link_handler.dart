@@ -56,24 +56,26 @@ StreamSubscription initUriHandler() {
 
 void handleDynamicLink(Uri url) {
   if (url.host == getAppDomain("") || url.scheme == "submon") {
-    switch (url.path) {
-      case "/__/auth/action":
-        handleAuthUri(url, [AuthUriMode.verifyAndChangeEmail]);
+    switch (url.path.split("/")[1]) {
+      case "__":
+        if (url.path == "/__/auth/action") {
+          handleAuthUri(url, [AuthUriMode.verifyAndChangeEmail]);
+        }
         break;
 
-      case "/submission":
+      case "submission":
         openSubmission(url);
         break;
-      case "/submission-sharing":
+      case "submission-sharing":
         showSubmissionSharingDialog(url);
         break;
-      case "/create-submission":
+      case "create-submission":
         openCreateSubmissionPage();
         break;
-      case "/focus-timer":
+      case "focus-timer":
         openFocusTimer(url);
         break;
-      case "/tab":
+      case "tab":
         setDefaultTab(url);
         break;
     }
