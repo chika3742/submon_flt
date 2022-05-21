@@ -60,6 +60,10 @@ class MainMethodChannelHandler : NSObject {
             WidgetCenter.shared.reloadAllTimelines()
         }
     }
+    
+    func saveMessagingToken(token: String) {
+        methodChannel.invokeMethod("saveMessagingToken", arguments: ["token": token])
+    }
 }
 
 extension MainMethodChannelHandler : ASWebAuthenticationPresentationContextProviding {

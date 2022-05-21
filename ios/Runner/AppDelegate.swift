@@ -5,7 +5,6 @@ import SafariServices
 import Firebase
 import FirebaseMessaging
 import FirebaseAuth
-import FirebaseFirestore
 import WidgetKit
 
 @available(iOS 13.0, *)
@@ -14,6 +13,7 @@ import WidgetKit
     
     var viewController: FlutterViewController?
     var uriEvent: UriEventChannelHandler?
+    var mainMethodCallHandler: MainMethodChannelHandler?
     
     override func application(
         _ application: UIApplication,
@@ -28,7 +28,8 @@ import WidgetKit
         
         viewController = window?.rootViewController as? FlutterViewController
         
-        MainMethodChannelHandler(viewController: viewController!).register()
+        mainMethodCallHandler = MainMethodChannelHandler(viewController: viewController!)
+        mainMethodCallHandler?.register()
         MessagingMethodChannelHandler(viewController: viewController!, appDelegate: self).register()
         
         uriEvent = UriEventChannelHandler(binaryMessenger: viewController!.binaryMessenger)
@@ -59,32 +60,41 @@ import WidgetKit
         
         switch response.notification.request.content.categoryIdentifier {
         case "reminder":
-            if response.actionIdentifier == "openCreateNewPage" {
-                openUrl(url: "submon:///create-submission")
+            if response.actionIdentifier == "openCreateSubmission" {
+                openUrl(path: "/create-submission")
             }
             break;
             
         case "digestive":
             if response.actionIdentifier == "openFocusTimer" {
-                openUrl(url: "submon:///focus-timer?digestiveId=\(userInfo["digestiveId"])")
+                print("called")
+                openUrl(path: "/focus-timer?digestiveId=\(userInfo["digestiveId"] ?? "-1")")
             } else {
                 if (userInfo["submissionId"] as? String? != "-1") {
-                    openUrl(url: "submon:///submission?id=\(userInfo["submissionId"])")
+                    openUrl(path: "/submission?id=\(userInfo["submissionId"] ?? "-1")")
                 } else {
-                    openUrl(url: "submon:///tab/digestive")
+                    openUrl(path: "/tab/digestive")
                 }
             }
             
         case "timetable":
-            openUrl(url: "submon:///tab/timetable")
+            openUrl(path: "/tab/timetable")
             
         default: break
         }
         completionHandler()
     }
     
-    private func openUrl(url: String) {
-        UIApplication.shared.open(URL(string: url)!, options: [:], completionHandler: nil)
+    private func openUrl(path: String) {
+        let domain: String
+        #if RELEASE
+            domain = "open.submon.app"
+        #else
+            domain = "dev.open.submon.app"
+        #endif
+        
+                
+        UIApplication.shared.open(URL(string: "submon://\(path)")!, options: [:], completionHandler: nil)
     }
     
     func initNotificationCategories() {
@@ -92,11 +102,11 @@ import WidgetKit
         
         notificationCenter.setNotificationCategories([
             UNNotificationCategory(identifier: "reminder", actions: [
-                UNNotificationAction(identifier: "openCreateNewPage", title: "新規作成", options: [.foreground])
+                UNNotificationAction(identifier: "openCreateSubmission", title: "新規作成", options: [.foreground])
             ], intentIdentifiers: [], options: []),
             UNNotificationCategory(identifier: "timetable", actions: [], intentIdentifiers: [], options: []),
             UNNotificationCategory(identifier: "digestive", actions: [
-                UNNotificationAction(identifier: "openFocusTimerPage", title: "集中タイマー", options: [.foreground]),
+                UNNotificationAction(identifier: "openFocusTimer", title: "集中タイマー", options: [.foreground]),
             ], intentIdentifiers: [], options: [])
         ])
         
@@ -112,8 +122,8 @@ extension AppDelegate : MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: ["token": fcmToken ?? ""])
         
-        if fcmToken != nil, let user = Auth.auth().currentUser {
-//            Firestore.firestore().document("users/\(user.uid)").setData(["notificationTokens": FieldValue.arrayUnion([fcmToken!])], merge: true)
+        if (fcmToken != nil) {
+            mainMethodCallHandler?.saveMessagingToken(token: fcmToken!)
         }
     }
 }
