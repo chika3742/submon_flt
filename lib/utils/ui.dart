@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -104,33 +105,38 @@ Future<T?> showSimpleDialog<T>(
   String cancelText = "キャンセル",
   bool allowCancel = true,
   bool showCancel = false,
+  bool reverseOkCancelOrderOnApple = false,
 }) {
   return showPlatformDialog<T>(
       context: context,
       barrierDismissible: allowCancel,
       builder: (context) {
+        var actions = [
+          if (showCancel)
+            PlatformTextButton(
+              child: Text(cancelText),
+              onPressed: () {
+                Navigator.pop(context, false);
+                onCancelPressed?.call();
+              },
+            ),
+          PlatformTextButton(
+            child: Text(okText),
+            onPressed: () {
+              Navigator.pop(context, true);
+              onOKPressed?.call();
+            },
+          ),
+        ];
+
         return PlatformAlertDialog(
           title: Text(title, style: Theme.of(context).textTheme.titleLarge),
           content: SingleChildScrollView(
             child: Text(message, style: Theme.of(context).textTheme.bodyLarge),
           ),
-          actions: [
-            if (showCancel)
-              PlatformTextButton(
-                child: Text(cancelText),
-                onPressed: () {
-                  Navigator.pop(context, false);
-                  onCancelPressed?.call();
-                },
-              ),
-            PlatformTextButton(
-              child: Text(okText),
-              onPressed: () {
-                Navigator.pop(context, true);
-                onOKPressed?.call();
-              },
-            ),
-          ],
+          actions: reverseOkCancelOrderOnApple && !kIsWeb && Platform.isIOS
+              ? actions.reversed.toList()
+              : actions,
         );
       });
 }

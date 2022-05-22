@@ -69,7 +69,6 @@ class _HomePageState extends State<HomePage> {
                 MediaQuery.of(context).size.width.truncate())
             .then((adSize) {
           MainMethodPlugin.requestIDFA().then((granted) {
-            print(granted);
             setState(() {
               bannerAd = BannerAd(
                 adUnitId: AdUnits.homeBottomBanner!,

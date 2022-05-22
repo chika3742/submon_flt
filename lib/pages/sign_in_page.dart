@@ -135,15 +135,10 @@ class _SignInPageState extends State<SignInPage> {
                     const SizedBox(height: 24),
                     if (Platform.isIOS)
                       Text(
-                          "「Googleでログイン」もしくは「Twitterでログイン」をタップすると、「あなたに関する情報を共有することを許可します」"
-                          "という内容のダイアログが表示されます。\nここでいう「あなたに関する情報」はログインに使用する情報のみですので、"
+                          "「Googleでログイン」もしくは「Twitterでログイン」をタップすると、「あなたに関する情報を共有することを許可」"
+                          "するか聞かれる場合があります。\nここでいう「あなたに関する情報」はログインに必要な情報のことです。"
                           "ログインする場合は「続ける」をタップしてください。",
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: Theme.of(context)
-                                  .primaryTextTheme
-                                  .bodyText1!
-                                  .color)),
+                          style: Theme.of(context).textTheme.bodyLarge),
                   ],
                 ),
               ),
