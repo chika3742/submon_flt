@@ -10,7 +10,8 @@ import 'package:submon/db/digestive.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/utils/ui.dart';
-import 'package:submon/utils/utils.dart';
+
+import '../utils/ad_unit_ids.dart';
 
 const addMinutes = 20;
 const breakMinutes = 10;
@@ -71,7 +72,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
     _checkDndAccessGranted();
 
     InterstitialAd.load(
-      adUnitId: getAdUnitId(AdUnit.focusTimerInterstitial)!,
+      adUnitId: AdUnits.focusTimerInterstitial!,
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
           onAdLoaded: (ad) {

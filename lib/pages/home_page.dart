@@ -13,6 +13,7 @@ import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
 import 'package:submon/link_handler.dart';
 import 'package:submon/main.dart';
+import 'package:submon/method_channel/main.dart';
 import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/home_tabs/tab_digestive_list.dart';
 import 'package:submon/pages/home_tabs/tab_others.dart';
@@ -23,6 +24,7 @@ import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
 import '../fade_through_page_route.dart';
+import '../utils/ad_unit_ids.dart';
 import 'home_tabs/tab_timetable_2.dart';
 
 class HomePage extends StatefulWidget {
@@ -66,14 +68,17 @@ class _HomePageState extends State<HomePage> {
         AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
                 MediaQuery.of(context).size.width.truncate())
             .then((adSize) {
-          setState(() {
-            bannerAd = BannerAd(
-              adUnitId: getAdUnitId(AdUnit.homeBottomBanner)!,
-              size: adSize!,
-              request: const AdRequest(),
-              listener: const BannerAdListener(),
-            );
-            bannerAd!.load();
+          MainMethodPlugin.requestIDFA().then((granted) {
+            print(granted);
+            setState(() {
+              bannerAd = BannerAd(
+                adUnitId: AdUnits.homeBottomBanner!,
+                size: adSize!,
+                request: const AdRequest(),
+                listener: const BannerAdListener(),
+              );
+              bannerAd!.load();
+            });
           });
         });
       }
