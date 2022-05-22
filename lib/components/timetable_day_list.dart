@@ -165,7 +165,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
   Widget _buildTimetableCell(int index, Timetable? data) {
     var timeItem = widget.classTimeItems
         .firstWhereOrNull((element) => element.id == index + 1);
-    return OpenContainer<String>(
+    return OpenContainer<dynamic>(
       key: GlobalObjectKey(getWidgetId(index)),
       useRootNavigator: true,
       closedColor: Theme.of(context).cardColor,
