@@ -162,7 +162,7 @@ class _SignInPageState extends State<SignInPage> {
           color: Colors.white,
         ),
         style: ElevatedButton.styleFrom(primary: Colors.blueGrey),
-        label: const Text("Appleでログイン", style: TextStyle(color: Colors.white)),
+        label: const Text("Appleでサインイン", style: TextStyle(color: Colors.white)),
         onPressed: !loading && !widget.reAuth
             ? () {
                 wrapSignIn(signInWithApple);
@@ -181,7 +181,8 @@ class _SignInPageState extends State<SignInPage> {
           "assets/vector/google.svg",
         ),
         style: ElevatedButton.styleFrom(primary: Colors.white),
-        label: const Text("Googleでログイン", style: TextStyle(color: Colors.black)),
+        label:
+            const Text("Googleでサインイン", style: TextStyle(color: Colors.black)),
         onPressed: !loading && !widget.reAuth
             ? () {
                 wrapSignIn(signInWithGoogle);
@@ -201,7 +202,7 @@ class _SignInPageState extends State<SignInPage> {
           color: Colors.white,
         ),
         style: ElevatedButton.styleFrom(primary: const Color(0xff1da1f2)),
-        label: Text("Twitterでログイン",
+        label: Text("Twitterでサインイン",
             style: Theme.of(context)
                 .textTheme
                 .labelLarge

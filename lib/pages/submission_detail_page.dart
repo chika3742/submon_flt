@@ -9,8 +9,9 @@ import 'package:submon/db/digestive.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/main.dart';
 import 'package:submon/utils/ui.dart';
-import 'package:submon/utils/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../utils/ad_unit_ids.dart';
 
 class SubmissionDetailPage extends StatefulWidget {
   const SubmissionDetailPage(this.submissionId, {Key? key}) : super(key: key);
@@ -53,7 +54,7 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
 
     if (!screenShotMode) {
       _bannerAd = BannerAd(
-        adUnitId: getAdUnitId(AdUnit.submissionDetailBanner)!,
+        adUnitId: AdUnits.submissionDetailBanner!,
         size: AdSize.banner,
         request: const AdRequest(),
         listener: const BannerAdListener(),
