@@ -23,8 +23,6 @@
 		C79CBA5A277E7C0E00D62ECE /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C795EEBE2775966D00BBE527 /* SwiftUI.framework */; };
 		C79CBA5D277E7C0E00D62ECE /* Widgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79CBA5C277E7C0E00D62ECE /* Widgets.swift */; };
 		C79CBA60277E7C0F00D62ECE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C79CBA5F277E7C0F00D62ECE /* Assets.xcassets */; };
-		C79CBA62277E7C0F00D62ECE /* Widgets.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = C79CBA5E277E7C0E00D62ECE /* Widgets.intentdefinition */; };
-		C79CBA63277E7C0F00D62ECE /* Widgets.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = C79CBA5E277E7C0E00D62ECE /* Widgets.intentdefinition */; };
 		C79CBA66277E7C0F00D62ECE /* WidgetsExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = C79CBA58277E7C0E00D62ECE /* WidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		C79CBA6C277E7C4F00D62ECE /* SubmissionListWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79CBA6B277E7C4F00D62ECE /* SubmissionListWidget.swift */; };
 		C79CBA73277E87DD00D62ECE /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = C79CBA72277E87DD00D62ECE /* FirebaseAnalytics */; };
@@ -32,6 +30,7 @@
 		C79CBA79277E880700D62ECE /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = C79CBA78277E880700D62ECE /* FirebaseFirestore */; };
 		C7AA489927454DC6009C440D /* GoogleService-Info-debug.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7AA489827454DC6009C440D /* GoogleService-Info-debug.plist */; };
 		C7B6BD5B27C87778004F1EA9 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B6BD5A27C87778004F1EA9 /* Extension.swift */; };
+		C7C9E8312839C1AE0096B271 /* Widgets.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = C7C9E8332839C1AE0096B271 /* Widgets.intentdefinition */; };
 		C7E5AEBA277ED5B9009058C9 /* GoogleService-Info-debug.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7AA489827454DC6009C440D /* GoogleService-Info-debug.plist */; };
 		C7E9623F282CBA3800A4C98A /* UriEventChannelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E9623E282CBA3800A4C98A /* UriEventChannelHandler.swift */; };
 		C7F285B127697B670067BB87 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = C7F285B027697B670067BB87 /* GeneratedPluginRegistrant.m */; };
@@ -105,12 +104,12 @@
 		C79CBA52277E719F00D62ECE /* DoTimeListWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DoTimeListWidgetExtension.entitlements; sourceTree = "<group>"; };
 		C79CBA58277E7C0E00D62ECE /* WidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C79CBA5C277E7C0E00D62ECE /* Widgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Widgets.swift; sourceTree = "<group>"; };
-		C79CBA5E277E7C0E00D62ECE /* Widgets.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = Widgets.intentdefinition; sourceTree = "<group>"; };
 		C79CBA5F277E7C0F00D62ECE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C79CBA61277E7C0F00D62ECE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C79CBA6B277E7C4F00D62ECE /* SubmissionListWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmissionListWidget.swift; sourceTree = "<group>"; };
 		C7AA489827454DC6009C440D /* GoogleService-Info-debug.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-debug.plist"; sourceTree = "<group>"; };
 		C7B6BD5A27C87778004F1EA9 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
+		C7C9E8322839C1AE0096B271 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; name = Base; path = Base.lproj/Widgets.intentdefinition; sourceTree = "<group>"; };
 		C7E5AEBB277ED825009058C9 /* WidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WidgetsExtension.entitlements; sourceTree = "<group>"; };
 		C7E9623E282CBA3800A4C98A /* UriEventChannelHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UriEventChannelHandler.swift; sourceTree = "<group>"; };
 		C7F285B027697B670067BB87 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
@@ -240,8 +239,8 @@
 		C79CBA5B277E7C0E00D62ECE /* Widgets */ = {
 			isa = PBXGroup;
 			children = (
+				C7C9E8332839C1AE0096B271 /* Widgets.intentdefinition */,
 				C79CBA5C277E7C0E00D62ECE /* Widgets.swift */,
-				C79CBA5E277E7C0E00D62ECE /* Widgets.intentdefinition */,
 				C79CBA5F277E7C0F00D62ECE /* Assets.xcassets */,
 				C79CBA61277E7C0F00D62ECE /* Info.plist */,
 				C79CBA6B277E7C4F00D62ECE /* SubmissionListWidget.swift */,
@@ -499,7 +498,6 @@
 				C778405127E4281B00291495 /* MessagingMethodChannelHandler.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				C7E9623F282CBA3800A4C98A /* UriEventChannelHandler.swift in Sources */,
-				C79CBA63277E7C0F00D62ECE /* Widgets.intentdefinition in Sources */,
 				C778404E27E41FFA00291495 /* MainMethodChannelHandler.swift in Sources */,
 				C7F285B127697B670067BB87 /* GeneratedPluginRegistrant.m in Sources */,
 				C778405527E46D1A00291495 /* Extensions.swift in Sources */,
@@ -510,7 +508,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C79CBA62277E7C0F00D62ECE /* Widgets.intentdefinition in Sources */,
+				C7C9E8312839C1AE0096B271 /* Widgets.intentdefinition in Sources */,
 				C79CBA6C277E7C4F00D62ECE /* SubmissionListWidget.swift in Sources */,
 				C79CBA5D277E7C0E00D62ECE /* Widgets.swift in Sources */,
 				C7B6BD5B27C87778004F1EA9 /* Extension.swift in Sources */,
@@ -542,6 +540,14 @@
 				97C147001CF9000F007C117D /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		C7C9E8332839C1AE0096B271 /* Widgets.intentdefinition */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C7C9E8322839C1AE0096B271 /* Base */,
+			);
+			name = Widgets.intentdefinition;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
