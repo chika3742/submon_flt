@@ -12,6 +12,7 @@ import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
 import 'package:submon/link_handler.dart';
+import 'package:submon/main.dart';
 import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/home_tabs/tab_digestive_list.dart';
 import 'package:submon/pages/home_tabs/tab_others.dart';
@@ -61,19 +62,21 @@ class _HomePageState extends State<HomePage> {
     });
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-              MediaQuery.of(context).size.width.truncate())
-          .then((adSize) {
-        setState(() {
-          bannerAd = BannerAd(
-            adUnitId: getAdUnitId(AdUnit.homeBottomBanner)!,
-            size: adSize!,
-            request: const AdRequest(),
-            listener: const BannerAdListener(),
-          );
-          bannerAd!.load();
+      if (!screenShotMode) {
+        AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+                MediaQuery.of(context).size.width.truncate())
+            .then((adSize) {
+          setState(() {
+            bannerAd = BannerAd(
+              adUnitId: getAdUnitId(AdUnit.homeBottomBanner)!,
+              size: adSize!,
+              request: const AdRequest(),
+              listener: const BannerAdListener(),
+            );
+            bannerAd!.load();
+          });
         });
-      });
+      }
     });
 
     hideAdListener = eventBus.on<SetAdHidden>().listen((event) {

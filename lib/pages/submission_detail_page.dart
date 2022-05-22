@@ -7,6 +7,7 @@ import 'package:submon/components/digestive_edit_bottom_sheet.dart';
 import 'package:submon/components/formatted_date_remaining.dart';
 import 'package:submon/db/digestive.dart';
 import 'package:submon/db/submission.dart';
+import 'package:submon/main.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -50,14 +51,16 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
       });
     });
 
-    _bannerAd = BannerAd(
-      adUnitId: getAdUnitId(AdUnit.submissionDetailBanner)!,
-      size: AdSize.banner,
-      request: const AdRequest(),
-      listener: const BannerAdListener(),
-    );
+    if (!screenShotMode) {
+      _bannerAd = BannerAd(
+        adUnitId: getAdUnitId(AdUnit.submissionDetailBanner)!,
+        size: AdSize.banner,
+        request: const AdRequest(),
+        listener: const BannerAdListener(),
+      );
 
-    _bannerAd!.load();
+      _bannerAd!.load();
+    }
   }
 
   @override
