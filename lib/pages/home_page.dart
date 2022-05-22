@@ -6,6 +6,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:submon/components/hidable_progress_indicator.dart';
 import 'package:submon/db/firestore_provider.dart';
@@ -108,39 +109,39 @@ class _HomePageState extends State<HomePage> {
       _bottomNavItems = [
         BottomNavItem(
           BottomNavItemId.home,
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "提出物",
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.home),
+            label: AppLocalizations.of(context)!.submissions,
           ),
         ),
         BottomNavItem(
           BottomNavItemId.digestive,
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.task),
-            label: "Digestive",
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.task),
+            label: AppLocalizations.of(context)!.digestive,
           ),
         ),
         if (prefs.showTimetableMenu)
           BottomNavItem(
             BottomNavItemId.timetable,
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.table_chart_outlined),
-              label: "時間割表",
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.table_chart_outlined),
+              label: AppLocalizations.of(context)!.timetable,
             ),
           ),
         if (prefs.showMemorizeMenu)
           BottomNavItem(
             BottomNavItemId.memorizeCard,
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.school),
-              label: "暗記カード",
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.school),
+              label: AppLocalizations.of(context)!.ankiCard,
             ),
           ),
         BottomNavItem(
           BottomNavItemId.others,
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.more_horiz),
-            label: "その他",
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.more_horiz),
+            label: AppLocalizations.of(context)!.others,
           ),
         )
       ];

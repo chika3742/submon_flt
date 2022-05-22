@@ -52,8 +52,8 @@ class TimetableClassTimeProvider extends SqlProvider<TimetableClassTime> {
   Map<String, Object?> objToMap(TimetableClassTime data) {
     return {
       colId: data.id,
-      colStart: data.start.format(context),
-      colEnd: data.end.format(context),
+      colStart: "${data.start.hour}:${data.start.minute}",
+      colEnd: "${data.end.hour}:${data.end.minute}",
     };
   }
 
