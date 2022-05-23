@@ -50,6 +50,8 @@ class TabTimetableState extends State<TabTimetable> {
             )
           ],
         );
+
+        prefs.isTimetableTipsDisplayed = true;
       }
     });
 
