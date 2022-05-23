@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:submon/components/submission_editor.dart';
 
 class SubmissionCreatePage extends StatelessWidget {
@@ -13,7 +14,7 @@ class SubmissionCreatePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('新規作成'),
+          title: Text(AppLocalizations.of(context)!.createNew),
         ),
         body: WillPopScope(
           child: SubmissionEditor(

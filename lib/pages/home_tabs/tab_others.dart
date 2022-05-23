@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:submon/components/hidable_progress_indicator.dart';
 import 'package:submon/components/settings_ui.dart';
@@ -18,10 +19,10 @@ class TabOthers extends StatefulWidget {
   const TabOthers({Key? key}) : super(key: key);
 
   @override
-  _TabOthersState createState() => _TabOthersState();
+  TabOthersState createState() => TabOthersState();
 }
 
-class _TabOthersState extends State<TabOthers> {
+class TabOthersState extends State<TabOthers> {
   var _loading = false;
   SharedPrefs? prefs;
 
@@ -44,7 +45,7 @@ class _TabOthersState extends State<TabOthers> {
             categories: [
               SettingsCategory(title: "Have a nice day", tiles: [
                 SettingsTile(
-                  title: "今すぐ同期",
+                  title: AppLocalizations.of(context)!.syncNow,
                   enabled: !_loading,
                   leading: const Icon(Icons.sync),
                   onTap: () async {
@@ -65,7 +66,7 @@ class _TabOthersState extends State<TabOthers> {
                   },
                 ),
                 SettingsTile(
-                  title: "完了済みの提出物",
+                  title: AppLocalizations.of(context)!.doneSubmissions,
                   leading: const Icon(Icons.check),
                   onTap: () {
                     Navigator.of(context, rootNavigator: true)
@@ -73,7 +74,7 @@ class _TabOthersState extends State<TabOthers> {
                   },
                 ),
                 SettingsTile(
-                  title: "カスタマイズ設定",
+                  title: AppLocalizations.of(context)!.customizeSettings,
                   leading: const Icon(Icons.auto_fix_high),
                   onTap: () {
                     Navigator.of(context, rootNavigator: true)
@@ -81,7 +82,7 @@ class _TabOthersState extends State<TabOthers> {
                   },
                 ),
                 SettingsTile(
-                  title: "機能設定",
+                  title: AppLocalizations.of(context)!.functionSettings,
                   leading: const Icon(Icons.settings),
                   onTap: () {
                     Navigator.of(context, rootNavigator: true)
@@ -89,7 +90,7 @@ class _TabOthersState extends State<TabOthers> {
                   },
                 ),
                 SettingsTile(
-                  title: "全般",
+                  title: AppLocalizations.of(context)!.general,
                   leading: const Icon(Icons.info),
                   onTap: () {
                     Navigator.of(context, rootNavigator: true)
@@ -98,20 +99,22 @@ class _TabOthersState extends State<TabOthers> {
                 ),
               ]),
               SettingsCategory(
-                title: "フィードバック・お知らせ",
+                title: AppLocalizations.of(context)!.feedbackAndAnnouncements,
                 tiles: [
                   if (prefs == null || prefs!.showReviewBtn)
                     SettingsTile(
-                      title: "レビューを書く",
-                      subtitle: "全体的なアプリ評価はこちら。",
+                      title: AppLocalizations.of(context)!.writeReview,
+                      subtitle:
+                          AppLocalizations.of(context)!.writeReviewDescription,
                       leading: const Icon(Icons.star),
                       onTap: () {
                         Browser.openStoreListing();
                       },
                     ),
                   SettingsTile(
-                    title: "フィードバックを書く",
-                    subtitle: "不具合報告や細かな改善要望はこちら。",
+                    title: AppLocalizations.of(context)!.writeFeedback,
+                    subtitle:
+                        AppLocalizations.of(context)!.writeFeedbackDescription,
                     leading: const Icon(Icons.rate_review),
                     onTap: () async {
                       var deviceInfoPlugin = DeviceInfoPlugin();
@@ -138,8 +141,10 @@ class _TabOthersState extends State<TabOthers> {
                     },
                   ),
                   SettingsTile(
-                    title: "Submonに関するお知らせ",
-                    subtitle: "サービスに関するお知らせを掲載しています。",
+                    title:
+                        AppLocalizations.of(context)!.announcementsAboutSubmon,
+                    subtitle: AppLocalizations.of(context)!
+                        .announcementsAboutSubmonDescription,
                     leading: const Icon(Icons.newspaper),
                     onTap: () {
                       Browser.openInfo();

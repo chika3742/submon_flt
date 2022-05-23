@@ -1,5 +1,27 @@
 {
-  "homeTabs": {
-    "submissions": "Submissions"
-  }
+  "submissions": "Submissions",
+  "digestive": "Digestive",
+  "timetable": "Timetable",
+  "ankiCard": "Anki card",
+  "others": "More",
+  "noSubmissions": "No submissions.",
+  "createNew": "Create New",
+  "submissionEditDateFormat": "EEE, MMM d",
+  "addTime": "Add time",
+  "title": "Title",
+  "details": "Details",
+  "syncToGoogleTasks": "Sync this submission to Google Tasks",
+  "save": "Save",
+  "syncNow": "Sync Now",
+  "doneSubmissions": "Done Submissions",
+  "customizeSettings": "Customize Settings",
+  "functionSettings": "Function Settings",
+  "general": "General",
+  "feedbackAndAnnouncements": "Feedback and Announcements",
+  "writeReview": "Write a Review",
+  "writeReviewDescription": "Overall application review is here.",
+  "writeFeedback": "Write a Feedback",
+  "writeFeedbackDescription": "Bug reports and requests for minor improvements can be sent here.",
+  "announcementsAboutSubmon": "Announcements About Submon",
+  "announcementsAboutSubmonDescription": "Service announcements."
 }

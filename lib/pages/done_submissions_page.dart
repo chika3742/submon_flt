@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:submon/components/submission_list.dart';
 
 class DoneSubmissionsPage extends StatefulWidget {
@@ -13,7 +14,7 @@ class _DoneSubmissionsPageState extends State<DoneSubmissionsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('完了済みの提出物'),
+          title: Text(AppLocalizations.of(context)!.doneSubmissions),
         ),
         body: const SubmissionList(done: true));
   }

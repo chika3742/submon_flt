@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:intl/intl.dart';
 import 'package:submon/components/color_picker_dialog.dart';
@@ -14,7 +15,8 @@ import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
 class SubmissionEditor extends StatefulWidget {
-  const SubmissionEditor({Key? key, this.submissionId, this.initialTitle, this.initialDeadline})
+  const SubmissionEditor(
+      {Key? key, this.submissionId, this.initialTitle, this.initialDeadline})
       : super(key: key);
 
   final int? submissionId;
@@ -22,10 +24,10 @@ class SubmissionEditor extends StatefulWidget {
   final DateTime? initialDeadline;
 
   @override
-  _SubmissionEditorState createState() => _SubmissionEditorState();
+  SubmissionEditorState createState() => SubmissionEditorState();
 }
 
-class _SubmissionEditorState extends State<SubmissionEditor> {
+class SubmissionEditorState extends State<SubmissionEditor> {
   final _titleController = TextEditingController();
   String? _titleError;
   final _detailController = TextEditingController();
@@ -35,7 +37,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
   bool _writeGoogleTasks = false;
   bool? _googleTasksAvailable;
 
-  _SubmissionEditorState() {
+  SubmissionEditorState() {
     var date = DateTime.now().add(const Duration(days: 1));
     date = date.toLocal();
     _date = DateTime(date.year, date.month, date.day, 23, 59);
@@ -87,6 +89,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                   Row(
                     children: [
                       TappableCard(
+                        onTap: showDateTimePickerDialog,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -94,21 +97,19 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                             const SizedBox(width: 8),
                             Text(
                                 DateFormat(
-                                        "M月 d日 (E)" +
-                                            (_addTime ? " HH:mm" : ""),
-                                        "ja_JP")
-                                    .format(_date),
+                                  "${AppLocalizations.of(context)!.submissionEditDateFormat}"
+                                  "${_addTime ? " HH:mm" : ""}",
+                                ).format(_date),
                                 style: const TextStyle(
                                     fontSize: 17, fontWeight: FontWeight.bold))
                           ],
                         ),
-                        onTap: showDateTimePickerDialog,
                       ),
                       const SizedBox(width: 16),
                       TappableCard(
-                        child: const Icon(Icons.palette),
                         color: _color.withOpacity(0.3),
                         onTap: showColorPickerDialog,
+                        child: const Icon(Icons.palette),
                       ),
                     ],
                   ),
@@ -123,7 +124,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                         },
                       ),
                       GestureDetector(
-                        child: const Text("時刻を追加する"),
+                        child: Text(AppLocalizations.of(context)!.addTime),
                         onTap: () {
                           setState(() {
                             _addTime = !_addTime;
@@ -138,7 +139,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                       controller: _titleController,
                       autofocus: true,
                       decoration: InputDecoration(
-                        label: const Text("タイトル"),
+                        label: Text(AppLocalizations.of(context)!.title),
                         filled: true,
                         errorText: _titleError,
                       ),
@@ -152,8 +153,10 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                       keyboardType: TextInputType.multiline,
                       maxLines: null,
                       minLines: 2,
-                      decoration: const InputDecoration(
-                          label: Text("詳細"), border: OutlineInputBorder()),
+                      decoration: InputDecoration(
+                        label: Text(AppLocalizations.of(context)!.details),
+                        border: const OutlineInputBorder(),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -170,10 +173,17 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                             : null,
                       ),
                       GestureDetector(
+                        onTap: _googleTasksAvailable == true
+                            ? () {
+                                setState(() {
+                                  _writeGoogleTasks = !_writeGoogleTasks;
+                                });
+                              }
+                            : null,
                         child: Opacity(
                           opacity: _googleTasksAvailable == true ? 1 : 0.6,
                           child: Text(
-                            "Google Tasksに提出物を同期",
+                            AppLocalizations.of(context)!.syncToGoogleTasks,
                             style: TextStyle(
                               color: _googleTasksAvailable == true
                                   ? null
@@ -185,13 +195,6 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                             ),
                           ),
                         ),
-                        onTap: _googleTasksAvailable == true
-                            ? () {
-                                setState(() {
-                                  _writeGoogleTasks = !_writeGoogleTasks;
-                                });
-                              }
-                            : null,
                       ),
                       const SizedBox(width: 8),
                       if (_googleTasksAvailable == null)
@@ -212,7 +215,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: FloatingActionButton.extended(
-              label: const Text("保存"),
+              label: Text(AppLocalizations.of(context)!.save),
               icon: const Icon(Icons.save),
               onPressed: save,
             ),
@@ -245,7 +248,8 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
         );
         if (timeResult != null) {
           setState(() {
-            _date = DateTime(dateResult.year, dateResult.month, dateResult.day, timeResult.hour, timeResult.minute);
+            _date = DateTime(dateResult.year, dateResult.month, dateResult.day,
+                timeResult.hour, timeResult.minute);
           });
         }
       } else {

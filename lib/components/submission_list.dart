@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:submon/components/submission_list_item.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/submission.dart';
@@ -95,10 +96,11 @@ class _SubmissionListState extends State<SubmissionList> {
           AnimatedOpacity(
             opacity: items!.isNotEmpty ? 0 : 0.7,
             duration: const Duration(milliseconds: 200),
-            child: const Center(
+            child: Center(
               child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text("提出物がありません", style: TextStyle(fontSize: 16)),
+                padding: const EdgeInsets.all(16.0),
+                child: Text(AppLocalizations.of(context)!.noSubmissions,
+                    style: TextStyle(fontSize: 16)),
               ),
             ),
           ),
