@@ -8,7 +8,8 @@
 import WidgetKit
 import SwiftUI
 import Intents
-import Firebase
+import FirebaseAuth
+import FirebaseFirestore
 
 @available(iOS 14.0, *)
 struct Provider: TimelineProvider {
@@ -25,7 +26,7 @@ struct Provider: TimelineProvider {
         var entries: [SubmissionEntry] = []
         
         do {
-            try Auth.auth().useUserAccessGroup("4L354SDDCC.net.chikach.submon")
+            try Auth.auth().useUserAccessGroup("B66Z929S96.net.chikach.submon")
         } catch let error as NSError {
             print(error)
         }
