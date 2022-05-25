@@ -1,12 +1,13 @@
 import SwiftUI
-import Firebase
+import FirebaseCore
+import FirebaseAuth
 
 @main
 struct Widgets: WidgetBundle {
     init() {
         FirebaseApp.configure()
         do {
-            try Auth.auth().useUserAccessGroup("4L354SDDCC.net.chikach.submon")
+            try Auth.auth().useUserAccessGroup("B66Z929S96.net.chikach.submon")
         } catch let error as NSError {
             print(error)
         }
