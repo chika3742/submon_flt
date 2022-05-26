@@ -48,7 +48,7 @@ target 'Runner' do
   pod 'Firebase/Messaging'
 end
 
-target 'WidgetsExtension' do
+target 'WidgetKitExtension' do
   google_utilities
   pod 'FirebaseCore'
   pod 'FirebaseAuth'
