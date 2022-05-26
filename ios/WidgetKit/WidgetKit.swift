@@ -1,9 +1,17 @@
+//
+//  WidgetKit.swift
+//  WidgetKit
+//
+//  Created by 近松 和矢 on 2022/05/25.
+//
+
+import WidgetKit
 import SwiftUI
 import FirebaseCore
 import FirebaseAuth
 
 @main
-struct Widgets: WidgetBundle {
+struct WidgetKit: WidgetBundle {
     init() {
         FirebaseApp.configure()
         do {
@@ -12,6 +20,7 @@ struct Widgets: WidgetBundle {
             print(error)
         }
     }
+    
     @WidgetBundleBuilder
     var body: some Widget {
         SubmissionListWidget()

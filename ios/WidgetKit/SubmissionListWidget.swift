@@ -11,7 +11,7 @@ import Intents
 import FirebaseAuth
 import FirebaseFirestore
 
-@available(iOS 14.0, *)
+@available(iOS 15.0, *)
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> SubmissionEntry {
         SubmissionEntry.preview()
@@ -90,7 +90,7 @@ struct SubmissionEntry: TimelineEntry {
 //    let configuration: ConfigurationIntent
 }
 
-@available(iOS 14.0, *)
+@available(iOS 15.0, *)
 struct SubmissionListWidgetEntryView : View {
     @Environment(\.widgetFamily) var family
 //    var family: WidgetFamily = .systemLarge
@@ -161,10 +161,16 @@ struct SubmissionListWidgetEntryView : View {
                                 HStack {
                                     if family != .systemSmall {
                                         Text({
-                                            if (delta < 24) {
+                                            let absDelta = abs(delta)
+                                            if (absDelta < 24) {
                                                 return "\(delta) 時間"
+                                            } else if (absDelta < 24 * 7) {
+                                                return "\(delta / 24) 日"
+                                            } else if (absDelta < 24 * 30) {
+                                                return "\(delta / (24 * 7)) 週間"
+                                            } else {
+                                                return "\(delta / (24 * 30)) ヶ月"
                                             }
-                                            return "\(delta / 24) 日"
                                         }() as String)
                                             .font(.subheadline)
                                             .foregroundColor({
@@ -186,8 +192,8 @@ struct SubmissionListWidgetEntryView : View {
                     }
                     Spacer()
                     if (family != .systemSmall) {
-                        Link(destination: URL(string: "submon://create-submission")!) {
-                        Image( "outline_add_black_24pt")
+                        Link(destination: URL(string: "submon:///create-submission")!) {
+                        Image("add-add_symbol")
                             .frame(width: 50, height: 50, alignment: .center)
                             .tint(.white)
                             .background(.green)
@@ -201,7 +207,7 @@ struct SubmissionListWidgetEntryView : View {
     }
 }
 
-@available(iOS 14.0, *)
+@available(iOS 15.0, *)
 struct SubmissionListWidget: Widget {
     let kind: String = "SubmissionListWidget"
 
@@ -215,7 +221,7 @@ struct SubmissionListWidget: Widget {
     }
 }
 
-@available(iOS 14.0, *)
+@available(iOS 15.0, *)
 struct SubmissionListWidget_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -239,10 +245,9 @@ struct SubmissionData: Decodable {
             let json = try JSONSerialization.data(withJSONObject: dic)
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .formatted({
-                let f = DateFormatter()
-                f.locale = .current
-                f.dateFormat = "yyyy/MM/dd HH:mm"
-                return f
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                return formatter
             }())
             let decoded = try decoder.decode(Self.self, from: json)
             return decoded

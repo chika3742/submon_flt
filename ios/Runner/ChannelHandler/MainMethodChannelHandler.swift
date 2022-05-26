@@ -9,6 +9,7 @@ import AppTrackingTransparency
 class MainMethodChannelHandler : NSObject {
     let methodChannel: FlutterMethodChannel
     let viewController: FlutterViewController
+    var pendingUri: String? = nil
     
     init(viewController: FlutterViewController) {
         self.methodChannel = FlutterMethodChannel(name: "net.chikach.submon/main", binaryMessenger: viewController.binaryMessenger)
@@ -35,7 +36,7 @@ class MainMethodChannelHandler : NSObject {
             result(nil)
             break
         case "getPendingUri":
-            result(nil)
+            result(pendingUri)
             break
         case "requestIDFA":
             requestIDFA(result: result)
