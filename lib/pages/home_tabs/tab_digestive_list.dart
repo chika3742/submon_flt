@@ -28,6 +28,8 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
       var submissionProvider = SubmissionProvider();
       submissionProvider.db = provider.db;
       var digestiveList = await provider.getAll(where: "$colDone = 0");
+      digestiveList.sort((a, b) =>
+          a.startAt.millisecondsSinceEpoch - b.startAt.millisecondsSinceEpoch);
       _digestiveList = await Future.wait(digestiveList.map((e) async {
         var submission = e.submissionId != null
             ? await submissionProvider.get(e.submissionId!)
