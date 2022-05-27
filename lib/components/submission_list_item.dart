@@ -1,6 +1,5 @@
 import 'package:animations/animations.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
@@ -192,7 +191,6 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                 ),
                 onTap: () {
                   callback();
-                  FirebaseCrashlytics.instance.crash();
                   FirebaseAnalytics.instance
                       .logSelectItem(itemListName: "submission_list");
                 },
