@@ -7,6 +7,7 @@ import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/timetable.dart';
 import 'package:submon/db/timetable_class_time.dart';
 import 'package:submon/db/timetable_table.dart';
+import 'package:submon/main.dart';
 import 'package:submon/pages/settings/customize.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:time_picker_widget/time_picker_widget.dart';
@@ -19,10 +20,10 @@ class TimetableSettingsPage extends StatefulWidget {
   const TimetableSettingsPage({Key? key}) : super(key: key);
 
   @override
-  _TimetableSettingsPageState createState() => _TimetableSettingsPageState();
+  TimetableSettingsPageState createState() => TimetableSettingsPageState();
 }
 
-class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
+class TimetableSettingsPageState extends State<TimetableSettingsPage> {
   // int? hours;
   // bool? showSaturday;
   SharedPrefs? prefs;
@@ -34,12 +35,6 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
   @override
   void initState() {
     super.initState();
-    // SharedPrefs.use((prefs) {
-    //   setState(() {
-    //     hours = prefs.timetableHour;
-    //     showSaturday = prefs.timetableShowSaturday;
-    //   });
-    // });
 
     SharedPreferences.getInstance().then((value) {
       setState(() {
@@ -49,7 +44,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
 
     getTables();
 
-    TimetableClassTimeProvider(context).use((provider) async {
+    TimetableClassTimeProvider().use((provider) async {
       classTimes = await provider.getAll();
       setState(() {});
     });
@@ -97,35 +92,35 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
                       itemBuilder: (context) => [
                         PopupMenuItem(
                           enabled: e.id != _timetableNotification?.id,
+                          value: _PopupMenuAction.setNotification,
                           child: ListTile(
                             enabled: e.id != _timetableNotification?.id,
                             title: const Text("この時間割を通知"),
                             leading: const Icon(Icons.notifications),
                           ),
-                          value: _PopupMenuAction.setNotification,
                         ),
                         const PopupMenuItem(
+                          value: _PopupMenuAction.copy,
                           child: ListTile(
                             title: Text("コピー"),
                             leading: Icon(Icons.content_copy),
                           ),
-                          value: _PopupMenuAction.copy,
                         ),
                         if (e.id != null)
                           const PopupMenuItem(
+                            value: _PopupMenuAction.edit,
                             child: ListTile(
                               title: Text("編集"),
                               leading: Icon(Icons.edit),
                             ),
-                            value: _PopupMenuAction.edit,
                           ),
                         if (e.id != null)
                           const PopupMenuItem(
+                            value: _PopupMenuAction.delete,
                             child: ListTile(
                               title: Text("削除"),
                               leading: Icon(Icons.delete),
                             ),
-                            value: _PopupMenuAction.delete,
                           ),
                       ],
                       onSelected: (value) {
@@ -170,9 +165,9 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
                   onDone: (text) async {
                     await TimetableTableProvider().use((provider) async {
                       await provider.insert(TimetableTable(title: text));
-                      Navigator.pop(context);
+                      Navigator.pop(globalContext!);
                     });
-                    showSnackBar(context, "時間割表を追加しました");
+                    showSnackBar(globalContext!, "時間割表を追加しました");
                   },
                 ),
               );
@@ -210,7 +205,8 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
                     await MessagingPlugin.requestNotificationPermission();
                 if (requestPermissionResult ==
                     NotificationPermissionState.denied) {
-                  showSnackBar(context, "通知の表示が許可されていません。本体設定から許可してください。");
+                  showSnackBar(
+                      globalContext!, "通知の表示が許可されていません。本体設定から許可してください。");
                 } else {
                   var result = await showCustomTimePicker(
                     context: context,
@@ -234,7 +230,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
                       await FirestoreProvider.setTimetableNotification(
                           _timetableNotification!);
                     } catch (e) {
-                      showSnackBar(context, "設定に失敗しました");
+                      showSnackBar(globalContext!, "設定に失敗しました");
                     }
                     setState(() {
                       _loadingTimetableNotification = false;
@@ -328,7 +324,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
                 if (end == null) return;
 
                 if (start.toMinutes() >= end.toMinutes()) {
-                  showSnackBar(context, "終業時刻が始業時刻よりも前か同じになっています");
+                  showSnackBar(globalContext!, "終業時刻が始業時刻よりも前か同じになっています");
                   return;
                 }
 
@@ -342,11 +338,11 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
                           ((element.id < e && x < b) ||
                               (element.id > e && y > a)));
                 })) {
-                  showSnackBar(context, "他の設定時刻との関係が正しくありません");
+                  showSnackBar(globalContext!, "他の設定時刻との関係が正しくありません");
                   return;
                 }
 
-                await TimetableClassTimeProvider(context).use((provider) async {
+                await TimetableClassTimeProvider().use((provider) async {
                   var obj = TimetableClassTime(id: e, start: start, end: end);
                   await provider.insert(obj);
                   classTimes.remove(item);
@@ -359,8 +355,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
                       splashRadius: 24,
                       icon: const Icon(Icons.clear),
                       onPressed: () {
-                        TimetableClassTimeProvider(context)
-                            .use((provider) async {
+                        TimetableClassTimeProvider().use((provider) async {
                           await provider.delete(e);
                         });
                         setState(() {
@@ -400,7 +395,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
       getTables();
     });
 
-    showSnackBar(context, "コピーしました");
+    showSnackBar(globalContext!, "コピーしました");
   }
 
   void changeTimetableName(TimetableTable table) async {
@@ -412,10 +407,15 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
         initialText: table.title,
         onDone: (text) {
           TimetableTableProvider().use((provider) async {
-            await provider.insert(TimetableTable(id: table.id, title: text));
-            Navigator.pop(context);
+            try {
+              await provider.insert(TimetableTable(id: table.id, title: text));
+              Navigator.pop(globalContext!);
+              showSnackBar(globalContext!, "時間割表名を変更しました");
+            } catch (e, st) {
+              showSnackBar(globalContext!, "エラーが発生しました。");
+              recordErrorToCrashlytics(e, st);
+            }
           });
-          showSnackBar(context, "時間割表名を変更しました");
         },
       ),
     );

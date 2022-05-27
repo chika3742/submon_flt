@@ -52,8 +52,7 @@ class _TabOthersState extends State<TabOthers> {
                       _loading = true;
                     });
                     try {
-                      await FirestoreProvider.fetchData(
-                          context: context, force: true);
+                      await FirestoreProvider.fetchData(force: true);
                     } on FirebaseException catch (e, stackTrace) {
                       handleFirebaseError(e, stackTrace, context, "同期に失敗しました。");
                     } catch (e, stackTrace) {

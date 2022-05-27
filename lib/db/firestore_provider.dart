@@ -189,12 +189,18 @@ class FirestoreProvider {
     }
   }
 
+  static void setLastAppOpenedToCurrentTime() {
+    userDoc?.set({"lastAppOpened": FieldValue.serverTimestamp()},
+        SetOptions(merge: true));
+  }
+
   ///
   /// if value is changed, true will be returned.
   ///
-  static Future<bool> fetchData(
-      {required BuildContext context, bool force = false}) async {
+  static Future<bool> fetchData({bool force = false}) async {
     await FirestoreProvider.checkMigration();
+
+    setLastAppOpenedToCurrentTime();
 
     var changed = !force ? await FirestoreProvider.checkTimestamp() : true;
 

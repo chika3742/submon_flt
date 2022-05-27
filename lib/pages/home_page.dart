@@ -349,7 +349,7 @@ class _HomePageState extends State<HomePage> {
     });
 
     try {
-      var result = await FirestoreProvider.fetchData(context: context);
+      var result = await FirestoreProvider.fetchData();
 
       if (result) {
         _navigatorKey.currentState

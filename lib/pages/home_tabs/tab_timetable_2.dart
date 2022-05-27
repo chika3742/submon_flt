@@ -73,7 +73,7 @@ class _TabTimetable2State extends State<TabTimetable2> {
             .getAll(where: "$colTableId = ?", whereArgs: [timetableId]);
       }
 
-      await TimetableClassTimeProvider(context).use((provider) async {
+      await TimetableClassTimeProvider().use((provider) async {
         _classTimes = await provider.getAll();
       });
 
