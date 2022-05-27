@@ -5,7 +5,6 @@ import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/sql_provider.dart';
 
 const tableTimetable = "timetable";
-const colId = "id";
 const colTableId = "tableId";
 const colCellId = "cellId";
 const colSubject = "subject";

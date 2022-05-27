@@ -11,7 +11,6 @@ import 'package:submon/method_channel/main.dart';
 
 const tableSubmission = "submission";
 
-const colId = "id";
 const colTitle = "title";
 const colDate = "date";
 const colDetail = "detail";

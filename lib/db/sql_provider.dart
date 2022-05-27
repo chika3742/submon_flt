@@ -4,6 +4,8 @@ import 'package:submon/db/timetable.dart';
 
 const schemaVer = 4;
 
+const colId = "id";
+
 abstract class SqlProvider<T> {
   SqlProvider({Database? db}) {
     if (db != null) {
