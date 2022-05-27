@@ -44,9 +44,8 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
     DigestiveProvider().use((provider) async {
       var digestives = await provider.getAll(
           where: "$colSubmissionId = ?", whereArgs: [widget.submissionId]);
-      digestives.sort((a, b) {
-        return a.startAt.difference(b.startAt).inMinutes;
-      });
+      digestives.sort((a, b) =>
+          a.startAt.millisecondsSinceEpoch - b.startAt.millisecondsSinceEpoch);
       setState(() {
         _digestiveList = digestives;
       });
