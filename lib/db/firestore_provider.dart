@@ -245,7 +245,7 @@ class FirestoreProvider {
         }
       });
 
-      await TimetableClassTimeProvider(context).use((provider) async {
+      await TimetableClassTimeProvider().use((provider) async {
         await provider.setAllLocally(
             timetableClassTimeDataSnapshot.docs.map((e) => e.data()).toList());
       });

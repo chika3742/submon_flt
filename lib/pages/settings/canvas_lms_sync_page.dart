@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:submon/components/color_picker_dialog.dart';
-import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/firestore_provider.dart';
+import 'package:submon/ui_components/settings_ui.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 

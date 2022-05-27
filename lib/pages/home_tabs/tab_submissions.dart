@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:submon/components/submission_list.dart';
+import 'package:submon/components/submissions/submission_list.dart';
 
 class TabSubmissions extends StatefulWidget {
   const TabSubmissions({Key? key}) : super(key: key);

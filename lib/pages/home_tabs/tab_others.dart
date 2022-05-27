@@ -5,10 +5,10 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:submon/components/hidable_progress_indicator.dart';
-import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/ui_components/hidable_progress_indicator.dart';
+import 'package:submon/ui_components/settings_ui.dart';
 import 'package:submon/utils/utils.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 

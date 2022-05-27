@@ -5,12 +5,11 @@ import 'package:animations/animations.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/db/timetable.dart';
 import 'package:submon/db/timetable_class_time.dart';
 import 'package:submon/pages/timetable_cell_edit_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
-
-import '../db/timetable.dart';
 
 class TimetableDayList extends StatefulWidget {
   const TimetableDayList({

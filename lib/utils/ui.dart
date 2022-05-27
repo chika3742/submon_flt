@@ -4,8 +4,8 @@ import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:submon/ui_components/platform_dialog.dart';
 
 String getWeekdayString(int weekday) {
   var weekdays = ["月", "火", "水", "木", "金", "土", "日"];
@@ -103,7 +103,7 @@ Future<T?> showSimpleDialog<T>(
   Function? onCancelPressed,
   String okText = "OK",
   String cancelText = "キャンセル",
-  bool allowCancel = true,
+  bool? allowCancel,
   bool showCancel = false,
   bool reverseOkCancelOrderOnApple = false,
 }) {
@@ -114,14 +114,15 @@ Future<T?> showSimpleDialog<T>(
         var actions = [
           if (showCancel)
             PlatformTextButton(
-              child: Text(cancelText),
+              child: Text(cancelText,
+                  style: const TextStyle(fontFamily: "Murecho")),
               onPressed: () {
                 Navigator.pop(context, false);
                 onCancelPressed?.call();
               },
             ),
           PlatformTextButton(
-            child: Text(okText),
+            child: Text(okText, style: const TextStyle(fontFamily: "Murecho")),
             onPressed: () {
               Navigator.pop(context, true);
               onOKPressed?.call();
@@ -159,7 +160,8 @@ void showSelectSheet(
     String? title,
     String? message,
     required List<SelectSheetAction> actions}) {
-  if (Platform.isIOS || Platform.isMacOS) {
+  var platform = Theme.of(context).platform;
+  if (platform == TargetPlatform.iOS || platform == TargetPlatform.macOS) {
     showCupertinoModalPopup<void>(
         context: context,
         builder: (context) {

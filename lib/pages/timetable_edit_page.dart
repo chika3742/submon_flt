@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:submon/components/timetable.dart';
+import 'package:submon/components/timetable/timetable.dart';
 import 'package:submon/db/timetable.dart' as db;
 import 'package:submon/events.dart';
 

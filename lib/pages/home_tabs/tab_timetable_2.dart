@@ -2,13 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:submon/components/timetable/timetable_day_list.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/timetable.dart';
 import 'package:submon/db/timetable_class_time.dart';
 import 'package:submon/db/timetable_table.dart';
 import 'package:submon/events.dart';
-
-import '../../components/timetable_day_list.dart';
 
 class TabTimetable2 extends StatefulWidget {
   const TabTimetable2({Key? key}) : super(key: key);

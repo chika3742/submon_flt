@@ -3,7 +3,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:submon/components/formatted_date_remaining.dart';
+import 'package:submon/components/submissions/formatted_date_remaining.dart';
 import 'package:submon/db/digestive.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/pages/submission_detail_page.dart';
@@ -11,7 +11,7 @@ import 'package:submon/utils/dynamic_links.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
-import 'digestive_edit_bottom_sheet.dart';
+import '../digestive_edit_bottom_sheet.dart';
 
 class SubmissionListItem extends StatefulWidget {
   const SubmissionListItem(this.item, {Key? key, this.onDone, this.onDelete})

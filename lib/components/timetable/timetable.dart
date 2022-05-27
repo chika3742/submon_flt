@@ -2,7 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:submon/components/open_modal_animation.dart';
+import 'package:submon/components/timetable/open_modal_animation.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/timetable.dart' as db;
 import 'package:submon/events.dart';
@@ -10,7 +10,7 @@ import 'package:submon/pages/timetable_cell_edit_page.dart';
 import 'package:submon/pages/timetable_edit_page.dart';
 import 'package:submon/utils/ui.dart';
 
-import '../utils/utils.dart';
+import '../../utils/utils.dart';
 
 class Timetable extends StatefulWidget {
   const Timetable({

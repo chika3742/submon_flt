@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:submon/components/submission_editor.dart';
+import 'package:submon/components/submissions/submission_editor.dart';
 
 class SubmissionEditPage extends StatelessWidget {
   const SubmissionEditPage(this.id, {Key? key}) : super(key: key);

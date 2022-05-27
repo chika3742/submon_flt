@@ -11,10 +11,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:submon/browser.dart';
-import 'package:submon/components/hidable_progress_indicator.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/twitter_sign_in.dart';
+import 'package:submon/ui_components/hidable_progress_indicator.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 

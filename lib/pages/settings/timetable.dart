@@ -2,13 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/timetable.dart';
 import 'package:submon/db/timetable_class_time.dart';
 import 'package:submon/db/timetable_table.dart';
 import 'package:submon/main.dart';
 import 'package:submon/pages/settings/customize.dart';
+import 'package:submon/ui_components/settings_ui.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:time_picker_widget/time_picker_widget.dart';
 

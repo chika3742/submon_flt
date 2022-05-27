@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:submon/components/submission_list_item.dart';
+import 'package:submon/components/submissions/submission_list_item.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/events.dart';

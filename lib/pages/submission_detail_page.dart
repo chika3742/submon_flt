@@ -4,7 +4,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:submon/components/digestive_detail_card.dart';
 import 'package:submon/components/digestive_edit_bottom_sheet.dart';
-import 'package:submon/components/formatted_date_remaining.dart';
+import 'package:submon/components/submissions/formatted_date_remaining.dart';
 import 'package:submon/db/digestive.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/main.dart';
