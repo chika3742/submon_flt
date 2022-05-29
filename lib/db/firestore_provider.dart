@@ -6,11 +6,10 @@ import 'package:submon/db/digestive.dart';
 import 'package:submon/db/memorize_card_folder.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/db/sql_provider.dart';
-import 'package:submon/db/submission.dart';
 import 'package:submon/db/timetable.dart';
 import 'package:submon/db/timetable_class_time.dart';
 import 'package:submon/db/timetable_table.dart';
-import 'package:submon/events.dart';
+import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/utils/firestore.dart';
 
 class FirestoreProvider {
@@ -212,10 +211,14 @@ class FirestoreProvider {
       final timetableClassTimeDataSnapshot = await timetableClassTime.get();
       final memorizeCardSnapshot = await memorizeCard.get();
 
-      await SubmissionProvider().use((provider) async {
-        await provider.setAllLocally(
-            submissionSnapshot.docs.map((e) => e.data()).toList());
-        eventBus.fire(SubmissionFetched());
+      SubmissionProvider().use((provider) {
+        provider.writeTransaction(() async {
+          await provider.isar.clear();
+
+          await provider.putAllLocalOnly(submissionSnapshot.docs
+              .map((e) => Submission.fromMap(e.data()))
+              .toList());
+        });
       });
 
       await DigestiveProvider().use((provider) async {
@@ -226,7 +229,7 @@ class FirestoreProvider {
       var timetableTables = timetableDataSnapshot.docs
           .where((e) => e.id != "main")
           .map((e) => {
-        "id": int.parse(e.id),
+                "id": int.parse(e.id),
         "title": e.data()["title"],
       })
           .toList();

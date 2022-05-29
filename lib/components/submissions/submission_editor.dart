@@ -6,7 +6,7 @@ import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:intl/intl.dart';
 import 'package:submon/components/color_picker_dialog.dart';
 import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/db/submission.dart';
+import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/main.dart';
 import 'package:submon/ui_components/tappable_card.dart';
 import 'package:submon/utils/dynamic_links.dart';
@@ -22,23 +22,22 @@ class SubmissionEditor extends StatefulWidget {
   final DateTime? initialDeadline;
 
   @override
-  _SubmissionEditorState createState() => _SubmissionEditorState();
+  SubmissionEditorState createState() => SubmissionEditorState();
 }
 
-class _SubmissionEditorState extends State<SubmissionEditor> {
+class SubmissionEditorState extends State<SubmissionEditor> {
   final _titleController = TextEditingController();
   String? _titleError;
-  final _detailController = TextEditingController();
-  late DateTime _date;
-  Color _color = Colors.white;
+  final _detailsController = TextEditingController();
   bool _addTime = false;
   bool _writeGoogleTasks = false;
   bool? _googleTasksAvailable;
+  Submission _submission = Submission()..color = Colors.white;
 
-  _SubmissionEditorState() {
+  SubmissionEditorState() {
     var date = DateTime.now().add(const Duration(days: 1));
     date = date.toLocal();
-    _date = DateTime(date.year, date.month, date.day, 23, 59);
+    _submission.due = DateTime(date.year, date.month, date.day, 23, 59);
   }
 
   @override
@@ -47,11 +46,11 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
     if (widget.submissionId != null) {
       SubmissionProvider().use((provider) {
         provider.get(widget.submissionId!).then((data) {
+          if (data == null) return;
           setState(() {
-            _titleController.text = data!.title;
-            _detailController.text = data.detail;
-            _date = data.date!;
-            _color = data.color;
+            _titleController.text = data.title;
+            _detailsController.text = data.details;
+            _submission = data;
           });
         });
       });
@@ -59,7 +58,8 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
     if (widget.initialTitle != null) {
       _titleController.text = widget.initialTitle!;
     }
-    if (widget.initialDeadline != null) _date = widget.initialDeadline!;
+    if (widget.initialDeadline != null)
+      _submission.due = widget.initialDeadline!;
 
     canAccessTasks().then((value) {
       setState(() {
@@ -87,6 +87,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                   Row(
                     children: [
                       TappableCard(
+                        onTap: showDateTimePickerDialog,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -94,21 +95,19 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                             const SizedBox(width: 8),
                             Text(
                                 DateFormat(
-                                        "M月 d日 (E)" +
-                                            (_addTime ? " HH:mm" : ""),
+                                        "M月 d日 (E)${_addTime ? " HH:mm" : ""}",
                                         "ja_JP")
-                                    .format(_date),
+                                    .format(_submission.due),
                                 style: const TextStyle(
                                     fontSize: 17, fontWeight: FontWeight.bold))
                           ],
                         ),
-                        onTap: showDateTimePickerDialog,
                       ),
                       const SizedBox(width: 16),
                       TappableCard(
-                        child: const Icon(Icons.palette),
-                        color: _color.withOpacity(0.3),
+                        color: _submission.color.withOpacity(0.3),
                         onTap: showColorPickerDialog,
+                        child: const Icon(Icons.palette),
                       ),
                     ],
                   ),
@@ -148,7 +147,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextField(
-                      controller: _detailController,
+                      controller: _detailsController,
                       keyboardType: TextInputType.multiline,
                       maxLines: null,
                       minLines: 2,
@@ -170,6 +169,13 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                             : null,
                       ),
                       GestureDetector(
+                        onTap: _googleTasksAvailable == true
+                            ? () {
+                                setState(() {
+                                  _writeGoogleTasks = !_writeGoogleTasks;
+                                });
+                              }
+                            : null,
                         child: Opacity(
                           opacity: _googleTasksAvailable == true ? 1 : 0.6,
                           child: Text(
@@ -181,17 +187,10 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                                       .textTheme
                                       .bodyText1!
                                       .color!
-                                      .withOpacity(0.7),
+                                  .withOpacity(0.7),
                             ),
                           ),
                         ),
-                        onTap: _googleTasksAvailable == true
-                            ? () {
-                                setState(() {
-                                  _writeGoogleTasks = !_writeGoogleTasks;
-                                });
-                              }
-                            : null,
                       ),
                       const SizedBox(width: 8),
                       if (_googleTasksAvailable == null)
@@ -201,6 +200,32 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
                           child: CircularProgressIndicator(),
                         ),
                     ],
+                  ),
+                  DropdownButtonFormField<Repeat>(
+                    value: _submission.repeat,
+                    items: const [
+                      DropdownMenuItem(
+                        value: Repeat.none,
+                        child: Text("しない"),
+                      ),
+                      DropdownMenuItem(
+                        value: Repeat.weekly,
+                        child: Text("毎週"),
+                      ),
+                      DropdownMenuItem(
+                        value: Repeat.monthly,
+                        child: Text("毎月"),
+                      ),
+                    ],
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      label: Text("繰り返し"),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _submission.repeat = value!;
+                      });
+                    },
                   ),
                 ],
               ),
@@ -227,7 +252,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
       context: context,
       builder: (context) {
         return DatePickerDialog(
-          initialDate: _date,
+          initialDate: _submission.due,
           firstDate: DateTime(2020),
           lastDate: DateTime(2099),
         );
@@ -239,19 +264,20 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
           context: context,
           builder: (context) {
             return TimePickerDialog(
-              initialTime: TimeOfDay.fromDateTime(_date),
+              initialTime: TimeOfDay.fromDateTime(_submission.due),
             );
           },
         );
         if (timeResult != null) {
           setState(() {
-            _date = DateTime(dateResult.year, dateResult.month, dateResult.day, timeResult.hour, timeResult.minute);
+            _submission.due = DateTime(dateResult.year, dateResult.month,
+                dateResult.day, timeResult.hour, timeResult.minute);
           });
         }
       } else {
         setState(() {
-          _date = DateTime(dateResult.year, dateResult.month, dateResult.day,
-              _date.hour, _date.minute);
+          _submission.due = DateTime(dateResult.year, dateResult.month,
+              dateResult.day, _submission.due.hour, _submission.due.minute);
         });
       }
     }
@@ -262,121 +288,111 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
       context: context,
       builder: (context) {
         return ColorPickerDialog(
-          initialColor: _color,
+          initialColor: _submission.color,
         );
       },
     ).then((color) {
       if (color != null) {
         setState(() {
-          _color = color;
+          _submission.color = color;
         });
       }
     });
   }
 
   void save() {
+    _submission
+      ..title = _titleController.text
+      ..details = _detailsController.text;
     SubmissionProvider().use((provider) async {
-      Submission data;
-      if (widget.submissionId != null) {
-        data = (await provider.get(widget.submissionId!))!;
-      } else {
-        data = Submission();
+      await provider.writeTransaction(() async {
+        await provider.put(_submission);
+      });
+
+      if (_writeGoogleTasks && _googleTasksAvailable == true) {
+        writeToGoogleTasks(_submission);
       }
-      data.title = _titleController.text;
-      data.detail = _detailController.text;
-      data.date = _date;
-      data.color = _color;
+    });
 
-      // google tasks entry
+    // If created new
+    if (widget.submissionId == null) {
+      SharedPrefs.use((prefs) {
+        var context = Application.globalKey.currentContext!;
 
-      dynamic result;
-      if (widget.submissionId != null) {
-        await provider.update(data);
-        result = true;
-      } else {
-        result = (await provider.insert(data)).id;
-
-        SharedPrefs.use((prefs) {
-          var context = Application.globalKey.currentContext!;
-
-          // submission tips banner
-          if (!prefs.isSubmissionTipsDisplayed) {
-            ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
-              content: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text.rich(
-                  const TextSpan(children: [
-                    TextSpan(text: "提出物を完了にするには"),
-                    TextSpan(
-                        text: "右にスワイプ",
-                        style: TextStyle(color: Colors.greenAccent)),
-                    TextSpan(text: "、\n提出物を削除するには"),
-                    TextSpan(
-                        text: "左にスワイプ",
-                        style: TextStyle(color: Colors.redAccent)),
-                    TextSpan(text: "します。\n\n"),
-                    TextSpan(text: "また、提出物を"),
-                    TextSpan(
-                        text: "長押し", style: TextStyle(color: Colors.redAccent)),
-                    TextSpan(text: "で、提出物の共有やその他のメニューが表示されます。"),
-                  ]),
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ),
-              actions: [
-                TextButton(
-                  child: const Text("閉じる"),
-                  onPressed: () {
-                    hideMaterialBanner(context);
-                  },
-                ),
-              ],
-            ));
-
-            prefs.isSubmissionTipsDisplayed = true;
-          }
-
-          // google tasks default tips banner
-          if (!prefs.isWriteToGoogleTasksTipsDisplayed && _writeGoogleTasks) {
-            showMaterialBanner(
-              context,
-              content: Text.rich(
+        // submission tips banner
+        if (!prefs.isSubmissionTipsDisplayed) {
+          ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
+            content: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Text.rich(
                 const TextSpan(children: [
+                  TextSpan(text: "提出物を完了にするには"),
                   TextSpan(
-                      text:
-                          "今後、「Google Tasksに提出物を同期」をデフォルトにしますか？\n(この設定は「カスタマイズ設定」から変更できます)"),
+                      text: "右にスワイプ",
+                      style: TextStyle(color: Colors.greenAccent)),
+                  TextSpan(text: "、\n提出物を削除するには"),
+                  TextSpan(
+                      text: "左にスワイプ",
+                      style: TextStyle(color: Colors.redAccent)),
+                  TextSpan(text: "します。\n\n"),
+                  TextSpan(text: "また、提出物を"),
+                  TextSpan(
+                      text: "長押し", style: TextStyle(color: Colors.redAccent)),
+                  TextSpan(text: "で、提出物の共有やその他のメニューが表示されます。"),
                 ]),
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              actions: [
-                TextButton(
-                  child: const Text("しない"),
-                  onPressed: () {
-                    hideMaterialBanner(context);
-                  },
-                ),
-                TextButton(
-                  child: const Text("する"),
-                  onPressed: () {
-                    hideMaterialBanner(context);
-                    prefs.isWriteToGoogleTasksByDefault = true;
-                  },
-                ),
-              ],
-            );
+            ),
+            actions: [
+              TextButton(
+                child: const Text("閉じる"),
+                onPressed: () {
+                  hideMaterialBanner(context);
+                },
+              ),
+            ],
+          ));
 
-            prefs.isWriteToGoogleTasksTipsDisplayed = true;
-          }
-        });
+          prefs.isSubmissionTipsDisplayed = true;
+        }
 
-        FirebaseAnalytics.instance.logEvent(name: "create_submission");
-      }
+        // google tasks default tips banner
+        if (!prefs.isWriteToGoogleTasksTipsDisplayed && _writeGoogleTasks) {
+          showMaterialBanner(
+            context,
+            content: Text.rich(
+              const TextSpan(children: [
+                TextSpan(
+                    text:
+                        "今後、「Google Tasksに提出物を同期」をデフォルトにしますか？\n(この設定は「カスタマイズ設定」から変更できます)"),
+              ]),
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            actions: [
+              TextButton(
+                child: const Text("しない"),
+                onPressed: () {
+                  hideMaterialBanner(context);
+                },
+              ),
+              TextButton(
+                child: const Text("する"),
+                onPressed: () {
+                  hideMaterialBanner(context);
+                  prefs.isWriteToGoogleTasksByDefault = true;
+                },
+              ),
+            ],
+          );
 
-      if (_writeGoogleTasks && _googleTasksAvailable == true) {
-        writeToGoogleTasks(data);
-      }
-      Navigator.of(context, rootNavigator: true).maybePop<dynamic>(result);
-    });
+          prefs.isWriteToGoogleTasksTipsDisplayed = true;
+        }
+      });
+
+      FirebaseAnalytics.instance.logEvent(name: "create_submission");
+    }
+
+    Navigator.of(context, rootNavigator: true).maybePop(_submission.id);
   }
 
   Future<tasks.Task> makeTaskRequest(Submission data) async {
@@ -385,7 +401,7 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
       id: data.googleTasksTaskId,
       title: "${data.title} (Submon)",
       notes: "Submon アプリ内で開く: ${linkData.shortUrl}",
-      due: data.date!.toUtc().toIso8601String(),
+      due: data.due.toUtc().toIso8601String(),
     );
   }
 
@@ -415,8 +431,10 @@ class _SubmissionEditorState extends State<SubmissionEditor> {
         var result = await tasksApi.tasks
             .insert(await makeTaskRequest(data), tasklist.id!);
 
-        await SubmissionProvider().use((provider) async {
-          await provider.update(data..googleTasksTaskId = result.id);
+        SubmissionProvider().use((provider) {
+          provider.writeTransaction(() async {
+            await provider.put(data..googleTasksTaskId = result.id);
+          });
         });
       }
     } catch (e, st) {

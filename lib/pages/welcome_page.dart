@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/browser.dart';
 import 'package:submon/db/firestore_provider.dart';
@@ -59,11 +61,6 @@ class _WelcomePageState extends State<WelcomePage> {
                     height: 55,
                     width: 240,
                     child: ElevatedButton(
-                      child: const Text('ログインして始める',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold)),
                       onPressed: () async {
                         var result =
                             await Navigator.pushNamed(context, "/signIn");
@@ -73,6 +70,11 @@ class _WelcomePageState extends State<WelcomePage> {
                       },
                       style:
                           ElevatedButton.styleFrom(primary: Colors.redAccent),
+                      child: const Text('ログインして始める',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold)),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -80,8 +82,6 @@ class _WelcomePageState extends State<WelcomePage> {
                     height: 40,
                     width: 240,
                     child: ElevatedButton(
-                      child: const Text('お試しモードで開始',
-                          style: TextStyle(color: Colors.white, fontSize: 16)),
                       onPressed: () async {
                         showSimpleDialog(
                           context,
@@ -109,6 +109,8 @@ class _WelcomePageState extends State<WelcomePage> {
                         );
                       },
                       style: ElevatedButton.styleFrom(primary: Colors.grey),
+                      child: const Text('お試しモードで開始',
+                          style: TextStyle(color: Colors.white, fontSize: 16)),
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -125,37 +127,31 @@ class _WelcomePageState extends State<WelcomePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: const [
                       OutlinedButton(
-                        child: Text('利用規約'),
                         onPressed: Browser.openTermsOfUse,
+                        child: Text('利用規約'),
                       ),
                       OutlinedButton(
-                        child: Text('プライバシーポリシー'),
                         onPressed: Browser.openPrivacyPolicy,
+                        child: Text('プライバシーポリシー'),
                       ),
                     ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      'ログイン後、「他社のAppやWebサイトを横断してトラッキング'
-                      'することを許可」するか尋ねるダイアログが表示される'
-                      '場合があります。これは最適な広告表示のためのものです。',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                      textAlign: TextAlign.center,
+                  if (!kIsWeb && (Platform.isIOS || Platform.isMacOS))
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        'ログイン後、「他社のAppやWebサイトを横断してトラッキング'
+                        'することを許可」するか尋ねるダイアログが表示される'
+                        '場合があります。これは最適な広告表示のためのものです。',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                  ),
                   const SizedBox(height: 32),
                   SizedBox(
                     height: 70,
                     width: 240,
                     child: ElevatedButton(
-                      child: const Text('旧「提出物マネージャー」\nからアカウント移行',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            height: 1.4,
-                          ),
-                          textAlign: TextAlign.center),
                       onPressed: () async {
                         showSimpleDialog(
                             context,
@@ -170,6 +166,13 @@ class _WelcomePageState extends State<WelcomePage> {
                       },
                       style: ElevatedButton.styleFrom(
                           primary: Colors.orange.shade900),
+                      child: const Text('旧「提出物マネージャー」\nからアカウント移行',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            height: 1.4,
+                          ),
+                          textAlign: TextAlign.center),
                     ),
                   ),
                   const SizedBox(height: 32),

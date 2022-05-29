@@ -4,9 +4,10 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/components/submissions/submission_list_item.dart';
 import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/db/submission.dart';
 import 'package:submon/events.dart';
+import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/utils/ui.dart';
+import 'package:submon/utils/utils.dart';
 
 class SubmissionList extends StatefulWidget {
   const SubmissionList({Key? key, this.done = false}) : super(key: key);
@@ -14,10 +15,10 @@ class SubmissionList extends StatefulWidget {
   final bool done;
 
   @override
-  _SubmissionListState createState() => _SubmissionListState();
+  SubmissionListState createState() => SubmissionListState();
 }
 
-class _SubmissionListState extends State<SubmissionList> {
+class SubmissionListState extends State<SubmissionList> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   List<Submission>? items;
 
@@ -35,11 +36,11 @@ class _SubmissionListState extends State<SubmissionList> {
 
     SubmissionProvider().use((provider) async {
       if (!widget.done) {
-        items = await provider.getAll(where: "$colDone = 0");
+        items = await provider.getUndoneSubmissions();
       } else {
-        items = await (provider as SubmissionProvider)
-            .getAll(where: "$colDone = 1", sortDescending: true);
+        items = await provider.getDoneSubmissions();
       }
+
       setState(() {
         items?.asMap().forEach((index, element) async {
           _listKey.currentState?.insertItem(index, duration: const Duration());
@@ -57,8 +58,8 @@ class _SubmissionListState extends State<SubmissionList> {
 
     _stream2 = eventBus.on<SubmissionInserted>().listen((event) {
       SubmissionProvider().use((provider) async {
-        if (!provider.db.isOpen) return;
         var data = await provider.get(event.id);
+
         if (data != null) {
           setState(() {
             items!.add(data);
@@ -126,14 +127,16 @@ class _SubmissionListState extends State<SubmissionList> {
 
   void checkDone(int index) {
     var item = items![index];
-    SubmissionProvider().use((provider) async {
-      item.done = !widget.done;
-      provider.update(item);
-      setState(() {
-        items!.removeAt(index);
-        _listKey.currentState?.removeItem(
-            index, (context, animation) => Container(),
-            duration: const Duration(milliseconds: 1));
+    setState(() {
+      items!.removeAt(index);
+      _listKey.currentState?.removeItem(
+          index, (context, animation) => Container(),
+          duration: const Duration(milliseconds: 1));
+    });
+
+    SubmissionProvider().use((provider) {
+      provider.writeTransaction(() async {
+        await provider.put(item..done = !item.done);
       });
     });
 
@@ -153,12 +156,13 @@ class _SubmissionListState extends State<SubmissionList> {
                 items!.insert(actualIndex, item);
                 _listKey.currentState?.insertItem(actualIndex);
               });
-            } catch (e) {
-              print(e);
+            } catch (e, st) {
+              recordErrorToCrashlytics(e, st);
             }
             SubmissionProvider().use((provider) {
-              item.done = !item.done;
-              provider.update(item);
+              provider.writeTransaction(() async {
+                provider.put(item..done = !item.done);
+              });
             });
           },
         ));
@@ -167,11 +171,14 @@ class _SubmissionListState extends State<SubmissionList> {
   void delete(int index) {
     var item = items![index];
 
-    SubmissionProvider().use((provider) async {
-      (provider as SubmissionProvider)
-          .deleteGoogleTasks(item.googleTasksTaskId);
-      provider.delete(item.id!);
+    SubmissionProvider().use((provider) {
+      SubmissionProvider.deleteFromGoogleTasks(item.googleTasksTaskId);
+
+      provider.writeTransaction(() async {
+        provider.delete(item.id!);
+      });
     });
+
     try {
       setState(() {
         items!.removeAt(index);
@@ -179,23 +186,28 @@ class _SubmissionListState extends State<SubmissionList> {
             index, (context, animation) => Container(),
             duration: const Duration(milliseconds: 1));
       });
-    } catch (e) {
-      print(e);
-    }
-    showSnackBar(context, "削除しました",
-        action: SnackBarAction(
-          label: "元に戻す",
-          textColor: Colors.pinkAccent,
-          onPressed: () {
-            setState(() {
-              var actualIndex = items!.length <= index ? items!.length : index;
-              items!.insert(actualIndex, item);
-              _listKey.currentState?.insertItem(actualIndex);
-              SubmissionProvider().use((provider) {
-                provider.insert(item);
+
+      showSnackBar(context, "削除しました",
+          action: SnackBarAction(
+            label: "元に戻す",
+            textColor: Colors.pinkAccent,
+            onPressed: () {
+              setState(() {
+                var actualIndex =
+                    items!.length <= index ? items!.length : index;
+                items!.insert(actualIndex, item);
+                _listKey.currentState?.insertItem(actualIndex);
+                SubmissionProvider().use((provider) {
+                  provider.writeTransaction(() async {
+                    await provider.put(item);
+                  });
+                });
               });
-            });
-          },
-        ));
+            },
+          ));
+    } catch (e, st) {
+      recordErrorToCrashlytics(e, st);
+      showSnackBar(context, "エラーが発生しました");
+    }
   }
 }
