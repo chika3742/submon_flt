@@ -2,15 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:submon/db/digestive.dart';
 import 'package:submon/db/memorize_card_folder.dart';
 import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/db/sql_provider.dart';
 import 'package:submon/db/timetable.dart';
 import 'package:submon/db/timetable_class_time.dart';
 import 'package:submon/db/timetable_table.dart';
+import 'package:submon/isar_db/isar_digestive.dart';
+import 'package:submon/isar_db/isar_provider.dart';
 import 'package:submon/isar_db/isar_submission.dart';
+import 'package:submon/main.dart';
 import 'package:submon/utils/firestore.dart';
+import 'package:submon/utils/ui.dart';
 
 class FirestoreProvider {
   FirestoreProvider(this.collectionId);
@@ -166,24 +168,47 @@ class FirestoreProvider {
     await FirebaseFunctions.instanceFor(region: "asia-northeast1")
         .httpsCallable("createUser")
         .call();
-    await userDoc!.set({"schemaVersion": schemaVer});
+    await userDoc!.set({"schemaVersion": schemaVersion});
   }
 
   static Future<void> checkMigration() async {
     if (userDoc == null) return;
     var snapshot = await userDoc!.get();
 
-    var schemaVersion = (snapshot.data() as dynamic)?["schemaVersion"];
+    var serverSchemaVersion = (snapshot.data() as dynamic)?["schemaVersion"];
 
-    if (schemaVersion == null) {
-      await userDoc!.set({"schemaVersion": schemaVer}, SetOptions(merge: true));
+    if (serverSchemaVersion == null) {
+      await userDoc!
+          .set({"schemaVersion": schemaVersion}, SetOptions(merge: true));
     } else {
-      if (schemaVersion < schemaVer) {
+      if (serverSchemaVersion < schemaVersion) {
+        showLoadingModal(globalContext!);
+
+        var oldVersion = serverSchemaVersion;
         // migrate (server side?)
+        if (oldVersion == 4) {
+          var list = await submission.get();
+          List<Future> futures = [];
+          for (var item in list.docs) {
+            var data = item.data();
+            data["details"] = data["detail"];
+            data["due"] = data["date"];
+            data["done"] = data["done"] == 1;
+            data["important"] = data["important"] == 1;
+            data.remove("detail");
+            data.remove("date");
+            futures.add(submission.set(item.id, data));
+          }
+
+          await Future.wait(futures);
+        }
         await userDoc!
-            .set({"schemaVersion": schemaVer}, SetOptions(merge: true));
-      } else if (schemaVersion > schemaVer) {
-        throw SchemaVersionMismatchException(schemaVer, schemaVersion);
+            .set({"schemaVersion": schemaVersion}, SetOptions(merge: true));
+
+        Navigator.of(globalContext!, rootNavigator: true).pop();
+      } else if (serverSchemaVersion > schemaVersion) {
+        throw SchemaVersionMismatchException(
+            serverSchemaVersion, schemaVersion);
       }
     }
   }
@@ -197,11 +222,11 @@ class FirestoreProvider {
   /// if value is changed, true will be returned.
   ///
   static Future<bool> fetchData({bool force = false}) async {
+    var changed = !force ? await FirestoreProvider.checkTimestamp() : true;
+
     await FirestoreProvider.checkMigration();
 
     setLastAppOpenedToCurrentTime();
-
-    var changed = !force ? await FirestoreProvider.checkTimestamp() : true;
 
     if (changed == true) {
       final configData = await config;
@@ -211,8 +236,8 @@ class FirestoreProvider {
       final timetableClassTimeDataSnapshot = await timetableClassTime.get();
       final memorizeCardSnapshot = await memorizeCard.get();
 
-      SubmissionProvider().use((provider) {
-        provider.writeTransaction(() async {
+      await SubmissionProvider().use((provider) async {
+        await provider.writeTransaction(() async {
           await provider.isar.clear();
 
           await provider.putAllLocalOnly(submissionSnapshot.docs
@@ -222,14 +247,17 @@ class FirestoreProvider {
       });
 
       await DigestiveProvider().use((provider) async {
-        await provider.setAllLocally(
-            digestiveSnapshot.docs.map((e) => e.data()).toList());
+        provider.writeTransaction(() async {
+          await provider.putAllLocalOnly(digestiveSnapshot.docs
+              .map((e) => Digestive.fromMap(e.data()))
+              .toList());
+        });
       });
 
       var timetableTables = timetableDataSnapshot.docs
           .where((e) => e.id != "main")
           .map((e) => {
-                "id": int.parse(e.id),
+        "id": int.parse(e.id),
         "title": e.data()["title"],
       })
           .toList();
@@ -242,7 +270,7 @@ class FirestoreProvider {
         await provider.deleteAllLocal();
         for (var e in timetableDataSnapshot.docs) {
           for (var value
-              in ((e.data()["cells"] as Map<String, dynamic>?) ?? {}).values) {
+          in ((e.data()["cells"] as Map<String, dynamic>?) ?? {}).values) {
             await provider.insertLocalOnly(provider.mapToObj(value));
           }
         }
@@ -256,9 +284,9 @@ class FirestoreProvider {
       await MemorizeCardFolderProvider().use((provider) async {
         await provider.setAllLocally(memorizeCardSnapshot.docs
             .map((e) => {
-                  "id": e.data()["id"],
-                  "title": e.data()["title"],
-                })
+          "id": e.data()["id"],
+          "title": e.data()["title"],
+        })
             .toList());
       });
 

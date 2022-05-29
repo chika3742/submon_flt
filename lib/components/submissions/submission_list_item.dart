@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:submon/components/submissions/formatted_date_remaining.dart';
-import 'package:submon/db/digestive.dart';
+import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/pages/submission_detail_page.dart';
 import 'package:submon/utils/dynamic_links.dart';
@@ -250,8 +250,8 @@ class SubmissionListItemState extends State<SubmissionListItem> {
             );
           },
           onClosed: (result) {
-            SubmissionProvider().use((provider) {
-              provider.get(_item.id!).then((obj) {
+            SubmissionProvider().use((provider) async {
+              await provider.get(_item.id!).then((obj) {
                 setState(() {
                   _item = obj!;
                 });
@@ -270,7 +270,7 @@ class SubmissionListItemState extends State<SubmissionListItem> {
       _item.important = !_item.important;
     });
     SubmissionProvider().use((provider) {
-      provider.writeTransaction(() async {
+      return provider.writeTransaction(() async {
         await provider.put(_item);
       });
     });
@@ -309,7 +309,7 @@ class SubmissionListItemState extends State<SubmissionListItem> {
         );
         if (data != null) {
           DigestiveProvider().use((provider) async {
-            await provider.insert(data);
+            await provider.put(data);
           });
           showSnackBar(context, "作成しました");
         }

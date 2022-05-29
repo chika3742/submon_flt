@@ -5,11 +5,11 @@ import 'package:intl/intl.dart';
 import 'package:submon/components/digestive_detail_card.dart';
 import 'package:submon/components/digestive_edit_bottom_sheet.dart';
 import 'package:submon/components/submissions/formatted_date_remaining.dart';
-import 'package:submon/db/digestive.dart';
-import 'package:submon/db/submission.dart';
+import 'package:submon/isar_db/isar_digestive.dart';
+import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/main.dart';
 import 'package:submon/utils/ui.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../utils/ad_unit_ids.dart';
 
@@ -19,6 +19,7 @@ class SubmissionDetailPage extends StatefulWidget {
   final int submissionId;
 
   @override
+  // ignore: library_private_types_in_public_api
   _SubmissionDetailPageState createState() => _SubmissionDetailPageState();
 }
 
@@ -42,10 +43,8 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
       });
     });
     DigestiveProvider().use((provider) async {
-      var digestives = await provider.getAll(
-          where: "$colSubmissionId = ?", whereArgs: [widget.submissionId]);
-      digestives.sort((a, b) =>
-          a.startAt.millisecondsSinceEpoch - b.startAt.millisecondsSinceEpoch);
+      var digestives =
+          await provider.getDigestivesBySubmissionId(widget.submissionId);
       setState(() {
         _digestiveList = digestives;
       });
@@ -74,8 +73,8 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
             onPressed: () async {
               await Navigator.pushNamed(context, "/submission/edit",
                   arguments: {"submissionId": widget.submissionId});
-              SubmissionProvider().use((provider) {
-                provider.get(widget.submissionId).then((value) {
+              SubmissionProvider().use((provider) async {
+                await provider.get(widget.submissionId).then((value) {
                   setState(() {
                     item = value;
                   });
@@ -86,8 +85,8 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
         onPressed: showCreateDigestiveBottomSheet,
+        child: const Icon(Icons.add),
       ),
       body: SafeArea(
         child: Column(
@@ -117,7 +116,7 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
                             if (item != null)
                               Text(
                                   DateFormat("M/d (E)", 'ja_JP')
-                                      .format(item!.date!),
+                                      .format(item!.due),
                                   style: const TextStyle(fontSize: 18)),
                           ],
                         ),
@@ -131,7 +130,7 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
                             const SizedBox(width: 8),
                             if (item != null)
                               FormattedDateRemaining(
-                                  item!.date!.difference(DateTime.now()),
+                                  item!.due.difference(DateTime.now()),
                                   numberSize: 24),
                           ],
                         ),
@@ -143,13 +142,14 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
                           // child: Text(item!.detail, style: const TextStyle(fontSize: 16, height: 1.3)),
                           child: Linkify(
                             onOpen: (link) async {
-                              if (await canLaunch(link.url)) {
-                                await launch(link.url);
+                              if (await canLaunchUrlString(link.url)) {
+                                await launchUrlString(link.url,
+                                    mode: LaunchMode.externalApplication);
                               } else {
                                 throw 'Could not launch $link';
                               }
                             },
-                            text: item!.detail,
+                            text: item!.details,
                             style: const TextStyle(fontSize: 16, height: 1.7),
                           ),
                         ),
@@ -189,9 +189,9 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
             if (_bannerAd != null)
               Container(
                 alignment: Alignment.center,
-                child: AdWidget(ad: _bannerAd!),
                 width: _bannerAd!.size.width.toDouble(),
                 height: _bannerAd!.size.height.toDouble(),
+                child: AdWidget(ad: _bannerAd!),
               ),
           ],
         ),
@@ -207,7 +207,9 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
     );
     if (data != null) {
       DigestiveProvider().use((provider) async {
-        await provider.insert(data);
+        provider.writeTransaction(() async {
+          await provider.put(data);
+        });
       });
       setState(() {
         _digestiveList.add(data);

@@ -3,9 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:submon/components/digestive_detail_card.dart';
-import 'package:submon/db/digestive.dart';
-import 'package:submon/db/submission.dart';
 import 'package:submon/events.dart';
+import 'package:submon/isar_db/isar_digestive.dart';
+import 'package:submon/isar_db/isar_submission.dart';
+import 'package:submon/main.dart';
 
 import '../../components/digestive_edit_bottom_sheet.dart';
 import '../../utils/ui.dart';
@@ -25,18 +26,16 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
   @override
   void initState() {
     DigestiveProvider().use((provider) async {
-      var submissionProvider = SubmissionProvider();
-      submissionProvider.db = provider.db;
-      var digestiveList = await provider.getAll(where: "$colDone = 0");
-      digestiveList.sort((a, b) =>
-          a.startAt.millisecondsSinceEpoch - b.startAt.millisecondsSinceEpoch);
-      _digestiveList = await Future.wait(digestiveList.map((e) async {
-        var submission = e.submissionId != null
-            ? await submissionProvider.get(e.submissionId!)
-            : null;
-        return DigestiveWithSubmission.fromObject(e, submission);
-      }).toList());
-      setState(() {});
+      SubmissionProvider().use((sProvider) async {
+        var digestiveList = await provider.getUndoneDigestives();
+        _digestiveList = await Future.wait(digestiveList.map((e) async {
+          var submission = e.submissionId != null
+              ? await sProvider.get(e.submissionId!)
+              : null;
+          return DigestiveWithSubmission.fromObject(e, submission);
+        }).toList());
+        setState(() {});
+      });
     });
 
     listener = eventBus.on<DigestiveAddButtonPressed>().listen((event) async {
@@ -50,12 +49,15 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
 
       if (result != null) {
         DigestiveProvider().use((provider) async {
-          var data = await provider.insert(result);
-          setState(() {
-            _digestiveList.add(DigestiveWithSubmission.fromObject(data, null));
+          provider.writeTransaction(() async {
+            var data = await provider.put(result);
+            setState(() {
+              _digestiveList
+                  .add(DigestiveWithSubmission.fromObject(data, null));
+            });
           });
         });
-        showSnackBar(context, "作成しました");
+        showSnackBar(globalContext!, "作成しました");
       }
     });
 
@@ -85,7 +87,7 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
             : const SizedBox(
                 height: 8,
               ));
-        var diff = e.submission?.date?.difference(DateTime.now());
+        var diff = e.submission?.due.difference(DateTime.now());
         var remainingString =
             diff != null ? getRemainingString(diff, false) : null;
         if (e.submission != null) {
@@ -107,7 +109,7 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
                 const SizedBox(width: 8),
                 Text.rich(TextSpan(
                     text:
-                        "${DateFormat("M/d (E)", "ja").format(e.submission!.date!)}・あと ",
+                        "${DateFormat("M/d (E)", "ja").format(e.submission!.due)}・あと ",
                     children: [
                       TextSpan(
                           text: remainingString![0],
@@ -152,43 +154,14 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
 
 class DigestiveWithSubmission extends Digestive {
   final Submission? submission;
+  final Digestive digestive;
 
-  DigestiveWithSubmission(
-      {required int id,
-      required int? submissionId,
-      required DateTime startAt,
-      required int minute,
-      required String content,
-      required bool done,
-      required this.submission})
-      : super(
-          id: id,
-          submissionId: submissionId,
-          startAt: startAt,
-          minute: minute,
-          content: content,
-          done: done,
-        );
-
-  static DigestiveWithSubmission fromObject(
-      Digestive digestive, Submission? submission) {
-    return DigestiveWithSubmission(
-      id: digestive.id!,
-      submissionId: digestive.submissionId,
-      startAt: digestive.startAt,
-      minute: digestive.minute,
-      content: digestive.content,
-      done: digestive.done,
-      submission: submission,
-    );
-  }
-
-  Digestive toDigestive() {
-    return Digestive(
-        submissionId: submissionId,
-        startAt: startAt,
-        minute: minute,
-        content: content,
-        done: done);
+  DigestiveWithSubmission.fromObject(this.digestive, this.submission) {
+    id = digestive.id!;
+    submissionId = digestive.submissionId;
+    startAt = digestive.startAt;
+    minute = digestive.minute;
+    content = digestive.content;
+    done = digestive.done;
   }
 }

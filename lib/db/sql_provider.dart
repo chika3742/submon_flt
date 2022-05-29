@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/db/timetable.dart';
 
-const schemaVer = 4;
+// const schemaVer = 4;
 
 const colId = "id";
 
@@ -34,9 +34,7 @@ abstract class SqlProvider<T> {
   /// Opens database.
   Future<void> open() async {
     db = await openDatabase("main.db",
-        version: schemaVer,
-        onUpgrade: migrate,
-        onDowngrade: onDatabaseDowngradeDelete);
+        version: 4, onUpgrade: migrate, onDowngrade: onDatabaseDowngradeDelete);
     var createSql = "create table if not exists ${tableName()} ( ";
     columns().forEach((element) {
       createSql += "${element.fieldName} ";

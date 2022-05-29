@@ -32,20 +32,14 @@ class SubmissionEditorState extends State<SubmissionEditor> {
   bool _addTime = false;
   bool _writeGoogleTasks = false;
   bool? _googleTasksAvailable;
-  Submission _submission = Submission()..color = Colors.white;
-
-  SubmissionEditorState() {
-    var date = DateTime.now().add(const Duration(days: 1));
-    date = date.toLocal();
-    _submission.due = DateTime(date.year, date.month, date.day, 23, 59);
-  }
+  Submission _submission = Submission();
 
   @override
   void initState() {
     super.initState();
     if (widget.submissionId != null) {
-      SubmissionProvider().use((provider) {
-        provider.get(widget.submissionId!).then((data) {
+      SubmissionProvider().use((provider) async {
+        await provider.get(widget.submissionId!).then((data) {
           if (data == null) return;
           setState(() {
             _titleController.text = data.title;
@@ -58,8 +52,9 @@ class SubmissionEditorState extends State<SubmissionEditor> {
     if (widget.initialTitle != null) {
       _titleController.text = widget.initialTitle!;
     }
-    if (widget.initialDeadline != null)
+    if (widget.initialDeadline != null) {
       _submission.due = widget.initialDeadline!;
+    }
 
     canAccessTasks().then((value) {
       setState(() {
@@ -131,29 +126,50 @@ class SubmissionEditorState extends State<SubmissionEditor> {
                       ),
                     ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField(
-                      controller: _titleController,
-                      autofocus: true,
-                      decoration: InputDecoration(
-                        label: const Text("タイトル"),
-                        filled: true,
-                        errorText: _titleError,
-                      ),
+                  TextField(
+                    controller: _titleController,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      label: const Text("タイトル"),
+                      filled: true,
+                      errorText: _titleError,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField(
-                      controller: _detailsController,
-                      keyboardType: TextInputType.multiline,
-                      maxLines: null,
-                      minLines: 2,
-                      decoration: const InputDecoration(
-                          label: Text("詳細"), border: OutlineInputBorder()),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _detailsController,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    minLines: 2,
+                    decoration: const InputDecoration(
+                        label: Text("詳細"), border: OutlineInputBorder()),
+                  ),
+                  const SizedBox(height: 24),
+                  DropdownButtonFormField<Repeat>(
+                    value: _submission.repeat,
+                    items: const [
+                      DropdownMenuItem(
+                        value: Repeat.none,
+                        child: Text("しない"),
+                      ),
+                      DropdownMenuItem(
+                        value: Repeat.weekly,
+                        child: Text("毎週"),
+                      ),
+                      DropdownMenuItem(
+                        value: Repeat.monthly,
+                        child: Text("毎月"),
+                      ),
+                    ],
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      label: Text("繰り返し"),
                     ),
+                    onChanged: (value) {
+                      setState(() {
+                        _submission.repeat = value!;
+                      });
+                    },
                   ),
                   const SizedBox(height: 24),
                   Row(
@@ -187,7 +203,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
                                       .textTheme
                                       .bodyText1!
                                       .color!
-                                  .withOpacity(0.7),
+                                      .withOpacity(0.7),
                             ),
                           ),
                         ),
@@ -200,32 +216,6 @@ class SubmissionEditorState extends State<SubmissionEditor> {
                           child: CircularProgressIndicator(),
                         ),
                     ],
-                  ),
-                  DropdownButtonFormField<Repeat>(
-                    value: _submission.repeat,
-                    items: const [
-                      DropdownMenuItem(
-                        value: Repeat.none,
-                        child: Text("しない"),
-                      ),
-                      DropdownMenuItem(
-                        value: Repeat.weekly,
-                        child: Text("毎週"),
-                      ),
-                      DropdownMenuItem(
-                        value: Repeat.monthly,
-                        child: Text("毎月"),
-                      ),
-                    ],
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      label: Text("繰り返し"),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        _submission.repeat = value!;
-                      });
-                    },
                   ),
                 ],
               ),
@@ -301,6 +291,13 @@ class SubmissionEditorState extends State<SubmissionEditor> {
   }
 
   void save() {
+    if (_titleController.text.isEmpty) {
+      setState(() {
+        _titleError = "入力してください";
+      });
+      return;
+    }
+
     _submission
       ..title = _titleController.text
       ..details = _detailsController.text;
@@ -364,7 +361,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
               const TextSpan(children: [
                 TextSpan(
                     text:
-                        "今後、「Google Tasksに提出物を同期」をデフォルトにしますか？\n(この設定は「カスタマイズ設定」から変更できます)"),
+                    "今後、「Google Tasksに提出物を同期」をデフォルトにしますか？\n(この設定は「カスタマイズ設定」から変更できます)"),
               ]),
               style: Theme.of(context).textTheme.bodyLarge,
             ),
@@ -431,8 +428,8 @@ class SubmissionEditorState extends State<SubmissionEditor> {
         var result = await tasksApi.tasks
             .insert(await makeTaskRequest(data), tasklist.id!);
 
-        SubmissionProvider().use((provider) {
-          provider.writeTransaction(() async {
+        SubmissionProvider().use((provider) async {
+          await provider.writeTransaction(() async {
             await provider.put(data..googleTasksTaskId = result.id);
           });
         });

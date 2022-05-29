@@ -1,9 +1,16 @@
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:submon/isar_db/isar_digestive.dart';
+import 'package:submon/isar_db/isar_memorization_card_group.dart';
 import 'package:submon/isar_db/isar_submission.dart';
+import 'package:submon/isar_db/isar_timetable.dart';
+import 'package:submon/isar_db/isar_timetable_class_time.dart';
+import 'package:submon/isar_db/isar_timetable_table.dart';
 import 'package:submon/main.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
+
+const schemaVersion = 5;
 
 abstract class IsarProvider<T> {
   late Isar isar;
@@ -16,13 +23,19 @@ abstract class IsarProvider<T> {
       isar = instance;
     } else {
       var dir = await getApplicationSupportDirectory();
-      instance =
-          await Isar.open(schemas: [SubmissionSchema], directory: dir.path);
+      instance = await Isar.open(schemas: [
+        SubmissionSchema,
+        DigestiveSchema,
+        TimetableSchema,
+        TimetableClassTimeSchema,
+        TimetableTableSchema,
+        MemorizationCardGroupSchema,
+      ], directory: dir.path);
       isar = instance;
     }
   }
 
-  Future<void> use(void Function(dynamic provider) callback);
+  Future<void> use(Future<void> Function(dynamic provider) callback);
 
   ///
   /// オブジェクトを [id] で取得する。オブジェクトが存在しない場合は `null` を返す。
@@ -34,9 +47,10 @@ abstract class IsarProvider<T> {
   ///
   /// オブジェクト [data] を挿入または更新し、割り当てられた [id] を返す。Firestore上のデータも同様に挿入・更新する。
   ///
-  Future<int> put(T data) {
+  Future<T> put(T data) async {
     _setFirestore(data);
-    return collection.put(data);
+    var id = await collection.put(data);
+    return (data as dynamic)..id = id;
   }
 
   Future<void> delete(int id) {

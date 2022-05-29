@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:googleapis/oauth2/v2.dart' as oauth;
 import 'package:googleapis_auth/auth_io.dart';
+import 'package:submon/browser.dart';
 import 'package:submon/main.dart';
 import 'package:submon/utils/ui.dart';
 
@@ -41,8 +42,7 @@ void handleAuthError(
     case "user-token-expired":
       showSnackBar(context, "トークンの有効期限が切れました。再度ログインする必要があります。");
       FirebaseAuth.instance.signOut();
-      Application.globalKey.currentState
-          ?.pushReplacementNamed("welcome", arguments: {});
+      backToWelcomePage(Application.globalKey.currentContext!);
       break;
     default:
       showSnackBar(context, "エラーが発生しました。(${e.code})",
@@ -61,7 +61,15 @@ void handleFirebaseError(FirebaseException e, StackTrace stackTrace,
         "エラー",
         "$message\n\nアカウントがすでに削除されたか、サーバーメンテナンス中である可能性があります。",
         allowCancel: false,
+        showCancel: true,
+        cancelText: "ログアウト",
+        onCancelPressed: () {
+          FirebaseAuth.instance.signOut();
+          backToWelcomePage(context);
+        },
+        okText: "お知らせを開く",
         onOKPressed: () {
+          Browser.openAnnouncements();
           SystemChannels.platform.invokeMethod('SystemNavigator.pop');
         },
       );

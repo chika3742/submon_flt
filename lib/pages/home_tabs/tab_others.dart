@@ -141,7 +141,7 @@ class _TabOthersState extends State<TabOthers> {
                     subtitle: "サービスに関するお知らせを掲載しています。",
                     leading: const Icon(Icons.newspaper),
                     onTap: () {
-                      Browser.openInfo();
+                      Browser.openAnnouncements();
                     },
                   ),
                 ],

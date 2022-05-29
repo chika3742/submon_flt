@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submon/db/submission.dart';
 import 'package:submon/events.dart';
+import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/pages/home_page.dart';
@@ -15,7 +16,6 @@ import 'package:submon/utils/dynamic_links.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
-import 'db/digestive.dart';
 import 'db/shared_prefs.dart';
 import 'method_channel/channels.dart';
 
@@ -154,7 +154,7 @@ void handleAuthUri(Uri url, List<AuthUriMode> acceptableMode) async {
       await auth.signOut();
       navigator.pop(); // dismiss loading modal
       showSnackBar(globalContext!, "メールアドレスの変更が完了しました。再度ログインが必要となります。");
-      navigator.pushReplacementNamed("welcome");
+      backToWelcomePage(globalContext!);
     } else {
       navigator.pop();
     }

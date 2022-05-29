@@ -18,13 +18,14 @@ class Digestive {
   String content;
   bool done;
 
-  Digestive(
-      {this.id,
-      required this.submissionId,
-      required this.startAt,
-      required this.minute,
-      required this.content,
-      required this.done});
+  Digestive({
+    this.id,
+    required this.submissionId,
+    required this.startAt,
+    required this.minute,
+    required this.content,
+    required this.done,
+  });
 }
 
 class DigestiveProvider extends SqlProvider<Digestive> {
