@@ -105,7 +105,7 @@ Timetable _timetableDeserializeNative(IsarCollection<Timetable> collection,
   object.note = reader.readString(offsets[1]);
   object.room = reader.readString(offsets[2]);
   object.subject = reader.readString(offsets[3]);
-  object.tableId = reader.readLongOrNull(offsets[4]);
+  object.tableId = reader.readLong(offsets[4]);
   object.teacher = reader.readString(offsets[5]);
   return object;
 }
@@ -124,7 +124,7 @@ P _timetableDeserializePropNative<P>(
     case 3:
       return (reader.readString(offset)) as P;
     case 4:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 5:
       return (reader.readString(offset)) as P;
     default:
@@ -154,7 +154,8 @@ Timetable _timetableDeserializeWeb(
   object.note = IsarNative.jsObjectGet(jsObj, 'note') ?? '';
   object.room = IsarNative.jsObjectGet(jsObj, 'room') ?? '';
   object.subject = IsarNative.jsObjectGet(jsObj, 'subject') ?? '';
-  object.tableId = IsarNative.jsObjectGet(jsObj, 'tableId');
+  object.tableId =
+      IsarNative.jsObjectGet(jsObj, 'tableId') ?? double.negativeInfinity;
   object.teacher = IsarNative.jsObjectGet(jsObj, 'teacher') ?? '';
   return object;
 }
@@ -173,7 +174,8 @@ P _timetableDeserializePropWeb<P>(Object jsObj, String propertyName) {
     case 'subject':
       return (IsarNative.jsObjectGet(jsObj, 'subject') ?? '') as P;
     case 'tableId':
-      return (IsarNative.jsObjectGet(jsObj, 'tableId')) as P;
+      return (IsarNative.jsObjectGet(jsObj, 'tableId') ??
+          double.negativeInfinity) as P;
     case 'teacher':
       return (IsarNative.jsObjectGet(jsObj, 'teacher') ?? '') as P;
     default:
@@ -661,16 +663,8 @@ extension TimetableQueryFilter
     ));
   }
 
-  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tableIdIsNull() {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.isNull,
-      property: 'tableId',
-      value: null,
-    ));
-  }
-
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tableIdEqualTo(
-      int? value) {
+      int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
       property: 'tableId',
@@ -679,7 +673,7 @@ extension TimetableQueryFilter
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tableIdGreaterThan(
-    int? value, {
+    int value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
@@ -691,7 +685,7 @@ extension TimetableQueryFilter
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tableIdLessThan(
-    int? value, {
+    int value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
@@ -703,8 +697,8 @@ extension TimetableQueryFilter
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tableIdBetween(
-    int? lower,
-    int? upper, {
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -999,7 +993,7 @@ extension TimetableQueryProperty
     return addPropertyNameInternal('subject');
   }
 
-  QueryBuilder<Timetable, int?, QQueryOperations> tableIdProperty() {
+  QueryBuilder<Timetable, int, QQueryOperations> tableIdProperty() {
     return addPropertyNameInternal('tableId');
   }
 

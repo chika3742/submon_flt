@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
-import '../../db/sql_provider.dart';
 import '../../utils/dynamic_links.dart';
 
 class AccountEditPage extends StatefulWidget {
@@ -274,7 +273,6 @@ class _AccountEditPageState extends State<AccountEditPage> {
   Future<void> executeAccountDeletion() async {
     try {
       await FirebaseAuth.instance.currentUser!.delete();
-      SqlProvider.clearAllTables();
 
       showSnackBar(context, "アカウントを削除しました。");
       backToWelcomePage(context);

@@ -10,7 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:submon/db/memorize_card.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/utils/card_side_builder.dart';
@@ -224,19 +223,19 @@ class _CameraPreviewPageState extends State<CameraPreviewPage>
               onPressed: _builder.toStringFront() != "" &&
                       _builder.toStringBack() != ""
                   ? () {
-                      MemorizeCardProvider().use((provider) async {
-                        await provider.insert(MemorizeCard(
-                          front: _builder.toStringFront(),
-                          back: _builder.toStringBack(),
-                          folderId: widget.folderId,
-                        ));
-                        setState(() {
-                          _builder.clearAll();
-                          _switchAnimationController!.reverse();
-                          _currentCardSide = CardSide.front;
-                        });
-                        showSnackBar(context, "作成しました。");
-                      });
+                      // MemorizeCardProvider().use((provider) async {
+                      //   await provider.insert(MemorizeCard(
+                      //     front: _builder.toStringFront(),
+                      //     back: _builder.toStringBack(),
+                      //     folderId: widget.folderId,
+                      //   ));
+                      //   setState(() {
+                      //     _builder.clearAll();
+                      //     _switchAnimationController!.reverse();
+                      //     _currentCardSide = CardSide.front;
+                      //   });
+                      //   showSnackBar(context, "作成しました。");
+                      // });
                     }
                   : null,
             )

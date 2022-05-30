@@ -50,10 +50,10 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
       if (result != null) {
         DigestiveProvider().use((provider) async {
           provider.writeTransaction(() async {
-            var data = await provider.put(result);
+            var id = await provider.put(result);
             setState(() {
-              _digestiveList
-                  .add(DigestiveWithSubmission.fromObject(data, null));
+              _digestiveList.add(
+                  DigestiveWithSubmission.fromObject(result..id = id, null));
             });
           });
         });

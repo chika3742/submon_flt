@@ -3,9 +3,9 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/db/timetable.dart';
-import 'package:submon/db/timetable_class_time.dart';
-import 'package:submon/db/timetable_table.dart';
+import 'package:submon/isar_db/isar_timetable.dart';
+import 'package:submon/isar_db/isar_timetable_class_time.dart';
+import 'package:submon/isar_db/isar_timetable_table.dart';
 import 'package:submon/main.dart';
 import 'package:submon/pages/settings/customize.dart';
 import 'package:submon/ui_components/settings_ui.dart';
@@ -69,7 +69,10 @@ class TimetableSettingsPageState extends State<TimetableSettingsPage> {
 
   void getTables() {
     TimetableTableProvider().use((provider) async {
-      tables = [TimetableTable(title: "メイン"), ...await provider.getAll()];
+      tables = [
+        TimetableTable.from(id: -1, title: "メイン"),
+        ...await provider.getAll()
+      ];
       setState(() {});
     });
   }
@@ -106,7 +109,7 @@ class TimetableSettingsPageState extends State<TimetableSettingsPage> {
                             leading: Icon(Icons.content_copy),
                           ),
                         ),
-                        if (e.id != null)
+                        if (e.id != -1)
                           const PopupMenuItem(
                             value: _PopupMenuAction.edit,
                             child: ListTile(
@@ -114,7 +117,7 @@ class TimetableSettingsPageState extends State<TimetableSettingsPage> {
                               leading: Icon(Icons.edit),
                             ),
                           ),
-                        if (e.id != null)
+                        if (e.id != -1)
                           const PopupMenuItem(
                             value: _PopupMenuAction.delete,
                             child: ListTile(
@@ -164,9 +167,11 @@ class TimetableSettingsPageState extends State<TimetableSettingsPage> {
                   formLabel: "時間割表名",
                   onDone: (text) async {
                     await TimetableTableProvider().use((provider) async {
-                      await provider.insert(TimetableTable(title: text));
-                      Navigator.pop(globalContext!);
+                      await provider.writeTransaction(() async {
+                        await provider.put(TimetableTable.from(title: text));
+                      });
                     });
+                    Navigator.pop(globalContext!);
                     showSnackBar(globalContext!, "時間割表を追加しました");
                   },
                 ),
@@ -299,7 +304,7 @@ class TimetableSettingsPageState extends State<TimetableSettingsPage> {
           title: "各時限の始業・終業時刻",
           tiles: [1, 2, 3, 4, 5, 6, 7, 8].map((e) {
             var item =
-                classTimes.firstWhereOrNull((element) => element.id == e);
+                classTimes.firstWhereOrNull((element) => element.period == e);
             return SettingsTile(
               title: "$e 時間目",
               subtitle: item != null
@@ -333,18 +338,21 @@ class TimetableSettingsPageState extends State<TimetableSettingsPage> {
                   var b = element.end.toMinutes();
                   var x = start.toMinutes();
                   var y = end.toMinutes();
-                  return element.id != e &&
+                  return element.period != e &&
                       ((x <= b && a <= y) ||
-                          ((element.id < e && x < b) ||
-                              (element.id > e && y > a)));
+                          ((element.period < e && x < b) ||
+                              (element.period > e && y > a)));
                 })) {
                   showSnackBar(globalContext!, "他の設定時刻との関係が正しくありません");
                   return;
                 }
 
                 await TimetableClassTimeProvider().use((provider) async {
-                  var obj = TimetableClassTime(id: e, start: start, end: end);
-                  await provider.insert(obj);
+                  var obj = TimetableClassTime.from(
+                      period: e, start: start, end: end);
+                  await provider.writeTransaction(() async {
+                    await provider.put(obj);
+                  });
                   classTimes.remove(item);
                   classTimes.add(obj);
                   setState(() {});
@@ -356,10 +364,13 @@ class TimetableSettingsPageState extends State<TimetableSettingsPage> {
                       icon: const Icon(Icons.clear),
                       onPressed: () {
                         TimetableClassTimeProvider().use((provider) async {
-                          await provider.delete(e);
+                          provider.writeTransaction(() async {
+                            await provider.delete(e);
+                          });
                         });
                         setState(() {
-                          classTimes.removeWhere((element) => element.id == e);
+                          classTimes
+                              .removeWhere((element) => element.period == e);
                         });
                       },
                     )
@@ -373,23 +384,27 @@ class TimetableSettingsPageState extends State<TimetableSettingsPage> {
 
   void copyTimetable(TimetableTable table) async {
     await TimetableTableProvider().use((provider) async {
-      var newTable = await provider.insert(TimetableTable(
-        title: "${table.title ?? "メイン"} - コピー",
-      ));
+      late TimetableTable newTable;
+      await provider.writeTransaction(() async {
+        newTable = TimetableTable.from(
+          title: "${table.title} - コピー",
+        );
+        var id = await provider.put(newTable);
+        newTable.id = id;
+      });
 
       await TimetableProvider().use((provider) async {
-        (provider as TimetableProvider).currentTableId = newTable.id.toString();
-        var cells = table.id != null
-            ? await provider
-                .getAll(where: "$colTableId = ?", whereArgs: [table.id])
-            : await provider.getAll(where: "$colTableId is null");
-        for (var cell in cells) {
-          await provider.insert(
-            cell
-              ..id = null
-              ..tableId = newTable.id,
-          );
-        }
+        provider.currentTableId = newTable.id!;
+        var cells = await provider.getTableByTableId(table.id!);
+        provider.writeTransaction(() async {
+          for (var cell in cells) {
+            await provider.put(
+              cell
+                ..id = null
+                ..tableId = newTable.id!,
+            );
+          }
+        });
       });
 
       getTables();
@@ -408,7 +423,10 @@ class TimetableSettingsPageState extends State<TimetableSettingsPage> {
         onDone: (text) {
           TimetableTableProvider().use((provider) async {
             try {
-              await provider.insert(TimetableTable(id: table.id, title: text));
+              await provider.writeTransaction(() async {
+                await provider
+                    .put(TimetableTable.from(id: table.id, title: text));
+              });
               Navigator.pop(globalContext!);
               showSnackBar(globalContext!, "時間割表名を変更しました");
             } catch (e, st) {
@@ -427,19 +445,21 @@ class TimetableSettingsPageState extends State<TimetableSettingsPage> {
         context, "確認", "${table.title}\n\n時間割表を削除しますか？\n※一度削除すると元に戻せません",
         showCancel: true, onOKPressed: () {
       TimetableTableProvider().use((provider) async {
-        await provider.delete(table.id!);
+        await provider.writeTransaction(() async {
+          await provider.delete(table.id!);
+        });
         var pref = await SharedPreferences.getInstance();
         var sp = SharedPrefs(pref);
-        if (sp.currentTimetableId == table.id.toString()) {
-          sp.currentTimetableId = "main";
+        if (sp.intCurrentTimetableId == table.id) {
+          sp.intCurrentTimetableId = -1;
         }
         getTables();
       });
 
       TimetableProvider().use((provider) async {
-        await provider.db.execute(
-            "delete from ${provider.tableName()} where $colTableId = ?",
-            [table.id]);
+        provider.writeTransaction(() async {
+          await provider.deleteAllInTableLocalOnly(table.id!);
+        });
       });
 
       showSnackBar(context, "削除しました");

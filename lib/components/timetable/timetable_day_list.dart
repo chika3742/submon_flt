@@ -5,11 +5,12 @@ import 'package:animations/animations.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/db/timetable.dart';
-import 'package:submon/db/timetable_class_time.dart';
 import 'package:submon/pages/timetable_cell_edit_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
+
+import '../../isar_db/isar_timetable.dart';
+import '../../isar_db/isar_timetable_class_time.dart';
 
 class TimetableDayList extends StatefulWidget {
   const TimetableDayList({
@@ -62,7 +63,8 @@ class _TimetableDayListState extends State<TimetableDayList> {
 
         if (currentPeriod != null) {
           var currentContext =
-              GlobalObjectKey(getWidgetId(currentPeriod.id - 1)).currentContext;
+              GlobalObjectKey(getWidgetId(currentPeriod.period - 1))
+                  .currentContext;
           _markerPos = getWidgetPos(currentContext)!.dy -
               16 +
               getWidgetSize(currentContext)!.height *
@@ -73,12 +75,13 @@ class _TimetableDayListState extends State<TimetableDayList> {
           var interval = widget.classTimeItems.firstWhereOrNull((e) {
             return e.end.toMinutes() < currentTime.toMinutes() &&
                 widget.classTimeItems.any((element) =>
-                element.id == e.id + 1 &&
+                element.period == e.period + 1 &&
                     currentTime.toMinutes() < element.start.toMinutes());
           });
           if (interval != null) {
             var currentContext =
-                GlobalObjectKey(getWidgetId(interval.id - 1)).currentContext;
+                GlobalObjectKey(getWidgetId(interval.period - 1))
+                    .currentContext;
             _markerPos = getWidgetPos(currentContext)!.dy -
                 16 +
                 getWidgetSize(currentContext)!.height +
@@ -163,7 +166,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
 
   Widget _buildTimetableCell(int index, Timetable? data) {
     var timeItem = widget.classTimeItems
-        .firstWhereOrNull((element) => element.id == index + 1);
+        .firstWhereOrNull((element) => element.period == index + 1);
     return OpenContainer<dynamic>(
       key: GlobalObjectKey(getWidgetId(index)),
       useRootNavigator: true,

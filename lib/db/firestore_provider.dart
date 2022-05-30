@@ -2,14 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:submon/db/memorize_card_folder.dart';
 import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/db/timetable.dart';
-import 'package:submon/db/timetable_class_time.dart';
-import 'package:submon/db/timetable_table.dart';
 import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_provider.dart';
 import 'package:submon/isar_db/isar_submission.dart';
+import 'package:submon/isar_db/isar_timetable.dart';
+import 'package:submon/isar_db/isar_timetable_class_time.dart';
+import 'package:submon/isar_db/isar_timetable_table.dart';
 import 'package:submon/main.dart';
 import 'package:submon/utils/firestore.dart';
 import 'package:submon/utils/ui.dart';
@@ -39,6 +38,11 @@ class FirestoreProvider {
   Future<QuerySnapshot<Map<String, dynamic>>> get() async {
     assert(userDoc != null);
     return await userDoc!.collection(collectionId).get();
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getDoc(String id) async {
+    assert(userDoc != null);
+    return await userDoc!.collection(collectionId).doc(id).get();
   }
 
   Future<bool?> exists(String docId) async {
@@ -187,9 +191,9 @@ class FirestoreProvider {
         var oldVersion = serverSchemaVersion;
         // migrate (server side?)
         if (oldVersion == 4) {
-          var list = await submission.get();
+          var submissions = await submission.get();
           List<Future> futures = [];
-          for (var item in list.docs) {
+          for (var item in submissions.docs) {
             var data = item.data();
             data["details"] = data["detail"];
             data["due"] = data["date"];
@@ -198,6 +202,19 @@ class FirestoreProvider {
             data.remove("detail");
             data.remove("date");
             futures.add(submission.set(item.id, data));
+          }
+
+          var mainTimetable = await timetable.getDoc("main");
+          futures.add(timetable.set("-1", mainTimetable.data()));
+          futures.add(timetable.delete("main"));
+
+          var timetableClassTimes = await timetableClassTime.get();
+          for (var item in timetableClassTimes.docs) {
+            var data = item.data();
+            data["period"] = data["id"];
+            data.remove("id");
+
+            futures.add(timetableClassTime.set(item.id, data));
           }
 
           await Future.wait(futures);
@@ -255,40 +272,47 @@ class FirestoreProvider {
       });
 
       var timetableTables = timetableDataSnapshot.docs
-          .where((e) => e.id != "main")
-          .map((e) => {
-        "id": int.parse(e.id),
-        "title": e.data()["title"],
-      })
+          .where((e) => e.id != "-1")
+          .map((e) => TimetableTable.fromMap({
+                "id": int.parse(e.id),
+                "title": e.data()["title"],
+              }))
           .toList();
 
       await TimetableTableProvider().use((provider) async {
-        await provider.setAllLocally(timetableTables);
+        await provider.writeTransaction(() async {
+          await provider.putAllLocalOnly(timetableTables);
+        });
       });
 
       await TimetableProvider().use((provider) async {
-        await provider.deleteAllLocal();
-        for (var e in timetableDataSnapshot.docs) {
-          for (var value
-          in ((e.data()["cells"] as Map<String, dynamic>?) ?? {}).values) {
-            await provider.insertLocalOnly(provider.mapToObj(value));
+        await provider.writeTransaction(() async {
+          for (var e in timetableDataSnapshot.docs) {
+            var list = ((e.data()["cells"] as Map<String, dynamic>?) ?? {})
+                .values
+                .map((e) => Timetable.fromMap(e))
+                .toList();
+            await provider.putAllLocalOnly(list);
           }
-        }
+        });
       });
 
       await TimetableClassTimeProvider().use((provider) async {
-        await provider.setAllLocally(
-            timetableClassTimeDataSnapshot.docs.map((e) => e.data()).toList());
+        await provider.writeTransaction(() async {
+          await provider.putAllLocalOnly(timetableClassTimeDataSnapshot.docs
+              .map((e) => TimetableClassTime.fromMap(e.data()))
+              .toList());
+        });
       });
 
-      await MemorizeCardFolderProvider().use((provider) async {
-        await provider.setAllLocally(memorizeCardSnapshot.docs
-            .map((e) => {
-          "id": e.data()["id"],
-          "title": e.data()["title"],
-        })
-            .toList());
-      });
+      // await MemorizeCardFolderProvider().use((provider) async {
+      //   await provider.setAllLocally(memorizeCardSnapshot.docs
+      //       .map((e) => {
+      //     "id": e.data()["id"],
+      //     "title": e.data()["title"],
+      //   })
+      //       .toList());
+      // });
 
       if (configData?.lastChanged != null) {
         SharedPrefs.use((prefs) {

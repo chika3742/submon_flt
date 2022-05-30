@@ -44,13 +44,17 @@ abstract class IsarProvider<T> {
     return collection.get(id);
   }
 
+  Future<List<T>> getAll() {
+    return collection.where().findAll();
+  }
+
   ///
   /// オブジェクト [data] を挿入または更新し、割り当てられた [id] を返す。Firestore上のデータも同様に挿入・更新する。
   ///
-  Future<T> put(T data) async {
-    _setFirestore(data);
+  Future<int> put(T data) async {
     var id = await collection.put(data);
-    return (data as dynamic)..id = id;
+    _setFirestore(data, id);
+    return id;
   }
 
   Future<void> delete(int id) {
@@ -65,10 +69,10 @@ abstract class IsarProvider<T> {
     return collection.putAll(list);
   }
 
-  Future<void> setFirestore(T data);
+  Future<void> setFirestore(T data, int id);
 
-  Future<void> _setFirestore(T data) async {
-    await _wrapUpdateFirestore(setFirestore(data));
+  Future<void> _setFirestore(T data, int id) async {
+    await _wrapUpdateFirestore(setFirestore(data, id));
   }
 
   Future<void> deleteFirestore(int id);

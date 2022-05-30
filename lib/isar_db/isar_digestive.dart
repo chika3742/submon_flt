@@ -78,10 +78,10 @@ class DigestiveProvider extends IsarProvider<Digestive> {
   }
 
   @override
-  Future<void> setFirestore(Digestive data) async {
+  Future<void> setFirestore(Digestive data, id) async {
     await FirestoreProvider.digestive
-        .set(data.id.toString(), data.toMap(), SetOptions(merge: true));
-    await FirestoreProvider.addDigestiveNotification(data.id);
+        .set(id.toString(), data.toMap(), SetOptions(merge: true));
+    await FirestoreProvider.addDigestiveNotification(id);
   }
 
   @override

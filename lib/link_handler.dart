@@ -5,9 +5,9 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:submon/db/submission.dart';
 import 'package:submon/events.dart';
 import 'package:submon/isar_db/isar_digestive.dart';
+import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/pages/home_page.dart';
@@ -203,13 +203,13 @@ void showSubmissionSharingDialog(Uri url) {
     showCancel: true,
     onOKPressed: () async {
       await SubmissionProvider().use((provider) async {
-        var data = await provider.insert(Submission(
+        var id = await provider.put(Submission.from(
           title: title,
-          date: DateTime.parse(date).toLocal(),
-          detail: detail,
+          due: DateTime.parse(date).toLocal(),
+          details: detail,
           color: Color(int.parse(color)),
         ));
-        eventBus.fire(SubmissionInserted(data.id!));
+        eventBus.fire(SubmissionInserted(id));
       });
       showSnackBar(globalContext!, "作成しました。");
     },

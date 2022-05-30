@@ -36,6 +36,13 @@ class Submission {
     due = DateTime(nextDate.year, nextDate.month, nextDate.day, 23, 59);
   }
 
+  Submission.from({
+    required this.title,
+    required this.details,
+    required this.due,
+    required this.color,
+  });
+
   Map<String, dynamic> toMap() {
     return {
       "title": title,
@@ -153,9 +160,9 @@ class SubmissionProvider extends IsarProvider<Submission> {
   }
 
   @override
-  Future<void> setFirestore(Submission data) {
+  Future<void> setFirestore(Submission data, int id) {
     return FirestoreProvider.submission
-        .set(data.id.toString(), data.toMap(), SetOptions(merge: true));
+        .set(id.toString(), data.toMap(), SetOptions(merge: true));
   }
 
   @override

@@ -32,7 +32,6 @@ dependencies:
 
   cupertino_icons: ^1.0.4
   audioplayers: ^0.20.1
-  sqflite: ^2.0.2+1
   animations: ^2.0.3
   event_bus: ^2.0.0
   package_info_plus: ^1.4.2

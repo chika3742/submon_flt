@@ -15,7 +15,7 @@ extension GetTimetableClassTimeCollection on Isar {
 const TimetableClassTimeSchema = CollectionSchema(
   name: 'TimetableClassTime',
   schema:
-      '{"name":"TimetableClassTime","idName":"period","properties":[{"name":"end","type":"Long"},{"name":"start","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"TimetableClassTime","idName":"period","properties":[{"name":"end","type":"String"},{"name":"start","type":"String"}],"indexes":[],"links":[]}',
   idName: 'period',
   propertyIds: {'end': 0, 'start': 1},
   listProperties: {},
@@ -52,6 +52,8 @@ List<IsarLinkBase> _timetableClassTimeGetLinks(TimetableClassTime object) {
   return [];
 }
 
+const _timetableClassTimeTimeOfDayConverter = TimeOfDayConverter();
+
 void _timetableClassTimeSerializeNative(
     IsarCollection<TimetableClassTime> collection,
     IsarRawObject rawObj,
@@ -60,18 +62,20 @@ void _timetableClassTimeSerializeNative(
     List<int> offsets,
     AdapterAlloc alloc) {
   var dynamicSize = 0;
-  final value0 = object.end;
-  final _end = value0;
-  final value1 = object.start;
-  final _start = value1;
+  final value0 = _timetableClassTimeTimeOfDayConverter.toIsar(object.end);
+  final _end = IsarBinaryWriter.utf8Encoder.convert(value0);
+  dynamicSize += (_end.length) as int;
+  final value1 = _timetableClassTimeTimeOfDayConverter.toIsar(object.start);
+  final _start = IsarBinaryWriter.utf8Encoder.convert(value1);
+  dynamicSize += (_start.length) as int;
   final size = staticSize + dynamicSize;
 
   rawObj.buffer = alloc(size);
   rawObj.buffer_length = size;
   final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
-  writer.writeLong(offsets[0], _end);
-  writer.writeLong(offsets[1], _start);
+  writer.writeBytes(offsets[0], _end);
+  writer.writeBytes(offsets[1], _start);
 }
 
 TimetableClassTime _timetableClassTimeDeserializeNative(
@@ -80,9 +84,11 @@ TimetableClassTime _timetableClassTimeDeserializeNative(
     IsarBinaryReader reader,
     List<int> offsets) {
   final object = TimetableClassTime();
-  object.end = reader.readLong(offsets[0]);
+  object.end = _timetableClassTimeTimeOfDayConverter
+      .fromIsar(reader.readString(offsets[0]));
   object.period = id;
-  object.start = reader.readLong(offsets[1]);
+  object.start = _timetableClassTimeTimeOfDayConverter
+      .fromIsar(reader.readString(offsets[1]));
   return object;
 }
 
@@ -92,9 +98,11 @@ P _timetableClassTimeDeserializePropNative<P>(
     case -1:
       return id as P;
     case 0:
-      return (reader.readLong(offset)) as P;
+      return (_timetableClassTimeTimeOfDayConverter
+          .fromIsar(reader.readString(offset))) as P;
     case 1:
-      return (reader.readLong(offset)) as P;
+      return (_timetableClassTimeTimeOfDayConverter
+          .fromIsar(reader.readString(offset))) as P;
     default:
       throw 'Illegal propertyIndex';
   }
@@ -103,34 +111,37 @@ P _timetableClassTimeDeserializePropNative<P>(
 dynamic _timetableClassTimeSerializeWeb(
     IsarCollection<TimetableClassTime> collection, TimetableClassTime object) {
   final jsObj = IsarNative.newJsObject();
-  IsarNative.jsObjectSet(jsObj, 'end', object.end);
+  IsarNative.jsObjectSet(
+      jsObj, 'end', _timetableClassTimeTimeOfDayConverter.toIsar(object.end));
   IsarNative.jsObjectSet(jsObj, 'period', object.period);
-  IsarNative.jsObjectSet(jsObj, 'start', object.start);
+  IsarNative.jsObjectSet(jsObj, 'start',
+      _timetableClassTimeTimeOfDayConverter.toIsar(object.start));
   return jsObj;
 }
 
 TimetableClassTime _timetableClassTimeDeserializeWeb(
     IsarCollection<TimetableClassTime> collection, dynamic jsObj) {
   final object = TimetableClassTime();
-  object.end = IsarNative.jsObjectGet(jsObj, 'end') ?? double.negativeInfinity;
+  object.end = _timetableClassTimeTimeOfDayConverter
+      .fromIsar(IsarNative.jsObjectGet(jsObj, 'end') ?? '');
   object.period =
       IsarNative.jsObjectGet(jsObj, 'period') ?? double.negativeInfinity;
-  object.start =
-      IsarNative.jsObjectGet(jsObj, 'start') ?? double.negativeInfinity;
+  object.start = _timetableClassTimeTimeOfDayConverter
+      .fromIsar(IsarNative.jsObjectGet(jsObj, 'start') ?? '');
   return object;
 }
 
 P _timetableClassTimeDeserializePropWeb<P>(Object jsObj, String propertyName) {
   switch (propertyName) {
     case 'end':
-      return (IsarNative.jsObjectGet(jsObj, 'end') ?? double.negativeInfinity)
-          as P;
+      return (_timetableClassTimeTimeOfDayConverter
+          .fromIsar(IsarNative.jsObjectGet(jsObj, 'end') ?? '')) as P;
     case 'period':
       return (IsarNative.jsObjectGet(jsObj, 'period') ??
           double.negativeInfinity) as P;
     case 'start':
-      return (IsarNative.jsObjectGet(jsObj, 'start') ?? double.negativeInfinity)
-          as P;
+      return (_timetableClassTimeTimeOfDayConverter
+          .fromIsar(IsarNative.jsObjectGet(jsObj, 'start') ?? '')) as P;
     default:
       throw 'Illegal propertyName';
   }
@@ -209,53 +220,109 @@ extension TimetableClassTimeQueryWhere
 extension TimetableClassTimeQueryFilter
     on QueryBuilder<TimetableClassTime, TimetableClassTime, QFilterCondition> {
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
-      endEqualTo(int value) {
+      endEqualTo(
+    TimeOfDay value, {
+    bool caseSensitive = true,
+  }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
       property: 'end',
-      value: value,
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
     ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       endGreaterThan(
-    int value, {
+    TimeOfDay value, {
+    bool caseSensitive = true,
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
       include: include,
       property: 'end',
-      value: value,
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
     ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       endLessThan(
-    int value, {
+    TimeOfDay value, {
+    bool caseSensitive = true,
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
       include: include,
       property: 'end',
-      value: value,
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
     ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       endBetween(
-    int lower,
-    int upper, {
+    TimeOfDay lower,
+    TimeOfDay upper, {
+    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return addFilterConditionInternal(FilterCondition.between(
       property: 'end',
-      lower: lower,
+      lower: _timetableClassTimeTimeOfDayConverter.toIsar(lower),
       includeLower: includeLower,
-      upper: upper,
+      upper: _timetableClassTimeTimeOfDayConverter.toIsar(upper),
       includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
+      endStartsWith(
+    TimeOfDay value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'end',
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
+      endEndsWith(
+    TimeOfDay value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'end',
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
+      endContains(TimeOfDay value, {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'end',
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
+      endMatches(String pattern, {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'end',
+      value: pattern,
+      caseSensitive: caseSensitive,
     ));
   }
 
@@ -311,53 +378,109 @@ extension TimetableClassTimeQueryFilter
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
-      startEqualTo(int value) {
+      startEqualTo(
+    TimeOfDay value, {
+    bool caseSensitive = true,
+  }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
       property: 'start',
-      value: value,
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
     ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       startGreaterThan(
-    int value, {
+    TimeOfDay value, {
+    bool caseSensitive = true,
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
       include: include,
       property: 'start',
-      value: value,
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
     ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       startLessThan(
-    int value, {
+    TimeOfDay value, {
+    bool caseSensitive = true,
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
       include: include,
       property: 'start',
-      value: value,
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
     ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       startBetween(
-    int lower,
-    int upper, {
+    TimeOfDay lower,
+    TimeOfDay upper, {
+    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return addFilterConditionInternal(FilterCondition.between(
       property: 'start',
-      lower: lower,
+      lower: _timetableClassTimeTimeOfDayConverter.toIsar(lower),
       includeLower: includeLower,
-      upper: upper,
+      upper: _timetableClassTimeTimeOfDayConverter.toIsar(upper),
       includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
+      startStartsWith(
+    TimeOfDay value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'start',
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
+      startEndsWith(
+    TimeOfDay value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'start',
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
+      startContains(TimeOfDay value, {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'start',
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
+      startMatches(String pattern, {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'start',
+      value: pattern,
+      caseSensitive: caseSensitive,
     ));
   }
 }
@@ -433,9 +556,9 @@ extension TimetableClassTimeQueryWhereSortThenBy
 
 extension TimetableClassTimeQueryWhereDistinct
     on QueryBuilder<TimetableClassTime, TimetableClassTime, QDistinct> {
-  QueryBuilder<TimetableClassTime, TimetableClassTime, QDistinct>
-      distinctByEnd() {
-    return addDistinctByInternal('end');
+  QueryBuilder<TimetableClassTime, TimetableClassTime, QDistinct> distinctByEnd(
+      {bool caseSensitive = true}) {
+    return addDistinctByInternal('end', caseSensitive: caseSensitive);
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QDistinct>
@@ -444,14 +567,14 @@ extension TimetableClassTimeQueryWhereDistinct
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QDistinct>
-      distinctByStart() {
-    return addDistinctByInternal('start');
+      distinctByStart({bool caseSensitive = true}) {
+    return addDistinctByInternal('start', caseSensitive: caseSensitive);
   }
 }
 
 extension TimetableClassTimeQueryProperty
     on QueryBuilder<TimetableClassTime, TimetableClassTime, QQueryProperty> {
-  QueryBuilder<TimetableClassTime, int, QQueryOperations> endProperty() {
+  QueryBuilder<TimetableClassTime, TimeOfDay, QQueryOperations> endProperty() {
     return addPropertyNameInternal('end');
   }
 
@@ -459,7 +582,8 @@ extension TimetableClassTimeQueryProperty
     return addPropertyNameInternal('period');
   }
 
-  QueryBuilder<TimetableClassTime, int, QQueryOperations> startProperty() {
+  QueryBuilder<TimetableClassTime, TimeOfDay, QQueryOperations>
+      startProperty() {
     return addPropertyNameInternal('start');
   }
 }
