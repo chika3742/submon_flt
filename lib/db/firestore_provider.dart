@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:submon/batch_operation.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_provider.dart';
@@ -188,37 +189,9 @@ class FirestoreProvider {
       if (serverSchemaVersion < schemaVersion) {
         showLoadingModal(globalContext!);
 
-        var oldVersion = serverSchemaVersion;
         // migrate (server side?)
-        if (oldVersion == 4) {
-          var submissions = await submission.get();
-          List<Future> futures = [];
-          for (var item in submissions.docs) {
-            var data = item.data();
-            data["details"] = data["detail"];
-            data["due"] = data["date"];
-            data["done"] = data["done"] == 1;
-            data["important"] = data["important"] == 1;
-            data.remove("detail");
-            data.remove("date");
-            futures.add(submission.set(item.id, data));
-          }
+        await _migrate(serverSchemaVersion);
 
-          var mainTimetable = await timetable.getDoc("main");
-          futures.add(timetable.set("-1", mainTimetable.data()));
-          futures.add(timetable.delete("main"));
-
-          var timetableClassTimes = await timetableClassTime.get();
-          for (var item in timetableClassTimes.docs) {
-            var data = item.data();
-            data["period"] = data["id"];
-            data.remove("id");
-
-            futures.add(timetableClassTime.set(item.id, data));
-          }
-
-          await Future.wait(futures);
-        }
         await userDoc!
             .set({"schemaVersion": schemaVersion}, SetOptions(merge: true));
 
@@ -227,6 +200,69 @@ class FirestoreProvider {
         throw SchemaVersionMismatchException(
             serverSchemaVersion, schemaVersion);
       }
+    }
+  }
+
+  static Future<void> _migrate(int oldVersion) async {
+    if (oldVersion == 4) {
+      var operations = <BatchOperation>[];
+
+      var submissions = await submission.get();
+      for (var item in submissions.docs) {
+        var data = item.data();
+        data["details"] = data["detail"];
+        data["due"] = data["date"];
+        data["done"] = data["done"] == 1;
+        data["important"] = data["important"] == 1;
+        data.remove("detail");
+        data.remove("date");
+        operations.add(BatchOperation.set(
+          doc: userDoc!.collection("submission").doc(item.id),
+          data: data,
+        ));
+      }
+
+      var digestives = await digestive.get();
+      for (var item in digestives.docs) {
+        operations.add(BatchOperation.set(
+          doc: item.reference,
+          data: {
+            "done": item.data()["done"] == 1,
+          },
+          setOptions: SetOptions(merge: true),
+        ));
+      }
+
+      var mainTimetable = await timetable.getDoc("main");
+      if (mainTimetable.exists) {
+        var data = mainTimetable.data()!;
+        if (data["cells"] != null) {
+          data["cells"] = (data["cells"] as Map<String, dynamic>)
+              .map((key, value) => MapEntry(key, value..["tableId"] = -1));
+        }
+        operations.add(BatchOperation.set(
+          doc: userDoc!.collection("timetable").doc("-1"),
+          data: data,
+        ));
+        operations.add(BatchOperation.delete(
+          doc: userDoc!.collection("timetable").doc("main"),
+        ));
+      }
+
+      var timetableClassTimes = await timetableClassTime.get();
+      for (var item in timetableClassTimes.docs) {
+        var data = item.data();
+        data["period"] = data["id"];
+        data.remove("id");
+
+        operations.add(BatchOperation.set(
+            doc: userDoc!.collection("timetableClassTime").doc(item.id),
+            data: data));
+      }
+
+      await BatchOperation.commit(operations);
+
+      oldVersion++;
     }
   }
 
@@ -264,7 +300,7 @@ class FirestoreProvider {
       });
 
       await DigestiveProvider().use((provider) async {
-        provider.writeTransaction(() async {
+        await provider.writeTransaction(() async {
           await provider.putAllLocalOnly(digestiveSnapshot.docs
               .map((e) => Digestive.fromMap(e.data()))
               .toList());

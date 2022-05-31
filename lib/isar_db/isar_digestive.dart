@@ -20,7 +20,7 @@ class Digestive {
       : id = map["id"],
         submissionId = map["submissionId"],
         done = map["done"],
-        startAt = map["startAt"],
+        startAt = DateTime.parse(map["startAt"]).toLocal(),
         minute = map["minute"],
         content = map["content"];
 
@@ -29,7 +29,7 @@ class Digestive {
       "id": id,
       "submissionId": submissionId,
       "done": done,
-      "startAt": startAt,
+      "startAt": startAt.toUtc().toIso8601String(),
       "minute": minute,
       "content": content,
     };
