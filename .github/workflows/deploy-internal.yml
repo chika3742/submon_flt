@@ -26,6 +26,22 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
+      - name: Cache Flutter SDK
+          uses: actions/cache@v3
+          with:
+            key: ${{ runner.os }}-flutter-${{ hashFiles('**/Podfile.lock') }}
+            path: ./flutter
+            restore-keys: ${{ runner.os }}-flutter-
+
+      - name: Cache Flutter SDK
+          uses: actions/cache@v3
+          with:
+            key: pods
+            path: ./ios/Pods
+            restore-keys: ${{ runner.os }}-pods-
+
+      - run: xcodebuild -version
+
       - name: Flutter Command Initialize
         run: |
           git clone https://github.com/flutter/flutter.git
@@ -36,12 +52,6 @@ jobs:
 
       - name: Flutter Pub Get
         run: flutter pub get
-
-      - name: Cache Flutter SDK
-        uses: actions/cache@v3
-        with:
-          key: flutter-sdk
-          path: ./flutter
 
       - name: Import Apple Provisioning Profiles
         run: |
