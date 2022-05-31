@@ -27,18 +27,18 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Cache Flutter SDK
-          uses: actions/cache@v3
-          with:
-            key: ${{ runner.os }}-flutter-${{ hashFiles('**/Podfile.lock') }}
-            path: ./flutter
-            restore-keys: ${{ runner.os }}-flutter-
+        uses: actions/cache@v3
+        with:
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/Podfile.lock') }}
+          path: ./flutter
+          restore-keys: ${{ runner.os }}-flutter-
 
       - name: Cache Flutter SDK
-          uses: actions/cache@v3
-          with:
-            key: pods
-            path: ./ios/Pods
-            restore-keys: ${{ runner.os }}-pods-
+        uses: actions/cache@v3
+        with:
+          key: pods
+          path: ./ios/Pods
+          restore-keys: ${{ runner.os }}-pods-
 
       - run: xcodebuild -version
 
