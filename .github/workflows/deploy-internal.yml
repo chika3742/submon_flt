@@ -26,13 +26,15 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - name: Flutter command initialize
+      - name: Flutter Command Initialize
         run: |
           git clone https://github.com/flutter/flutter.git
           echo "$(pwd)/flutter/bin" >> $GITHUB_PATH
-          flutter channel beta
 
-      - name: Flutter pub get
+      - name: Flutter Channel Switch
+        run: flutter channel beta
+
+      - name: Flutter Pub Get
         run: flutter pub get
 
       - name: Import Apple Provisioning Profiles
