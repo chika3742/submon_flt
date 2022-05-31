@@ -49,11 +49,11 @@ jobs:
           p12-file-base64: ${{ secrets.APPLE_CERTIFICATES_P12_BASE64 }}
           p12-password: ${{ secrets.APPLE_CERTIFICATES_PASSWORD }}
 
-      - name: Import Code-Signing Certificates
-        uses: Apple-Actions/import-codesign-certs@v1
-        with:
-          p12-file-base64: ${{ secrets.APPLE_CERTIFICATES_WIDGETKIT_P12_BASE64 }}
-          p12-password: ${{ secrets.APPLE_CERTIFICATES_WIDGETKIT_PASSWORD }}
+      #      - name: Import Code-Signing Certificates
+      #        uses: Apple-Actions/import-codesign-certs@v1
+      #        with:
+      #          p12-file-base64: ${{ secrets.APPLE_CERTIFICATES_WIDGETKIT_P12_BASE64 }}
+      #          p12-password: ${{ secrets.APPLE_CERTIFICATES_WIDGETKIT_PASSWORD }}
 
       - name: Import App Store Connect API Key
         run: |
