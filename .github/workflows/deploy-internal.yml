@@ -40,8 +40,6 @@ jobs:
           path: ./ios/Pods
           restore-keys: ${{ runner.os }}-pods-
 
-      - run: xcodebuild -version
-
       - name: Flutter Command Initialize
         run: |
           git clone https://github.com/flutter/flutter.git
