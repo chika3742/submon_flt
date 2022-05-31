@@ -31,11 +31,7 @@ jobs:
           git clone https://github.com/flutter/flutter.git
           echo "$(pwd)/flutter/bin" >> $GITHUB_PATH
           flutter channel beta
-        with:
-          channel: "beta"
-          cache: true
-          cache-key: flutter
-          cache-path: ${{ runner.tool_cache }}/flutter
+
       - name: Flutter pub get
         run: flutter pub get
 
