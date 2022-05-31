@@ -176,8 +176,8 @@ class FirestoreProvider {
     await userDoc!.set({"schemaVersion": schemaVersion});
   }
 
-  static Future<void> checkMigration() async {
-    if (userDoc == null) return;
+  static Future<bool> checkMigration() async {
+    if (userDoc == null) return false;
     var snapshot = await userDoc!.get();
 
     var serverSchemaVersion = (snapshot.data() as dynamic)?["schemaVersion"];
@@ -185,6 +185,7 @@ class FirestoreProvider {
     if (serverSchemaVersion == null) {
       await userDoc!
           .set({"schemaVersion": schemaVersion}, SetOptions(merge: true));
+      return false;
     } else {
       if (serverSchemaVersion < schemaVersion) {
         showLoadingModal(globalContext!);
@@ -196,10 +197,13 @@ class FirestoreProvider {
             .set({"schemaVersion": schemaVersion}, SetOptions(merge: true));
 
         Navigator.of(globalContext!, rootNavigator: true).pop();
+
+        return true;
       } else if (serverSchemaVersion > schemaVersion) {
         throw SchemaVersionMismatchException(
             serverSchemaVersion, schemaVersion);
       }
+      return false;
     }
   }
 
@@ -277,7 +281,9 @@ class FirestoreProvider {
   static Future<bool> fetchData({bool force = false}) async {
     var changed = !force ? await FirestoreProvider.checkTimestamp() : true;
 
-    await FirestoreProvider.checkMigration();
+    if (await FirestoreProvider.checkMigration()) {
+      changed = true;
+    }
 
     setLastAppOpenedToCurrentTime();
 
