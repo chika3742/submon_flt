@@ -68,6 +68,9 @@ jobs:
           mkdir ~/private_key
           echo -n "${{ secrets.APP_STORE_PRIVKEY_P8 }}" > ~/private_key/AuthKey_${{ secrets.APP_STORE_PRIVKEY_ID }}.p8
 
+      - name: Import .env
+        run: echo -n "${{ secrets.DOTENV }}" > .env
+
       - name: Build IPA for App Store
         run: flutter build ipa --build-number $((${GITHUB_RUN_NUMBER}+42))
       #      - name: Build App Bundle for Google Play
