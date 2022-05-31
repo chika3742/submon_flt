@@ -37,6 +37,12 @@ jobs:
       - name: Flutter Pub Get
         run: flutter pub get
 
+      - name: Cache Flutter SDK
+        uses: actions/cache@v3
+        with:
+          key: flutter-sdk
+          path: ./flutter
+
       - name: Import Apple Provisioning Profiles
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
@@ -48,12 +54,6 @@ jobs:
         with:
           p12-file-base64: ${{ secrets.APPLE_CERTIFICATES_P12_BASE64 }}
           p12-password: ${{ secrets.APPLE_CERTIFICATES_PASSWORD }}
-
-      #      - name: Import Code-Signing Certificates
-      #        uses: Apple-Actions/import-codesign-certs@v1
-      #        with:
-      #          p12-file-base64: ${{ secrets.APPLE_CERTIFICATES_WIDGETKIT_P12_BASE64 }}
-      #          p12-password: ${{ secrets.APPLE_CERTIFICATES_WIDGETKIT_PASSWORD }}
 
       - name: Import App Store Connect API Key
         run: |
