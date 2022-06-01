@@ -98,7 +98,9 @@ jobs:
 
       - name: Install Fastlane
         run: |
-          echo -n "source \"https://rubygems.org\"\n\ngem \"fastlane\"" > ./Gemfile
+          echo -n "source \"https://rubygems.org\"
+          
+          gem \"fastlane\"" > ./Gemfile
           bundle install
           bundle update
 
