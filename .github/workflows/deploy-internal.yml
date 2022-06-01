@@ -65,8 +65,8 @@ jobs:
 
       - name: Import App Store Connect API Key
         run: |
-          mkdir ~/private_key
-          echo -n "${{ secrets.APP_STORE_PRIVKEY_P8 }}" > ~/private_key/AuthKey_${{ secrets.APP_STORE_PRIVKEY_ID }}.p8
+          mkdir ~/private_keys
+          echo -n "${{ secrets.APP_STORE_PRIVKEY_P8 }}" > ~/private_keys/AuthKey_${{ secrets.APP_STORE_PRIVKEY_ID }}.p8
 
       - name: Import .env
         run: echo -n "${{ secrets.DOTENV }}" > .env
