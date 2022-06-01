@@ -116,10 +116,19 @@ jobs:
         with:
           python-version: 3.9
 
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install yq
+
+      - name: Flutter Pub Get
+        run: flutter pub get
+
       - name: Inport Keystore
         run: |
           echo -n "${{ secrets.ANDROID_LOCAL_PROPERTIES }}" >> android/local.properties
           echo -n "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > ~/release.keystore
+          cat android/local.properties
 
       - name: Import .env
         run: echo -n "${{ secrets.DOTENV }}" > .env
@@ -129,14 +138,12 @@ jobs:
           mkdir -p android/app/src/release
           echo -n "${{ secrets.ANDROID_GOOGLE_SERVICES_JSON_BASE64 }}" | base64 -d > android/app/src/release/google-services.json
 
-      - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install yq
-
       - name: Build App Bundle for Android
         run: |
           flutter build appbundle --build-name $(cat pubspec.yaml | yq '.version | split("+") | .[0]')-build$((${GITHUB_RUN_NUMBER}+42)) --build-number $((${GITHUB_RUN_NUMBER}+42))
+
+      - name: Deploy to Google Play
+        run: bundle exec fastlane supply --aab build/app/outputs/bundle/release/app-bundle.aab --track internal --json_key
 
       - name: Cancel if failed
         uses: andymckay/cancel-action@0.2
