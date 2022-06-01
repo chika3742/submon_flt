@@ -129,8 +129,9 @@ jobs:
 
       - name: Inport Keystore
         run: |
-          echo -n "${{ secrets.ANDROID_LOCAL_PROPERTIES }}" >> android/local.properties
-          echo -n "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > ~/release.jks
+          echo -n '
+          ${{ secrets.ANDROID_LOCAL_PROPERTIES }}' >> android/local.properties
+          echo -n "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > android/app/release.jks
 
       - name: Import .env
         run: echo -n "${{ secrets.DOTENV }}" > .env
@@ -145,8 +146,11 @@ jobs:
           buildNumber=$((${GITHUB_RUN_NUMBER}+26))
           flutter build appbundle --build-name $(cat pubspec.yaml | yq -r '.version | split("+") | .[0]')-build$buildNumber --build-number $buildNumber
 
+      - name: Import Service Account Key
+        run: echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_BASE64 }}' | base64 -d > service_account_key.json
+
       - name: Deploy to Google Play
-        run: bundle exec fastlane supply --aab build/app/outputs/bundle/release/app-bundle.aab --track internal --json_key
+        run: bundle exec fastlane supply --aab $(pwd)/build/app/outputs/bundle/release/app-bundle.aab --track internal --json_key $(pwd)/service_account_key.json
 
       - name: Cancel if failed
         uses: andymckay/cancel-action@0.2
