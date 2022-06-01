@@ -17,7 +17,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  Build for iOS:
+  Build-for-iOS:
     # The type of runner that the job will run on
     runs-on: macos-12
 
@@ -78,7 +78,7 @@ jobs:
       - name: Deploy to App Store
         run: xcrun altool --upload-app --type ios -f "./build/ios/ipa/Submon.ipa" --apiKey ${{ secrets.APP_STORE_PRIVKEY_ID }} --apiIssuer ${{ secrets.APP_STORE_CONNECT_API_ISSUER }}
 
-  Build for Android:
+  Build-for-Android:
     runs-on: ubuntu-latest
 
     steps:
