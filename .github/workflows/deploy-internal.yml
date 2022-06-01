@@ -76,7 +76,7 @@ jobs:
         run: echo -n "${{ secrets.APPLE_GOOGLE_SERVICE_INFO_RELEASE_PLIST_BASE64 }}" | base64 -d > ios/GoogleService-Info-release.plist
 
       - name: Build IPA for App Store
-        run: flutter build ipa --build-number $((${GITHUB_RUN_NUMBER}+26))
+        run: flutter build ipa --build-number $((${GITHUB_RUN_NUMBER}+26)) --export-options-plist ios/exportOptions.plist
 
       - name: Deploy to App Store
         run: xcrun altool --upload-app --type ios -f "./build/ios/ipa/Submon.ipa" --apiKey ${{ secrets.APP_STORE_PRIVKEY_ID }} --apiIssuer ${{ secrets.APP_STORE_CONNECT_API_ISSUER }}
