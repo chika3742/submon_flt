@@ -2,7 +2,7 @@
 
 Submission Manager App
 
-[Website / DL](hp.submon.app)
+[Website / DL](https://hp.submon.app)
 
 2022 chika All rights reserved.
 
