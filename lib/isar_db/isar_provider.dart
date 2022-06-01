@@ -15,12 +15,17 @@ const schemaVersion = 5;
 abstract class IsarProvider<T> {
   late Isar isar;
 
-  IsarCollection<T> get collection => isar.getCollection<T>();
+  static Future<void> clear() async {
+    var isar = await _open();
+    await isar.writeTxn((isar) async {
+      await isar.clear();
+    });
+  }
 
-  Future<void> open() async {
+  static Future<Isar> _open() async {
     var instance = Isar.getInstance();
     if (instance != null) {
-      isar = instance;
+      return instance;
     } else {
       var dir = await getApplicationSupportDirectory();
       instance = await Isar.open(schemas: [
@@ -31,8 +36,14 @@ abstract class IsarProvider<T> {
         TimetableTableSchema,
         MemorizationCardGroupSchema,
       ], directory: dir.path);
-      isar = instance;
+      return instance;
     }
+  }
+
+  IsarCollection<T> get collection => isar.getCollection<T>();
+
+  Future<void> open() async {
+    isar = await _open();
   }
 
   Future<void> use(Future<void> Function(dynamic provider) callback);

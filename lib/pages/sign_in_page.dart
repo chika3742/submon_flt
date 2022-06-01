@@ -12,6 +12,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:submon/browser.dart';
 import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/isar_db/isar_provider.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/twitter_sign_in.dart';
@@ -465,7 +466,10 @@ Future<void> completeLogin(UserCredential result, BuildContext context) async {
     SharedPrefs.use((prefs) {
       prefs.firestoreLastChanged = null;
     });
+    await IsarProvider.clear();
+
     try {
+      // check account exists
       var doc =
           FirebaseFirestore.instance.collection("users").doc(result.user!.uid);
       await doc.get();
@@ -489,9 +493,6 @@ Future<void> completeLogin(UserCredential result, BuildContext context) async {
       FirestoreProvider.saveNotificationToken(token);
     });
     MainMethodPlugin.updateWidgets();
-    SharedPrefs.use((prefs) {
-      prefs.firestoreLastChanged = null;
-    });
   } catch (e) {
     FirebaseCrashlytics.instance.recordError(e, (e as dynamic).stackTrace);
     showSnackBar(context, "エラーが発生しました");
