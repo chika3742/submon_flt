@@ -129,7 +129,8 @@ jobs:
 
       - name: Inport Keystore
         run: |
-          echo -n "${{ secrets.ANDROID_LOCAL_PROPERTIES }}" >> android/local.properties
+          echo -n "
+          ${{ secrets.ANDROID_LOCAL_PROPERTIES }}" >> ./android/local.properties
           echo -n "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > ~/release.jks
 
       - name: Import .env
