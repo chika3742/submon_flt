@@ -72,6 +72,9 @@ jobs:
       - name: Import .env
         run: echo -n "${{ secrets.DOTENV }}" > .env
 
+      - name: Import GoogleService-Info.plist
+        run: echo -n "${{ secrets.APPLE_GOOGLE_SERVICE_INFO_RELEASE_PLIST_BASE64 }}" | base64 -d > ios/GoogleService-Info-release.plist
+
       - name: Build IPA for App Store
         run: flutter build ipa --build-number $((${GITHUB_RUN_NUMBER}+26))
 
@@ -127,8 +130,7 @@ jobs:
       - name: Inport Keystore
         run: |
           echo -n "${{ secrets.ANDROID_LOCAL_PROPERTIES }}" >> android/local.properties
-          echo -n "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > ~/release.keystore
-          cat android/local.properties
+          echo -n "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > ~/release.jks
 
       - name: Import .env
         run: echo -n "${{ secrets.DOTENV }}" > .env
@@ -140,7 +142,8 @@ jobs:
 
       - name: Build App Bundle for Android
         run: |
-          flutter build appbundle --build-name $(cat pubspec.yaml | yq -r '.version | split("+") | .[0]')-build$((${GITHUB_RUN_NUMBER}+26)) --build-number $((${GITHUB_RUN_NUMBER}+42))
+          buildNumber=$((${GITHUB_RUN_NUMBER}+26))
+          flutter build appbundle --build-name $(cat pubspec.yaml | yq -r '.version | split("+") | .[0]')-build$buildNumber --build-number $buildNumber
 
       - name: Deploy to Google Play
         run: bundle exec fastlane supply --aab build/app/outputs/bundle/release/app-bundle.aab --track internal --json_key
