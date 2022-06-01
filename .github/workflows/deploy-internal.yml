@@ -150,7 +150,7 @@ jobs:
         run: echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_BASE64 }}' | base64 -d > service_account_key.json
 
       - name: Deploy to Google Play
-        run: bundle exec fastlane supply --aab $(pwd)/build/app/outputs/bundle/release/app-bundle.aab --track internal --json_key $(pwd)/service_account_key.json
+        run: bundle exec fastlane supply --aab build/app/outputs/bundle/release/app-release.aab --track internal --json_key service_account_key.json
 
       - name: Cancel if failed
         uses: andymckay/cancel-action@0.2
