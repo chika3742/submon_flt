@@ -90,6 +90,13 @@ jobs:
           key: ${{ runner.os }}-flutter
           path: ./flutter
 
+      - name: Flutter Command Initialize
+        run: |
+          if [ ! -d "./flutter" ] ; then
+            git clone https://github.com/flutter/flutter.git
+            echo "$(pwd)/flutter/bin" >> $GITHUB_PATH
+          fi
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -117,3 +124,7 @@ jobs:
       - name: Build App Bundle for Android
         run: |
           flutter build appbundle --build-name $(cat pubspec.yaml | yq '.version | split("+") | .[0]')-build$((${GITHUB_RUN_NUMBER}+42)) --build-number $((${GITHUB_RUN_NUMBER}+42))
+
+      - name: cancelling
+        uses: andymckay/cancel-action@0.2
+        if: failure()
