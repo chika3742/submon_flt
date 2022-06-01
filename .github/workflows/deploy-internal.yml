@@ -17,7 +17,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  Build for iOS:
     # The type of runner that the job will run on
     runs-on: macos-12
 
@@ -29,21 +29,22 @@ jobs:
       - name: Cache Flutter SDK
         uses: actions/cache@v3
         with:
-          key: ${{ runner.os }}-flutter-${{ hashFiles('**/Podfile.lock') }}
+          key: ${{ runner.os }}-flutter
           path: ./flutter
-          restore-keys: ${{ runner.os }}-flutter-
 
-      - name: Cache Flutter SDK
+      - name: Cache Pods
         uses: actions/cache@v3
         with:
-          key: pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
           path: ./ios/Pods
           restore-keys: ${{ runner.os }}-pods-
 
       - name: Flutter Command Initialize
         run: |
-          git clone https://github.com/flutter/flutter.git
-          echo "$(pwd)/flutter/bin" >> $GITHUB_PATH
+          if [ ! -d "./flutter" ] ; then
+            git clone https://github.com/flutter/flutter.git
+            echo "$(pwd)/flutter/bin" >> $GITHUB_PATH
+          fi
 
       - name: Flutter Channel Switch
         run: flutter channel beta
@@ -54,8 +55,8 @@ jobs:
       - name: Import Apple Provisioning Profiles
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo -n ${{ secrets.PROVISIONING_PROFILE }} | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/Submon_distribution.mobileprovision
-          echo -n ${{ secrets.PROVISIONING_PROFILE_WIDGETKIT }} | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/Submon_WidgetKit_Production.mobileprovision
+          echo -n ${{ secrets.PROVISIONING_PROFILE }} | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/35fb050a-3d4f-46b7-ac78-9b342258c5c8.mobileprovision
+          echo -n ${{ secrets.PROVISIONING_PROFILE_WIDGETKIT }} | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/90e08659-d60f-4b2b-ba19-4c54bc05e6ca.mobileprovision
 
       - name: Import Code-Signing Certificates
         uses: Apple-Actions/import-codesign-certs@v1
@@ -73,8 +74,41 @@ jobs:
 
       - name: Build IPA for App Store
         run: flutter build ipa --build-number $((${GITHUB_RUN_NUMBER}+42))
-      #      - name: Build App Bundle for Google Play
-      #        run: flutter build appbundle
 
       - name: Deploy to App Store
         run: xcrun altool --upload-app --type ios -f "./build/ios/ipa/Submon.ipa" --apiKey ${{ secrets.APP_STORE_PRIVKEY_ID }} --apiIssuer ${{ secrets.APP_STORE_CONNECT_API_ISSUER }}
+
+  Build for Android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache Flutter SDK
+          uses: actions/cache@v3
+          with:
+            key: ${{ runner.os }}-flutter
+            path: ./flutter
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Install Fastlane
+        run: |
+          bundle install
+          echo "source \"https://rubygems.org\"\n\ngem \"fastlane\"" > ./Gemfile
+          bundle update
+
+      - name: Setup Python
+        uses: actions/setup-python@v3
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install yq
+
+      - name: Build App Bundle for Android
+        run: |
+          flutter build appbundle --build-name $(cat pubspec.yaml | yq '.version | split("+") | .[0]')-build$((${GITHUB_RUN_NUMBER}+42)) --build-number $((${GITHUB_RUN_NUMBER}+42))
