@@ -98,8 +98,8 @@ jobs:
 
       - name: Install Fastlane
         run: |
-          bundle install
           echo "source \"https://rubygems.org\"\n\ngem \"fastlane\"" > ./Gemfile
+          bundle install
           bundle update
 
       - name: Setup Python
