@@ -211,13 +211,25 @@ class _TimetableDayListState extends State<TimetableDayList> {
                     const SizedBox(height: 12),
                     const Divider(height: 2, thickness: 2),
                     const SizedBox(height: 4),
-                    Row(
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 16,
+                      runSpacing: 4,
                       children: [
-                        const Icon(Icons.meeting_room),
-                        Text(data.room == "" ? "未登録" : data.room),
-                        const SizedBox(width: 16),
-                        const Icon(Icons.person),
-                        Text(data.teacher == "" ? "未登録" : data.teacher),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.meeting_room),
+                            Text(data.room == "" ? "未登録" : data.room),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.person),
+                            Text(data.teacher == "" ? "未登録" : data.teacher),
+                          ],
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
