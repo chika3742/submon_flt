@@ -131,7 +131,6 @@ class _TabOthersState extends State<TabOthers> {
 
                       var url =
                           "https://docs.google.com/forms/d/e/1FAIpQLSeb0kHMcYWkl8LDpiS6NqoViuU5DHL8FcRRBHyMXXSzhiCx3Q/viewform?usp=pp_url&entry.1179597929=${Uri.encodeQueryComponent(deviceNameAndVer)}&entry.1250051436=${Uri.encodeQueryComponent(appVer)}";
-                      print(url);
                       launchUrlString(url,
                           mode: LaunchMode.externalApplication);
                     },

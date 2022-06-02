@@ -20,8 +20,6 @@ class BatchOperation {
   static Future<void> commit(List<BatchOperation> operations) async {
     var chunks = operations.partition(500);
 
-    debugPrint(chunks.toString());
-
     for (var chunk in chunks) {
       var batch = FirebaseFirestore.instance.batch();
       for (var operation in chunk) {
