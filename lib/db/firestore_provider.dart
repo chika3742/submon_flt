@@ -96,16 +96,18 @@ class FirestoreProvider {
     }
   }
 
-  static Future<void> setTimetableNotification(
-      TimetableNotification data) async {
+  static Future<void> setTimetableNotificationTime(TimeOfDay? time) async {
     if (userDoc != null) {
-      String? timeString;
-      if (data.time != null) {
-        timeString = "${data.time!.hour}:${data.time!.minute}";
-      }
       await userDoc!.set({
-        "timetableNotificationTime": timeString,
-        "timetableNotificationId": data.id
+        "timetableNotificationTime": time != null ? "${time.hour}:${time.minute}" : null,
+      }, SetOptions(merge: true));
+    }
+  }
+
+  static Future<void> setTimetableNotificationId(int id) async {
+    if (userDoc != null) {
+      await userDoc!.set({
+        "timetableNotificationId": id,
       }, SetOptions(merge: true));
     }
   }
@@ -160,10 +162,11 @@ class FirestoreProvider {
     }, SetOptions(merge: true));
   }
 
-  static Future<ConfigData?> get config async {
+  static Future<UserConfig?> get config async {
     if (userDoc != null) {
-      var snapshot = await userDoc!.get();
-      return ConfigData.fromMap(snapshot.data() as Map<String, dynamic>);
+      return (await userDoc!
+          .withConverter<UserConfig>(fromFirestore: UserConfig.fromFirestore,
+          toFirestore: (config, options) => config.toFirestore()).get()).data();
     } else {
       return null;
     }
@@ -191,7 +194,7 @@ class FirestoreProvider {
         showLoadingModal(globalContext!);
 
         // migrate (server side?)
-        await _migrate(serverSchemaVersion);
+        await _migrate(serverSchemaVersion, snapshot.data() as dynamic);
 
         await userDoc!
             .set({"schemaVersion": schemaVersion}, SetOptions(merge: true));
@@ -207,9 +210,15 @@ class FirestoreProvider {
     }
   }
 
-  static Future<void> _migrate(int oldVersion) async {
+  static Future<void> _migrate(int oldVersion, Map<String, dynamic> userConfig) async {
     if (oldVersion == 4) {
       var operations = <BatchOperation>[];
+
+      if (userConfig["timetableNotificationId"] == null) {
+        operations.add(BatchOperation.set(doc: userDoc!, data: {
+          "timetableNotificationId": -1
+        }, setOptions: SetOptions(merge: true)));
+      }
 
       var submissions = await submission.get();
       for (var item in submissions.docs) {
@@ -291,7 +300,7 @@ class FirestoreProvider {
       final configData = await config;
       final submissionSnapshot = await submission.get();
       final digestiveSnapshot = await digestive.get();
-      final timetableDataSnapshot = await timetable.get();
+      final timetableSnapshot = await timetable.get();
       final timetableClassTimeDataSnapshot = await timetableClassTime.get();
       final memorizeCardSnapshot = await memorizeCard.get();
 
@@ -313,13 +322,15 @@ class FirestoreProvider {
         });
       });
 
-      var timetableTables = timetableDataSnapshot.docs
+      var timetableTables = timetableSnapshot.docs
           .where((e) => e.id != "-1")
           .map((e) => TimetableTable.fromMap({
                 "id": int.parse(e.id),
                 "title": e.data()["title"],
               }))
           .toList();
+
+      print(timetableTables);
 
       await TimetableTableProvider().use((provider) async {
         await provider.writeTransaction(() async {
@@ -329,7 +340,7 @@ class FirestoreProvider {
 
       await TimetableProvider().use((provider) async {
         await provider.writeTransaction(() async {
-          for (var e in timetableDataSnapshot.docs) {
+          for (var e in timetableSnapshot.docs) {
             var list = ((e.data()["cells"] as Map<String, dynamic>?) ?? {})
                 .values
                 .map((e) => Timetable.fromMap(e))
@@ -367,93 +378,90 @@ class FirestoreProvider {
   }
 }
 
-class ConfigData {
-  ConfigData({
-    this.lastChanged,
+class UserConfig {
+  int? schemaVersion;
+  Timestamp? lastChanged;
+  Timestamp? lastAppOpened;
+  TimeOfDay? reminderNotificationTime;
+  TimeOfDay? timetableNotificationTime;
+  int? timetableNotificationId;
+  int? digestiveNotificationTimeBefore;
+  Lms? lms;
+
+  UserConfig({
     this.schemaVersion,
+    this.lastChanged,
+    this.lastAppOpened,
     this.reminderNotificationTime,
-    this.timetableNotification,
+    this.timetableNotificationTime,
+    this.timetableNotificationId,
     this.digestiveNotificationTimeBefore,
     this.lms,
   });
 
-  Timestamp? lastChanged;
-  int? schemaVersion;
-  TimeOfDay? reminderNotificationTime;
-  TimetableNotification? timetableNotification;
-  int? digestiveNotificationTimeBefore;
-  Lms? lms;
-
-  static ConfigData fromMap(Map<String, dynamic>? map) {
-    if (map == null) return ConfigData();
-    var reminderNotificationTimeSpilt =
-        (map["reminderNotificationTime"] as String?)?.split(":");
-    var timetableNotificationTimeSpilt =
-        (map["timetableNotificationTime"] as String?)?.split(":");
-    return ConfigData(
-      lastChanged: map["lastChanged"],
-      schemaVersion: map["schemaVersion"],
-      reminderNotificationTime: reminderNotificationTimeSpilt != null
-          ? TimeOfDay(
-              hour: int.parse(reminderNotificationTimeSpilt[0]),
-              minute: int.parse(reminderNotificationTimeSpilt[1]),
-            )
-          : null,
-      timetableNotification: TimetableNotification(
-        time: timetableNotificationTimeSpilt != null
-            ? TimeOfDay(
-                hour: int.parse(timetableNotificationTimeSpilt[0]),
-                minute: int.parse(timetableNotificationTimeSpilt[1]),
-              )
-            : null,
-        id: map["timetableNotificationId"],
-      ),
-      digestiveNotificationTimeBefore: map["digestiveNotificationTimeBefore"],
-      lms: Lms.fromMap(map["lms"]),
+  factory UserConfig.fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot, SnapshotOptions? options) {
+    final data = snapshot.data();
+    return UserConfig(
+      schemaVersion: data?["schemaVersion"],
+      lastChanged: data?["lastChanged"],
+      lastAppOpened: data?["lastAppOpened"],
+      reminderNotificationTime: () {
+        final spilt = (data?["reminderNotificationTime"] as String?)?.split(":");
+        return spilt != null ? TimeOfDay(hour: int.parse(spilt[0]), minute: int.parse(spilt[1])) : null;
+      }(),
+      timetableNotificationTime: () {
+        final spilt = (data?["timetableNotificationTime"] as String?)?.split(":");
+        return spilt != null ?TimeOfDay(hour: int.parse(spilt[0]), minute: int.parse(spilt[1])) : null;
+      }(),
+      timetableNotificationId: data?["timetableNotificationId"],
+      digestiveNotificationTimeBefore: data?["digestiveNotificationTimeBefore"],
+      lms: Lms.fromMap(data?["lms"]),
     );
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {};
   }
 }
 
 class Lms {
-  CanvasLms? canvas;
+  Canvas? canvas;
 
-  Lms(Map<String, dynamic> map) : canvas = CanvasLms.fromMap(map["canvas"]);
+  Lms({this.canvas});
 
-  static fromMap(Map<String, dynamic>? map) {
-    if (map != null) {
-      return Lms(map);
-    }
-    return null;
+  static Lms? fromMap(Map<String, dynamic>? map) {
+    if (map == null) return null;
+    return Lms(
+      canvas: Canvas.fromMap(map["canvas"]),
+    );
   }
 }
 
-class CanvasLms {
-  int universityId;
+class Canvas {
+  int? universityId;
   Timestamp? lastSync;
-  bool hasError;
-  List<dynamic> excludedPlannableIds;
-  int submissionColor;
+  bool? hasError;
+  List<dynamic>? excludedPlannableIds;
+  int? submissionColor;
 
-  CanvasLms(Map<String, dynamic> map)
-      : universityId = map["universityId"],
-        lastSync = map["lastSync"],
-        hasError = map["hasError"],
-        excludedPlannableIds = map["excludedPlannableIds"],
-        submissionColor = map["submissionColor"];
+  Canvas({
+    this.universityId,
+    this.lastSync,
+    this.hasError,
+    this.excludedPlannableIds,
+    this.submissionColor,
+  });
 
-  static fromMap(Map<String, dynamic>? map) {
-    if (map != null) {
-      return CanvasLms(map);
-    }
-    return null;
+  static Canvas? fromMap(Map<String, dynamic>? map) {
+    if (map == null) return null;
+    return Canvas(
+      universityId: map["universityId"],
+      lastSync: map["lastSync"],
+      hasError: map["hasError"],
+      excludedPlannableIds: map["excludedPlannableIds"],
+      submissionColor: map["submissionColor"],
+    );
   }
-}
-
-class TimetableNotification {
-  TimetableNotification({this.time, this.id});
-
-  TimeOfDay? time;
-  int? id;
 }
 
 class SchemaVersionMismatchException {
