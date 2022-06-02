@@ -90,6 +90,19 @@ enum Repeat {
   monthly,
 }
 
+extension RepeatToLocaleString on Repeat {
+  String toLocaleString() {
+    switch (this) {
+      case Repeat.none:
+        return "なし";
+      case Repeat.weekly:
+        return "毎週";
+      case Repeat.monthly:
+        return "毎月";
+    }
+  }
+}
+
 class ColorConverter extends TypeConverter<Color, int> {
   const ColorConverter();
 

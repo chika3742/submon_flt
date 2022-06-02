@@ -135,6 +135,17 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
                           ],
                         ),
                       ),
+                      if (item != null && item!.repeat != Repeat.none) Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            const Spacer(),
+                            const Icon(Icons.repeat),
+                            const SizedBox(width: 8),
+                            Text(item!.repeat.toLocaleString()),
+                          ],
+                        ),
+                      ),
                       if (item != null)
                         Padding(
                           padding: const EdgeInsets.only(
