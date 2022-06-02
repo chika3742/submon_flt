@@ -28,11 +28,9 @@ class _TabTimetable2State extends State<TabTimetable2> {
   @override
   void initState() {
     initSharedPrefs();
-    initTableList();
 
     _listener = eventBus.on<TimetableListChanged>().listen((event) {
       initTable();
-      initTableList();
     });
 
     super.initState();
@@ -66,19 +64,20 @@ class _TabTimetable2State extends State<TabTimetable2> {
   void initTable() async {
     await TimetableProvider().use((provider) async {
       _items = await provider.getCurrentTable();
-
-      await TimetableClassTimeProvider().use((provider) async {
-        _classTimes = await provider.getAll();
-      });
-
-      setState(() {});
     });
-  }
-
-  void initTableList() {
-    TimetableTableProvider().use((provider) async {
+    await TimetableClassTimeProvider().use((provider) async {
+      _classTimes = await provider.getAll();
+    });
+    await TimetableTableProvider().use((provider) async {
       _tables = await provider.getAll();
     });
+
+    var sharedPrefs = SharedPrefs(await SharedPreferences.getInstance());
+    if (!_tables!.any((element) => element.id == sharedPrefs.intCurrentTimetableId)) {
+      sharedPrefs.intCurrentTimetableId = -1;
+    }
+
+    setState(() {});
   }
 
   @override
