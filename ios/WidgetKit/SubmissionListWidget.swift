@@ -13,6 +13,8 @@ import FirebaseFirestore
 
 @available(iOS 15.0, *)
 struct Provider: TimelineProvider {
+    let schemaVer = 5
+    
     func placeholder(in context: Context) -> SubmissionEntry {
         SubmissionEntry.preview()
     }
@@ -34,27 +36,36 @@ struct Provider: TimelineProvider {
         Auth.auth().addStateDidChangeListener { auth, user in
             if user != nil {
                 let db = Firestore.firestore()
-                db.collection("users/\(user!.uid)/submission").whereField("done", isEqualTo: 0).getDocuments { snapshot, error  in
-                    if error == nil {
-                        let docs = snapshot!.documents
-                        let submissions = docs.map { e in
-                            SubmissionData.fromDic(dic: e.data())!
+                
+                db.document("users/\(user!.uid)").getDocument { docSnapshot, error in
+                    if (error == nil && docSnapshot!.data()!["schemaVersion"] as! Int32 == schemaVer) {
+                        db.collection("users/\(user!.uid)/submission").whereField("done", isEqualTo: false).getDocuments { snapshot, error  in
+                            if error == nil {
+                                let docs = snapshot!.documents
+                                let submissions = docs.map { e in
+                                    SubmissionData.fromDic(dic: e.data())!
+                                }
+                                
+                                let currentDate = Date()
+                                for dateOffset in 0 ..< 3 {
+                                    let entryDate = Calendar.current.date(byAdding: .day, value: dateOffset, to: currentDate)!
+                                    let entry = SubmissionEntry.entry(date: entryDate, submissions: submissions)
+                                    entries.append(entry)
+                                }
+                                
+                                let timeline = Timeline(entries: entries, policy: .atEnd)
+                                
+                                completion(timeline)
+                            } else {
+                                print("An error occured while generating widget timeline.")
+                                print(error!)
+                            }
                         }
-                        
-                        let currentDate = Date()
-                        for dateOffset in 0 ..< 3 {
-                            let entryDate = Calendar.current.date(byAdding: .day, value: dateOffset, to: currentDate)!
-                            let entry = SubmissionEntry.entry(date: entryDate, submissions: submissions)
-                            entries.append(entry)
-                        }
-                        
-                        let timeline = Timeline(entries: entries, policy: .atEnd)
-                        
-                        completion(timeline)
                     } else {
                         print("An error occured while generating widget timeline.")
                         print(error!)
                     }
+                    
                 }
             } else {
                 entries.append(SubmissionEntry.notSignedIn())
@@ -74,18 +85,23 @@ struct SubmissionEntry: TimelineEntry {
     let date: Date
     let isPreview: Bool
     let isSignedIn: Bool
+    let schemaVersionMismatch: Bool
     let submissions: [SubmissionData]
     
     static func preview() -> Self {
-        SubmissionEntry(date: Date(), isPreview: true, isSignedIn: true, submissions: [])
+        SubmissionEntry(date: Date(), isPreview: true, isSignedIn: true, schemaVersionMismatch: false, submissions: [])
     }
     
     static func notSignedIn() -> Self {
-        SubmissionEntry(date: Date(), isPreview: false, isSignedIn: false, submissions: [])
+        SubmissionEntry(date: Date(), isPreview: false, isSignedIn: false, schemaVersionMismatch: false,submissions: [])
+    }
+    
+    static func schemaVersionMismatch() -> Self {
+        SubmissionEntry(date: Date(), isPreview: false, isSignedIn: true, schemaVersionMismatch: true, submissions: [])
     }
     
     static func entry(date: Date, submissions: [SubmissionData]) -> Self {
-        SubmissionEntry(date: date, isPreview: false, isSignedIn: true, submissions: submissions)
+        SubmissionEntry(date: date, isPreview: false, isSignedIn: true, schemaVersionMismatch: false, submissions: submissions)
     }
 //    let configuration: ConfigurationIntent
 }
@@ -95,16 +111,6 @@ struct SubmissionListWidgetEntryView : View {
     @Environment(\.widgetFamily) var family
 //    var family: WidgetFamily = .systemLarge
     var entry: Provider.Entry
-    var dateFormatter: DateFormatter {
-        let df = DateFormatter()
-        df.dateFormat = "M/d (E)"
-        return df
-    }
-    var fromDateFormatter: DateFormatter {
-        let df = DateFormatter()
-        df.dateFormat = "yyyy/MM/dd HH:mm"
-        return df
-    }
     
     @ViewBuilder
     var body: some View {
@@ -114,13 +120,17 @@ struct SubmissionListWidgetEntryView : View {
             if entry.isPreview {
                 buildPreview()
             } else {
-                let listEntries = self.entry.submissions
-                
-                let sliceCount = (family != .systemLarge ? 4 : 10)
-                if listEntries.count >= sliceCount {
-                    buildItemView(items: Array(listEntries[0..<sliceCount]))
+                if entry.schemaVersionMismatch {
+                    buildSchemaVersionMismatch()
                 } else {
-                    buildItemView(items: listEntries)
+                    let listEntries = self.entry.submissions
+                    
+                    let sliceCount = (family != .systemLarge ? 4 : 10)
+                    if listEntries.count >= sliceCount {
+                        buildItemView(items: Array(listEntries[0..<sliceCount]))
+                    } else {
+                        buildItemView(items: listEntries)
+                    }
                 }
             }
         }
@@ -132,16 +142,20 @@ struct SubmissionListWidgetEntryView : View {
             .padding()
     }
     
+    func buildSchemaVersionMismatch() -> some View {
+        Text("Submonを最新版にアップデートしてください")
+            .font(.caption)
+            .padding()
+    }
+    
     func buildPreview() -> some View {
         var listEntries = [SubmissionData]()
         
         let currentDate = Date()
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy/MM/dd HH:mm"
         
         for n in 0..<4 {
             let entryDate = Calendar.current.date(byAdding: .day, value: n, to: currentDate)!
-            listEntries.append(SubmissionData(id: 0, title: "提出物\(n + 1)", date: entryDate))
+            listEntries.append(SubmissionData(id: 0, title: "提出物\(n + 1)", due: entryDate))
         }
         
         return buildItemView(items: listEntries)
@@ -156,7 +170,7 @@ struct SubmissionListWidgetEntryView : View {
                     VStack(alignment: .leading) {
                         ForEach(0..<items.count, id: \.self) { index in
                             let item = items[index]
-                            let delta = Int(item.date - entry.date) / (60 * 60)
+                            let delta = Int(item.due - entry.date) / (60 * 60)
                             VStack {
                                 HStack {
                                     if family != .systemSmall {
@@ -238,7 +252,7 @@ struct SubmissionListWidget_Previews: PreviewProvider {
 struct SubmissionData: Decodable {
     let id: Int64
     let title: String
-    let date: Date
+    let due: Date
     
     static func fromDic(dic: [String: Any]) -> Self? {
         do {
