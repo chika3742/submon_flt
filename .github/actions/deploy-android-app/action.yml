@@ -77,8 +77,10 @@ runs:
     - name: Build App Bundle for Android
       shell: bash
       run: |
-        buildNumber=$((${{ inputs.run-number }}+26))
+        buildNumber=$((${GITHUB_RUN_NUMBER}+26))
         flutter build appbundle --build-name $(cat pubspec.yaml | yq -r '.version | split("+") | .[0]')-build$buildNumber --build-number $buildNumber
+      env:
+        GITHUB_RUN_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
 
     - name: Import Service Account Key
       shell: bash
