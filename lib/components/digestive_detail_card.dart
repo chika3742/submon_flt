@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:submon/db/firestore_provider.dart';
+import 'package:submon/isar_db/isar_digestive.dart';
+import 'package:submon/main.dart';
 import 'package:submon/pages/home_tabs/tab_digestive_list.dart';
 import 'package:submon/utils/ui.dart';
 
-import '../db/digestive.dart';
 import 'digestive_edit_bottom_sheet.dart';
 
 class DigestiveDetailCard extends StatefulWidget {
@@ -118,26 +119,26 @@ class _DigestiveDetailCardState extends State<DigestiveDetailCard> {
                         itemBuilder: (context) {
                           return [
                             PopupMenuItem(
+                              value: 2,
                               child: ListTile(
                                 title:
                                     Text(!digestive.done ? "完了にする" : "未完了にする"),
                                 leading: const Icon(Icons.check),
                               ),
-                              value: 2,
                             ),
                             const PopupMenuItem(
+                              value: 0,
                               child: ListTile(
                                 title: Text("編集"),
                                 leading: Icon(Icons.edit),
                               ),
-                              value: 0,
                             ),
                             const PopupMenuItem(
+                              value: 1,
                               child: ListTile(
                                 title: Text("削除"),
                                 leading: Icon(Icons.delete),
                               ),
-                              value: 1,
                             ),
                           ];
                         },
@@ -190,7 +191,9 @@ class _DigestiveDetailCardState extends State<DigestiveDetailCard> {
   void done() async {
     var isDone = widget.digestive.done;
     await DigestiveProvider().use((provider) async {
-      await provider.insert(widget.digestive..done = !isDone);
+      provider.writeTransaction(() async {
+        await provider.invertDone(widget.digestive);
+      });
     });
     setState(() {});
     if (!isDone) {
@@ -198,13 +201,16 @@ class _DigestiveDetailCardState extends State<DigestiveDetailCard> {
     } else {
       FirestoreProvider.addDigestiveNotification(widget.digestive.id);
     }
-    showSnackBar(context, !isDone ? "完了しました" : "完了マークを外しました",
+    showSnackBar(Application.globalKey.currentContext!,
+        !isDone ? "完了しました" : "完了マークを外しました",
         action: SnackBarAction(
           label: "元に戻す",
           onPressed: () {
             DigestiveProvider().use((provider) async {
-              await provider.insert(widget.digestive..done = isDone);
-              setState(() {});
+              provider.writeTransaction(() async {
+                await provider.invertDone(widget.digestive);
+                setState(() {});
+              });
             });
           },
         ));
@@ -222,7 +228,9 @@ class _DigestiveDetailCardState extends State<DigestiveDetailCard> {
     );
     if (data != null) {
       await DigestiveProvider().use((provider) async {
-        await provider.insert(data);
+        provider.writeTransaction(() async {
+          await provider.put(data);
+        });
       });
 
       var index = widget.parentList
@@ -235,24 +243,28 @@ class _DigestiveDetailCardState extends State<DigestiveDetailCard> {
       }
 
       widget.onChanged?.call();
-      showSnackBar(context, "編集しました");
+      showSnackBar(Application.globalKey.currentContext!, "編集しました");
     }
   }
 
   void delete() async {
     await DigestiveProvider().use((provider) async {
-      await provider.delete(widget.digestive.id!);
+      provider.writeTransaction(() async {
+        await provider.delete(widget.digestive.id!);
+      });
     });
     var removedIndex = widget.parentList.indexOf(widget.digestive);
     var removed = widget.parentList.removeAt(removedIndex);
     widget.onChanged?.call();
 
-    showSnackBar(context, "削除しました",
+    showSnackBar(Application.globalKey.currentContext!, "削除しました",
         action: SnackBarAction(
           label: "元に戻す",
           onPressed: () {
             DigestiveProvider().use((provider) async {
-              await provider.insert(widget.digestive);
+              provider.writeTransaction(() async {
+                await provider.put(widget.digestive);
+              });
             });
 
             if (removedIndex > widget.parentList.length) {

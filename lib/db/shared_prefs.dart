@@ -120,11 +120,19 @@ class SharedPrefs {
       pref!.setString("emailForUrlSignIn", value!);
 
   // currentTimetableId
+  @Deprecated("Use intCurrentTimetableId instead.")
   String get currentTimetableId =>
       pref!.getString("currentTimetableId") ?? "main";
 
+  @Deprecated("Use intCurrentTimetableId instead.")
   set currentTimetableId(String value) =>
       pref!.setString("currentTimetableId", value);
+
+  // intCurrentTimetableId
+  int get intCurrentTimetableId => pref!.getInt("intCurrentTimetableId") ?? -1;
+
+  set intCurrentTimetableId(int value) =>
+      pref!.setInt("intCurrentTimetableId", value);
 
   // string list
 

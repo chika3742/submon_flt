@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:submon/components/timetable.dart';
-import 'package:submon/db/timetable.dart' as db;
+import 'package:submon/components/timetable/timetable.dart';
 import 'package:submon/events.dart';
+import 'package:submon/isar_db/isar_timetable.dart' as db;
 
 class TimetableEditPage extends StatefulWidget {
   const TimetableEditPage({Key? key}) : super(key: key);
@@ -41,27 +41,29 @@ class _TimetableEditPageState extends State<TimetableEditPage> {
             splashRadius: 24,
             onPressed: () {
               setState(() {
-                db.Timetable.redoList.clear();
-                db.Timetable.undoList
+                db.TimetableProvider.redoList.clear();
+                db.TimetableProvider.undoList
                     .insert(0, Map.from(_tableKey.currentState!.table));
               });
               _tableKey.currentState?.setState(() {
                 _tableKey.currentState?.table.clear();
               });
               db.TimetableProvider().use((provider) async {
-                await provider.deleteAll();
+                provider.writeTransaction(() async {
+                  await provider.clearCurrentTable();
+                });
               });
             },
           ),
           IconButton(
             icon: const Icon(Icons.undo),
             splashRadius: 24,
-            onPressed: db.Timetable.undoList.isNotEmpty ? undo : null,
+            onPressed: db.TimetableProvider.undoList.isNotEmpty ? undo : null,
           ),
           IconButton(
             icon: const Icon(Icons.redo),
             splashRadius: 24,
-            onPressed: db.Timetable.redoList.isNotEmpty ? redo : null,
+            onPressed: db.TimetableProvider.redoList.isNotEmpty ? redo : null,
           ),
         ],
       ),
@@ -82,27 +84,30 @@ class _TimetableEditPageState extends State<TimetableEditPage> {
 
   void undo() {
     setState(() {
-      db.Timetable.redoList.insert(0, Map.from(_tableKey.currentState!.table));
-      _tableKey.currentState?.table = db.Timetable.undoList[0];
-      db.Timetable.undoList.removeAt(0);
+      db.TimetableProvider.redoList
+          .insert(0, Map.from(_tableKey.currentState!.table));
+      _tableKey.currentState?.table = db.TimetableProvider.undoList[0];
+      db.TimetableProvider.undoList.removeAt(0);
     });
     updateLocalDb();
   }
 
   void redo() {
     setState(() {
-      db.Timetable.undoList.insert(0, Map.from(_tableKey.currentState!.table));
-      _tableKey.currentState?.table = db.Timetable.redoList[0];
-      db.Timetable.redoList.removeAt(0);
+      db.TimetableProvider.undoList
+          .insert(0, Map.from(_tableKey.currentState!.table));
+      _tableKey.currentState?.table = db.TimetableProvider.redoList[0];
+      db.TimetableProvider.redoList.removeAt(0);
     });
     updateLocalDb();
   }
 
   void updateLocalDb() {
     db.TimetableProvider().use((provider) async {
-      await provider.setAllLocally(_tableKey.currentState!.table.values
-          .map((e) => db.TimetableProvider.objToMapStatic(e))
-          .toList());
+      provider.writeTransaction(() async {
+        await provider
+            .putAllLocalOnly(_tableKey.currentState!.table.values.toList());
+      });
     });
   }
 }

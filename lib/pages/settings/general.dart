@@ -2,8 +2,8 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:submon/browser.dart';
-import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/ui_components/settings_ui.dart';
 
 class GeneralSettingsPage extends StatefulWidget {
   const GeneralSettingsPage({Key? key}) : super(key: key);

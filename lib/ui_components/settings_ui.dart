@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:submon/components/list_tile.dart';
+import 'package:submon/ui_components/list_tile.dart';
 
 class SettingsListView extends StatelessWidget {
   const SettingsListView(

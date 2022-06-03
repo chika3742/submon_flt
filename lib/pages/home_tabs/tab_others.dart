@@ -5,10 +5,10 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:submon/components/hidable_progress_indicator.dart';
-import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/ui_components/hidable_progress_indicator.dart';
+import 'package:submon/ui_components/settings_ui.dart';
 import 'package:submon/utils/utils.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -52,8 +52,7 @@ class _TabOthersState extends State<TabOthers> {
                       _loading = true;
                     });
                     try {
-                      await FirestoreProvider.fetchData(
-                          context: context, force: true);
+                      await FirestoreProvider.fetchData(force: true);
                     } on FirebaseException catch (e, stackTrace) {
                       handleFirebaseError(e, stackTrace, context, "同期に失敗しました。");
                     } catch (e, stackTrace) {
@@ -132,7 +131,6 @@ class _TabOthersState extends State<TabOthers> {
 
                       var url =
                           "https://docs.google.com/forms/d/e/1FAIpQLSeb0kHMcYWkl8LDpiS6NqoViuU5DHL8FcRRBHyMXXSzhiCx3Q/viewform?usp=pp_url&entry.1179597929=${Uri.encodeQueryComponent(deviceNameAndVer)}&entry.1250051436=${Uri.encodeQueryComponent(appVer)}";
-                      print(url);
                       launchUrlString(url,
                           mode: LaunchMode.externalApplication);
                     },
@@ -142,7 +140,7 @@ class _TabOthersState extends State<TabOthers> {
                     subtitle: "サービスに関するお知らせを掲載しています。",
                     leading: const Icon(Icons.newspaper),
                     onTap: () {
-                      Browser.openInfo();
+                      Browser.openAnnouncements();
                     },
                   ),
                 ],

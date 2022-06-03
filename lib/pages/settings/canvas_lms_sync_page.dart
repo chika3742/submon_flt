@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:submon/components/color_picker_dialog.dart';
-import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/firestore_provider.dart';
+import 'package:submon/ui_components/settings_ui.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -28,32 +28,39 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
   final _scrollController = ScrollController();
   List<UniversityLms> universities = [];
 
-  CanvasLms? canvas;
+  Canvas? canvas;
 
   @override
   void initState() {
     Future(() async {
       showLoadingModal(context);
 
-      try {
-        universities = await UniversityLms.fetch();
-        setState(() {});
+      await _fetchSyncStatus();
 
-        var canvas = (await FirestoreProvider.config)?.lms?.canvas;
-        if (canvas != null) {
-          setState(() {
-            connected = true;
-            this.canvas = canvas;
-          });
-        }
-      } catch (e, stack) {
-        debugPrint(e.toString());
-        debugPrintStack(stackTrace: stack);
-        showSnackBar(context, "連携状態の取得に失敗しました");
-      }
-      Navigator.pop(context);
+      if (mounted) Navigator.pop(context);
     });
     super.initState();
+  }
+
+  Future<void> _fetchSyncStatus() async {
+    try {
+      universities = await UniversityLms.fetch();
+      setState(() {});
+
+      var canvas = (await FirestoreProvider.config)?.lms?.canvas;
+      if (canvas != null) {
+        connected = true;
+        this.canvas = canvas;
+      } else {
+        connected = false;
+        this.canvas = null;
+      }
+      setState(() {});
+    } catch (e, stack) {
+      debugPrint(e.toString());
+      debugPrintStack(stackTrace: stack);
+      showSnackBar(context, "連携状態の取得に失敗しました");
+    }
   }
 
   @override
@@ -138,8 +145,8 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
                       SizedBox(
                         width: 250,
                         child: ElevatedButton(
-                          child: const Text('連携する'),
                           onPressed: integrate,
+                          child: const Text('連携する'),
                         ),
                       ),
                       const SizedBox(height: 32),
@@ -150,100 +157,105 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
             )
           else
             SizedBox.expand(
-              child: SettingsListView(
-                categories: [
-                  if (canvas != null)
-                    SettingsCategory(
-                      title: "ステータス",
-                      tiles: [
-                        SettingsTile(
-                          title: "連携状態",
-                          subtitle:
-                          "連携中 (${universities.firstWhereOrNull((e) => e.id == canvas!.universityId)?.name})",
-                        ),
-                        SettingsTile(
-                          title: "最終同期",
-                          subtitle: canvas!.lastSync != null
-                              ? "${DateFormat("yyyy-MM-dd HH:mm").format(canvas!.lastSync!.toDate())} (${canvas!.hasError == true ? "最後の同期に失敗しました。連携を解除し、再度連携をお試しください。" : "成功"})"
-                              : "未同期",
-                        ),
-                        SettingsTile(
-                          title: "今すぐ同期",
-                          onTap: () {
-                            showSimpleDialog(context, "注意",
-                                "本機能は短時間に何度も実行しないでください。\n\n今すぐ同期しますか？",
-                                showCancel: true, onOKPressed: () async {
-                                  showLoadingModal(context);
-                                  try {
-                                await FirebaseFunctions.instanceFor(
-                                        region: "asia-northeast1")
-                                    .httpsCallable("canvasSyncNow")();
-                                Navigator.pop(context);
-                                showSimpleDialog(context, "完了",
-                                    "同期リクエストを送信しました。結果は本画面でご確認ください。");
-                              } catch (e, stack) {
-                                Navigator.pop(context);
-                                showSimpleDialog(context, "エラー", "エラーが発生しました。");
-                                recordErrorToCrashlytics(e, stack);
-                              }
-                            });
-                          },
-                        ),
-                        SettingsTile(
-                            title: "提出物カラー選択",
-                            subtitle: "提出物が追加される際のカラーを設定できます。",
-                            onTap: () async {
-                              var result = await showDialog<Color>(
-                                context: context,
-                                builder: (_) {
-                                  return ColorPickerDialog(
-                                      initialColor:
-                                      Color(canvas!.submissionColor));
-                                },
-                              );
-                              if (result != null) {
-                                showLoadingModal(context);
-                                await FirestoreProvider
-                                    .setCanvasLmsSubmissionColor(result);
-                                canvas?.submissionColor = result.value;
-                                Navigator.pop(context);
-                              }
-                            }),
-                        SettingsTile(
-                            title: "同期除外リストのクリア",
+              child: RefreshIndicator(
+                onRefresh: _fetchSyncStatus,
+                child: SettingsListView(
+                  categories: [
+                    if (canvas != null)
+                      SettingsCategory(
+                        title: "ステータス",
+                        tiles: [
+                          SettingsTile(
+                            title: "連携状態",
                             subtitle:
-                            "提出物を削除すると自動的に除外リストに登録されます。このリストをクリアすると、次回同期時に追加されるようになります。",
+                            "連携中 (${universities.firstWhereOrNull((e) => e.id == canvas!.universityId)?.name})",
+                          ),
+                          SettingsTile(
+                            title: "最終同期",
+                            subtitle: canvas!.lastSync != null
+                                ? "${DateFormat("yyyy-MM-dd HH:mm").format(canvas!.lastSync!.toDate())} (${canvas!.hasError == true ? "最後の同期に失敗しました。連携を解除し、再度連携をお試しください。" : "成功"})"
+                                : "未同期",
+                          ),
+                          SettingsTile(
+                            title: "今すぐ同期",
                             onTap: () {
-                              showSimpleDialog(
-                                  context, "確認", "同期除外リストをクリアしますか？",
-                                  showCancel: true, onOKPressed: () async {
-                                showLoadingModal(context);
-                                await FirestoreProvider
-                                    .clearCanvasLmsSyncExcludeList();
-                                Navigator.pop(context);
-                                showSnackBar(context, "クリアしました");
-                              });
-                            }),
-                        SettingsTile(
-                            title: "連携を解除する",
-                            onTap: () {
-                              showSimpleDialog(context, "確認",
-                                  "連携を解除しますか？\n※アクセストークンを再生成する必要があります",
+                              showSimpleDialog(context, "注意",
+                                  "本機能は短時間に何度も実行しないでください。\n\n今すぐ同期しますか？",
                                   showCancel: true, onOKPressed: () async {
                                     showLoadingModal(context);
-                                    await FirestoreProvider.disconnectCanvasLms();
+                                    try {
+                                  await FirebaseFunctions.instanceFor(
+                                          region: "asia-northeast1")
+                                      .httpsCallable("canvasSyncNow")();
+                                  if (mounted) {
                                     Navigator.pop(context);
-                                    setState(() {
-                                      connected = false;
+                                    showSimpleDialog(context, "完了",
+                                        "同期リクエストを送信しました。しばらく待ってから本画面を下にスワイプして結果をご確認ください。");
+                                  }
+                                } catch (e, stack) {
+                                  Navigator.pop(context);
+                                  showSimpleDialog(context, "エラー", "エラーが発生しました。");
+                                  recordErrorToCrashlytics(e, stack);
+                                }
+                              });
+                            },
+                          ),
+                          SettingsTile(
+                              title: "提出物カラー選択",
+                              subtitle: "提出物が追加される際のカラーを設定できます。",
+                              onTap: () async {
+                                var result = await showDialog<Color>(
+                                  context: context,
+                                  builder: (_) {
+                                    return ColorPickerDialog(
+                                        initialColor:
+                                        Color(canvas!.submissionColor!));
+                                  },
+                                );
+                                if (result != null) {
+                                  if (mounted) showLoadingModal(context);
+                                  await FirestoreProvider
+                                      .setCanvasLmsSubmissionColor(result);
+                                  canvas?.submissionColor = result.value;
+                                  if (mounted) Navigator.pop(context);
+                                }
+                              }),
+                          SettingsTile(
+                              title: "同期除外リストのクリア",
+                              subtitle:
+                              "提出物を削除すると自動的に除外リストに登録されます。このリストをクリアすると、次回同期時に追加されるようになります。",
+                              onTap: () {
+                                showSimpleDialog(
+                                    context, "確認", "同期除外リストをクリアしますか？",
+                                    showCancel: true, onOKPressed: () async {
+                                  showLoadingModal(context);
+                                  await FirestoreProvider
+                                      .clearCanvasLmsSyncExcludeList();
+                                  Navigator.pop(context);
+                                  showSnackBar(context, "クリアしました");
+                                });
+                              }),
+                          SettingsTile(
+                              title: "連携を解除する",
+                              onTap: () {
+                                showSimpleDialog(context, "確認",
+                                    "連携を解除しますか？\n※アクセストークンを再生成する必要があります",
+                                    showCancel: true, onOKPressed: () async {
+                                      showLoadingModal(context);
+                                      await FirestoreProvider.disconnectCanvasLms();
+                                      Navigator.pop(context);
+                                      setState(() {
+                                        connected = false;
+                                      });
                                     });
-                                  });
-                            }),
-                        SettingsTile(
-                          subtitle: "同期は月〜土(18:00)に行われます",
-                        ),
-                      ],
-                    ),
-                ],
+                              }),
+                          SettingsTile(
+                            subtitle: "同期は月〜土(18:00)に行われます",
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
               ),
             ),
         ],

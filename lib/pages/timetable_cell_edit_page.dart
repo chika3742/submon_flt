@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:submon/db/timetable.dart';
 import 'package:submon/pages/timetable_edit_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
 import '../events.dart';
+import '../isar_db/isar_timetable.dart';
 
 class TimetableCellEditPage extends StatefulWidget {
   const TimetableCellEditPage(
@@ -52,8 +52,11 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
               icon: const Icon(Icons.delete),
               onPressed: () async {
                 await TimetableProvider().use((provider) async {
-                  await provider.delete(
-                      getTimetableCellId(widget.period, widget.weekDay));
+                  await provider.writeTransaction(() async {
+                    await provider.deleteFromCurrentTable(
+                        getTimetableCellId(widget.period, widget.weekDay));
+                  });
+                  ;
                 });
                 Navigator.pop(context, FieldValue.unselect);
                 eventBus.fire(TimetableListChanged());
@@ -142,16 +145,18 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
       _subjectError = null;
     });
 
-    var data = widget.initialData ??
-        Timetable(
-            cellId: getTimetableCellId(widget.period, widget.weekDay),
-            subject: "");
+    var data = widget.initialData ?? Timetable()
+      ..set(
+          cellId: getTimetableCellId(widget.period, widget.weekDay),
+          subject: "");
     data.subject = _subjectController.text;
     data.room = _roomController.text;
     data.teacher = _teacherController.text;
     data.note = _noteController.text;
     await TimetableProvider().use((provider) async {
-      await provider.insert(data);
+      await provider.writeTransaction(() async {
+        await provider.putToCurrentTable(data);
+      });
     });
 
     Navigator.pop(context, _subjectController.text);

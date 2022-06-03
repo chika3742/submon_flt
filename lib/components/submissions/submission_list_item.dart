@@ -3,15 +3,15 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:submon/components/formatted_date_remaining.dart';
-import 'package:submon/db/digestive.dart';
-import 'package:submon/db/submission.dart';
+import 'package:submon/components/submissions/formatted_date_remaining.dart';
+import 'package:submon/isar_db/isar_digestive.dart';
+import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/pages/submission_detail_page.dart';
 import 'package:submon/utils/dynamic_links.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
-import 'digestive_edit_bottom_sheet.dart';
+import '../digestive_edit_bottom_sheet.dart';
 
 class SubmissionListItem extends StatefulWidget {
   const SubmissionListItem(this.item, {Key? key, this.onDone, this.onDelete})
@@ -110,20 +110,20 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                                   child: Text.rich(
                                     TextSpan(children: [
                                       TextSpan(
-                                          text: "${_item.date!.month} / ",
+                                          text: "${_item.due.month} / ",
                                           style: const TextStyle(fontSize: 20)),
                                       TextSpan(
-                                          text: "${_item.date!.day}",
+                                          text: "${_item.due.day}",
                                           style: const TextStyle(fontSize: 34)),
                                       TextSpan(
                                           text:
-                                              " (${getWeekdayString(_item.date!.weekday - 1)})",
+                                              " (${getWeekdayString(_item.due.weekday - 1)})",
                                           style: const TextStyle(fontSize: 20)),
-                                      if (_item.date!.hour != 23 ||
-                                          _item.date!.minute != 59)
+                                      if (_item.due.hour != 23 ||
+                                          _item.due.minute != 59)
                                         TextSpan(
                                           text:
-                                              " ${DateFormat("HH:mm").format(_item.date!)}",
+                                              " ${DateFormat("HH:mm").format(_item.due)}",
                                           style: const TextStyle(fontSize: 20),
                                         )
                                     ]),
@@ -147,7 +147,7 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                                 },
                                 borderRadius: BorderRadius.circular(4),
                                 child: FormattedDateRemaining(
-                                    _item.date!.difference(DateTime.now()),
+                                    _item.due.difference(DateTime.now()),
                                     weekView: _weekView),
                               ),
                               const SizedBox(
@@ -204,7 +204,7 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                           leading: const Icon(Icons.share),
                           title: const Text("共有"),
                           onTap: () {
-                            handleContextMenuAction(_ContextMenuAction.share);
+                            _handleContextMenuAction(_ContextMenuAction.share);
                             FirebaseAnalytics.instance.logShare(
                               contentType: "submission",
                               itemId: widget.item.id.toString(),
@@ -216,7 +216,7 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                           leading: const Icon(Icons.add),
                           title: const Text("Digestive を追加"),
                           onTap: () {
-                            handleContextMenuAction(
+                            _handleContextMenuAction(
                                 _ContextMenuAction.addDigestive);
                           },
                         ),
@@ -224,14 +224,14 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                           leading: const Icon(Icons.edit),
                           title: const Text("編集"),
                           onTap: () {
-                            handleContextMenuAction(_ContextMenuAction.edit);
+                            _handleContextMenuAction(_ContextMenuAction.edit);
                           },
                         ),
                         ListTile(
                           leading: const Icon(Icons.check),
                           title: const Text("完了にする"),
                           onTap: () {
-                            handleContextMenuAction(
+                            _handleContextMenuAction(
                                 _ContextMenuAction.makeDone);
                           },
                         ),
@@ -239,7 +239,7 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                           leading: const Icon(Icons.delete),
                           title: const Text("削除"),
                           onTap: () {
-                            handleContextMenuAction(_ContextMenuAction.delete);
+                            _handleContextMenuAction(_ContextMenuAction.delete);
                           },
                         ),
                       ],
@@ -250,10 +250,10 @@ class SubmissionListItemState extends State<SubmissionListItem> {
             );
           },
           onClosed: (result) {
-            SubmissionProvider().use((provider) {
-              provider.get(_item.id!).then((value) {
+            SubmissionProvider().use((provider) async {
+              await provider.get(_item.id!).then((obj) {
                 setState(() {
-                  _item = value!;
+                  _item = obj!;
                 });
               });
             });
@@ -270,11 +270,13 @@ class SubmissionListItemState extends State<SubmissionListItem> {
       _item.important = !_item.important;
     });
     SubmissionProvider().use((provider) {
-      provider.update(_item);
+      return provider.writeTransaction(() async {
+        await provider.put(_item);
+      });
     });
   }
 
-  Future<void> handleContextMenuAction(_ContextMenuAction action) async {
+  Future<void> _handleContextMenuAction(_ContextMenuAction action) async {
     Navigator.of(context, rootNavigator: true).pop(context);
 
     switch (action) {
@@ -283,8 +285,8 @@ class SubmissionListItemState extends State<SubmissionListItem> {
 
         buildShortDynamicLink("/submission-sharing"
                 "?title=${Uri.encodeComponent(widget.item.title)}"
-                "&date=${widget.item.date!.toUtc().toIso8601String()}"
-                "${widget.item.detail != "" ? "&detail=${Uri.encodeComponent(widget.item.detail)}" : ""}"
+                "&date=${widget.item.due.toUtc().toIso8601String()}"
+                "${widget.item.details != "" ? "&details=${Uri.encodeComponent(widget.item.details)}" : ""}"
                 "&color=${widget.item.color.value}")
             .then((link) {
           Share.share(link.shortUrl.toString());
@@ -307,7 +309,7 @@ class SubmissionListItemState extends State<SubmissionListItem> {
         );
         if (data != null) {
           DigestiveProvider().use((provider) async {
-            await provider.insert(data);
+            await provider.put(data);
           });
           showSnackBar(context, "作成しました");
         }

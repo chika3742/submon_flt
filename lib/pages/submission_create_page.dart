@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:submon/components/submission_editor.dart';
+import 'package:submon/components/submissions/submission_editor.dart';
 
 class SubmissionCreatePage extends StatelessWidget {
   const SubmissionCreatePage(

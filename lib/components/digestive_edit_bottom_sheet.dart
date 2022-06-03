@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:submon/db/digestive.dart';
+import 'package:submon/isar_db/isar_digestive.dart';
 
 class DigestiveEditBottomSheet extends StatefulWidget {
   const DigestiveEditBottomSheet(
@@ -146,9 +146,9 @@ class _DigestiveEditBottomSheetState extends State<DigestiveEditBottomSheet> {
                 value: _minutesAfter,
                 items: _acceptableMinutesAfter
                     .map((e) => DropdownMenuItem(
+                  value: e,
                           child: Text("$e分後",
                               style: const TextStyle(fontSize: 20)),
-                          value: e,
                         ))
                     .toList(),
                 onChanged: (value) {
@@ -162,9 +162,9 @@ class _DigestiveEditBottomSheetState extends State<DigestiveEditBottomSheet> {
               value: _minute,
               items: _acceptableMinute
                   .map((e) => DropdownMenuItem(
+                value: e,
                         child:
                             Text("$e分間", style: const TextStyle(fontSize: 20)),
-                        value: e,
                       ))
                   .toList(),
               onChanged: (value) {
@@ -211,15 +211,15 @@ class _DigestiveEditBottomSheetState extends State<DigestiveEditBottomSheet> {
                       DateTime.now().add(Duration(minutes: _minutesAfter));
                 }
                 Navigator.pop(
-                    context,
-                    Digestive(
-                      id: widget.initialData?.id,
-                      submissionId: widget.submissionId,
-                      startAt: startAt,
-                      minute: _minute,
-                      content: _controller.text,
-                      done: false,
-                    ));
+                  context,
+                  Digestive()
+                    ..id = widget.initialData?.id
+                    ..submissionId = widget.submissionId
+                    ..startAt = startAt
+                    ..minute = _minute
+                    ..content = _controller.text
+                    ..done = false,
+                );
               },
             ),
           ),

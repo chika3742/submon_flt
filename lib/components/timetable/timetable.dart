@@ -1,16 +1,14 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
-import 'package:submon/components/open_modal_animation.dart';
+import 'package:submon/components/timetable/open_modal_animation.dart';
 import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/db/timetable.dart' as db;
 import 'package:submon/events.dart';
+import 'package:submon/isar_db/isar_timetable.dart' as db;
 import 'package:submon/pages/timetable_cell_edit_page.dart';
 import 'package:submon/pages/timetable_edit_page.dart';
 import 'package:submon/utils/ui.dart';
 
-import '../utils/utils.dart';
+import '../../utils/utils.dart';
 
 class Timetable extends StatefulWidget {
   const Timetable({
@@ -45,8 +43,7 @@ class TimetableState extends State<Timetable> {
 
   void getTable() {
     db.TimetableProvider().use((provider) async {
-      List<db.Timetable> list =
-          await (provider as db.TimetableProvider).getCurrentTimetable();
+      List<db.Timetable> list = await provider.getCurrentTable();
 
       setState(() {
         table = Map.fromIterables(list.map((e) => e.cellId), list);
@@ -237,8 +234,8 @@ class TimetableState extends State<Timetable> {
         await provider.delete(getWholeIndex(weekday, index));
       });
     } else if (result != null) {
-      table[getWholeIndex(weekday, index)] =
-          db.Timetable(cellId: getWholeIndex(weekday, index), subject: result);
+      table[getWholeIndex(weekday, index)] = db.Timetable()
+        ..set(cellId: getWholeIndex(weekday, index), subject: result);
 
       SharedPrefs.use((prefs) {
         var history = prefs.timetableHistory;
@@ -253,15 +250,17 @@ class TimetableState extends State<Timetable> {
       });
 
       db.TimetableProvider().use((provider) async {
-        await provider.insert(db.Timetable(
-            cellId: getWholeIndex(weekday, index), subject: result));
+        provider.writeTransaction(() async {
+          await provider
+              .putToCurrentTable(table[getWholeIndex(weekday, index)]!);
+        });
       });
     }
   }
 
   void updateUndoList() {
-    db.Timetable.undoList.insert(0, Map.from(table));
-    db.Timetable.redoList.clear();
+    db.TimetableProvider.undoList.insert(0, Map.from(table));
+    db.TimetableProvider.redoList.clear();
     eventBus.fire(UndoRedoUpdatedEvent());
   }
 

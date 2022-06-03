@@ -26,6 +26,8 @@ import net.chikach.submon.Utils.getDateDiffString
 import java.io.Serializable
 import java.util.*
 
+const val SCHEMA_VERSION = 5L
+
 class SubmissionListAppWidgetProvider : AppWidgetProvider() {
     @SuppressLint("WrongConstant")
     override fun onUpdate(
@@ -52,11 +54,23 @@ class SubmissionListAppWidgetProvider : AppWidgetProvider() {
                     R.id.listView,
                     Intent(context, AppWidgetSubmissionListService::class.java)
                 )
-                if (FirebaseAuth.getInstance().currentUser != null) {
-                    setEmptyView(R.id.listView, R.id.emptyText)
-                    setViewVisibility(R.id.notSignedInText, View.GONE)
-                    setViewVisibility(R.id.emptyTextParent, View.VISIBLE)
+                val user = FirebaseAuth.getInstance().currentUser
+                if (user != null) {
+                    FirebaseFirestore.getInstance().document("users/${user.uid}").get().addOnCompleteListener {
+                        if (it.isSuccessful && it.result["schemaVersion"] as Long == SCHEMA_VERSION) {
+                            setEmptyView(R.id.listView, R.id.emptyText)
+                            setViewVisibility(R.id.notSignedInText, View.GONE)
+                            setViewVisibility(R.id.emptyTextParent, View.VISIBLE)
+                        } else {
+                            setTextViewText(R.id.notSignedInText, "Submonを最新版にアップデートしてください")
+                            setViewVisibility(R.id.notSignedInText, View.VISIBLE)
+                            setViewVisibility(R.id.emptyTextParent, View.GONE)
+                        }
+                        appWidgetManager?.updateAppWidget(widgetId, this)
+                        appWidgetManager?.notifyAppWidgetViewDataChanged(widgetId, R.id.listView)
+                    }
                 } else {
+                    setTextViewText(R.id.notSignedInText, "サインインすると利用できます")
                     setViewVisibility(R.id.notSignedInText, View.VISIBLE)
                     setViewVisibility(R.id.emptyTextParent, View.GONE)
                 }
@@ -104,15 +118,17 @@ class AppWidgetSubmissionListService : RemoteViewsService() {
             val user = FirebaseAuth.getInstance().currentUser
             if (user != null) {
                 val deferred = CompletableDeferred<Unit>()
-                FirebaseFirestore.getInstance().collection("users/${user.uid}/submission")
-                    .whereEqualTo("done", 0)
+
+                val db = FirebaseFirestore.getInstance()
+                db.collection("users/${user.uid}/submission")
+                    .whereEqualTo("done", false)
                     .get()
                     .addOnSuccessListener { snapshot ->
                         val list = snapshot.documents.map {
                             SubmissionData(
                                 it["id"] as Long,
                                 it["title"] as String,
-                                it["date"] as String
+                                it["due"] as String
                             )
                         }.sortedBy {
                             SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sssZ", Locale.US).apply {
@@ -126,6 +142,7 @@ class AppWidgetSubmissionListService : RemoteViewsService() {
                         Log.e("AppWidget", "Failed to get firestore", it)
                         deferred.complete(Unit)
                     }
+
                 runBlocking {
                     deferred.await()
                 }

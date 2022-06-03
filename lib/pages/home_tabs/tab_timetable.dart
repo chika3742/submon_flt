@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:submon/components/timetable.dart';
+import 'package:submon/components/timetable/timetable.dart';
 import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/db/timetable.dart' as db;
-import 'package:submon/db/timetable_table.dart';
 import 'package:submon/events.dart';
+import 'package:submon/isar_db/isar_timetable.dart' as db;
+import 'package:submon/isar_db/isar_timetable_table.dart';
 import 'package:submon/main.dart';
 import 'package:submon/utils/ui.dart';
 
@@ -64,9 +64,9 @@ class TabTimetableState extends State<TabTimetable> {
     TimetableTableProvider().use((provider) async {
       tables = await provider.getAll();
       if (prefs != null &&
-          !tables.any((element) =>
-              element.id.toString() == prefs!.currentTimetableId)) {
-        prefs!.currentTimetableId = "main";
+          tables
+              .every((element) => element.id != prefs!.intCurrentTimetableId)) {
+        prefs!.intCurrentTimetableId = -1;
       }
       setState(() {});
     });
@@ -87,22 +87,22 @@ class TabTimetableState extends State<TabTimetable> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 4.0, horizontal: 32),
                 child: SizedBox(
-                  child: DropdownButton<String>(
-                    value: prefs!.currentTimetableId,
+                  child: DropdownButton<int>(
+                    value: prefs!.intCurrentTimetableId,
                     enableFeedback: true,
                     items: [
                       const DropdownMenuItem(
-                        value: "main",
+                        value: -1,
                         child: Text('メイン'),
                       ),
                       ...tables.map((e) => DropdownMenuItem(
-                            value: e.id.toString(),
-                            child: Text(e.title!),
+                            value: e.id,
+                            child: Text(e.title),
                           )),
                     ],
                     onChanged: (value) {
                       setState(() {
-                        prefs!.currentTimetableId = value!;
+                        prefs!.intCurrentTimetableId = value!;
                       });
                       tableKey.currentState?.getTable();
                     },

@@ -24,7 +24,7 @@ class Browser {
     MainMethodPlugin.openWebPage("ヘルプ", "https://www.chikach.net/submon-help/");
   }
 
-  static void openInfo() {
+  static void openAnnouncements() {
     MainMethodPlugin.openWebPage(
         "お知らせ", "https://www.chikach.net/category/submon-info/");
   }

@@ -11,10 +11,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:submon/browser.dart';
-import 'package:submon/components/hidable_progress_indicator.dart';
 import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/isar_db/isar_provider.dart';
+import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/twitter_sign_in.dart';
+import 'package:submon/ui_components/hidable_progress_indicator.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
@@ -407,7 +409,7 @@ class _SignInPageState extends State<SignInPage> {
         } else if (methods.first ==
             EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD) {
           showSimpleDialog(
-            context,
+            globalContext!,
             "追加認証",
             "セキュリティのため、再度ログインする必要があります。送信されたメールにあるURLをタップし、ログインしてください。\n\n"
                 "その後、再度メールアドレス変更をお試しください。",
@@ -461,19 +463,25 @@ class _SignInPageState extends State<SignInPage> {
 
 Future<void> completeLogin(UserCredential result, BuildContext context) async {
   try {
+    SharedPrefs.use((prefs) {
+      prefs.firestoreLastChanged = null;
+    });
+    await IsarProvider.clear();
+
     try {
+      // check account exists
       var doc =
           FirebaseFirestore.instance.collection("users").doc(result.user!.uid);
       await doc.get();
       FirebaseAnalytics.instance.logLogin(
           loginMethod: result.additionalUserInfo?.providerId ?? "unknown");
-      showSnackBar(context, "ログインしました");
+      showSnackBar(globalContext!, "ログインしました");
     } on FirebaseException catch (e) {
       if (e.code == "permission-denied") {
         showSnackBar(context, "アカウントを作成しています。しばらくお待ち下さい・・・",
             duration: const Duration(seconds: 10));
         await FirestoreProvider.initializeUser();
-        showSnackBar(context, "アカウントを作成しました");
+        showSnackBar(globalContext!, "アカウントを作成しました");
         FirebaseAnalytics.instance.logSignUp(
             signUpMethod: result.additionalUserInfo?.providerId ?? "unknown");
       } else {
@@ -485,9 +493,6 @@ Future<void> completeLogin(UserCredential result, BuildContext context) async {
       FirestoreProvider.saveNotificationToken(token);
     });
     MainMethodPlugin.updateWidgets();
-    SharedPrefs.use((prefs) {
-      prefs.firestoreLastChanged = null;
-    });
   } catch (e) {
     FirebaseCrashlytics.instance.recordError(e, (e as dynamic).stackTrace);
     showSnackBar(context, "エラーが発生しました");

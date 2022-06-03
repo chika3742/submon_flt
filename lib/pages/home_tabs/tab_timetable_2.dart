@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:submon/components/timetable/timetable_day_list.dart';
 import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/db/timetable.dart';
-import 'package:submon/db/timetable_class_time.dart';
-import 'package:submon/db/timetable_table.dart';
 import 'package:submon/events.dart';
 
-import '../../components/timetable_day_list.dart';
+import '../../isar_db/isar_timetable.dart';
+import '../../isar_db/isar_timetable_class_time.dart';
+import '../../isar_db/isar_timetable_table.dart';
 
 class TabTimetable2 extends StatefulWidget {
   const TabTimetable2({Key? key}) : super(key: key);
@@ -28,11 +28,9 @@ class _TabTimetable2State extends State<TabTimetable2> {
   @override
   void initState() {
     initSharedPrefs();
-    initTableList();
 
     _listener = eventBus.on<TimetableListChanged>().listen((event) {
       initTable();
-      initTableList();
     });
 
     super.initState();
@@ -65,26 +63,21 @@ class _TabTimetable2State extends State<TabTimetable2> {
 
   void initTable() async {
     await TimetableProvider().use((provider) async {
-      var timetableId = prefs?.currentTimetableId;
-      if (timetableId == "main") {
-        _items = await provider.getAll(where: "$colTableId is null");
-      } else {
-        _items = await provider
-            .getAll(where: "$colTableId = ?", whereArgs: [timetableId]);
-      }
-
-      await TimetableClassTimeProvider(context).use((provider) async {
-        _classTimes = await provider.getAll();
-      });
-
-      setState(() {});
+      _items = await provider.getCurrentTable();
     });
-  }
-
-  void initTableList() {
-    TimetableTableProvider().use((provider) async {
+    await TimetableClassTimeProvider().use((provider) async {
+      _classTimes = await provider.getAll();
+    });
+    await TimetableTableProvider().use((provider) async {
       _tables = await provider.getAll();
     });
+
+    var sharedPrefs = SharedPrefs(await SharedPreferences.getInstance());
+    if (!_tables!.any((element) => element.id == sharedPrefs.intCurrentTimetableId)) {
+      sharedPrefs.intCurrentTimetableId = -1;
+    }
+
+    setState(() {});
   }
 
   @override
@@ -114,27 +107,27 @@ class _TabTimetable2State extends State<TabTimetable2> {
         if (_tables != null)
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: DropdownButtonFormField<String>(
-              value: prefs!.currentTimetableId,
+            child: DropdownButtonFormField<int>(
+              value: prefs!.intCurrentTimetableId,
               decoration: const InputDecoration(
                 label: Text("時間割選択"),
                 border: OutlineInputBorder(),
               ),
               items: [
-                const DropdownMenuItem<String>(
-                  value: "main",
+                const DropdownMenuItem(
+                  value: -1,
                   child: Text("メイン"),
                 ),
                 ..._tables!.map((e) {
-                  return DropdownMenuItem<String>(
-                    value: e.id.toString(),
-                    child: Text(e.title!),
+                  return DropdownMenuItem(
+                    value: e.id,
+                    child: Text(e.title),
                   );
                 }).toList()
               ],
               onChanged: (e) {
                 setState(() {
-                  prefs!.currentTimetableId = e!;
+                  prefs!.intCurrentTimetableId = e!;
                 });
                 initTable();
               },
