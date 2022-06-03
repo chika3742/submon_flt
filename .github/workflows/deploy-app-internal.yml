@@ -33,9 +33,9 @@ jobs:
           path: ./ios/Pods
           restore-keys: ${{ runner.os }}-pods-
 
-      - uses: actions/init-flutter-cli@v1
+      - uses: ./.github/actions/init-flutter-cli
 
-      - uses: actions/deploy-ios-app@v1
+      - uses: ./.github/actions/deploy-ios-app
         with:
           provisioning-profile: ${{ secrets.PROVISIONING_PROFILE }}
           provisioning-profile-widgetkit: ${{ secrets.PROVISIONING_PROFILE_WIDGETKIT }}
@@ -54,9 +54,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/init-flutter-cli@v1
+      - uses: ./.github/actions/init-flutter-cli
 
-      - uses: actions/deploy-android-app@v1
+      - uses: ./.github/actions/deploy-android-app
         with:
           track: internal
           run-number: ${ GITHUB_RUN_NUMBER }
