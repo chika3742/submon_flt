@@ -1,4 +1,4 @@
-name: 'Deploy Android App'
+name: 'Build and Deploy Android App'
 description: "Deploys Android App to Google Play."
 inputs:
   track:

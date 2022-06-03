@@ -1,4 +1,4 @@
-name: "Deploy iOS App"
+name: "Build and Deploy iOS App"
 description: "Deploys iOS App to App Store."
 
 inputs:
