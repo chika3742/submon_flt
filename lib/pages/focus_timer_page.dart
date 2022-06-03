@@ -6,11 +6,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dnd/flutter_dnd.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:submon/db/digestive.dart';
-import 'package:submon/db/submission.dart';
+import 'package:submon/isar_db/isar_digestive.dart';
+import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/utils/ui.dart';
-import 'package:submon/utils/utils.dart';
+
+import '../utils/ad_unit_ids.dart';
 
 const addMinutes = 20;
 const breakMinutes = 10;
@@ -53,14 +54,13 @@ class _FocusTimerPageState extends State<FocusTimerPage>
 
     _remainingTime = Duration(minutes: widget.digestive.minute);
 
-    SubmissionProvider().use((provider) async {
-      var submissionName = widget.digestive.submissionId != null
-          ? (await provider.get(widget.digestive.submissionId!))!.title
-          : "";
-      setState(() {
-        _submissionName = submissionName;
+    if (widget.digestive.submissionId != null) {
+      SubmissionProvider().use((provider) async {
+        _submissionName =
+            (await provider.get(widget.digestive.submissionId!))!.title;
+        setState(() {});
       });
-    });
+    }
 
     _audioCache.load("audio/alarm.mp3");
 
@@ -71,7 +71,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
     _checkDndAccessGranted();
 
     InterstitialAd.load(
-      adUnitId: getAdUnitId(AdUnit.focusTimerInterstitial)!,
+      adUnitId: AdUnits.focusTimerInterstitial!,
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
           onAdLoaded: (ad) {
@@ -85,10 +85,11 @@ class _FocusTimerPageState extends State<FocusTimerPage>
 
   @override
   void dispose() {
+    super.dispose();
     WidgetsBinding.instance.removeObserver(this);
     _stopTimer();
     _stopBreakTimer();
-    _stopBlinkTimer();
+    _stopBlinkTimer(inDispose: true);
     _alarmPlayer?.stop();
     MainMethodPlugin.disableWakeLock();
     if (!kIsWeb && Platform.isAndroid) {
@@ -98,7 +99,6 @@ class _FocusTimerPageState extends State<FocusTimerPage>
       FlutterDnd.setInterruptionFilter(FlutterDnd.INTERRUPTION_FILTER_ALL);
     }
     ad?.dispose();
-    super.dispose();
   }
 
   @override
@@ -446,9 +446,9 @@ class _FocusTimerPageState extends State<FocusTimerPage>
     });
   }
 
-  void _stopBlinkTimer() {
+  void _stopBlinkTimer({bool inDispose = false}) {
     _blinkTimer?.cancel();
-    if (mounted) {
+    if (mounted && !inDispose) {
       setState(() {
         _displayTimer = true;
       });

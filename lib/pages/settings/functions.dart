@@ -4,13 +4,12 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:submon/components/settings_ui.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/db/sql_provider.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/sign_in_page.dart';
+import 'package:submon/ui_components/settings_ui.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 import 'package:time_picker_widget/time_picker_widget.dart';
@@ -136,7 +135,6 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                       onOKPressed: () async {
                         await auth.signOut();
                     await GoogleSignIn().signOut();
-                    SqlProvider.clearAllTables();
                     MainMethodPlugin.updateWidgets();
                     Navigator.pop(context);
                     Navigator.pushReplacementNamed(context, "welcome");

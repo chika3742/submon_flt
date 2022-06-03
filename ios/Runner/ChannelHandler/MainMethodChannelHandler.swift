@@ -3,11 +3,13 @@ import Flutter
 import SafariServices
 import AuthenticationServices
 import WidgetKit
+import AppTrackingTransparency
 
 @objc
 class MainMethodChannelHandler : NSObject {
     let methodChannel: FlutterMethodChannel
     let viewController: FlutterViewController
+    var pendingUri: String? = nil
     
     init(viewController: FlutterViewController) {
         self.methodChannel = FlutterMethodChannel(name: "net.chikach.submon/main", binaryMessenger: viewController.binaryMessenger)
@@ -34,8 +36,10 @@ class MainMethodChannelHandler : NSObject {
             result(nil)
             break
         case "getPendingUri":
-            result(nil)
+            result(pendingUri)
             break
+        case "requestIDFA":
+            requestIDFA(result: result)
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -58,6 +62,17 @@ class MainMethodChannelHandler : NSObject {
     private func updateWidgets() {
         if #available(iOS 14.0, *) {
             WidgetCenter.shared.reloadAllTimelines()
+        }
+    }
+    
+    private func requestIDFA(result: @escaping FlutterResult) {
+        if #available(iOS 14.0, *) {
+            ATTrackingManager.requestTrackingAuthorization(completionHandler: { status in
+                let authorized = status == .authorized
+                result(authorized)
+            })
+        } else {
+            result(true)
         }
     }
     

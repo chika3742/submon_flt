@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:submon/components/submission_list.dart';
+import 'package:submon/components/submissions/submission_list.dart';
 
 class DoneSubmissionsPage extends StatefulWidget {
   const DoneSubmissionsPage({Key? key}) : super(key: key);

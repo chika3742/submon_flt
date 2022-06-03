@@ -7,9 +7,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:googleapis/oauth2/v2.dart' as oauth;
 import 'package:googleapis_auth/auth_io.dart';
+import 'package:submon/browser.dart';
 import 'package:submon/main.dart';
 import 'package:submon/utils/ui.dart';
 
@@ -42,8 +42,7 @@ void handleAuthError(
     case "user-token-expired":
       showSnackBar(context, "トークンの有効期限が切れました。再度ログインする必要があります。");
       FirebaseAuth.instance.signOut();
-      Application.globalKey.currentState
-          ?.pushReplacementNamed("welcome", arguments: {});
+      backToWelcomePage(Application.globalKey.currentContext!);
       break;
     default:
       showSnackBar(context, "エラーが発生しました。(${e.code})",
@@ -62,7 +61,15 @@ void handleFirebaseError(FirebaseException e, StackTrace stackTrace,
         "エラー",
         "$message\n\nアカウントがすでに削除されたか、サーバーメンテナンス中である可能性があります。",
         allowCancel: false,
+        showCancel: true,
+        cancelText: "ログアウト",
+        onCancelPressed: () {
+          FirebaseAuth.instance.signOut();
+          backToWelcomePage(context);
+        },
+        okText: "お知らせを開く",
         onOKPressed: () {
+          Browser.openAnnouncements();
           SystemChannels.platform.invokeMethod('SystemNavigator.pop');
         },
       );
@@ -125,56 +132,6 @@ void createNewSubmissionForTimetable(
 
 void recordErrorToCrashlytics(dynamic exception, StackTrace stackTrace) {
   FirebaseCrashlytics.instance.recordError(exception, stackTrace);
-}
-
-enum AdUnit {
-  homeBottomBanner,
-  submissionDetailBanner,
-  focusTimerInterstitial,
-}
-
-String? getAdUnitId(AdUnit adUnit) {
-  var adUnitIds = {
-    AdUnit.homeBottomBanner: {
-      "debug": {
-        "iOS": dotenv.get("AD_UNIT_DEBUG_BANNER_IOS"),
-        "Android": dotenv.get("AD_UNIT_DEBUG_BANNER_ANDROID"),
-      },
-      "release": {
-        "iOS": dotenv.get("AD_UNIT_HOME_IOS"),
-        "Android": dotenv.get("AD_UNIT_HOME_ANDROID"),
-      }
-    },
-    AdUnit.submissionDetailBanner: {
-      "debug": {
-        "iOS": dotenv.get("AD_UNIT_DEBUG_BANNER_IOS"),
-        "Android": dotenv.get("AD_UNIT_DEBUG_BANNER_ANDROID"),
-      },
-      "release": {
-        "iOS": dotenv.get("AD_UNIT_SUBMISSION_DETAIL_IOS"),
-        "Android": dotenv.get("AD_UNIT_SUBMISSION_DETAIL_ANDROID"),
-      }
-    },
-    AdUnit.focusTimerInterstitial: {
-      "debug": {
-        "iOS": dotenv.get("AD_UNIT_DEBUG_INTERSTITIAL_IOS"),
-        "Android": dotenv.get("AD_UNIT_DEBUG_INTERSTITIAL_ANDROID"),
-      },
-      "release": {
-        "iOS": dotenv.get("AD_UNIT_FOCUS_TIMER_INTERSTITIAL_IOS"),
-        "Android": dotenv.get("AD_UNIT_FOCUS_TIMER_INTERSTITIAL_ANDROID"),
-      }
-    },
-  };
-  String platform;
-  if (Platform.isIOS) {
-    platform = "iOS";
-  } else if (Platform.isAndroid) {
-    platform = "Android";
-  } else {
-    return null;
-  }
-  return adUnitIds[adUnit]?[kReleaseMode ? "release" : "debug"]?[platform];
 }
 
 extension TimeOfDayToMinutes on TimeOfDay {

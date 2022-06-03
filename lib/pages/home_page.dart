@@ -3,27 +3,31 @@ import 'dart:async';
 import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:submon/components/hidable_progress_indicator.dart';
+import 'package:submon/browser.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
 import 'package:submon/link_handler.dart';
 import 'package:submon/main.dart';
+import 'package:submon/method_channel/main.dart';
 import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/home_tabs/tab_digestive_list.dart';
 import 'package:submon/pages/home_tabs/tab_others.dart';
 import 'package:submon/pages/home_tabs/tab_submissions.dart';
 import 'package:submon/pages/submission_create_page.dart';
+import 'package:submon/ui_components/hidable_progress_indicator.dart';
 import 'package:submon/utils/firestore.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
 import '../fade_through_page_route.dart';
+import '../utils/ad_unit_ids.dart';
 import 'home_tabs/tab_timetable_2.dart';
 
 class HomePage extends StatefulWidget {
@@ -67,14 +71,16 @@ class _HomePageState extends State<HomePage> {
         AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
                 MediaQuery.of(context).size.width.truncate())
             .then((adSize) {
-          setState(() {
-            bannerAd = BannerAd(
-              adUnitId: getAdUnitId(AdUnit.homeBottomBanner)!,
-              size: adSize!,
-              request: const AdRequest(),
-              listener: const BannerAdListener(),
-            );
-            bannerAd!.load();
+          MainMethodPlugin.requestIDFA().then((granted) {
+            setState(() {
+              bannerAd = BannerAd(
+                adUnitId: AdUnits.homeBottomBanner!,
+                size: adSize!,
+                request: const AdRequest(),
+                listener: const BannerAdListener(),
+              );
+              bannerAd!.load();
+            });
           });
         });
       }
@@ -346,7 +352,7 @@ class _HomePageState extends State<HomePage> {
     });
 
     try {
-      var result = await FirestoreProvider.fetchData(context: context);
+      var result = await FirestoreProvider.fetchData();
 
       if (result) {
         _navigatorKey.currentState
@@ -357,14 +363,16 @@ class _HomePageState extends State<HomePage> {
     } on SchemaVersionMismatchException catch (e) {
       debugPrint(e.toString());
       showSimpleDialog(
-          context,
-          "エラー",
-          "Submonを最新版にアップデートしてください。\n\n(${e.toString()})",
+          context, "エラー", "Submonを最新版にアップデートしてください。\n\n(${e.toString()})",
           allowCancel: false,
-          onOKPressed: () {
-            SystemChannels.platform.invokeMethod("SystemNavigator.pop");
-          }
-      );
+          showCancel: true,
+          cancelText: "ログアウト", onCancelPressed: () {
+        FirebaseAuth.instance.signOut();
+        backToWelcomePage(context);
+      }, onOKPressed: () {
+        Browser.openStoreListing();
+        SystemChannels.platform.invokeMethod("SystemNavigator.pop");
+      });
     } catch (e, stackTrace) {
       showSnackBar(context, "エラーが発生しました");
       FirebaseCrashlytics.instance.recordError(e, stackTrace);

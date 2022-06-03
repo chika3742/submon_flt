@@ -44,7 +44,12 @@ import WidgetKit
     }
     
     override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        uriEvent?.eventSink?(url.absoluteString)
+        if (uriEvent != nil && uriEvent?.eventSink != nil) {
+            uriEvent?.eventSink?(url.absoluteString)
+        } else {
+            mainMethodCallHandler?.pendingUri = url.absoluteString
+        }
+        
         return true
     }
     
