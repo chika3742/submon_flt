@@ -29,6 +29,9 @@ inputs:
   google-service-info-plist-base64:
     description: "GoogleService-Info.plist base64"
     required: true
+  run-number:
+    description: "Run-Number"
+    required: true
 
 runs:
   using: composite
