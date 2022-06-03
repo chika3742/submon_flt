@@ -66,7 +66,7 @@ runs:
 
     - name: Build IPA for App Store
       shell: bash
-      run: flutter build ipa --build-number $((${{ inputs.run-number  }}+26)) --export-options-plist ios/exportOptions.plist
+      run: flutter build ipa --build-number $((${{ inputs.run-number  }}+58)) --export-options-plist ios/exportOptions.plist
 
     - name: Deploy to App Store
       shell: bash
