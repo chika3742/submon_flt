@@ -1,22 +1,13 @@
-# This is a basic workflow to help you get started with Actions
-
-name: Deploy to App Store / Google Play(internal track)
-
-# Controls when the workflow will run
+name: Deploy to App Store / Google Play(production track)
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ dev ]
-  pull_request:
-    branches: [ dev ]
+    branches:
+      - master
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
   repository_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   Build-for-iOS:
     # The type of runner that the job will run on
     runs-on: macos-12
@@ -62,7 +53,7 @@ jobs:
       - name: Build and Deploy App
         uses: ./.github/actions/deploy-android-app
         with:
-          track: internal
+          track: production
           run-number: ${{ github.run_number }}
           local-properties: ${{ secrets.ANDROID_LOCAL_PROPERTIES }}
           keystore: ${{ secrets.ANDROID_KEYSTORE }}
