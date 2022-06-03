@@ -132,7 +132,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
                     controller: _titleController,
                     autofocus: true,
                     decoration: InputDecoration(
-                      label: const Text(AppLocalizations.of(context)!.title),
+                      label: Text(AppLocalizations.of(context)!.title),
                       filled: true,
                       errorText: _titleError,
                     ),
@@ -143,8 +143,8 @@ class SubmissionEditorState extends State<SubmissionEditor> {
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     minLines: 2,
-                    decoration: const InputDecoration(
-                        label: Text(AppLocalizations.of(context)!.details), border: OutlineInputBorder()),
+                    decoration: InputDecoration(
+                        label: Text(AppLocalizations.of(context)!.details), border: const OutlineInputBorder()),
                   ),
                   const SizedBox(height: 24),
                   DropdownButtonFormField<Repeat>(
