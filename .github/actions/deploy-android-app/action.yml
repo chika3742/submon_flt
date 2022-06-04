@@ -78,7 +78,7 @@ runs:
       shell: bash
       run: |
         buildNumber=$((${{ inputs.run-number }}+58))
-        flutter build appbundle --build-name $(cat pubspec.yaml | yq -r '.version | split("+") | .[0]')-build$buildNumber --build-number $buildNumber
+        flutter build appbundle --build-number $buildNumber
 
     - name: Import Service Account Key
       shell: bash
