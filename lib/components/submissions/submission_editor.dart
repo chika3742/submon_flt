@@ -6,6 +6,7 @@ import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:intl/intl.dart';
 import 'package:submon/components/color_picker_dialog.dart';
 import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/events.dart';
 import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/main.dart';
 import 'package:submon/ui_components/tappable_card.dart';
@@ -303,7 +304,9 @@ class SubmissionEditorState extends State<SubmissionEditor> {
       ..details = _detailsController.text;
     SubmissionProvider().use((provider) async {
       await provider.writeTransaction(() async {
-        await provider.put(_submission);
+        var id = await provider.put(_submission);
+
+        eventBus.fire(SubmissionInserted(id));
       });
 
       if (_writeGoogleTasks && _googleTasksAvailable == true) {
