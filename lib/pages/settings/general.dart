@@ -21,7 +21,7 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
     super.initState();
     PackageInfo.fromPlatform().then((info) {
       setState(() {
-        _version = info.version;
+        _version = "${info.version} (build ${info.buildNumber})";
       });
     });
     SharedPrefs.use((prefs) {
