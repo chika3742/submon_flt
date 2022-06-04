@@ -426,7 +426,7 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
+			shellPath = /bin/bash;
 			shellScript = "PATH_TO_GOOGLE_PLISTS=\"${PROJECT_DIR}\"\n\ncase \"${CONFIGURATION}\" in\n\"Debug\" )\ncp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info-debug.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" ;;\n\"Profile\" )\ncp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info-debug.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" ;;\n\"Release\" )\ncp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info-release.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" ;;\n\n*)\n;;\nesac\n\n";
 		};
 		C7B9DC08283F96D9006821B8 /* ShellScript */ = {
@@ -443,7 +443,7 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
+			shellPath = /bin/bash;
 			shellScript = "PATH_TO_GOOGLE_PLISTS=\"${PROJECT_DIR}\"\n\ncase \"${CONFIGURATION}\" in\n\"Debug\" )\ncp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info-debug.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.appex/GoogleService-Info.plist\" ;;\n\"Profile\" )\ncp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info-debug.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.appex/GoogleService-Info.plist\" ;;\n\"Release\" )\ncp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info-release.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.appex/GoogleService-Info.plist\" ;;\n\n*)\n;;\nesac\n\n";
 		};
 		D584C8E40A551EA19494ABA2 /* [CP] Check Pods Manifest.lock */ = {

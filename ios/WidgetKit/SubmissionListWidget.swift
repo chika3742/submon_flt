@@ -38,7 +38,7 @@ struct Provider: TimelineProvider {
                 let db = Firestore.firestore()
                 
                 db.document("users/\(user!.uid)").getDocument { docSnapshot, error in
-                    if (error == nil && docSnapshot!.data()!["schemaVersion"] as! Int32 == schemaVer) {
+                    if (error == nil && docSnapshot!.data()?["schemaVersion"] as! Int64 == schemaVer) {
                         db.collection("users/\(user!.uid)/submission").whereField("done", isEqualTo: false).getDocuments { snapshot, error  in
                             if error == nil {
                                 let docs = snapshot!.documents
@@ -63,7 +63,7 @@ struct Provider: TimelineProvider {
                         }
                     } else {
                         print("An error occured while generating widget timeline.")
-                        print(error!)
+                        print(error ?? "")
                     }
                     
                 }
