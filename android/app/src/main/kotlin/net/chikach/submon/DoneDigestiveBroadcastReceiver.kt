@@ -29,7 +29,7 @@ class DoneDigestiveBroadcastReceiver : BroadcastReceiver() {
             try {
                 val digestiveId = intent.getIntExtra(EXTRA_DO_TIME_ID, -1)
                 db.document("users/${auth.currentUser!!.uid}/digestive/$digestiveId")
-                    .update("done", 1)
+                    .update("done", true)
                 db.document("users/${auth.currentUser!!.uid}").set(
                     mapOf(
                         "lastChanged" to Timestamp.now()
