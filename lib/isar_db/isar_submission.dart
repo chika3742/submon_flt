@@ -45,6 +45,7 @@ class Submission {
 
   Map<String, dynamic> toMap() {
     return {
+      "id": id,
       "title": title,
       "details": details,
       "due": due.toUtc().toIso8601String(),

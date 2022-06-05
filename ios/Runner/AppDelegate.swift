@@ -58,10 +58,7 @@ import WidgetKit
     }
     
     override func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        // TODO: Separate on notification action tapped from on notification content tapped
         let userInfo = response.notification.request.content.userInfo
-        print(userInfo)
-        print("Action identifier: \(response.actionIdentifier)")
         
         switch response.notification.request.content.categoryIdentifier {
         case "reminder":
@@ -72,7 +69,6 @@ import WidgetKit
             
         case "digestive":
             if response.actionIdentifier == "openFocusTimer" {
-                print("called")
                 openUrl(path: "/focus-timer?digestiveId=\(userInfo["digestiveId"] ?? "-1")")
             } else {
                 if (userInfo["submissionId"] as? String? != "-1") {
