@@ -306,7 +306,9 @@ class SubmissionEditorState extends State<SubmissionEditor> {
       await provider.writeTransaction(() async {
         var id = await provider.put(_submission);
 
-        eventBus.fire(SubmissionInserted(id));
+        if (widget.submissionId == null) {
+          eventBus.fire(SubmissionInserted(id));
+        }
       });
 
       if (_writeGoogleTasks && _googleTasksAvailable == true) {
