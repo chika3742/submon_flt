@@ -5,5 +5,6 @@ git clone https://github.com/flutter/flutter.git
 export PATH=$PATH:$(pwd)/flutter/bin
 
 flutter pub get
+flutter precache --ios
 
 pod install
