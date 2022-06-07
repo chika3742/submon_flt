@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo $DOTENV_BASE64 > ../.env
-echo $GOOGLE_SERVICE_INFO_PLIST_BASE64 > GoogleService-Info-release.plist
+echo $DOTENV_BASE64 > ../../.env
+echo $GOOGLE_SERVICE_INFO_PLIST_BASE64 > ../GoogleService-Info-release.plist
 ls
 
 brew install cocoapods
