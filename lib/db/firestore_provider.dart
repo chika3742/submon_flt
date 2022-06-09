@@ -14,6 +14,8 @@ import 'package:submon/main.dart';
 import 'package:submon/utils/firestore.dart';
 import 'package:submon/utils/ui.dart';
 
+import '../user_config.dart';
+
 class FirestoreProvider {
   FirestoreProvider(this.collectionId);
 
@@ -63,16 +65,24 @@ class FirestoreProvider {
     await userDoc?.set({"lastChanged": timestamp}, SetOptions(merge: true));
   }
 
-  static Future<bool> checkTimestamp() async {
-    final data = (await userDoc!.get()).data() as dynamic;
-    if (data != null && data["lastChanged"] != null) {
+  static Future<CheckTimestampResult> checkTimestamp() async {
+    final data = (await userDoc!.withConverter<UserConfig>(
+      fromFirestore: UserConfig.fromFirestore,
+      toFirestore: (userConfig, options) => userConfig.toFirestore(),
+    ).get()).data();
+    if (data != null && data.lastChanged != null) {
       var prefs = SharedPrefs(await SharedPreferences.getInstance());
-      return (data["lastChanged"] as Timestamp)
-              .toDate()
-              .compareTo(prefs.firestoreLastChanged) >
-          0;
+      return CheckTimestampResult(
+        changed: data.lastChanged!
+            .toDate()
+            .compareTo(prefs.firestoreLastChanged) > 0,
+        configData: data,
+      );
     } else {
-      return true;
+      return CheckTimestampResult(
+        changed: true,
+        configData: data,
+      );
     }
   }
 
@@ -160,6 +170,12 @@ class FirestoreProvider {
         },
       },
     }, SetOptions(merge: true));
+  }
+
+  static Future<void> updateUserConfig(String field, dynamic data) async {
+    await userDoc?.update({
+      field: data,
+    });
   }
 
   static Future<UserConfig?> get config async {
@@ -277,6 +293,15 @@ class FirestoreProvider {
 
       oldVersion++;
     }
+    if (oldVersion == 5) {
+      var sp = SharedPrefs(await SharedPreferences.getInstance());
+      await userDoc!.update({
+        UserConfig.pathIsSEEnabled: sp.isSEEnabled,
+        UserConfig.pathTimetableShowSaturday: sp.timetableShowSaturday,
+        UserConfig.pathTimetablePeriodCountToDisplay: sp.timetablePeriodCountToDisplay,
+      });
+      oldVersion++;
+    }
   }
 
   static void setLastAppOpenedToCurrentTime() {
@@ -288,16 +313,16 @@ class FirestoreProvider {
   /// if value is changed, true will be returned.
   ///
   static Future<bool> fetchData({bool force = false}) async {
-    var changed = !force ? await FirestoreProvider.checkTimestamp() : true;
+    var shouldUpdateLocalData = await FirestoreProvider.checkMigration();
 
-    if (await FirestoreProvider.checkMigration()) {
-      changed = true;
+    var checkTimestampResult = await FirestoreProvider.checkTimestamp();
+    if (shouldUpdateLocalData == false) {
+      shouldUpdateLocalData = !force ? checkTimestampResult.changed : true;
     }
 
     setLastAppOpenedToCurrentTime();
 
-    if (changed == true) {
-      final configData = await config;
+    if (shouldUpdateLocalData == true) {
       final submissionSnapshot = await submission.get();
       final digestiveSnapshot = await digestive.get();
       final timetableSnapshot = await timetable.get();
@@ -329,8 +354,6 @@ class FirestoreProvider {
                 "title": e.data()["title"],
               }))
           .toList();
-
-      print(timetableTables);
 
       await TimetableTableProvider().use((provider) async {
         await provider.writeTransaction(() async {
@@ -367,101 +390,37 @@ class FirestoreProvider {
       //       .toList());
       // });
 
-      if (configData?.lastChanged != null) {
+      if (checkTimestampResult.configData?.lastChanged != null) {
         SharedPrefs.use((prefs) {
-          prefs.firestoreLastChanged = configData?.lastChanged!.toDate();
+          prefs.firestoreLastChanged = checkTimestampResult.configData!.lastChanged!.toDate();
         });
+      } else {
+        await updateTimestamp();
       }
     }
 
-    return changed == true;
+    SharedPrefs.use((prefs) {
+      var timetableConfig = checkTimestampResult.configData?.timetable;
+      if (timetableConfig?.showSaturday != null) {
+        prefs.timetableShowSaturday = timetableConfig!.showSaturday!;
+      }
+      if (timetableConfig?.periodCountToDisplay != null) {
+        prefs.timetablePeriodCountToDisplay = timetableConfig!.periodCountToDisplay!;
+      }
+      if (checkTimestampResult.configData?.isSEEnabled != null) {
+        prefs.isSEEnabled = checkTimestampResult.configData!.isSEEnabled!;
+      }
+    });
+
+    return shouldUpdateLocalData == true;
   }
 }
 
-class UserConfig {
-  int? schemaVersion;
-  Timestamp? lastChanged;
-  Timestamp? lastAppOpened;
-  TimeOfDay? reminderNotificationTime;
-  TimeOfDay? timetableNotificationTime;
-  int? timetableNotificationId;
-  int? digestiveNotificationTimeBefore;
-  Lms? lms;
+class CheckTimestampResult {
+  bool changed;
+  UserConfig? configData;
 
-  UserConfig({
-    this.schemaVersion,
-    this.lastChanged,
-    this.lastAppOpened,
-    this.reminderNotificationTime,
-    this.timetableNotificationTime,
-    this.timetableNotificationId,
-    this.digestiveNotificationTimeBefore,
-    this.lms,
-  });
-
-  factory UserConfig.fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot, SnapshotOptions? options) {
-    final data = snapshot.data();
-    return UserConfig(
-      schemaVersion: data?["schemaVersion"],
-      lastChanged: data?["lastChanged"],
-      lastAppOpened: data?["lastAppOpened"],
-      reminderNotificationTime: () {
-        final spilt = (data?["reminderNotificationTime"] as String?)?.split(":");
-        return spilt != null ? TimeOfDay(hour: int.parse(spilt[0]), minute: int.parse(spilt[1])) : null;
-      }(),
-      timetableNotificationTime: () {
-        final spilt = (data?["timetableNotificationTime"] as String?)?.split(":");
-        return spilt != null ?TimeOfDay(hour: int.parse(spilt[0]), minute: int.parse(spilt[1])) : null;
-      }(),
-      timetableNotificationId: data?["timetableNotificationId"],
-      digestiveNotificationTimeBefore: data?["digestiveNotificationTimeBefore"],
-      lms: Lms.fromMap(data?["lms"]),
-    );
-  }
-
-  Map<String, dynamic> toFirestore() {
-    return {};
-  }
-}
-
-class Lms {
-  Canvas? canvas;
-
-  Lms({this.canvas});
-
-  static Lms? fromMap(Map<String, dynamic>? map) {
-    if (map == null) return null;
-    return Lms(
-      canvas: Canvas.fromMap(map["canvas"]),
-    );
-  }
-}
-
-class Canvas {
-  int? universityId;
-  Timestamp? lastSync;
-  bool? hasError;
-  List<dynamic>? excludedPlannableIds;
-  int? submissionColor;
-
-  Canvas({
-    this.universityId,
-    this.lastSync,
-    this.hasError,
-    this.excludedPlannableIds,
-    this.submissionColor,
-  });
-
-  static Canvas? fromMap(Map<String, dynamic>? map) {
-    if (map == null) return null;
-    return Canvas(
-      universityId: map["universityId"],
-      lastSync: map["lastSync"],
-      hasError: map["hasError"],
-      excludedPlannableIds: map["excludedPlannableIds"],
-      submissionColor: map["submissionColor"],
-    );
-  }
+  CheckTimestampResult({required this.changed, required this.configData});
 }
 
 class SchemaVersionMismatchException {

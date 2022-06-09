@@ -6,7 +6,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SharedPrefs {
   SharedPreferences? pref;
 
-  SharedPrefs(this.pref);
+  SharedPrefs(this.pref) {
+    if (pref!.containsKey("timetableHour")) {
+      // ignore: deprecated_member_use_from_same_package
+      timetablePeriodCountToDisplay = timetableHour;
+      pref!.remove("timetableHour");
+    }
+  }
 
   // bool
 
@@ -146,9 +152,15 @@ class SharedPrefs {
   // int
 
   // timetableHour
+  @Deprecated("Use timetablePeriodCount instead.")
   int get timetableHour => pref!.getInt("timetableHour") ?? 6;
-
+  @Deprecated("Use timetablePeriodCount instead.")
   set timetableHour(int? value) => pref!.setInt("timetableHour", value!);
+
+  // timetablePeriodCount
+  int get timetablePeriodCountToDisplay => pref!.getInt("timetablePeriodCountToDisplay") ?? 6;
+
+  set timetablePeriodCountToDisplay(int value) => pref!.setInt("timetablePeriodCountToDisplay", value);
 
   // submissionCreationCount
   int get submissionCreationCount =>
@@ -208,10 +220,10 @@ class SharedPrefs {
     }
   }
 
-  static use(dynamic Function(SharedPrefs prefs) callback) {
-    SharedPreferences.getInstance().then((pref) {
+  static Future<void> use(dynamic Function(SharedPrefs prefs) callback) {
+    return SharedPreferences.getInstance().then((pref) async {
       var prefs = SharedPrefs(pref);
-      callback(prefs);
+      await callback(prefs);
     });
   }
 }

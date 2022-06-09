@@ -14,6 +14,7 @@ import 'package:time_picker_widget/time_picker_widget.dart';
 
 import '../../db/firestore_provider.dart';
 import '../../method_channel/messaging.dart';
+import '../../user_config.dart';
 import '../../utils/utils.dart';
 
 class TimetableSettingsPage extends StatefulWidget {
@@ -246,13 +247,13 @@ class TimetableSettingsPageState extends State<TimetableSettingsPage> {
           SettingsCategory(title: "表示する情報", tiles: [
             SettingsTile(
                 title: "表示する時限数",
-                subtitle: "${prefs!.timetableHour} 時限目",
+                subtitle: "${prefs!.timetablePeriodCountToDisplay} 時限目",
                 onTap: () {
                   showRoundedBottomSheet(
                     context: context,
                     title: "表示する時限数",
                     child: RadioBottomSheet(
-                      initialValue: prefs!.timetableHour,
+                      initialValue: prefs!.timetablePeriodCountToDisplay,
                       items: [4, 5, 6, 7, 8].map((e) {
                         return RadioBottomSheetItem(
                           value: e,
@@ -260,7 +261,8 @@ class TimetableSettingsPageState extends State<TimetableSettingsPage> {
                         );
                       }).toList(),
                       onSelected: (value) {
-                        prefs?.timetableHour = value;
+                        prefs?.timetablePeriodCountToDisplay = value;
+                        FirestoreProvider.updateUserConfig(UserConfig.pathTimetablePeriodCountToDisplay, value);
                         setState(() {});
                       },
                     ),
@@ -271,6 +273,7 @@ class TimetableSettingsPageState extends State<TimetableSettingsPage> {
               value: prefs!.timetableShowSaturday,
               onChanged: (value) {
                 prefs?.timetableShowSaturday = value;
+                FirestoreProvider.updateUserConfig(UserConfig.pathTimetableShowSaturday, value);
                 setState(() {});
               },
             ),

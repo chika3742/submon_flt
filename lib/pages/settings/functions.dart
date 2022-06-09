@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/sign_in_page.dart';
@@ -14,14 +15,16 @@ import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 import 'package:time_picker_widget/time_picker_widget.dart';
 
+import '../../user_config.dart';
+
 class FunctionsSettingsPage extends StatefulWidget {
   const FunctionsSettingsPage({Key? key}) : super(key: key);
 
   @override
-  _FunctionsSettingsPageState createState() => _FunctionsSettingsPageState();
+  FunctionsSettingsPageState createState() => FunctionsSettingsPageState();
 }
 
-class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
+class FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
   bool _pwEnabled = true;
   bool? _enableSE;
   TimeOfDay? _reminderTime;
@@ -86,7 +89,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                     await MessagingPlugin.requestNotificationPermission();
                 if (requestPermissionResult ==
                     NotificationPermissionState.denied) {
-                  showSnackBar(context, "通知の表示が許可されていません。本体設定から許可してください。");
+                  showSnackBar(globalContext!, "通知の表示が許可されていません。本体設定から許可してください。");
                 } else {
                   var result = await showCustomTimePicker(
                     context: context,
@@ -111,7 +114,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                         _reminderTime = result;
                       });
                     } catch (e) {
-                      showSnackBar(context, "設定に失敗しました");
+                      showSnackBar(globalContext!, "設定に失敗しました");
                     }
                     setState(() {
                       _loadingReminderTime = false;
@@ -136,9 +139,9 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                         await auth.signOut();
                     await GoogleSignIn().signOut();
                     MainMethodPlugin.updateWidgets();
-                    Navigator.pop(context);
-                    Navigator.pushReplacementNamed(context, "welcome");
-                    showSnackBar(context, "ログアウトしました");
+                    Navigator.pop(globalContext!);
+                    Navigator.pushReplacementNamed(globalContext!, "welcome");
+                    showSnackBar(globalContext!, "ログアウトしました");
                   }, showCancel: true);
               }
             },
@@ -187,7 +190,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                 });
                 if (result == true) {
                   setState(() {});
-                  showSnackBar(context, "アカウントがアップグレードされました！");
+                  showSnackBar(globalContext!, "アカウントがアップグレードされました！");
                 }
               },
             ),
@@ -234,6 +237,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                 SharedPrefs.use((prefs) {
                   prefs.isSEEnabled = value;
                 });
+                FirestoreProvider.updateUserConfig(UserConfig.pathIsSEEnabled, value);
                 setState(() {
                   _enableSE = value;
                 });
@@ -295,15 +299,15 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
       var provider =
           await auth.fetchSignInMethodsForEmail(auth.currentUser!.email!);
       if (provider.isEmpty) throw FirebaseAuthException(code: "user-not-found");
-      Navigator.pop(context);
+      Navigator.pop(globalContext!);
       if (provider.first == EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {
-        await Navigator.pushNamed(context, "/account/changePassword");
+        await Navigator.pushNamed(globalContext!, "/account/changePassword");
         setState(() {});
       } else {
         setState(() {
           _pwEnabled = false;
         });
-        showSnackBar(context, "パスワードレス アカウントでパスワードの変更はできません");
+        showSnackBar(globalContext!, "パスワードレス アカウントでパスワードの変更はできません");
       }
     } on FirebaseAuthException catch (e, stack) {
       Navigator.pop(context);

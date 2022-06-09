@@ -23,7 +23,7 @@ class Timetable extends StatefulWidget {
 }
 
 class TimetableState extends State<Timetable> {
-  int? timetableHour;
+  int? timetablePeriodCountToDisplay;
   late Map<int, db.Timetable> table = {};
 
   @override
@@ -36,7 +36,7 @@ class TimetableState extends State<Timetable> {
   void getPref() {
     SharedPrefs.use((prefs) {
       setState(() {
-        timetableHour = prefs.timetableHour;
+        timetablePeriodCountToDisplay = prefs.timetablePeriodCountToDisplay;
       });
     });
   }
@@ -73,7 +73,7 @@ class TimetableState extends State<Timetable> {
   List<Widget> _buildFirstRow() {
     var widgets = <Widget>[];
 
-    if (timetableHour == null) return widgets;
+    if (timetablePeriodCountToDisplay == null) return widgets;
     // 左上の空欄
     widgets.add(Container(
       height: 45,
@@ -83,7 +83,7 @@ class TimetableState extends State<Timetable> {
     ));
 
     // 時限番号
-    for (var n = 1; n <= timetableHour!; n++) {
+    for (var n = 1; n <= timetablePeriodCountToDisplay!; n++) {
       widgets.add(Container(
           padding: const EdgeInsets.all(8),
           height: 50,
@@ -102,7 +102,7 @@ class TimetableState extends State<Timetable> {
   List<Widget> _buildRows() {
     var widgets = <Widget>[];
 
-    if (timetableHour == null) return widgets;
+    if (timetablePeriodCountToDisplay == null) return widgets;
 
     for (var youbi = 0; youbi <= 5; youbi++) {
       var columnItems = <Widget>[];
@@ -124,7 +124,7 @@ class TimetableState extends State<Timetable> {
       ));
 
       // 時間割
-      for (var index = 1; index <= timetableHour!; index++) {
+      for (var index = 1; index <= timetablePeriodCountToDisplay!; index++) {
         var key = GlobalKey();
         var cell = table[getWholeIndex(youbi, index)];
         columnItems.add(Padding(

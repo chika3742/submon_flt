@@ -153,7 +153,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
   List<Widget> _buildTimetableList() {
     var list = <Widget>[];
 
-    for (var index = 0; index < widget.prefs.timetableHour; index++) {
+    for (var index = 0; index < widget.prefs.timetablePeriodCountToDisplay; index++) {
       list.add(const SizedBox(height: 8));
       list.add(_buildTimetableCell(
           index,

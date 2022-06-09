@@ -13,6 +13,7 @@ import 'package:submon/utils/ui.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../utils/utils.dart';
+import '../../user_config.dart';
 
 class CanvasLmsSyncPage extends StatefulWidget {
   const CanvasLmsSyncPage({Key? key}) : super(key: key);
