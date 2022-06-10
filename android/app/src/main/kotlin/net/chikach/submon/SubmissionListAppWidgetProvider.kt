@@ -26,7 +26,7 @@ import net.chikach.submon.Utils.getDateDiffString
 import java.io.Serializable
 import java.util.*
 
-const val SCHEMA_VERSION = 5L
+const val SCHEMA_VERSION = 6L
 
 class SubmissionListAppWidgetProvider : AppWidgetProvider() {
     @SuppressLint("WrongConstant")
@@ -65,6 +65,7 @@ class SubmissionListAppWidgetProvider : AppWidgetProvider() {
                             setTextViewText(R.id.notSignedInText, "Submonを最新版にアップデートしてください")
                             setViewVisibility(R.id.notSignedInText, View.VISIBLE)
                             setViewVisibility(R.id.emptyTextParent, View.GONE)
+                            setViewVisibility(R.id.listView, View.GONE)
                         }
                         appWidgetManager?.updateAppWidget(widgetId, this)
                         appWidgetManager?.notifyAppWidgetViewDataChanged(widgetId, R.id.listView)
