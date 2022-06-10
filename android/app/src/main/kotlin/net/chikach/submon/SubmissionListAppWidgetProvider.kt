@@ -238,7 +238,7 @@ class ListItemActionBroadcastReceiver : BroadcastReceiver() {
                     Tasks.whenAll(
                         listOf(
                             db.document("users/${user.uid}/submission/${submissionId}")
-                                .update("done", 1),
+                                .update("done", true),
                             db.document("users/${user.uid}")
                                 .update("lastChanged", Timestamp.now())
                         )

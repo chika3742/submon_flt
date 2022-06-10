@@ -63,7 +63,7 @@ class Submission {
         title = map["title"],
         details = map["details"],
         due = DateTime.parse(map["due"]).toLocal(),
-        done = map["done"],
+        done = map["done"] is bool ? map["done"] : map["done"] == 1,
         important = map["important"],
         repeat = const RepeatConverter().fromIsar(map["repeat"]),
         color = const ColorConverter().fromIsar(map["color"]),
