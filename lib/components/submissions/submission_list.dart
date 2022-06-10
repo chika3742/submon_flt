@@ -28,7 +28,7 @@ class SubmissionListState extends State<SubmissionList> {
   StreamSubscription? _stream2;
 
   final AudioCache _audioCache = AudioCache();
-  bool? _enableSE;
+  SharedPrefs? _prefs;
 
   final _scrollController = ScrollController();
 
@@ -77,7 +77,9 @@ class SubmissionListState extends State<SubmissionList> {
     });
 
     SharedPrefs.use((prefs) {
-      _enableSE = prefs.isSEEnabled;
+      _listKey.currentState?.setState(() {
+        _prefs = prefs;
+      });
     });
 
     _audioCache.load("audio/decision28.mp3");
@@ -118,7 +120,7 @@ class SubmissionListState extends State<SubmissionList> {
                   delete(pos);
                 }, onDone: () {
                   checkDone(pos);
-                }),
+                }, prefs: _prefs),
               );
             },
           ),
@@ -142,7 +144,7 @@ class SubmissionListState extends State<SubmissionList> {
       });
     });
 
-    if (!widget.done && _enableSE == true) {
+    if (!widget.done && _prefs?.isSEEnabled == true) {
       _audioCache.play("audio/decision28.mp3");
     }
 

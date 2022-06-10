@@ -12,10 +12,12 @@ class UserConfig {
   Lms? lms;
   TimetableConfig? timetable;
   bool? isSEEnabled;
+  Color? colorSubmissionAddedFromLms;
 
   static const pathTimetableShowSaturday = "timetable.showSaturday";
   static const pathTimetablePeriodCountToDisplay = "timetable.periodCountToDisplay";
   static const pathIsSEEnabled = "isSEEnabled";
+  static const pathColorSubmissionAddedFromLms = "colorSubmissionAddedFromLms";
 
   UserConfig({
     this.schemaVersion,
@@ -28,6 +30,7 @@ class UserConfig {
     this.lms,
     this.timetable,
     this.isSEEnabled,
+    this.colorSubmissionAddedFromLms,
   });
 
   factory UserConfig.fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot, SnapshotOptions? options) {
@@ -49,6 +52,7 @@ class UserConfig {
       lms: Lms.fromMap(data?["lms"]),
       timetable: TimetableConfig.fromMap(data?["timetable"]),
       isSEEnabled: data?["isSEEnabled"],
+      colorSubmissionAddedFromLms: data?["colorSubmissionAddedFromLms"] != null ? Color(data!["colorSubmissionAddedFromLms"]) : null
     );
   }
 

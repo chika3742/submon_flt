@@ -12,6 +12,8 @@ import 'package:submon/isar_db/isar_provider.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
 
+import '../db/shared_prefs.dart';
+
 part '../generated/isar_db/isar_submission.g.dart';
 
 @Collection()
@@ -56,6 +58,14 @@ class Submission {
       "googleTasksTaskId": googleTasksTaskId,
       "canvasPlannableId": canvasPlannableId,
     };
+  }
+
+  Color getColorToDisplay(SharedPrefs? pref) {
+    if (canvasPlannableId != null && color.value == 0xFFFFFFFF) {
+      print(pref);
+      return pref?.colorSubmissionsAddedFromLms ?? color;
+    }
+    return color;
   }
 
   Submission.fromMap(Map<String, dynamic> map)

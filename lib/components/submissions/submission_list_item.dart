@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:submon/components/submissions/formatted_date_remaining.dart';
+import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/pages/submission_detail_page.dart';
@@ -14,11 +15,12 @@ import 'package:submon/utils/utils.dart';
 import '../digestive_edit_bottom_sheet.dart';
 
 class SubmissionListItem extends StatefulWidget {
-  const SubmissionListItem(this.item, {Key? key, this.onDone, this.onDelete})
+  const SubmissionListItem(this.item, {Key? key, this.onDone, this.onDelete, this.prefs})
       : super(key: key);
   final Submission item;
   final Function? onDone;
   final Function? onDelete;
+  final SharedPrefs? prefs;
 
   @override
   SubmissionListItemState createState() => SubmissionListItemState();
@@ -79,7 +81,7 @@ class SubmissionListItemState extends State<SubmissionListItem> {
               borderRadius: BorderRadius.all(Radius.circular(8))),
           closedBuilder: (context, callback) {
             return Material(
-              color: _item.color.withOpacity(0.2),
+              color: _item.getColorToDisplay(widget.prefs).withOpacity(0.2),
               child: InkWell(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

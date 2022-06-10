@@ -171,6 +171,11 @@ class SharedPrefs {
   }
 
   // firestoreLastChanged
+  Color get colorSubmissionsAddedFromLms => Color(pref!.getInt("colorSubmissionsAddedFromLms") ?? 0xFFFFFFFF);
+
+  set colorSubmissionsAddedFromLms(Color value) => pref!.setInt("colorSubmissionsAddedFromLms", value.value);
+
+  // firestoreLastChanged
   DateTime get firestoreLastChanged => DateTime.fromMicrosecondsSinceEpoch(
       pref!.getInt("firestoreLastChanged") ?? 0);
 

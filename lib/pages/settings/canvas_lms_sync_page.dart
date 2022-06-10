@@ -6,14 +6,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:submon/components/color_picker_dialog.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/ui_components/settings_ui.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-import '../../utils/utils.dart';
 import '../../user_config.dart';
+import '../../utils/utils.dart';
 
 class CanvasLmsSyncPage extends StatefulWidget {
   const CanvasLmsSyncPage({Key? key}) : super(key: key);
@@ -201,26 +200,6 @@ class _CanvasLmsSyncPageState extends State<CanvasLmsSyncPage> {
                               });
                             },
                           ),
-                          SettingsTile(
-                              title: "提出物カラー選択",
-                              subtitle: "提出物が追加される際のカラーを設定できます。",
-                              onTap: () async {
-                                var result = await showDialog<Color>(
-                                  context: context,
-                                  builder: (_) {
-                                    return ColorPickerDialog(
-                                        initialColor:
-                                        Color(canvas!.submissionColor!));
-                                  },
-                                );
-                                if (result != null) {
-                                  if (mounted) showLoadingModal(context);
-                                  await FirestoreProvider
-                                      .setCanvasLmsSubmissionColor(result);
-                                  canvas?.submissionColor = result.value;
-                                  if (mounted) Navigator.pop(context);
-                                }
-                              }),
                           SettingsTile(
                               title: "同期除外リストのクリア",
                               subtitle:
