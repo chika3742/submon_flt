@@ -178,27 +178,6 @@ class SharedPrefs {
       ? pref!.setInt("firestoreLastChanged", value.microsecondsSinceEpoch)
       : pref!.remove("firestoreLastChanged");
 
-  // reminderTime_
-  TimeOfDay? get reminderTime {
-    final hour = pref!.getInt("reminderTimeHour");
-    final minute = pref!.getInt("reminderTimeMinute");
-    if (hour == null || minute == null) {
-      return null;
-    } else {
-      return TimeOfDay(hour: hour, minute: minute);
-    }
-  }
-
-  set reminderTime(TimeOfDay? value) {
-    if (value != null) {
-      pref!.setInt("reminderTimeHour", value.hour);
-      pref!.setInt("reminderTimeMinute", value.minute);
-    } else {
-      pref!.remove("reminderTimeHour");
-      pref!.remove("reminderTimeMinute");
-    }
-  }
-
   // timetableNotificationTime_
   TimeOfDay? get timetableNotificationTime {
     final hour = pref!.getInt("timetableNotificationTimeHour");

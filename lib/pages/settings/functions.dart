@@ -277,9 +277,6 @@ class FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
       return IconButton(
         icon: const Icon(Icons.clear),
         onPressed: () {
-          SharedPrefs.use((prefs) {
-            prefs.reminderTime = null;
-          });
           setState(() {
             _reminderTime = null;
           });
