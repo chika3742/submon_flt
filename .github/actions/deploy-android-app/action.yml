@@ -88,7 +88,7 @@ runs:
       shell: bash
       run: |
         if [ "${{ inputs.track }}" == "internal" ]; then
-          versionNameOption=--version_name $(cat pubspec.yaml | yq -r '.version | split("+") | .[0]')-b$((${{ inputs.run-number }}+58))
+          versionNameOption="--version_name $(cat pubspec.yaml | yq -r '.version | split("+") | .[0]')-b$((${{ inputs.run-number }}+58))"
         else
           versionNameOption=
         fi
