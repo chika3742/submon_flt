@@ -69,10 +69,12 @@ android {
         profile {
             versionNameSuffix "-profile"
             manifestPlaceholders["appLinkHostName"] = "dev.open.submon.app"
+            applicationIdSuffix ".debug"
         }
         debug {
             versionNameSuffix "-debug"
             manifestPlaceholders["appLinkHostName"] = "dev.open.submon.app"
+            applicationIdSuffix ".debug"
         }
     }
 
