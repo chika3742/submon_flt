@@ -66,6 +66,12 @@ android {
             signingConfig signingConfigs.release
             manifestPlaceholders["appLinkHostName"] = "open.submon.app"
             manifestPlaceholders["applicationLabel"] = "Submon"
+            minifyEnabled = true
+            shrinkResources = true
+            proguardFiles(
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
+            )
         }
         profile {
             versionNameSuffix "-profile"
