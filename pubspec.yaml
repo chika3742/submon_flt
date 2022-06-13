@@ -47,7 +47,6 @@ dependencies:
   flutter_linkify: ^5.0.2
   path_provider: ^2.0.10
   flutter_exif_rotation: ^0.5.1
-  time_picker_widget: ^1.0.0+10
   flutter_dnd: ^0.1.4+1
   permission_handler: ^9.2.0
   fluttertoast: ^8.0.9

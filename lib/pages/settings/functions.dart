@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:submon/components/dropdown_time_picker_bottom_sheet.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/main.dart';
@@ -13,7 +14,6 @@ import 'package:submon/pages/sign_in_page.dart';
 import 'package:submon/ui_components/settings_ui.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
-import 'package:time_picker_widget/time_picker_widget.dart';
 
 import '../../user_config.dart';
 
@@ -91,17 +91,16 @@ class FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                     NotificationPermissionState.denied) {
                   showSnackBar(globalContext!, "通知の表示が許可されていません。本体設定から許可してください。");
                 } else {
-                  var result = await showCustomTimePicker(
+                  var result = await showRoundedBottomSheet<TimeOfDay>(
                     context: context,
-                    initialTime:
-                        _reminderTime ?? const TimeOfDay(hour: 0, minute: 0),
-                    selectableTimePredicate: (time) {
-                      return time != null && time.minute % 5 == 0;
-                    },
-                    onFailValidation: (context) {
-                      showSimpleDialog(context, "エラー", "5分おきに設定可能です");
-                    },
+                    title: "リマインダー通知時刻",
+                    child: DropdownTimePickerBottomSheet(
+                      initialTime: _reminderTime,
+                    ),
                   );
+
+                  print(result);
+
                   if (result != null) {
                     // NotificationMethodChannel.registerReminder();
                     setState(() {

@@ -143,3 +143,12 @@ extension TimeOfDayToMinutes on TimeOfDay {
     return start.toMinutes() <= toMinutes() && toMinutes() < end.toMinutes();
   }
 }
+
+Iterable<int> range(int start, int end, [int step = 1]) sync* {
+  if (step == 0) throw ArgumentError('step cannot be 0');
+  if (step < 0) throw ArgumentError('step cannot be negative');
+
+  for (int value = start; value <= end; value += step) {
+    yield value;
+  }
+}

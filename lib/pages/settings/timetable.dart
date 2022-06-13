@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:submon/components/dropdown_time_picker_bottom_sheet.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/isar_db/isar_timetable.dart';
 import 'package:submon/isar_db/isar_timetable_class_time.dart';
@@ -10,7 +11,6 @@ import 'package:submon/main.dart';
 import 'package:submon/pages/settings/customize.dart';
 import 'package:submon/ui_components/settings_ui.dart';
 import 'package:submon/utils/ui.dart';
-import 'package:time_picker_widget/time_picker_widget.dart';
 
 import '../../db/firestore_provider.dart';
 import '../../method_channel/messaging.dart';
@@ -206,16 +206,12 @@ class TimetableSettingsPageState extends State<TimetableSettingsPage> {
                   showSnackBar(
                       globalContext!, "通知の表示が許可されていません。本体設定から許可してください。");
                 } else {
-                  var result = await showCustomTimePicker(
+                  var result = await showRoundedBottomSheet<TimeOfDay>(
                     context: context,
-                    initialTime: _timetableNotificationTime ??
-                        const TimeOfDay(hour: 0, minute: 0),
-                    selectableTimePredicate: (time) {
-                      return time != null && time.minute % 5 == 0;
-                    },
-                    onFailValidation: (context) {
-                      showSimpleDialog(context, "エラー", "5分おきに設定可能です");
-                    },
+                    title: "時間割通知の時刻を設定",
+                    child: DropdownTimePickerBottomSheet(
+                      initialTime: _timetableNotificationTime,
+                    ),
                   );
                   if (result != null) {
                     setState(() {
