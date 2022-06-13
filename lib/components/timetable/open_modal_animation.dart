@@ -139,7 +139,7 @@ class _OpenModalAnimationRoute<T> extends ModalRoute<T> {
     }
 
     if (delayForSourceRoute) {
-      SchedulerBinding.instance!
+      SchedulerBinding.instance
           .addPostFrameCallback(takeMeasurementsInSourceRoute);
     } else {
       takeMeasurementsInSourceRoute();
