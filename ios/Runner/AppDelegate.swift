@@ -5,6 +5,7 @@ import SafariServices
 import Firebase
 import FirebaseMessaging
 import FirebaseAuth
+import FirebaseAppCheck
 import WidgetKit
 
 @available(iOS 13.0, *)
@@ -19,7 +20,13 @@ import WidgetKit
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        
+        #if !RELEASE
+        AppCheck.setAppCheckProviderFactory(AppCheckDebugProviderFactory())
+        #endif
+        
         FirebaseApp.configure()
+        
         do {
             try Auth.auth().useUserAccessGroup("B66Z929S96.net.chikach.submon")
         } catch let error as NSError {
