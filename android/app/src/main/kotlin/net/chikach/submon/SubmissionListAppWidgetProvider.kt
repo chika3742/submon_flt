@@ -17,6 +17,8 @@ import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.*
@@ -54,6 +56,12 @@ class SubmissionListAppWidgetProvider : AppWidgetProvider() {
                     R.id.listView,
                     Intent(context, AppWidgetSubmissionListService::class.java)
                 )
+                @Suppress("KotlinConstantConditions")
+                if (BuildConfig.BUILD_TYPE != "release") {
+                    FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
+                        DebugAppCheckProviderFactory.getInstance()
+                    )
+                }
                 val user = FirebaseAuth.getInstance().currentUser
                 if (user != null) {
                     FirebaseFirestore.getInstance().document("users/${user.uid}").get().addOnCompleteListener {
