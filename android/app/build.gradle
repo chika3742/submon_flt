@@ -65,15 +65,18 @@ android {
         release {
             signingConfig signingConfigs.release
             manifestPlaceholders["appLinkHostName"] = "open.submon.app"
+            manifestPlaceholders["applicationLabel"] = "Submon"
         }
         profile {
             versionNameSuffix "-profile"
             manifestPlaceholders["appLinkHostName"] = "dev.open.submon.app"
+            manifestPlaceholders["applicationLabel"] = "[D]Submon"
             applicationIdSuffix ".debug"
         }
         debug {
             versionNameSuffix "-debug"
             manifestPlaceholders["appLinkHostName"] = "dev.open.submon.app"
+            manifestPlaceholders["applicationLabel"] = "[D]Submon"
             applicationIdSuffix ".debug"
         }
     }
