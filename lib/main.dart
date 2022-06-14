@@ -4,7 +4,6 @@ import 'package:animations/animations.dart';
 import 'package:camera/camera.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -261,9 +260,6 @@ class _ApplicationState extends State<Application> {
   void initFirebase() async {
     try {
       await Firebase.initializeApp();
-      if (kReleaseMode) {
-        await FirebaseAppCheck.instance.activate();
-      }
       MainMethodPlugin.initHandler();
       FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
       if (kDebugMode) {
