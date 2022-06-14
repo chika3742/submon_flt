@@ -13,7 +13,7 @@ import FirebaseFirestore
 
 @available(iOS 15.0, *)
 struct Provider: TimelineProvider {
-    let schemaVer = 5
+    let schemaVer = 6
     
     func placeholder(in context: Context) -> SubmissionEntry {
         SubmissionEntry.preview()
