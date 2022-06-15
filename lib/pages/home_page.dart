@@ -46,14 +46,90 @@ class HomePageState extends State<HomePage> {
   var tabIndex = 0;
   var _loading = false;
   var _hideAd = false;
+  SharedPrefs? _prefs;
 
   BannerAd? bannerAd;
 
-  List<BottomNavItem> _bottomNavItems = [];
+  List<BottomNavItem> get _bottomNavItems => [
+        BottomNavItem(
+          "home",
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: "提出物",
+          ),
+        ),
+        BottomNavItem(
+          "digestive",
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.task),
+            label: "Digestive",
+          ),
+        ),
+        if (_prefs?.showTimetableMenu != false)
+          BottomNavItem(
+            "timetable",
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.table_chart_outlined),
+              label: "時間割表",
+            ),
+          ),
+        BottomNavItem(
+          "more",
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.more_horiz),
+            label: "その他",
+          ),
+        ),
+      ];
 
-  List<Widget> pages = [];
-
-  List<List<ActionItem>> actions = [];
+  List<List<ActionItem>> get actions => [
+    [],
+    [
+      ActionItem(Icons.help, "ヘルプ", () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text("Digestiveとは？"),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const Text(
+                        "ダイジェスティブでは、提出物に取り掛かる時間と、何分続けるかをスケジュールすることができます。\n集中タイマーで重い腰を上げるのにも最適。"),
+                    const SizedBox(height: 16),
+                    Image.asset("assets/img/digestive_guide.jpg"),
+                    const SizedBox(height: 16),
+                    const Text(
+                        "※Digestiveの通知は5分毎(サーバー時間)に行われます。例えば、28分にセットしていて「通知する時間」を5分前に設定していた場合、25分に通知されます。\n"
+                            "また、ユーザー数が増えれば増えるほど、サーバー側の処理量が増え通知が遅れる可能性があります。対策を検討しています。")
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  child: const Text("OK"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                )
+              ],
+            );
+          },
+        );
+      }),
+    ],
+    if (_prefs?.showTimetableMenu != false)
+      [
+        ActionItem(Icons.table_view, "テーブルビュー", () async {
+          await Navigator.pushNamed(context, "/timetable/table-view");
+        }),
+        ActionItem(Icons.settings, "設定", () async {
+          await Navigator.pushNamed(context, "/settings/timetable");
+          eventBus.fire(TimetableListChanged());
+        }),
+      ],
+    [],
+  ];
 
   final _scaffoldKey = GlobalKey();
 
@@ -111,106 +187,9 @@ class HomePageState extends State<HomePage> {
     fetchData();
 
     SharedPrefs.use((prefs) {
-      _bottomNavItems = [
-        BottomNavItem(
-          BottomNavItemId.home,
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "提出物",
-          ),
-        ),
-        BottomNavItem(
-          BottomNavItemId.digestive,
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.task),
-            label: "Digestive",
-          ),
-        ),
-        if (prefs.showTimetableMenu)
-          BottomNavItem(
-            BottomNavItemId.timetable,
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.table_chart_outlined),
-              label: "時間割表",
-            ),
-          ),
-        if (prefs.showMemorizeMenu)
-          BottomNavItem(
-            BottomNavItemId.memorizeCard,
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.school),
-              label: "暗記カード",
-            ),
-          ),
-        BottomNavItem(
-          BottomNavItemId.others,
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.more_horiz),
-            label: "その他",
-          ),
-        )
-      ];
-
-      pages = [
-        const TabSubmissions(),
-        const TabDigestiveList(),
-        if (prefs.showTimetableMenu) const TabTimetable2(),
-        if (prefs.showMemorizeMenu)
-          const Center(
-            child: Text('Coming Soon...'),
-          ),
-        const TabOthers(),
-      ];
-
-      actions = [
-        [],
-        [
-          ActionItem(Icons.help, "ヘルプ", () {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text("Digestiveとは？"),
-                  content: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        const Text(
-                            "ダイジェスティブでは、提出物に取り掛かる時間と、何分続けるかをスケジュールすることができます。\n集中タイマーで重い腰を上げるのにも最適。"),
-                        const SizedBox(height: 16),
-                        Image.asset("assets/img/digestive_guide.jpg"),
-                        const SizedBox(height: 16),
-                        const Text(
-                            "※Digestiveの通知は5分毎(サーバー時間)に行われます。例えば、28分にセットしていて「通知する時間」を5分前に設定していた場合、25分に通知されます。\n"
-                            "また、ユーザー数が増えれば増えるほど、サーバー側の処理量が増え通知が遅れる可能性があります。対策を検討しています。")
-                      ],
-                    ),
-                  ),
-                  actions: [
-                    TextButton(
-                      child: const Text("OK"),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    )
-                  ],
-                );
-              },
-            );
-          }),
-        ],
-        if (prefs.showTimetableMenu)
-          [
-            ActionItem(Icons.table_view, "テーブルビュー", () async {
-              await Navigator.pushNamed(context, "/timetable/table-view");
-            }),
-            ActionItem(Icons.settings, "設定", () async {
-              await Navigator.pushNamed(context, "/settings/timetable");
-              eventBus.fire(TimetableListChanged());
-            }),
-          ],
-        if (prefs.showMemorizeMenu) [],
-        [],
-      ];
+      setState(() {
+        _prefs = prefs;
+      });
     });
   }
 
