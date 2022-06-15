@@ -10,7 +10,6 @@ import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
-import 'package:submon/pages/home_page.dart';
 import 'package:submon/pages/sign_in_page.dart';
 import 'package:submon/utils/dynamic_links.dart';
 import 'package:submon/utils/ui.dart';
@@ -241,10 +240,10 @@ void openFocusTimer(Uri url) {
 void setDefaultTab(Uri url) {
   switch (url.path.split("/")[2]) {
     case "digestive":
-      eventBus.fire(SwitchBottomNav(BottomNavItemId.digestive));
+      eventBus.fire(SwitchBottomNav("digestive"));
       break;
     case "timetable":
-      eventBus.fire(SwitchBottomNav(BottomNavItemId.timetable));
+      eventBus.fire(SwitchBottomNav("timetable"));
       break;
   }
 }

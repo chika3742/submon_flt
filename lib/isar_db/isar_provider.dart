@@ -15,6 +15,8 @@ const schemaVersion = 6;
 abstract class IsarProvider<T> {
   late Isar isar;
 
+  static var opening = false;
+
   static Future<void> clear() async {
     var isar = await _openInternal();
     await isar.writeTxn((isar) async {
@@ -27,6 +29,7 @@ abstract class IsarProvider<T> {
     if (instance != null) {
       return instance;
     } else {
+      opening = true;
       var dir = await getApplicationSupportDirectory();
       instance = await Isar.open(schemas: [
         SubmissionSchema,
@@ -36,6 +39,7 @@ abstract class IsarProvider<T> {
         TimetableTableSchema,
         MemorizationCardGroupSchema,
       ], directory: dir.path);
+      opening = false;
       return instance;
     }
   }

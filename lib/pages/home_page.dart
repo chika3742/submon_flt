@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:animations/animations.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -12,6 +11,7 @@ import 'package:submon/browser.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
+import 'package:submon/isar_db/isar_provider.dart';
 import 'package:submon/link_handler.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
@@ -171,9 +171,9 @@ class HomePageState extends State<HomePage> {
     uriListener = initUriHandler();
     dynamicLinksListener = initDynamicLinks();
     switchBottomNavListener = eventBus.on<SwitchBottomNav>().listen((event) {
-      Timer.periodic(const Duration(milliseconds: 50), (timer) {
-        if (_navigatorKey.currentState != null) {
-          var index = _bottomNavItems.indexWhere((e) => e.id == event.id);
+      Timer.periodic(const Duration(milliseconds: 25), (timer) {
+        if (_navigatorKey.currentState != null && IsarProvider.opening == false) {
+          var index = _bottomNavItems.indexWhere((e) => e.path == event.path);
           if (index != -1) {
             onBottomNavTap(index);
           } else {
@@ -226,8 +226,30 @@ class HomePageState extends State<HomePage> {
           SafeArea(
             child: Navigator(
               key: _navigatorKey,
+              initialRoute: "home",
               onGenerateRoute: (settings) {
-                return FadeThroughPageRoute(pages.first);
+                Widget page;
+                switch (settings.name) {
+                  case "home":
+                    page = const TabSubmissions();
+                    break;
+
+                  case "digestive":
+                    page = const TabDigestiveList();
+                    break;
+
+                  case "timetable":
+                    page = const TabTimetable2();
+                    break;
+
+                  case "more":
+                    page = const TabOthers();
+                    break;
+
+                  default:
+                    page = const Center(child: Text("?"));
+                }
+                return FadeThroughPageRoute(page);
               },
             ),
           ),
@@ -262,8 +284,8 @@ class HomePageState extends State<HomePage> {
   }
 
   Widget? _buildFloatingActionButton() {
-    switch (_bottomNavItems[tabIndex].id) {
-      case BottomNavItemId.home:
+    switch (_bottomNavItems[tabIndex].path) {
+      case "home":
         return OpenContainer<int>(
           useRootNavigator: true,
           closedElevation: 8,
@@ -289,7 +311,7 @@ class HomePageState extends State<HomePage> {
             });
           },
         );
-      case BottomNavItemId.digestive:
+      case "digestive":
         return FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () async {
@@ -318,9 +340,9 @@ class HomePageState extends State<HomePage> {
       tabIndex = index;
     });
     _navigatorKey.currentState
-        ?.pushReplacement(FadeThroughPageRoute(pages[index]));
+        ?.pushReplacementNamed(_bottomNavItems[index].path);
     FirebaseAnalytics.instance
-        .logScreenView(screenName: "/tab/${_bottomNavItems[index].id.name}");
+        .logScreenView(screenName: "/tab/${_bottomNavItems[index].path}");
   }
 
   void fetchData() async {
@@ -334,7 +356,7 @@ class HomePageState extends State<HomePage> {
 
       if (result) {
         _navigatorKey.currentState
-            ?.pushReplacement(FadeThroughPageRoute(pages[tabIndex]));
+            ?.pushReplacementNamed(_bottomNavItems[tabIndex].path);
       }
     } on FirebaseException catch (e, stackTrace) {
       handleFirebaseError(e, stackTrace, context, "データの取得に失敗しました。");
@@ -371,16 +393,8 @@ class ActionItem {
 }
 
 class BottomNavItem {
-  final BottomNavItemId id;
+  final String path;
   final BottomNavigationBarItem item;
 
-  BottomNavItem(this.id, this.item);
-}
-
-enum BottomNavItemId {
-  home,
-  digestive,
-  timetable,
-  memorizeCard,
-  others,
+  BottomNavItem(this.path, this.item);
 }

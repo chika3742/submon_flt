@@ -1,5 +1,4 @@
 import 'package:event_bus/event_bus.dart';
-import 'package:submon/pages/home_page.dart';
 
 final eventBus = EventBus();
 
@@ -36,9 +35,9 @@ class SetAdHidden {
 }
 
 class SwitchBottomNav {
-  BottomNavItemId id;
+  String path;
 
-  SwitchBottomNav(this.id);
+  SwitchBottomNav(this.path);
 }
 
 class AppleSignInResult {
