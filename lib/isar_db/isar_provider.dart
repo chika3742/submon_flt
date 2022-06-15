@@ -16,13 +16,13 @@ abstract class IsarProvider<T> {
   late Isar isar;
 
   static Future<void> clear() async {
-    var isar = await _open();
+    var isar = await _openInternal();
     await isar.writeTxn((isar) async {
       await isar.clear();
     });
   }
 
-  static Future<Isar> _open() async {
+  static Future<Isar> _openInternal() async {
     var instance = Isar.getInstance();
     if (instance != null) {
       return instance;
@@ -43,7 +43,7 @@ abstract class IsarProvider<T> {
   IsarCollection<T> get collection => isar.getCollection<T>();
 
   Future<void> open() async {
-    isar = await _open();
+    isar = await _openInternal();
   }
 
   Future<void> use(Future<void> Function(dynamic provider) callback);
