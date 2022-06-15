@@ -202,13 +202,15 @@ void showSubmissionSharingDialog(Uri url) {
     showCancel: true,
     onOKPressed: () async {
       await SubmissionProvider().use((provider) async {
-        var id = await provider.put(Submission.from(
-          title: title,
-          due: DateTime.parse(date).toLocal(),
-          details: detail,
-          color: Color(int.parse(color)),
-        ));
-        eventBus.fire(SubmissionInserted(id));
+        provider.writeTransaction(() async {
+          var id = await provider.put(Submission.from(
+            title: title,
+            due: DateTime.parse(date).toLocal(),
+            details: detail,
+            color: Color(int.parse(color)),
+          ));
+          eventBus.fire(SubmissionInserted(id));
+        });
       });
       showSnackBar(globalContext!, "作成しました。");
     },
