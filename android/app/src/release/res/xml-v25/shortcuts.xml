@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="createSubmission"
+        android:enabled="true"
+        android:icon="@drawable/ic_outline_add_task_24"
+        android:shortcutShortLabel="@string/create_submission_shortcut_label"
+        android:shortcutLongLabel="@string/create_submission_shortcut_label">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="android-app://net.chikach.submon/submon//create-submission" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="digestive"
+        android:enabled="true"
+        android:icon="@drawable/ic_outline_task_24"
+        android:shortcutShortLabel="@string/digestive_shortcut_label"
+        android:shortcutLongLabel="@string/digestive_shortcut_label">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="android-app://net.chikach.submon/submon//tab/digestive" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="timetable"
+        android:enabled="true"
+        android:icon="@drawable/ic_outline_table_chart_24"
+        android:shortcutShortLabel="@string/timetable_shortcut_label"
+        android:shortcutLongLabel="@string/timetable_shortcut_label">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="net.chikach.submon"
+            android:data="android-app://net.chikach.submon/submon//tab/timetable" />
+    </shortcut>
+</shortcuts>

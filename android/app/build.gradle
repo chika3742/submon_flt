@@ -76,7 +76,7 @@ android {
         profile {
             versionNameSuffix "-profile"
             manifestPlaceholders["appLinkHostName"] = "dev.open.submon.app"
-            manifestPlaceholders["applicationLabel"] = "[D]Submon"
+            manifestPlaceholders["applicationLabel"] = "[P]Submon"
             applicationIdSuffix ".debug"
         }
         debug {
