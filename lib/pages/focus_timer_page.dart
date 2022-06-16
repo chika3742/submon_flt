@@ -31,7 +31,7 @@ class FocusTimerPage extends StatefulWidget {
 class _FocusTimerPageState extends State<FocusTimerPage>
     with WidgetsBindingObserver {
   String _submissionName = "";
-  final AudioPlayer _player = AudioPlayer();
+  final AudioCache _audioCache = AudioCache();
   bool? _dndAccessGranted = Platform.isAndroid ? false : null;
 
   bool _isEnableDnd = true;
@@ -45,6 +45,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
   Timer? _timer;
   Timer? _breakTimer;
   Timer? _blinkTimer;
+  AudioPlayer? _alarmPlayer;
   InterstitialAd? ad;
 
   @override
@@ -61,7 +62,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
       });
     }
 
-    _player.setSourceAsset("audio/alarm.mp3");
+    _audioCache.load("audio/alarm.mp3");
 
     if (!kIsWeb && Platform.isAndroid) {
       MainMethodPlugin.enterFullscreen();
@@ -89,7 +90,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
     _stopTimer();
     _stopBreakTimer();
     _stopBlinkTimer(inDispose: true);
-    _player.stop();
+    _alarmPlayer?.stop();
     MainMethodPlugin.disableWakeLock();
     if (!kIsWeb && Platform.isAndroid) {
       MainMethodPlugin.exitFullscreen();
@@ -348,7 +349,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                     });
                                   }
                                   _stopBlinkTimer();
-                                  _player.stop();
+                                  _alarmPlayer?.stop();
                                 },
                               ),
                             ),
@@ -402,8 +403,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
         _stopTimer();
         _disableDnd();
         _startBlinkTimer();
-        _player.setReleaseMode(ReleaseMode.stop);
-        await _player.resume();
+        _alarmPlayer = await _audioCache.play("audio/alarm.mp3");
         setState(() {
           _timerFinished = true;
         });
@@ -427,8 +427,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
       if (_breakRemainingTime.inSeconds == 0) {
         _stopBreakTimer();
         _startBlinkTimer();
-        await _player.setReleaseMode(ReleaseMode.loop);
-        await _player.resume();
+        _alarmPlayer = await _audioCache.loop("audio/alarm.mp3");
       }
     });
   }

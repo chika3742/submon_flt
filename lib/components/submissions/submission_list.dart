@@ -27,7 +27,7 @@ class SubmissionListState extends State<SubmissionList> {
   StreamSubscription? _stream1;
   StreamSubscription? _stream2;
 
-  final AudioPlayer _player = AudioPlayer()..setReleaseMode(ReleaseMode.stop);
+  final AudioCache _audioCache = AudioCache();
   SharedPrefs? _prefs;
 
   final _scrollController = ScrollController();
@@ -82,7 +82,7 @@ class SubmissionListState extends State<SubmissionList> {
       });
     });
 
-    _player.setSourceAsset("audio/decision28.mp3");
+    _audioCache.load("audio/decision28.mp3");
   }
 
   @override
@@ -145,10 +145,7 @@ class SubmissionListState extends State<SubmissionList> {
     });
 
     if (!widget.done && _prefs?.isSEEnabled == true) {
-      Future(() async {
-        _player.stop();
-        _player.resume();
-      });
+      _audioCache.play("audio/decision28.mp3");
     }
 
     showSnackBar(context, !widget.done ? "完了にしました" : "完了を外しました",
