@@ -94,7 +94,7 @@ runs:
         else
           versionNameOption=
         fi
-        bundle exec fastlane supply --aab build/app/outputs/bundle/release/app-release.aab --mapping_paths native_debug_symbols.zip,build/app/outputs/mapping/release/mapping.txt --track ${{ inputs.track }} --release_status draft --skip_upload_metadata --skip_upload_changelogs --skip_upload_screenshots --package_name net.chikach.submon $versionNameOption --json_key service_account_key.json
+        bundle exec fastlane supply --aab build/app/outputs/bundle/release/app-release.aab --mapping_paths native_debug_symbols.zip,build/app/outputs/mapping/release/mapping.txt --track ${{ inputs.track }} --skip_upload_metadata --skip_upload_changelogs --skip_upload_screenshots --package_name net.chikach.submon $versionNameOption --json_key service_account_key.json
 
     - name: Cancel if failed
       uses: andymckay/cancel-action@0.2
