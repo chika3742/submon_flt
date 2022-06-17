@@ -109,16 +109,6 @@ class CustomizeSettingsPageState extends State<CustomizeSettingsPage> {
               },
             ),
             SwitchSettingsTile(
-              title: "暗記カード",
-              subtitle: "利用しない場合はメニューから削除できます",
-              value: prefs!.showMemorizeMenu,
-              onChanged: (value) {
-                setState(() {
-                  prefs!.showMemorizeMenu = value;
-                });
-              },
-            ),
-            SwitchSettingsTile(
               title: "レビューを書く",
               subtitle: "既に書いた場合・書くつもりがない場合は「その他」のメニューから削除できます",
               value: prefs!.showReviewBtn,
