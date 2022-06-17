@@ -1,0 +1,6 @@
+webpack.bundle.js
+webpack.bundle.js.LICENSE.txt
+/firebase-messaging-sw.js
+src/generated-firebase-init.ts
+
+node_modules/**
