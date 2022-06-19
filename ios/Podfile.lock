@@ -624,9 +624,6 @@ PODS:
     - Flutter
   - Firebase/Analytics (8.15.0):
     - Firebase/Core
-  - Firebase/AppCheck (8.15.0):
-    - Firebase/CoreOnly
-    - FirebaseAppCheck (~> 8.15.0-beta)
   - Firebase/Auth (8.15.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 8.15.0)
@@ -925,7 +922,6 @@ DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - cloud_functions (from `.symlinks/plugins/cloud_functions/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
-  - Firebase/AppCheck
   - Firebase/Messaging
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
   - firebase_app_check (from `.symlinks/plugins/firebase_app_check/ios`)
@@ -935,6 +931,7 @@ DEPENDENCIES:
   - firebase_dynamic_links (from `.symlinks/plugins/firebase_dynamic_links/ios`)
   - firebase_performance (from `.symlinks/plugins/firebase_performance/ios`)
   - FirebaseAnalytics
+  - FirebaseAppCheck
   - FirebaseAuth
   - FirebaseCore
   - FirebaseFirestore
@@ -1103,6 +1100,6 @@ SPEC CHECKSUMS:
   sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
   url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
 
-PODFILE CHECKSUM: a2945978a5abf0eb62b1bb24d0977e62a93037be
+PODFILE CHECKSUM: cc0ecc9b9d5f4fe69ac362dad0126d0eadf88696
 
 COCOAPODS: 1.11.3
