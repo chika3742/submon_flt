@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:animations/animations.dart';
 import 'package:camera/camera.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -16,8 +15,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/tasks/v1.dart' as tasks;
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/pages/done_submissions_page.dart';
 import 'package:submon/pages/email_login_page.dart';
@@ -50,7 +51,7 @@ late List<CameraDescription> cameras;
 var scopes = [tasks.TasksApi.tasksScope];
 var googleSignIn = GoogleSignIn(scopes: scopes);
 
-const screenShotMode = false;
+const screenShotMode = bool.fromEnvironment("SCREENSHOT_MODE");
 
 BuildContext? get globalContext => Application.globalKey.currentContext;
 
@@ -93,6 +94,9 @@ class _ApplicationState extends State<Application> {
   @override
   void initState() {
     initFirebase();
+    SharedPrefs.use((prefs) async {
+      prefs.lastVersionCode = int.parse((await PackageInfo.fromPlatform()).buildNumber);
+    });
     super.initState();
   }
 

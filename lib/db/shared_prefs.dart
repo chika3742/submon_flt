@@ -204,6 +204,10 @@ class SharedPrefs {
     }
   }
 
+  // lastVersionCode
+  int? get lastVersionCode => pref!.getInt("lastVersionCode");
+  set lastVersionCode(int? value) => pref!.setInt("lastVersionCode", value!);
+
   static Future<void> use(dynamic Function(SharedPrefs prefs) callback) {
     return SharedPreferences.getInstance().then((pref) async {
       var prefs = SharedPrefs(pref);
