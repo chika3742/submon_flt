@@ -302,6 +302,10 @@ class FirestoreProvider {
       });
       oldVersion++;
     }
+    if (oldVersion == 6) {
+      // do nothing
+      oldVersion++;
+    }
   }
 
   static void setLastAppOpenedToCurrentTime() {
@@ -327,7 +331,6 @@ class FirestoreProvider {
       final digestiveSnapshot = await digestive.get();
       final timetableSnapshot = await timetable.get();
       final timetableClassTimeDataSnapshot = await timetableClassTime.get();
-      final memorizeCardSnapshot = await memorizeCard.get();
 
       await SubmissionProvider().use((provider) async {
         await provider.writeTransaction(() async {

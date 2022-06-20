@@ -30,6 +30,7 @@ class Submission {
   Color color = Colors.white;
   String? googleTasksTaskId;
   int? canvasPlannableId;
+  bool? repeatSubmissionCreated;
 
   Submission() {
     var nextDate = DateTime.now()..add(const Duration(days: 1)).toLocal();
@@ -56,6 +57,7 @@ class Submission {
       "color": const ColorConverter().toIsar(color),
       "googleTasksTaskId": googleTasksTaskId,
       "canvasPlannableId": canvasPlannableId,
+      "repeatSubmissionCreated": repeatSubmissionCreated,
     };
   }
 
@@ -76,7 +78,8 @@ class Submission {
         repeat = const RepeatConverter().fromIsar(map["repeat"]),
         color = const ColorConverter().fromIsar(map["color"]),
         googleTasksTaskId = map["googleTasksTaskId"],
-        canvasPlannableId = map["canvasPlannableId"];
+        canvasPlannableId = map["canvasPlannableId"],
+        repeatSubmissionCreated = map["repeatSubmissionCreated"];
 }
 
 class RepeatConverter extends TypeConverter<Repeat, int> {
@@ -134,8 +137,8 @@ class SubmissionProvider extends IsarProvider<Submission> {
     try {
       await callback(this);
     } catch (e, st) {
-      print(e);
-      print(st.toString());
+      debugPrint(e.toString());
+      debugPrint(st.toString());
       rethrow;
     }
   }

@@ -15,7 +15,7 @@ extension GetSubmissionCollection on Isar {
 const SubmissionSchema = CollectionSchema(
   name: 'Submission',
   schema:
-      '{"name":"Submission","idName":"id","properties":[{"name":"canvasPlannableId","type":"Long"},{"name":"color","type":"Long"},{"name":"details","type":"String"},{"name":"done","type":"Bool"},{"name":"due","type":"Long"},{"name":"googleTasksTaskId","type":"String"},{"name":"important","type":"Bool"},{"name":"repeat","type":"Long"},{"name":"title","type":"String"}],"indexes":[],"links":[]}',
+      '{"name":"Submission","idName":"id","properties":[{"name":"canvasPlannableId","type":"Long"},{"name":"color","type":"Long"},{"name":"details","type":"String"},{"name":"done","type":"Bool"},{"name":"due","type":"Long"},{"name":"googleTasksTaskId","type":"String"},{"name":"important","type":"Bool"},{"name":"repeat","type":"Long"},{"name":"repeatSubmissionCreated","type":"Bool"},{"name":"title","type":"String"}],"indexes":[],"links":[]}',
   idName: 'id',
   propertyIds: {
     'canvasPlannableId': 0,
@@ -26,7 +26,8 @@ const SubmissionSchema = CollectionSchema(
     'googleTasksTaskId': 5,
     'important': 6,
     'repeat': 7,
-    'title': 8
+    'repeatSubmissionCreated': 8,
+    'title': 9
   },
   listProperties: {},
   indexIds: {},
@@ -94,8 +95,10 @@ void _submissionSerializeNative(
   final _important = value6;
   final value7 = _submissionRepeatConverter.toIsar(object.repeat);
   final _repeat = value7;
-  final value8 = object.title;
-  final _title = IsarBinaryWriter.utf8Encoder.convert(value8);
+  final value8 = object.repeatSubmissionCreated;
+  final _repeatSubmissionCreated = value8;
+  final value9 = object.title;
+  final _title = IsarBinaryWriter.utf8Encoder.convert(value9);
   dynamicSize += (_title.length) as int;
   final size = staticSize + dynamicSize;
 
@@ -111,7 +114,8 @@ void _submissionSerializeNative(
   writer.writeBytes(offsets[5], _googleTasksTaskId);
   writer.writeBool(offsets[6], _important);
   writer.writeLong(offsets[7], _repeat);
-  writer.writeBytes(offsets[8], _title);
+  writer.writeBool(offsets[8], _repeatSubmissionCreated);
+  writer.writeBytes(offsets[9], _title);
 }
 
 Submission _submissionDeserializeNative(IsarCollection<Submission> collection,
@@ -128,7 +132,8 @@ Submission _submissionDeserializeNative(IsarCollection<Submission> collection,
   object.important = reader.readBool(offsets[6]);
   object.repeat =
       _submissionRepeatConverter.fromIsar(reader.readLong(offsets[7]));
-  object.title = reader.readString(offsets[8]);
+  object.repeatSubmissionCreated = reader.readBoolOrNull(offsets[8]);
+  object.title = reader.readString(offsets[9]);
   return object;
 }
 
@@ -155,6 +160,8 @@ P _submissionDeserializePropNative<P>(
       return (_submissionRepeatConverter.fromIsar(reader.readLong(offset)))
           as P;
     case 8:
+      return (reader.readBoolOrNull(offset)) as P;
+    case 9:
       return (reader.readString(offset)) as P;
     default:
       throw 'Illegal propertyIndex';
@@ -176,6 +183,8 @@ dynamic _submissionSerializeWeb(
   IsarNative.jsObjectSet(jsObj, 'important', object.important);
   IsarNative.jsObjectSet(
       jsObj, 'repeat', _submissionRepeatConverter.toIsar(object.repeat));
+  IsarNative.jsObjectSet(
+      jsObj, 'repeatSubmissionCreated', object.repeatSubmissionCreated);
   IsarNative.jsObjectSet(jsObj, 'title', object.title);
   return jsObj;
 }
@@ -199,6 +208,8 @@ Submission _submissionDeserializeWeb(
   object.important = IsarNative.jsObjectGet(jsObj, 'important') ?? false;
   object.repeat = _submissionRepeatConverter.fromIsar(
       IsarNative.jsObjectGet(jsObj, 'repeat') ?? double.negativeInfinity);
+  object.repeatSubmissionCreated =
+      IsarNative.jsObjectGet(jsObj, 'repeatSubmissionCreated');
   object.title = IsarNative.jsObjectGet(jsObj, 'title') ?? '';
   return object;
 }
@@ -232,6 +243,8 @@ P _submissionDeserializePropWeb<P>(Object jsObj, String propertyName) {
       return (_submissionRepeatConverter.fromIsar(
           IsarNative.jsObjectGet(jsObj, 'repeat') ??
               double.negativeInfinity)) as P;
+    case 'repeatSubmissionCreated':
+      return (IsarNative.jsObjectGet(jsObj, 'repeatSubmissionCreated')) as P;
     case 'title':
       return (IsarNative.jsObjectGet(jsObj, 'title') ?? '') as P;
     default:
@@ -804,6 +817,24 @@ extension SubmissionQueryFilter
     ));
   }
 
+  QueryBuilder<Submission, Submission, QAfterFilterCondition>
+      repeatSubmissionCreatedIsNull() {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.isNull,
+      property: 'repeatSubmissionCreated',
+      value: null,
+    ));
+  }
+
+  QueryBuilder<Submission, Submission, QAfterFilterCondition>
+      repeatSubmissionCreatedEqualTo(bool? value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'repeatSubmissionCreated',
+      value: value,
+    ));
+  }
+
   QueryBuilder<Submission, Submission, QAfterFilterCondition> titleEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -987,6 +1018,16 @@ extension SubmissionQueryWhereSortBy
     return addSortByInternal('repeat', Sort.desc);
   }
 
+  QueryBuilder<Submission, Submission, QAfterSortBy>
+      sortByRepeatSubmissionCreated() {
+    return addSortByInternal('repeatSubmissionCreated', Sort.asc);
+  }
+
+  QueryBuilder<Submission, Submission, QAfterSortBy>
+      sortByRepeatSubmissionCreatedDesc() {
+    return addSortByInternal('repeatSubmissionCreated', Sort.desc);
+  }
+
   QueryBuilder<Submission, Submission, QAfterSortBy> sortByTitle() {
     return addSortByInternal('title', Sort.asc);
   }
@@ -1072,6 +1113,16 @@ extension SubmissionQueryWhereSortThenBy
     return addSortByInternal('repeat', Sort.desc);
   }
 
+  QueryBuilder<Submission, Submission, QAfterSortBy>
+      thenByRepeatSubmissionCreated() {
+    return addSortByInternal('repeatSubmissionCreated', Sort.asc);
+  }
+
+  QueryBuilder<Submission, Submission, QAfterSortBy>
+      thenByRepeatSubmissionCreatedDesc() {
+    return addSortByInternal('repeatSubmissionCreated', Sort.desc);
+  }
+
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByTitle() {
     return addSortByInternal('title', Sort.asc);
   }
@@ -1123,6 +1174,11 @@ extension SubmissionQueryWhereDistinct
     return addDistinctByInternal('repeat');
   }
 
+  QueryBuilder<Submission, Submission, QDistinct>
+      distinctByRepeatSubmissionCreated() {
+    return addDistinctByInternal('repeatSubmissionCreated');
+  }
+
   QueryBuilder<Submission, Submission, QDistinct> distinctByTitle(
       {bool caseSensitive = true}) {
     return addDistinctByInternal('title', caseSensitive: caseSensitive);
@@ -1166,6 +1222,11 @@ extension SubmissionQueryProperty
 
   QueryBuilder<Submission, Repeat, QQueryOperations> repeatProperty() {
     return addPropertyNameInternal('repeat');
+  }
+
+  QueryBuilder<Submission, bool?, QQueryOperations>
+      repeatSubmissionCreatedProperty() {
+    return addPropertyNameInternal('repeatSubmissionCreated');
   }
 
   QueryBuilder<Submission, String, QQueryOperations> titleProperty() {

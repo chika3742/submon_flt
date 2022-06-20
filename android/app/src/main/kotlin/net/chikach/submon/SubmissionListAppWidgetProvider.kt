@@ -27,7 +27,7 @@ import net.chikach.submon.Utils.initAppCheck
 import java.io.Serializable
 import java.util.*
 
-const val SCHEMA_VERSION = 6L
+const val SCHEMA_VERSION = 7L
 
 class SubmissionListAppWidgetProvider : AppWidgetProvider() {
     @SuppressLint("WrongConstant")

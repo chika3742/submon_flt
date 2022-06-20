@@ -10,7 +10,7 @@ import 'package:submon/main.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
-const schemaVersion = 6;
+const schemaVersion = 7;
 
 abstract class IsarProvider<T> {
   late Isar isar;
