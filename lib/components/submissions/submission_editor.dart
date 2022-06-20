@@ -291,7 +291,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
     });
   }
 
-  void save() {
+  void save() async {
     if (_titleController.text.isEmpty) {
       setState(() {
         _titleError = "入力してください";
@@ -302,7 +302,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
     _submission
       ..title = _titleController.text
       ..details = _detailsController.text;
-    SubmissionProvider().use((provider) async {
+    await SubmissionProvider().use((provider) async {
       await provider.writeTransaction(() async {
         _submission.id = await provider.put(_submission);
 
