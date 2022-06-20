@@ -886,6 +886,8 @@ PODS:
     - AppAuth/Core (~> 1.4)
     - GTMSessionFetcher/Core (~> 1.5)
   - GTMSessionFetcher/Core (1.7.2)
+  - integration_test (0.0.1):
+    - Flutter
   - isar_flutter_libs (1.0.0):
     - Flutter
   - leveldb-library (1.22.1)
@@ -948,6 +950,7 @@ DEPENDENCIES:
   - "GoogleUtilities/NSData+zlib"
   - GoogleUtilities/Reachability
   - GoogleUtilities/UserDefaults
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - isar_flutter_libs (from `.symlinks/plugins/isar_flutter_libs/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
@@ -1025,6 +1028,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/google_mobile_ads/ios"
   google_sign_in_ios:
     :path: ".symlinks/plugins/google_sign_in_ios/ios"
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
   isar_flutter_libs:
     :path: ".symlinks/plugins/isar_flutter_libs/ios"
   package_info_plus:
@@ -1087,6 +1092,7 @@ SPEC CHECKSUMS:
   gRPC-Core: 943e491cb0d45598b0b0eb9e910c88080369290b
   GTMAppAuth: 4d8f864896f3646f0c33baf38a28362f4c601e15
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
+  integration_test: a1e7d09bd98eca2fc37aefd79d4f41ad37bdbbe5
   isar_flutter_libs: 5a34aebdd82e388db81dad8dd26786a642bb5b90
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   Libuv-gRPC: 55e51798e14ef436ad9bc45d12d43b77b49df378
