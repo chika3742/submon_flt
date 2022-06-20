@@ -256,5 +256,32 @@
 	<false/>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>UIApplicationShortcutItems</key>
+	<array>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>CreateSubmissionAction</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>提出物を作成</string>
+			<key>UIApplicationShortcutItemIconType</key>
+			<string>UIApplicationShortcutIconTypeAdd</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>DigestiveTabAction</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Digestive</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>list.bullet.rectangle.portrait</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>TimetableTabAction</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>時間割表</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>tablecells</string>
+		</dict>
+	</array>
 </dict>
 </plist>

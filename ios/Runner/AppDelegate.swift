@@ -20,7 +20,6 @@ import WidgetKit
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        
         #if !RELEASE
         AppCheck.setAppCheckProviderFactory(AppCheckDebugProviderFactory())
         #endif
@@ -47,6 +46,24 @@ import WidgetKit
         application.registerForRemoteNotifications()
         
         GeneratedPluginRegistrant.register(with: self)
+        
+        if let item = launchOptions?[UIApplication.LaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
+            switch item.type {
+            case "CreateSubmissionAction":
+                openUrl(path: "/create-submission")
+                break
+                
+            case "DigestiveTabAction":
+                openUrl(path: "/tab/digestive")
+                break
+                
+            case "TimetableTabAction":
+                openUrl(path: "/tab/timetable")
+                break
+                
+            default: break
+            }
+        }
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
@@ -125,5 +142,31 @@ extension AppDelegate : MessagingDelegate {
         if (fcmToken != nil) {
             mainMethodCallHandler?.saveMessagingToken(token: fcmToken!)
         }
+    }
+}
+
+extension AppDelegate {
+    func handleShortcutItem(_ item: UIApplicationShortcutItem) -> Bool {
+        switch item.type {
+        case "CreateSubmissionAction":
+            openUrl(path: "/create-submission")
+            break
+            
+        case "DigestiveTabAction":
+            openUrl(path: "/tab/digestive")
+            break
+            
+        case "TimetableTabAction":
+            openUrl(path: "/tab/timetable")
+            break
+            
+        default: return false
+        }
+        
+        return true
+    }
+    
+    override func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
+        completionHandler(handleShortcutItem(shortcutItem))
     }
 }

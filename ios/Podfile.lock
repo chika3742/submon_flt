@@ -1078,7 +1078,7 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 5e5118a2383b3531e730d974680954c679ca0a13
   FirebasePerformance: 66eb58c3e3568a0501a9be271c8ff424dea0ff34
   FirebaseRemoteConfig: 2d6e2cfdb49af79535c8af8a80a4a5009038ec2b
-  Flutter: 405776dd0763d7e32a8f989d4e271ca1317d080c
+  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   flutter_exif_rotation: de6b54e8bd54a687f28d6397d1a890391de41111
   Google-Mobile-Ads-SDK: 05e5d68bb42a61b2e5bef336a52789785605aa22
   google_mobile_ads: 36eaaacc5c08ca2b9c4878232ab98152b11805cc
