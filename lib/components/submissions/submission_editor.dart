@@ -304,10 +304,10 @@ class SubmissionEditorState extends State<SubmissionEditor> {
       ..details = _detailsController.text;
     SubmissionProvider().use((provider) async {
       await provider.writeTransaction(() async {
-        var id = await provider.put(_submission);
+        _submission.id = await provider.put(_submission);
 
         if (widget.submissionId == null) {
-          eventBus.fire(SubmissionInserted(id));
+          eventBus.fire(SubmissionInserted(_submission.id!));
         }
       });
 
