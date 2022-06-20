@@ -254,9 +254,11 @@ class SubmissionListItemState extends State<SubmissionListItem> {
           onClosed: (result) {
             SubmissionProvider().use((provider) async {
               await provider.get(_item.id!).then((obj) {
-                setState(() {
-                  _item = obj!;
-                });
+                if (obj != null) {
+                  setState(() {
+                    _item = obj;
+                  });
+                }
               });
             });
           },

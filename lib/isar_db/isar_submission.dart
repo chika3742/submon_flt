@@ -39,6 +39,7 @@ class Submission {
   }
 
   Submission.from({
+    this.id,
     required this.title,
     required this.details,
     required this.due,
@@ -132,7 +133,13 @@ class SubmissionProvider extends IsarProvider<Submission> {
   Future<void> use(
       Future<void> Function(SubmissionProvider provider) callback) async {
     await open();
-    await callback(this);
+    try {
+      await callback(this);
+    } catch (e, st) {
+      print(e);
+      print(st.toString());
+      rethrow;
+    }
   }
 
   Future<List<Submission>> getUndoneSubmissions() {

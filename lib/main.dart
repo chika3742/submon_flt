@@ -198,7 +198,7 @@ class _ApplicationState extends State<Application> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      initialRoute: FirebaseAuth.instance.currentUser == null ? "welcome" : "/",
+      initialRoute: FirebaseAuth.instance.currentUser == null && screenShotMode == false ? "welcome" : "/",
       onGenerateRoute: (settings) {
         var routes = <String, WidgetBuilder>{
           "/": (context) => const HomePage(),
@@ -265,7 +265,9 @@ class _ApplicationState extends State<Application> {
     try {
       await Firebase.initializeApp();
       MainMethodPlugin.initHandler();
-      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+      if (!screenShotMode) {
+        FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+      }
       if (kDebugMode) {
         FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
       }

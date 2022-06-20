@@ -8,6 +8,7 @@ import 'package:submon/components/submissions/formatted_date_remaining.dart';
 import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/main.dart';
+import 'package:submon/utils/date_time_utils.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -32,22 +33,34 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
   void initState() {
     super.initState();
     SubmissionProvider().use((provider) async {
-      await provider.get(widget.submissionId).then((value) {
-        if (value == null) {
-          showSnackBar(context, "提出物が見つかりません");
-          Navigator.pop(context);
-        }
-        setState(() {
-          item = value;
+      if (screenShotMode) {
+        item = Submission.from(title: "提出物1", details: "p.40〜44", due: DateTime.now().add(const Duration(hours: 10)).applied(const TimeOfDay(hour: 17, minute: 0)), color: Colors.white);
+      } else {
+        await provider.get(widget.submissionId).then((value) {
+          if (value == null) {
+            showSnackBar(context, "提出物が見つかりません");
+            Navigator.pop(context);
+          }
+          setState(() {
+            item = value;
+          });
         });
-      });
+      }
     });
     DigestiveProvider().use((provider) async {
-      var digestives =
-          await provider.getDigestivesBySubmissionId(widget.submissionId);
-      setState(() {
-        _digestiveList = digestives;
-      });
+      if (screenShotMode) {
+        _digestiveList = [Digestive.from(
+          id: 0,
+          done: false,
+          startAt: DateTime.now().add(const Duration(days: 1)).applied(const TimeOfDay(hour: 16, minute: 0)),
+          content: "p.40〜42",
+          minute: 30
+        )];
+      } else {
+        _digestiveList =
+        await provider.getDigestivesBySubmissionId(widget.submissionId);
+      }
+      setState(() {});
     });
 
     if (!screenShotMode) {

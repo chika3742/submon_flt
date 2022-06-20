@@ -16,6 +16,8 @@ class TimetableClassTime {
 
   TimetableClassTime();
 
+  TimetableClassTime.fromStartEnd(this.start, this.end);
+
   TimetableClassTime.fromMap(Map<String, dynamic> map)
       : period = map["period"],
         start = const TimeOfDayConverter().fromIsar(map["start"]),

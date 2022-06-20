@@ -25,6 +25,8 @@ class Timetable {
     this.subject = subject;
   }
 
+  Timetable.from({this.id, required this.cellId, required this.subject, required this.room, required this.teacher});
+
   Timetable.fromMap(Map<String, dynamic> map)
       : id = map["id"],
         tableId = map["tableId"],

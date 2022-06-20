@@ -7,6 +7,7 @@ import 'package:submon/events.dart';
 import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/main.dart';
+import 'package:submon/utils/date_time_utils.dart';
 
 import '../../components/digestive_edit_bottom_sheet.dart';
 import '../../utils/ui.dart';
@@ -25,18 +26,77 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
 
   @override
   void initState() {
-    DigestiveProvider().use((provider) async {
-      SubmissionProvider().use((sProvider) async {
-        var digestiveList = await provider.getUndoneDigestives();
-        _digestiveList = await Future.wait(digestiveList.map((e) async {
-          var submission = e.submissionId != null
-              ? await sProvider.get(e.submissionId!)
-              : null;
-          return DigestiveWithSubmission.fromObject(e, submission);
-        }).toList());
-        setState(() {});
+    if (screenShotMode) {
+      _digestiveList = [
+        DigestiveWithSubmission.fromObject(
+          Digestive.from(
+            id: 0,
+            submissionId: 0,
+            startAt: DateTime.now().add(const Duration(days: 1)).applied(const TimeOfDay(hour: 16, minute: 0)),
+            minute: 30,
+            content: "p.40〜42",
+          ),
+          Submission.from(
+            title: "提出物1",
+            details: "",
+            due: DateTime.now().add(const Duration(hours: 10)).applied(const TimeOfDay(hour: 17, minute: 0)),
+            color: Colors.white,
+          ),
+        ),
+        DigestiveWithSubmission.fromObject(
+          Digestive.from(
+            id: 1,
+            submissionId: 1,
+            startAt: DateTime.now().add(const Duration(days: 1)).applied(const TimeOfDay(hour: 18, minute: 0)),
+            minute: 45,
+            content: "p.55〜70",
+          ),
+          Submission.from(
+            title: "提出物2",
+            details: "",
+            due: DateTime.now().add(const Duration(days: 1)).applied(const TimeOfDay(hour: 23, minute: 59)),
+            color: Colors.red,
+          ),
+        ),
+        DigestiveWithSubmission.fromObject(
+          Digestive.from(
+            id: 2,
+            submissionId: 1,
+            startAt: DateTime.now().add(const Duration(days: 1)).applied(const TimeOfDay(hour: 18, minute: 0)),
+            minute: 20,
+            content: "p.71〜76",
+          ),
+          Submission.from(
+            title: "提出物2",
+            details: "",
+            due: DateTime.now().add(const Duration(days: 1)).applied(const TimeOfDay(hour: 23, minute: 59)),
+            color: Colors.red,
+          ),
+        ),
+        DigestiveWithSubmission.fromObject(
+          Digestive.from(
+            id: 3,
+            startAt: DateTime.now().add(const Duration(days: 1)).applied(const TimeOfDay(hour: 20, minute: 0)),
+            minute: 20,
+            content: "数学の復習",
+          ),
+          null,
+        ),
+      ];
+    } else {
+      DigestiveProvider().use((provider) async {
+        SubmissionProvider().use((sProvider) async {
+          var digestiveList = await provider.getUndoneDigestives();
+          _digestiveList = await Future.wait(digestiveList.map((e) async {
+            var submission = e.submissionId != null
+                ? await sProvider.get(e.submissionId!)
+                : null;
+            return DigestiveWithSubmission.fromObject(e, submission);
+          }).toList());
+          setState(() {});
+        });
       });
-    });
+    }
 
     listener = eventBus.on<DigestiveAddButtonPressed>().listen((event) async {
       var result = await showRoundedBottomSheet<Digestive>(

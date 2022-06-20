@@ -5,6 +5,7 @@ import 'package:animations/animations.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/main.dart';
 import 'package:submon/pages/timetable_cell_edit_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
@@ -153,20 +154,81 @@ class _TimetableDayListState extends State<TimetableDayList> {
   List<Widget> _buildTimetableList() {
     var list = <Widget>[];
 
-    for (var index = 0; index < widget.prefs.timetablePeriodCountToDisplay; index++) {
-      list.add(const SizedBox(height: 8));
-      list.add(_buildTimetableCell(
-          index,
-          widget.items
-              .firstWhereOrNull((e) => (e.cellId / 6).floor() == index)));
+    if (screenShotMode) {
+      list = [
+        const SizedBox(height: 8),
+        _buildTimetableCell(
+          0,
+          Timetable.from(
+            cellId: 0,
+            subject: "国語",
+            room: "3-1",
+            teacher: "佐藤",
+          ),
+        ),
+        const SizedBox(height: 8),
+        _buildTimetableCell(
+          1,
+          Timetable.from(
+            cellId: 6,
+            subject: "数学",
+            room: "3-2",
+            teacher: "鈴木",
+          ),
+        ),
+        const SizedBox(height: 8),
+        _buildTimetableCell(
+          2,
+          Timetable.from(
+            cellId: 12,
+            subject: "化学",
+            room: "3-3",
+            teacher: "高橋",
+          ),
+        ),
+        const SizedBox(height: 8),
+        _buildTimetableCell(
+          3,
+          Timetable.from(
+            cellId: 18,
+            subject: "世界史",
+            room: "3-4",
+            teacher: "田中",
+          ),
+        ),
+        const SizedBox(height: 8),
+        _buildTimetableCell(
+          4,
+          Timetable.from(
+            cellId: 0,
+            subject: "(一例です)",
+            room: "",
+            teacher: "出典: 名字由来net",
+          ),
+        ),
+      ];
+    } else {
+      for (var index = 0; index < widget.prefs.timetablePeriodCountToDisplay; index++) {
+        list.add(const SizedBox(height: 8));
+        list.add(_buildTimetableCell(
+            index,
+            widget.items
+                .firstWhereOrNull((e) => (e.cellId / 6).floor() == index)));
+      }
     }
 
     return list;
   }
 
   Widget _buildTimetableCell(int index, Timetable? data) {
-    var timeItem = widget.classTimeItems
-        .firstWhereOrNull((element) => element.period == index + 1);
+    TimetableClassTime? timeItem;
+    if (screenShotMode) {
+      var startHour = [9, 10, 11, 13, 14][index];
+      timeItem = TimetableClassTime.fromStartEnd(TimeOfDay(hour: startHour, minute: 0), TimeOfDay(hour: startHour, minute: 50));
+    } else {
+      timeItem = widget.classTimeItems
+          .firstWhereOrNull((element) => element.period == index + 1);
+    }
     return OpenContainer<dynamic>(
       key: GlobalObjectKey(getWidgetId(index)),
       useRootNavigator: true,

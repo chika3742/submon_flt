@@ -16,6 +16,15 @@ class Digestive {
 
   Digestive();
 
+  Digestive.from({
+    this.id,
+    this.submissionId,
+    this.done = false,
+    required this.startAt,
+    required this.minute,
+    required this.content,
+  });
+
   Digestive.fromMap(Map<String, dynamic> map)
       : id = map["id"],
         submissionId = map["submissionId"],
