@@ -20,7 +20,9 @@ import WidgetKit
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        #if !RELEASE
+        #if RELEASE
+        AppCheck.setAppCheckProviderFactory(MyAppCheckProviderFactory())
+        #else
         AppCheck.setAppCheckProviderFactory(AppCheckDebugProviderFactory())
         #endif
         
@@ -46,24 +48,7 @@ import WidgetKit
         application.registerForRemoteNotifications()
         
         GeneratedPluginRegistrant.register(with: self)
-        
-        if let item = launchOptions?[UIApplication.LaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
-            switch item.type {
-            case "CreateSubmissionAction":
-                openUrl(path: "/create-submission")
-                break
-                
-            case "DigestiveTabAction":
-                openUrl(path: "/tab/digestive")
-                break
-                
-            case "TimetableTabAction":
-                openUrl(path: "/tab/timetable")
-                break
-                
-            default: break
-            }
-        }
+
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     

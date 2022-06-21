@@ -14,6 +14,8 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		C766556C28614B0E00B244CA /* MyAppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C766556B28614B0E00B244CA /* MyAppCheckProviderFactory.swift */; };
+		C766556D28614B0E00B244CA /* MyAppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C766556B28614B0E00B244CA /* MyAppCheckProviderFactory.swift */; };
 		C7908098283E221D001C7835 /* Info-Debug.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7908096283E221D001C7835 /* Info-Debug.plist */; };
 		C7908099283E221D001C7835 /* Info-Release.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7908097283E221D001C7835 /* Info-Release.plist */; };
 		C79080A6283E22B1001C7835 /* MessagingMethodChannelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79080A3283E22B1001C7835 /* MessagingMethodChannelHandler.swift */; };
@@ -88,6 +90,7 @@
 		BD054E8DF0EC8922D08EFA45 /* Pods-WidgetsExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WidgetsExtension.debug.xcconfig"; path = "Target Support Files/Pods-WidgetsExtension/Pods-WidgetsExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		C3809B70CF250E80CE4E09EC /* Pods-WidgetKitExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WidgetKitExtension.release.xcconfig"; path = "Target Support Files/Pods-WidgetKitExtension/Pods-WidgetKitExtension.release.xcconfig"; sourceTree = "<group>"; };
 		C7263CC7285853D000416681 /* RunnerRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerRelease.entitlements; sourceTree = "<group>"; };
+		C766556B28614B0E00B244CA /* MyAppCheckProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAppCheckProviderFactory.swift; sourceTree = "<group>"; };
 		C7908096283E221D001C7835 /* Info-Debug.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-Debug.plist"; sourceTree = "<group>"; };
 		C7908097283E221D001C7835 /* Info-Release.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-Release.plist"; sourceTree = "<group>"; };
 		C79080A3283E22B1001C7835 /* MessagingMethodChannelHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagingMethodChannelHandler.swift; sourceTree = "<group>"; };
@@ -179,6 +182,7 @@
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
+				C766556B28614B0E00B244CA /* MyAppCheckProviderFactory.swift */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -476,6 +480,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C79080A7283E22B1001C7835 /* UriEventChannelHandler.swift in Sources */,
+				C766556C28614B0E00B244CA /* MyAppCheckProviderFactory.swift in Sources */,
 				C79080A8283E22B1001C7835 /* MainMethodChannelHandler.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
@@ -491,6 +496,7 @@
 				C7AAF560283E71BC00FB3CDE /* WidgetKit.swift in Sources */,
 				C7AAF575283E746D00FB3CDE /* DateExtension.swift in Sources */,
 				C7AAF573283E738E00FB3CDE /* SubmissionListWidget.swift in Sources */,
+				C766556D28614B0E00B244CA /* MyAppCheckProviderFactory.swift in Sources */,
 				C7AAF56F283E71D300FB3CDE /* WidgetKit.intentdefinition in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -778,6 +784,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = net.chikach.submon;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Submon (distribution)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = RELEASE;
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

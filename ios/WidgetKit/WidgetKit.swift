@@ -13,6 +13,11 @@ import FirebaseAuth
 @main
 struct WidgetKit: WidgetBundle {
     init() {
+        #if RELEASE
+        AppCheck.setAppCheckProviderFactory(MyAppCheckProviderFactory())
+        #else
+        AppCheck.setAppCheckProviderFactory(AppCheckDebugProviderFactory())
+        #endif
         FirebaseApp.configure()
         do {
             try Auth.auth().useUserAccessGroup("B66Z929S96.net.chikach.submon")
