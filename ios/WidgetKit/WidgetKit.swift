@@ -9,6 +9,7 @@ import WidgetKit
 import SwiftUI
 import FirebaseCore
 import FirebaseAuth
+import FirebaseAppCheck
 
 @main
 struct WidgetKit: WidgetBundle {
