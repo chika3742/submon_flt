@@ -7,9 +7,9 @@ import 'package:submon/events.dart';
 import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/main.dart';
-import 'package:submon/utils/date_time_utils.dart';
 
 import '../../components/digestive_edit_bottom_sheet.dart';
+import '../../sample_data.dart';
 import '../../utils/ui.dart';
 
 class TabDigestiveList extends StatefulWidget {
@@ -29,57 +29,19 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
     if (screenShotMode) {
       _digestiveList = [
         DigestiveWithSubmission.fromObject(
-          Digestive.from(
-            id: 0,
-            submissionId: 0,
-            startAt: DateTime.now().add(const Duration(days: 1)).applied(const TimeOfDay(hour: 16, minute: 0)),
-            minute: 30,
-            content: "p.40〜42",
-          ),
-          Submission.from(
-            title: "提出物1",
-            details: "",
-            due: DateTime.now().add(const Duration(hours: 10)).applied(const TimeOfDay(hour: 17, minute: 0)),
-            color: Colors.white,
-          ),
+          SampleData.digestives[0],
+          SampleData.submissions[0],
         ),
         DigestiveWithSubmission.fromObject(
-          Digestive.from(
-            id: 1,
-            submissionId: 1,
-            startAt: DateTime.now().add(const Duration(days: 1)).applied(const TimeOfDay(hour: 18, minute: 0)),
-            minute: 45,
-            content: "p.55〜70",
-          ),
-          Submission.from(
-            title: "提出物2",
-            details: "",
-            due: DateTime.now().add(const Duration(days: 1)).applied(const TimeOfDay(hour: 23, minute: 59)),
-            color: Colors.red,
-          ),
+          SampleData.digestives[1],
+          SampleData.submissions[1],
         ),
         DigestiveWithSubmission.fromObject(
-          Digestive.from(
-            id: 2,
-            submissionId: 1,
-            startAt: DateTime.now().add(const Duration(days: 1)).applied(const TimeOfDay(hour: 18, minute: 0)),
-            minute: 20,
-            content: "p.71〜76",
-          ),
-          Submission.from(
-            title: "提出物2",
-            details: "",
-            due: DateTime.now().add(const Duration(days: 1)).applied(const TimeOfDay(hour: 23, minute: 59)),
-            color: Colors.red,
-          ),
+          SampleData.digestives[2],
+          SampleData.submissions[1],
         ),
         DigestiveWithSubmission.fromObject(
-          Digestive.from(
-            id: 3,
-            startAt: DateTime.now().add(const Duration(days: 1)).applied(const TimeOfDay(hour: 20, minute: 0)),
-            minute: 20,
-            content: "数学の復習",
-          ),
+          SampleData.digestives[3],
           null,
         ),
       ];

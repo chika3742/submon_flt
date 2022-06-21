@@ -12,6 +12,7 @@ import 'package:submon/utils/utils.dart';
 
 import '../../isar_db/isar_timetable.dart';
 import '../../isar_db/isar_timetable_class_time.dart';
+import '../../sample_data.dart';
 
 class TimetableDayList extends StatefulWidget {
   const TimetableDayList({
@@ -159,52 +160,27 @@ class _TimetableDayListState extends State<TimetableDayList> {
         const SizedBox(height: 8),
         _buildTimetableCell(
           0,
-          Timetable.from(
-            cellId: 0,
-            subject: "国語",
-            room: "3-1",
-            teacher: "佐藤",
-          ),
+          SampleData.timetable[0],
         ),
         const SizedBox(height: 8),
         _buildTimetableCell(
           1,
-          Timetable.from(
-            cellId: 6,
-            subject: "数学",
-            room: "3-2",
-            teacher: "鈴木",
-          ),
+          SampleData.timetable[1],
         ),
         const SizedBox(height: 8),
         _buildTimetableCell(
           2,
-          Timetable.from(
-            cellId: 12,
-            subject: "化学",
-            room: "3-3",
-            teacher: "高橋",
-          ),
+          SampleData.timetable[2],
         ),
         const SizedBox(height: 8),
         _buildTimetableCell(
           3,
-          Timetable.from(
-            cellId: 18,
-            subject: "世界史",
-            room: "3-4",
-            teacher: "田中",
-          ),
+          SampleData.timetable[3],
         ),
         const SizedBox(height: 8),
         _buildTimetableCell(
           4,
-          Timetable.from(
-            cellId: 0,
-            subject: "(一例です)",
-            room: "",
-            teacher: "出典: 名字由来net",
-          ),
+          SampleData.timetable[4],
         ),
       ];
     } else {

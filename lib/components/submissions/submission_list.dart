@@ -8,9 +8,10 @@ import 'package:submon/events.dart';
 import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/main.dart';
-import 'package:submon/utils/date_time_utils.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
+
+import '../../sample_data.dart';
 
 class SubmissionList extends StatefulWidget {
   const SubmissionList({Key? key, this.done = false}) : super(key: key);
@@ -39,11 +40,7 @@ class SubmissionListState extends State<SubmissionList> {
 
     SubmissionProvider().use((provider) async {
       if (screenShotMode) {
-        items = [
-          Submission.from(id: 0, title: "提出物1", details: "p.40〜44", due: DateTime.now().add(const Duration(hours: 10)).applied(const TimeOfDay(hour: 17, minute: 0)), color: Colors.white),
-          Submission.from(id: 1, title: "提出物2", details: "p.40〜44", due: DateTime.now().add(const Duration(days: 1)).applied(const TimeOfDay(hour: 23, minute: 59)), color: Colors.red),
-          Submission.from(id: 2, title: "提出物3", details: "p.40〜44", due: DateTime.now().add(const Duration(days: 8)).applied(const TimeOfDay(hour: 23, minute: 59)), color: Colors.blue),
-        ];
+        items = SampleData.submissions;
       } else if (!widget.done) {
         items = await provider.getUndoneSubmissions();
       } else {
