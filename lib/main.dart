@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:animations/animations.dart';
-import 'package:camera/camera.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -16,8 +15,6 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/pages/done_submissions_page.dart';
@@ -25,7 +22,6 @@ import 'package:submon/pages/email_login_page.dart';
 import 'package:submon/pages/focus_timer_page.dart';
 import 'package:submon/pages/home_page.dart';
 import 'package:submon/pages/link_with_google_tasks_page.dart';
-import 'package:submon/pages/memorize_card/camera_preview_page.dart';
 import 'package:submon/pages/memorize_card/card_forum_page.dart';
 import 'package:submon/pages/memorize_card/card_graph_page.dart';
 import 'package:submon/pages/memorize_card/card_test_page.dart';
@@ -46,8 +42,6 @@ import 'package:submon/pages/timetable_edit_page.dart';
 import 'package:submon/pages/timetable_table_view_page.dart';
 import 'package:submon/pages/welcome_page.dart';
 
-late List<CameraDescription> cameras;
-
 var scopes = [tasks.TasksApi.tasksScope];
 var googleSignIn = GoogleSignIn(scopes: scopes);
 
@@ -58,15 +52,14 @@ BuildContext? get globalContext => Application.globalKey.currentContext;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
-  cameras = await availableCameras();
   googleSignIn.signInSilently();
   MobileAds.instance.initialize();
-  getTemporaryDirectory().then((value) async {
-    var directory = Directory(p.join(value.path, tempImgDirName));
-    if (await directory.exists()) {
-      directory.delete(recursive: true);
-    }
-  });
+  // getTemporaryDirectory().then((value) async {
+  //   var directory = Directory(p.join(value.path, tempImgDirName));
+  //   if (await directory.exists()) {
+  //     directory.delete(recursive: true);
+  //   }
+  // });
   LicenseRegistry.addLicense(() async* {
     yield LicenseEntryWithLineBreaks(["google_fonts"],
         await rootBundle.loadString('assets/google_fonts/Murecho/OFL.txt'));
@@ -217,8 +210,8 @@ class _ApplicationState extends State<Application> {
           ),
           "/timetable/edit": (context) => const TimetableEditPage(),
           "/timetable/table-view": (context) => const TimetableTableViewPage(),
-          "/memorize_card/camera": (context) =>
-              CameraPreviewPage(arguments: settings.arguments),
+          // "/memorize_card/camera": (context) =>
+          //     CameraPreviewPage(arguments: settings.arguments),
           "/memorize_card/create": (context) => const MemorizeCardCreatePage(),
           "/memorize_card/view": (context) =>
               CardViewPage(arguments: settings.arguments),
