@@ -1,16 +1,16 @@
 function takeScreenshotsAndroid() {
-    ~/Library/Android/sdk/emulator/emulator @$1 -netdelay none -netspeed full &
+    ~/Library/Android/sdk/emulator/emulator @"$1" -netdelay none -netspeed full &
     adb wait-for-device
-    takeScreenshots $2
+    takeScreenshots "$2"
     kill %%
     sleep 3
 }
 
 function takeScreenshotsApple() {
-    xcrun simctl boot $1
-    xcrun simctl bootstatus $1
-    takeScreenshots $2
-    xcrun simctl shutdown $1
+    xcrun simctl boot "$1"
+    xcrun simctl bootstatus "$1"
+    takeScreenshots "$2"
+    xcrun simctl shutdown "$1"
 }
 
 function takeScreenshots() {
