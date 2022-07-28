@@ -144,7 +144,12 @@ class SubmissionProvider extends IsarProvider<Submission> {
   }
 
   Future<List<Submission>> getUndoneSubmissions() {
-    return collection.filter().doneEqualTo(false).sortByDue().findAll();
+    return collection
+        .filter()
+        .doneEqualTo(false)
+        .sortByImportantDesc()
+        .thenByDue()
+        .findAll();
   }
 
   Future<List<Submission>> getDoneSubmissions() {

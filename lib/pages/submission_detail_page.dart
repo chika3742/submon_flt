@@ -76,6 +76,30 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
         title: const Text("詳細"),
         actions: [
           IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () async {
+              await SubmissionProvider().use((provider) async {
+                await provider.deleteItem(item!.id!);
+              });
+              if (!mounted) return;
+              Navigator.pop(context);
+            },
+          ),
+          IconButton(
+            icon: Icon(
+                item?.important == true ? Icons.star : Icons.star_outline,
+                color: item?.important == true ? Colors.yellowAccent : null),
+            onPressed: () async {
+              await SubmissionProvider().use((provider) {
+                return provider.writeTransaction(() async {
+                  item!.important = !item!.important;
+                  await provider.put(item!);
+                  setState(() {});
+                });
+              });
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
               await Navigator.pushNamed(context, "/submission/edit",
@@ -88,7 +112,7 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
                 });
               });
             },
-          )
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(

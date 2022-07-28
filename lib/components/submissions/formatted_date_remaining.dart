@@ -20,6 +20,9 @@ class FormattedDateRemaining extends StatelessWidget {
                   fontSize: numberSize,
                   fontWeight: FontWeight.bold,
                   color: getRemainingDateColor(context, diff.inHours))),
+          const TextSpan(
+            text: " ",
+          ),
           TextSpan(
               text: getRemainingString(diff, weekView)[1],
               style: const TextStyle(fontSize: 18))

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:animations/animations.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
@@ -15,11 +17,12 @@ import 'package:submon/utils/utils.dart';
 import '../digestive_edit_bottom_sheet.dart';
 
 class SubmissionListItem extends StatefulWidget {
-  const SubmissionListItem(this.item, {Key? key, this.onDone, this.onDelete, this.prefs})
+  const SubmissionListItem(this.item,
+      {Key? key, this.onDone, this.onDelete, this.prefs})
       : super(key: key);
   final Submission item;
-  final Function? onDone;
-  final Function? onDelete;
+  final void Function(bool animated)? onDone;
+  final void Function(bool animated)? onDelete;
   final SharedPrefs? prefs;
 
   @override
@@ -62,10 +65,10 @@ class SubmissionListItemState extends State<SubmissionListItem> {
       ),
       onDismissed: (direction) async {
         if (direction == DismissDirection.startToEnd) {
-          widget.onDone?.call();
+          widget.onDone?.call(false);
           _logMarkedAsDone("swipe");
         } else if (direction == DismissDirection.endToStart) {
-          widget.onDelete?.call();
+          widget.onDelete?.call(false);
         }
       },
       child: Card(
@@ -109,26 +112,16 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 2, horizontal: 12),
-                                  child: Text.rich(
-                                    TextSpan(children: [
-                                      TextSpan(
-                                          text: "${_item.due.month} / ",
-                                          style: const TextStyle(fontSize: 20)),
-                                      TextSpan(
-                                          text: "${_item.due.day}",
-                                          style: const TextStyle(fontSize: 34)),
-                                      TextSpan(
-                                          text:
-                                              " (${getWeekdayString(_item.due.weekday - 1)})",
-                                          style: const TextStyle(fontSize: 20)),
-                                      if (_item.due.hour != 23 ||
-                                          _item.due.minute != 59)
-                                        TextSpan(
-                                          text:
-                                              " ${DateFormat("HH:mm").format(_item.due)}",
-                                          style: const TextStyle(fontSize: 20),
-                                        )
-                                    ]),
+                                  child: InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _weekView = !_weekView;
+                                      });
+                                    },
+                                    borderRadius: BorderRadius.circular(4),
+                                    child: FormattedDateRemaining(
+                                        _item.due.difference(DateTime.now()),
+                                        weekView: _weekView),
                                   ),
                                 ),
                               ),
@@ -139,24 +132,36 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                         Padding(
                           padding:
                               const EdgeInsets.only(left: 8, right: 8, top: 4),
-                          child: Row(
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    _weekView = !_weekView;
-                                  });
-                                },
-                                borderRadius: BorderRadius.circular(4),
-                                child: FormattedDateRemaining(
-                                    _item.due.difference(DateTime.now()),
-                                    weekView: _weekView),
-                              ),
-                              const SizedBox(
-                                width: 8,
-                              ),
-                              const Icon(Icons.schedule),
-                            ],
+                          child: Text.rich(
+                            TextSpan(
+                                children: [
+                                  TextSpan(
+                                      text: "${_item.due.month}/",
+                                      style: const TextStyle(fontSize: 20)),
+                                  TextSpan(
+                                      text: "${_item.due.day}",
+                                      style: const TextStyle(fontSize: 28)),
+                                  TextSpan(
+                                      text:
+                                          " (${getWeekdayString(_item.due.weekday - 1)})",
+                                      style: const TextStyle(fontSize: 20)),
+                                  if (_item.due.hour != 23 ||
+                                      _item.due.minute != 59)
+                                    TextSpan(
+                                      text:
+                                          " ${DateFormat("HH:mm").format(_item.due)}",
+                                      style: const TextStyle(fontSize: 20),
+                                    )
+                                ],
+                                style: TextStyle(
+                                    letterSpacing: 2,
+                                    color:
+                                        widget.item.due.isBefore(DateTime.now())
+                                            ? Colors.red
+                                            : Theme.of(context)
+                                                .textTheme
+                                                .headlineMedium!
+                                                .color)),
                           ),
                         )
                       ],
@@ -178,13 +183,12 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                           ),
                         ),
                         IconButton(
-                          icon: Icon(
-                            _item.important ? Icons.star : Icons.star_border,
-                            color: _item.important ? Colors.orange : null,
-                          ),
+                          icon: Icon(widget.item.done
+                              ? Icons.done_outline
+                              : Icons.done),
                           splashRadius: 22,
                           onPressed: () {
-                            toggleImportant();
+                            widget.onDone?.call(true);
                           },
                         )
                       ],
@@ -258,6 +262,10 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                   setState(() {
                     _item = obj;
                   });
+                } else {
+                  Timer(const Duration(milliseconds: 300), () {
+                    widget.onDelete?.call(true);
+                  });
                 }
               });
             });
@@ -288,10 +296,10 @@ class SubmissionListItemState extends State<SubmissionListItem> {
         showLoadingModal(context);
 
         buildShortDynamicLink("/submission-sharing"
-                "?title=${Uri.encodeComponent(widget.item.title)}"
-                "&date=${widget.item.due.toUtc().toIso8601String()}"
-                "${widget.item.details != "" ? "&details=${Uri.encodeComponent(widget.item.details)}" : ""}"
-                "&color=${widget.item.color.value}")
+            "?title=${Uri.encodeComponent(widget.item.title)}"
+            "&date=${widget.item.due.toUtc().toIso8601String()}"
+            "${widget.item.details != "" ? "&details=${Uri.encodeComponent(widget.item.details)}" : ""}"
+            "&color=${widget.item.color.value}")
             .then((link) {
           Share.share(link.shortUrl.toString());
         }).onError((error, stackTrace) {
@@ -325,11 +333,11 @@ class SubmissionListItemState extends State<SubmissionListItem> {
         });
         break;
       case _ContextMenuAction.makeDone:
-        widget.onDone?.call();
+        widget.onDone?.call(true);
         _logMarkedAsDone("longPressMenu");
         break;
       case _ContextMenuAction.delete:
-        widget.onDelete?.call();
+        widget.onDelete?.call(true);
         break;
     }
   }

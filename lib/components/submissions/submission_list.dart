@@ -116,16 +116,7 @@ class SubmissionListState extends State<SubmissionList> {
             key: _listKey,
             controller: _scrollController,
             itemBuilder: (context, pos, anim) {
-              return SizeTransition(
-                sizeFactor: anim.drive(Tween(begin: 0.0, end: 1.0)
-                    .chain(CurveTween(curve: Curves.easeOutQuint))),
-                child: SubmissionListItem(items![pos],
-                    key: ObjectKey(items![pos].id), onDelete: () {
-                  delete(pos);
-                }, onDone: () {
-                  checkDone(pos);
-                }, prefs: _prefs),
-              );
+              return _buildSubmissionItem(anim, pos);
             },
           ),
         ),
@@ -133,13 +124,34 @@ class SubmissionListState extends State<SubmissionList> {
     );
   }
 
-  void checkDone(int index) {
+  Widget _buildSubmissionItem(Animation anim, int pos) {
+    return SizeTransition(
+      sizeFactor: anim.drive(Tween(begin: 0.0, end: 1.0)
+          .chain(CurveTween(curve: Curves.easeOutQuint))),
+      child: SubmissionListItem(items![pos], key: ObjectKey(items![pos].id),
+          onDelete: (animated) {
+        delete(pos, animated);
+      }, onDone: (animated) {
+        checkDone(pos, animated);
+      }, prefs: _prefs),
+    );
+  }
+
+  Widget _buildRemovedSubmissionItem(Animation anim, Submission item) {
+    return SizeTransition(
+      sizeFactor: anim.drive(Tween(begin: 0.0, end: 1.0)
+          .chain(CurveTween(curve: Curves.easeOutQuint.flipped))),
+      child: SubmissionListItem(item, key: ObjectKey(item.id), prefs: _prefs),
+    );
+  }
+
+  void checkDone(int index, bool animated) {
     var item = items![index];
     setState(() {
-      items!.removeAt(index);
-      _listKey.currentState?.removeItem(
-          index, (context, animation) => Container(),
-          duration: const Duration(milliseconds: 1));
+      _listKey.currentState?.removeItem(index,
+          (context, animation) => _buildRemovedSubmissionItem(animation, item),
+          duration: Duration(milliseconds: animated ? 300 : 0));
+      items!.removeWhere((element) => element.id == item.id);
     });
 
     SubmissionProvider().use((provider) {
@@ -176,12 +188,14 @@ class SubmissionListState extends State<SubmissionList> {
         ));
   }
 
-  void delete(int index) async {
+  void delete(int index, bool animated) async {
     var submission = items![index];
 
     SubmissionProvider().use((provider) async {
       SubmissionProvider.deleteFromGoogleTasks(submission.googleTasksTaskId);
-      await provider.deleteItem(submission.id!);
+      if (await provider.get(submission.id!) != null) {
+        await provider.deleteItem(submission.id!);
+      }
     });
 
     late List<Digestive> digestivesToRestore;
@@ -194,8 +208,10 @@ class SubmissionListState extends State<SubmissionList> {
       setState(() {
         items!.removeAt(index);
         _listKey.currentState?.removeItem(
-            index, (context, animation) => Container(),
-            duration: const Duration(milliseconds: 1));
+            index,
+            (context, animation) =>
+                _buildRemovedSubmissionItem(animation, submission),
+            duration: Duration(milliseconds: animated ? 300 : 0));
       });
 
       showSnackBar(globalContext!, "削除しました",
