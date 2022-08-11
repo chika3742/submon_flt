@@ -76,8 +76,14 @@ class DigestiveProvider extends IsarProvider<Digestive> {
         .findAll();
   }
 
-  Future<void> invertDone(Digestive data) {
-    return put(data..done = !data.done);
+  @override
+  Future<int> put(Digestive data) {
+    if (data.done) {
+      FirestoreProvider.removeDigestiveNotification(data.id);
+    } else if (data.startAt.isAfter(DateTime.now())) {
+      FirestoreProvider.addDigestiveNotification(data.id);
+    }
+    return super.put(data);
   }
 
   @override
@@ -100,3 +106,5 @@ class DigestiveProvider extends IsarProvider<Digestive> {
     await callback(this);
   }
 }
+
+

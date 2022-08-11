@@ -1,12 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:submon/db/firestore_provider.dart';
+import 'package:submon/events.dart';
 import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/main.dart';
+import 'package:submon/pages/focus_timer_page.dart';
 import 'package:submon/pages/home_tabs/tab_digestive_list.dart';
 import 'package:submon/utils/ui.dart';
 
 import 'digestive_edit_bottom_sheet.dart';
+
 
 class DigestiveDetailCard extends StatefulWidget {
   const DigestiveDetailCard({
@@ -21,10 +25,24 @@ class DigestiveDetailCard extends StatefulWidget {
   final void Function()? onChanged;
 
   @override
-  _DigestiveDetailCardState createState() => _DigestiveDetailCardState();
+  DigestiveDetailCardState createState() => DigestiveDetailCardState();
 }
 
-class _DigestiveDetailCardState extends State<DigestiveDetailCard> {
+class DigestiveDetailCardState extends State<DigestiveDetailCard> {
+  StreamSubscription? listener;
+
+  @override
+  void initState() {
+    super.initState();
+
+    listener = eventBus.on<OnDigestiveDoneChanged>().listen((event) {
+      setState(() {
+        widget.digestive.done = event.done;
+      });
+      widget.onChanged?.call();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var digestive = widget.digestive;
@@ -151,7 +169,7 @@ class _DigestiveDetailCardState extends State<DigestiveDetailCard> {
                               delete();
                               break;
                             case 2:
-                              done();
+                              done(widget.digestive, !digestive.done);
                               break;
                           }
                         },
@@ -188,28 +206,28 @@ class _DigestiveDetailCardState extends State<DigestiveDetailCard> {
     );
   }
 
-  void done() async {
-    var isDone = widget.digestive.done;
+  @override
+  void dispose() {
+    super.dispose();
+    listener?.cancel();
+  }
+
+  static void done(Digestive digestive, bool done) async {
     await DigestiveProvider().use((provider) async {
       provider.writeTransaction(() async {
-        await provider.invertDone(widget.digestive);
+        await provider.put(digestive..done = done);
       });
     });
-    setState(() {});
-    if (!isDone) {
-      FirestoreProvider.removeDigestiveNotification(widget.digestive.id);
-    } else {
-      FirestoreProvider.addDigestiveNotification(widget.digestive.id);
-    }
+    eventBus.fire(OnDigestiveDoneChanged(true));
     showSnackBar(Application.globalKey.currentContext!,
-        !isDone ? "完了しました" : "完了マークを外しました",
+        done ? "完了しました" : "完了マークを外しました",
         action: SnackBarAction(
           label: "元に戻す",
           onPressed: () {
             DigestiveProvider().use((provider) async {
               provider.writeTransaction(() async {
-                await provider.invertDone(widget.digestive);
-                setState(() {});
+                await provider.put(digestive..done = !done);
+                eventBus.fire(OnDigestiveDoneChanged(false));
               });
             });
           },
@@ -276,13 +294,13 @@ class _DigestiveDetailCardState extends State<DigestiveDetailCard> {
         ));
   }
 
-  void openTimerPage() async {
-    var result = await Navigator.of(context, rootNavigator: true)
-        .pushNamed("/focus-timer", arguments: {
-      "digestive": widget.digestive,
-    });
-    if (result == true) {
-      done();
+  void openTimerPage([bool force = false]) async {
+    if (widget.digestive.done && !force) {
+      showSnackBar(context, "このDigestiveは既に完了しています。", action: SnackBarAction(label: "それでも続ける", onPressed: () {
+        openTimerPage(true);
+      }));
+    } else {
+      FocusTimerPage.openFocusTimer(context, widget.digestive);
     }
   }
 }

@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dnd/flutter_dnd.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:submon/components/digestive_detail_card.dart';
 import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/method_channel/main.dart';
@@ -23,6 +24,14 @@ class FocusTimerPage extends StatefulWidget {
         super(key: key);
 
   final Digestive digestive;
+
+  static Future<void> openFocusTimer(BuildContext context, Digestive digestive) async {
+    var result = await Navigator.of(context, rootNavigator: true).pushNamed<bool>(routeName, arguments: FocusTimerPageArguments(digestive));
+
+    if (result == true) {
+      DigestiveDetailCardState.done(digestive, true);
+    }
+  }
 
   @override
   State<FocusTimerPage> createState() => _FocusTimerPageState();
