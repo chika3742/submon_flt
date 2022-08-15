@@ -11,11 +11,13 @@ import 'package:submon/utils/utils.dart';
 class CustomizeSettingsPage extends StatefulWidget {
   const CustomizeSettingsPage({Key? key}) : super(key: key);
 
+  static const routeName = "/settings/customize";
+
   @override
-  CustomizeSettingsPageState createState() => CustomizeSettingsPageState();
+  State<CustomizeSettingsPage> createState() => _CustomizeSettingsPageState();
 }
 
-class CustomizeSettingsPageState extends State<CustomizeSettingsPage> {
+class _CustomizeSettingsPageState extends State<CustomizeSettingsPage> {
   int? _digestiveNotificationTimeBefore;
   bool _loadingDigestiveNotificationTimeBefore = true;
   SharedPrefs? prefs;

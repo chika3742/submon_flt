@@ -7,6 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/pages/done_submissions_page.dart';
+import 'package:submon/pages/settings/customize.dart';
+import 'package:submon/pages/settings/functions.dart';
+import 'package:submon/pages/settings/general.dart';
 import 'package:submon/ui_components/hidable_progress_indicator.dart';
 import 'package:submon/ui_components/settings_ui.dart';
 import 'package:submon/utils/utils.dart';
@@ -68,7 +72,7 @@ class _TabOthersState extends State<TabOthers> {
                   leading: const Icon(Icons.check),
                   onTap: () {
                     Navigator.of(context, rootNavigator: true)
-                        .pushNamed("/done");
+                        .pushNamed(DoneSubmissionsPage.routeName);
                   },
                 ),
                 SettingsTile(
@@ -76,7 +80,7 @@ class _TabOthersState extends State<TabOthers> {
                   leading: const Icon(Icons.auto_fix_high),
                   onTap: () {
                     Navigator.of(context, rootNavigator: true)
-                        .pushNamed("/settings/customize");
+                        .pushNamed(CustomizeSettingsPage.routeName);
                   },
                 ),
                 SettingsTile(
@@ -84,7 +88,7 @@ class _TabOthersState extends State<TabOthers> {
                   leading: const Icon(Icons.settings),
                   onTap: () {
                     Navigator.of(context, rootNavigator: true)
-                        .pushNamed("/settings/functions");
+                        .pushNamed(FunctionsSettingsPage.routeName);
                   },
                 ),
                 SettingsTile(
@@ -92,7 +96,7 @@ class _TabOthersState extends State<TabOthers> {
                   leading: const Icon(Icons.info),
                   onTap: () {
                     Navigator.of(context, rootNavigator: true)
-                        .pushNamed("/settings/general");
+                        .pushNamed(GeneralSettingsPage.routeName);
                   },
                 ),
               ]),

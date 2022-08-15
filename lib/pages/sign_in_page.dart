@@ -1,46 +1,36 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:submon/auth/sign_in_handler.dart';
 import 'package:submon/browser.dart';
-import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/isar_db/isar_provider.dart';
 import 'package:submon/main.dart';
-import 'package:submon/method_channel/main.dart';
-import 'package:submon/twitter_sign_in.dart';
+import 'package:submon/pages/email_login_page.dart';
 import 'package:submon/ui_components/hidable_progress_indicator.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
-import '../apple_sign_in.dart';
-import '../db/firestore_provider.dart';
-import '../method_channel/messaging.dart';
 import '../utils/dynamic_links.dart';
 
 class SignInPage extends StatefulWidget {
-  SignInPage({Key? key, dynamic arguments})
-      : initialCred = arguments?["initialCred"],
-        reAuth = arguments?["reAuth"] ?? false,
-        upgrade = arguments?["upgrade"] ?? false,
-        // forMigration = arguments?["forMigration"] ?? false,
-        super(key: key);
+  const SignInPage({Key? key, required this.initialCred, required this.mode}) : super(key: key);
+
+  static const routeName = "/sign-in";
 
   final UserCredential? initialCred;
-  final bool reAuth;
-  final bool upgrade;
-
-  // final bool forMigration;
+  final SignInMode mode;
 
   @override
-  _SignInPageState createState() => _SignInPageState();
+  State<SignInPage> createState() => _SignInPageState();
+}
+
+class SignInPageArguments {
+  final UserCredential? initialCred;
+  final SignInMode mode;
+
+  const SignInPageArguments(this.mode, [this.initialCred]);
 }
 
 class _SignInPageState extends State<SignInPage> {
@@ -49,7 +39,7 @@ class _SignInPageState extends State<SignInPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.reAuth) {
+    if (widget.mode == SignInMode.reauthenticate) {
       reAuth();
     }
   }
@@ -100,15 +90,13 @@ class _SignInPageState extends State<SignInPage> {
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.mail, color: Colors.white),
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.orange.shade800,
+                          backgroundColor: Colors.orange.shade800,
                         ),
                         label: const Text("メールアドレスでログイン",
                             style: TextStyle(color: Colors.white)),
-                        onPressed: (!loading && !widget.reAuth)
+                        onPressed: (!loading && widget.mode != SignInMode.reauthenticate)
                             ? () {
-                                wrapSignIn(() async =>
-                                    await Navigator.pushNamed<dynamic>(
-                                        context, "/signIn/email"));
+                                signInWithProvider(AuthProvider.email);
                               }
                             : null,
                       ),
@@ -158,11 +146,11 @@ class _SignInPageState extends State<SignInPage> {
           "assets/vector/apple.svg",
           color: Colors.white,
         ),
-        style: ElevatedButton.styleFrom(primary: Colors.blueGrey),
+        style: ElevatedButton.styleFrom(backgroundColor: Colors.blueGrey),
         label: const Text("Appleでサインイン", style: TextStyle(color: Colors.white)),
-        onPressed: !loading && !widget.reAuth
+        onPressed: !loading && widget.mode != SignInMode.reauthenticate
             ? () {
-                wrapSignIn(signInWithApple);
+                signInWithProvider(AuthProvider.apple);
               }
             : null,
       ),
@@ -177,12 +165,12 @@ class _SignInPageState extends State<SignInPage> {
         icon: SvgPicture.asset(
           "assets/vector/google.svg",
         ),
-        style: ElevatedButton.styleFrom(primary: Colors.white),
+        style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
         label:
             const Text("Googleでサインイン", style: TextStyle(color: Colors.black)),
-        onPressed: !loading && !widget.reAuth
+        onPressed: !loading && widget.mode != SignInMode.reauthenticate
             ? () {
-                wrapSignIn(signInWithGoogle);
+                signInWithProvider(AuthProvider.google);
               }
             : null,
       ),
@@ -198,180 +186,45 @@ class _SignInPageState extends State<SignInPage> {
           "assets/vector/twitter.svg",
           color: Colors.white,
         ),
-        style: ElevatedButton.styleFrom(primary: const Color(0xff1da1f2)),
+        style: ElevatedButton.styleFrom(backgroundColor: const Color(0xff1da1f2)),
         label: Text("Twitterでサインイン",
             style: Theme.of(context)
                 .textTheme
                 .labelLarge
                 ?.copyWith(color: Colors.white)),
-        onPressed: !loading && !widget.reAuth
-            ? () async {
-                var result = await signInWithTwitter();
-
-                if (result != null) {
-                  await completeLogin(result, context);
-                  Navigator.pop(context, true);
-                }
+        onPressed: !loading && widget.mode != SignInMode.reauthenticate
+            ? () {
+                signInWithProvider(AuthProvider.twitter);
               }
             : null,
       ),
     );
   }
 
-  void wrapSignIn(Future<UserCredential?> Function() signInFunc) async {
+  Future<UserCredential?> signInWithProvider(AuthProvider provider) async {
     setState(() {
       loading = true;
     });
 
-    var result = await signInFunc();
-
-    if (result != null) {
-      await completeLogin(result, context);
-      Navigator.pop(context, true);
-    }
-
-    setState(() {
-      loading = false;
-    });
-  }
-
-  Future<UserCredential?> signInWithGoogle() async {
-    var googleSignIn = GoogleSignIn();
-    await googleSignIn.signOut();
-
     try {
-      final googleUser = await googleSignIn.signIn();
-      if (googleUser == null) return null;
+      var signInHandler = SignInHandler(widget.mode);
+      var result = await signInHandler.signIn(provider, context: context);
 
-      final googleAuth = await googleUser.authentication;
+      await signInHandler.handleSignInResult(result);
 
-      final cred = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
-
-      if (widget.reAuth) {
-        return await FirebaseAuth.instance.currentUser!
-            .reauthenticateWithCredential(cred);
-      } else if (widget.upgrade) {
-        return await FirebaseAuth.instance.currentUser!
-            .linkWithCredential(cred);
-      } else {
-        return await signInWithCredential(cred);
-      }
+      return result.credential;
     } on FirebaseAuthException catch (e, stack) {
-      handleCredentialError(e, stack);
-    } on PlatformException catch (e, stackTrace) {
-      print(e);
-      print(stackTrace);
-      showSnackBar(context, "エラーが発生しました。(${e.message})");
-    }
-    return null;
-  }
-
-  // sign in with apple
-
-  Future<UserCredential?> signInWithApple() async {
-    final rawNonce = generateNonce();
-    final state = generateNonce();
-    final nonce = AppleSignIn.sha256ofString(rawNonce);
-
-    try {
-      AuthorizationCredentialAppleID appleCredential;
-      if (Platform.isIOS || Platform.isMacOS) {
-        appleCredential = await SignInWithApple.getAppleIDCredential(
-            scopes: [
-              AppleIDAuthorizationScopes.email,
-              AppleIDAuthorizationScopes.fullName,
-            ],
-            nonce: nonce,
-            state: state,
-            webAuthenticationOptions: WebAuthenticationOptions(
-                clientId: "net.chikach.submon.asi",
-                redirectUri: Uri.parse(
-                    "https://asia-northeast1-submon-mgr.cloudfunctions.net/appleSignInRedirector")));
-      } else {
-        setState(() {
-          loading = false;
-        });
-        appleCredential =
-            (await AppleSignIn().signIn(state: state, nonce: nonce))!;
-      }
-
-      if (state != appleCredential.state) {
-        showSnackBar(context, "State mismatch.");
+      if (widget.mode != SignInMode.reauthenticate) {
+        handleCredentialError(e, stack);
         return null;
-      }
-
-      setState(() {
-        loading = true;
-      });
-
-      final cred = OAuthProvider("apple.com").credential(
-          accessToken: appleCredential.authorizationCode,
-          idToken: appleCredential.identityToken,
-          rawNonce: rawNonce);
-
-      if (widget.reAuth) {
-        return await FirebaseAuth.instance.currentUser!
-            .reauthenticateWithCredential(cred);
-      } else if (widget.upgrade) {
-        return await FirebaseAuth.instance.currentUser!
-            .linkWithCredential(cred);
       } else {
-        return await signInWithCredential(cred);
+        rethrow;
       }
-    } on FirebaseAuthException catch (e, stack) {
-      handleCredentialError(e, stack);
-    } catch (e, stackTrace) {
-      print(e);
-      print(stackTrace);
-      showSnackBar(context, "エラーが発生しました");
-    }
-    return null;
-  }
-
-  // sign in with twitter
-  Future<UserCredential?> signInWithTwitter() async {
-    var authResult = await TwitterSignIn.getInstance(context).signIn();
-
-    if (authResult?.errorMessage != null) {
-      showSnackBar(context, authResult!.errorMessage!);
-      return null;
-    }
-
-    if (authResult == null) {
-      return null;
-    }
-
-    setState(() {
-      loading = true;
-    });
-
-    final cred = TwitterAuthProvider.credential(
-      accessToken: authResult.accessToken!,
-      secret: authResult.accessTokenSecret!,
-    );
-
-    try {
-      if (widget.reAuth) {
-        return await FirebaseAuth.instance.currentUser!
-            .reauthenticateWithCredential(cred);
-      } else if (widget.upgrade) {
-        return await FirebaseAuth.instance.currentUser!
-            .linkWithCredential(cred);
-      } else {
-        return await signInWithCredential(cred);
-      }
-    } on FirebaseAuthException catch (e, stack) {
-      handleCredentialError(e, stack);
+    } finally {
       setState(() {
         loading = false;
       });
-      return null;
     }
-  }
-
-  Future<UserCredential> signInWithCredential(AuthCredential credential) async {
-    return FirebaseAuth.instance.signInWithCredential(credential);
   }
 
   void handleCredentialError(FirebaseAuthException e, StackTrace stack) {
@@ -400,12 +253,12 @@ class _SignInPageState extends State<SignInPage> {
 
         var methods = await auth.fetchSignInMethodsForEmail(currentUser.email!);
 
-        Navigator.pop(context); // Close Loading modal
+        Navigator.pop(globalContext!); // Close Loading modal
 
         if (methods.first == EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {
-          var result = await Navigator.pushNamed(context, "/signIn/email",
-              arguments: {'reAuth': true});
-          Navigator.pop(context, result != null);
+          var result = await Navigator.pushNamed(globalContext!, EmailSignInPage.routeName,
+              arguments: const EmailSignInPageArguments(reAuth: true));
+          Navigator.pop(globalContext!, result != null);
         } else if (methods.first ==
             EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD) {
           showSimpleDialog(
@@ -420,7 +273,7 @@ class _SignInPageState extends State<SignInPage> {
                     email: currentUser.email!,
                     actionCodeSettings:
                         actionCodeSettings(getAppDomain("", withScheme: true)));
-                showSnackBar(context, "送信しました");
+                if (mounted) showSnackBar(context, "送信しました");
               } catch (e, stack) {
                 showSnackBar(context, "エラーが発生しました");
                 recordErrorToCrashlytics(e, stack);
@@ -438,14 +291,14 @@ class _SignInPageState extends State<SignInPage> {
         try {
           UserCredential? result;
           if (providerId == GoogleAuthProvider.PROVIDER_ID) {
-            result = await signInWithGoogle();
+            result = await signInWithProvider(AuthProvider.google);
           } else if (providerId == TwitterAuthProvider.PROVIDER_ID) {
-            result = await signInWithTwitter();
+            result = await signInWithProvider(AuthProvider.twitter);
           } else if (providerId == "apple.com") {
-            result = await signInWithApple();
+            result = await signInWithProvider(AuthProvider.apple);
           }
 
-          Navigator.pop(context, result != null && result.user != null);
+          Navigator.pop(globalContext!, result != null && result.user != null);
         } on FirebaseAuthException catch (e, stack) {
           switch (e.code) {
             case "user-mismatch":
@@ -458,43 +311,5 @@ class _SignInPageState extends State<SignInPage> {
         }
       }
     });
-  }
-}
-
-Future<void> completeLogin(UserCredential result, BuildContext context) async {
-  try {
-    SharedPrefs.use((prefs) {
-      prefs.firestoreLastChanged = null;
-    });
-    await IsarProvider.clear();
-
-    try {
-      // check account exists
-      var doc =
-          FirebaseFirestore.instance.collection("users").doc(result.user!.uid);
-      await doc.get();
-      FirebaseAnalytics.instance.logLogin(
-          loginMethod: result.additionalUserInfo?.providerId ?? "unknown");
-      showSnackBar(globalContext!, "ログインしました");
-    } on FirebaseException catch (e) {
-      if (e.code == "permission-denied") {
-        showSnackBar(context, "アカウントを作成しています。しばらくお待ち下さい・・・",
-            duration: const Duration(seconds: 10));
-        await FirestoreProvider.initializeUser();
-        showSnackBar(globalContext!, "アカウントを作成しました");
-        FirebaseAnalytics.instance.logSignUp(
-            signUpMethod: result.additionalUserInfo?.providerId ?? "unknown");
-      } else {
-        rethrow;
-      }
-    }
-    // save messaging token
-    MessagingPlugin.getToken().then((token) {
-      FirestoreProvider.saveNotificationToken(token);
-    });
-    MainMethodPlugin.updateWidgets();
-  } catch (e) {
-    FirebaseCrashlytics.instance.recordError(e, (e as dynamic).stackTrace);
-    showSnackBar(context, "エラーが発生しました");
   }
 }

@@ -40,8 +40,8 @@ class SwitchBottomNav {
   SwitchBottomNav(this.path);
 }
 
-class AppleSignInResult {
-  Uri url;
+class OnDigestiveDoneChanged {
+  bool done;
 
-  AppleSignInResult(this.url);
+  OnDigestiveDoneChanged(this.done);
 }

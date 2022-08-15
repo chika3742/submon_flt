@@ -112,6 +112,7 @@ class SubmissionListState extends State<SubmissionList> {
             ),
           ),
         Scrollbar(
+          controller: _scrollController,
           child: AnimatedList(
             key: _listKey,
             controller: _scrollController,

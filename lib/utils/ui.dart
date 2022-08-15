@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:submon/ui_components/platform_dialog.dart';
 
+import '../pages/home_page.dart';
+import '../pages/welcome_page.dart';
+
 String getWeekdayString(int weekday) {
   var weekdays = ["月", "火", "水", "木", "金", "土", "日"];
   return weekdays[weekday];
@@ -237,8 +240,8 @@ void showSelectSheet(
 
 void backToWelcomePage(BuildContext context) {
   var navigatorState = Navigator.of(context, rootNavigator: true);
-  navigatorState.popUntil(ModalRoute.withName("/"));
-  navigatorState.pushReplacementNamed("welcome");
+  navigatorState.popUntil(ModalRoute.withName(HomePage.routeName));
+  navigatorState.pushReplacementNamed(WelcomePage.routeName);
 }
 
 class SelectSheetAction {

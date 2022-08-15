@@ -21,17 +21,12 @@ import 'package:submon/pages/done_submissions_page.dart';
 import 'package:submon/pages/email_login_page.dart';
 import 'package:submon/pages/focus_timer_page.dart';
 import 'package:submon/pages/home_page.dart';
-import 'package:submon/pages/link_with_google_tasks_page.dart';
-import 'package:submon/pages/memorize_card/card_forum_page.dart';
-import 'package:submon/pages/memorize_card/card_graph_page.dart';
-import 'package:submon/pages/memorize_card/card_test_page.dart';
-import 'package:submon/pages/memorize_card/card_view_page.dart';
-import 'package:submon/pages/memorize_card/memorize_card_create_page.dart';
 import 'package:submon/pages/settings/account_edit_page.dart';
-import 'package:submon/pages/settings/canvas_lms_sync_page.dart';
+import 'package:submon/pages/settings/canvas_lms_sync.dart';
 import 'package:submon/pages/settings/customize.dart';
 import 'package:submon/pages/settings/functions.dart';
 import 'package:submon/pages/settings/general.dart';
+import 'package:submon/pages/settings/google_tasks.dart';
 import 'package:submon/pages/settings/timetable.dart';
 import 'package:submon/pages/settings_page.dart';
 import 'package:submon/pages/sign_in_page.dart';
@@ -191,67 +186,82 @@ class _ApplicationState extends State<Application> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      initialRoute: FirebaseAuth.instance.currentUser == null && screenShotMode == false ? "welcome" : "/",
+      initialRoute: FirebaseAuth.instance.currentUser == null && screenShotMode == false ? WelcomePage.routeName : HomePage.routeName,
       onGenerateRoute: (settings) {
-        var routes = <String, WidgetBuilder>{
-          "/": (context) => const HomePage(),
-          "welcome": (context) => const WelcomePage(),
-          "/focus-timer": (context) =>
-              FocusTimerPage(arguments: settings.arguments as dynamic),
-          "/submission/edit": (context) => SubmissionEditPage(
-              (settings.arguments as dynamic)["submissionId"]),
-          "/submission/create": (context) => SubmissionCreatePage(
-            initialTitle: (settings.arguments as dynamic)["initialTitle"],
-            initialDeadline:
-            (settings.arguments as dynamic)["initialDeadline"],
-          ),
-          "/submission/detail": (context) => SubmissionDetailPage(
-            (settings.arguments as dynamic)["id"],
-          ),
-          "/timetable/edit": (context) => const TimetableEditPage(),
-          "/timetable/table-view": (context) => const TimetableTableViewPage(),
-          // "/memorize_card/camera": (context) =>
-          //     CameraPreviewPage(arguments: settings.arguments),
-          "/memorize_card/create": (context) => const MemorizeCardCreatePage(),
-          "/memorize_card/view": (context) =>
-              CardViewPage(arguments: settings.arguments),
-          "/memorize_card/test": (context) => const CardTestPage(),
-          "/memorize_card/graph": (context) => const CardGraphPage(),
-          "/memorize_card/forum": (context) => const CardForumPage(),
-          "/done": (context) => const DoneSubmissionsPage(),
-          "/signIn": (context) => SignInPage(arguments: settings.arguments),
-          "/signIn/email": (context) => EmailLoginPage(
-              reAuth: (settings.arguments as dynamic)?["reAuth"] ?? false),
-          "/settings/customize": (context) =>
-          const SettingsPage("カスタマイズ設定", page: CustomizeSettingsPage()),
-          "/settings/functions": (context) =>
-          const SettingsPage("機能設定", page: FunctionsSettingsPage()),
-          "/settings/functions/link-with-google-tasks": (context) =>
-          const LinkWithGoogleTasksPage(),
-          "/settings/functions/canvasLmsSync": (context) =>
-          const CanvasLmsSyncPage(),
-          "/settings/general": (context) =>
-          const SettingsPage("全般", page: GeneralSettingsPage()),
-          "/settings/timetable": (context) =>
-          const SettingsPage("時間割表設定", page: TimetableSettingsPage()),
-          "/account/changeEmail": (context) =>
-          const AccountEditPage(EditingType.changeEmail),
-          "/account/changePassword": (context) =>
-          const AccountEditPage(EditingType.changePassword),
-          "/account/changeDisplayName": (context) =>
-          const AccountEditPage(EditingType.changeDisplayName),
-          "/account/delete": (context) =>
-          const AccountEditPage(EditingType.delete),
-        };
-        if (Platform.isIOS || Platform.isMacOS) {
-          return CupertinoPageRoute(
-              builder: routes[settings.name]!, settings: settings);
-        } else {
-          return MaterialPageRoute(
-              builder: routes[settings.name]!, settings: settings);
+        switch (settings.name) {
+          case HomePage.routeName:
+            return generatePageRoute((context) => const HomePage(), settings);
+          case WelcomePage.routeName:
+            return generatePageRoute((context) => const WelcomePage(), settings);
+          case FocusTimerPage.routeName:
+            var args = settings.arguments as FocusTimerPageArguments;
+            return generatePageRoute<bool>((context) => FocusTimerPage(digestive: args.digestive), settings);
+          case SubmissionEditPage.routeName:
+            var args = settings.arguments as SubmissionEditPageArguments;
+            return generatePageRoute((context) => SubmissionEditPage(args.submissionId), settings);
+          case CreateSubmissionPage.routeName:
+            var args = settings.arguments as CreateSubmissionPageArguments;
+            return generatePageRoute<int>((context) => CreateSubmissionPage(initialTitle: args.initialTitle, initialDeadline: args.initialDeadline), settings);
+          case SubmissionDetailPage.routeName:
+            var args = settings.arguments as SubmissionDetailPageArguments;
+            return generatePageRoute((context) => SubmissionDetailPage(args.submissionId), settings);
+          case TimetableEditPage.routeName:
+            return generatePageRoute((context) => const TimetableEditPage(), settings);
+          case TimetableTableViewPage.routeName:
+            return generatePageRoute((context) => const TimetableTableViewPage(), settings);
+          case DoneSubmissionsPage.routeName:
+            return generatePageRoute((context) => const DoneSubmissionsPage(), settings);
+          case SignInPage.routeName:
+            var args = settings.arguments as SignInPageArguments;
+            return generatePageRoute<bool>((context) => SignInPage(
+              initialCred: args.initialCred,
+              mode: args.mode,
+            ), settings);
+          case EmailSignInPage.routeName:
+            var args = settings.arguments as EmailSignInPageArguments;
+            return generatePageRoute((context) => EmailSignInPage(reAuth: args.reAuth), settings);
+          case CustomizeSettingsPage.routeName:
+            return generatePageRoute((context) => const SettingsPage("カスタマイズ設定", CustomizeSettingsPage()), settings);
+          case FunctionsSettingsPage.routeName:
+            return generatePageRoute((context) => const SettingsPage("機能設定", FunctionsSettingsPage()), settings);
+          case GeneralSettingsPage.routeName:
+            return generatePageRoute((context) => const SettingsPage("全般", GeneralSettingsPage()), settings);
+          case TimetableSettingsPage.routeName:
+            return generatePageRoute((context) => const SettingsPage("時間割表設定", TimetableSettingsPage()), settings);
+          case GoogleTasksSettingsPage.routeName:
+            return generatePageRoute((context) => const SettingsPage("Google Tasksと連携", GoogleTasksSettingsPage()), settings);
+          case CanvasLmsSyncSettingsPage.routeName:
+            return generatePageRoute((context) => const SettingsPage("Canvas と連携", CanvasLmsSyncSettingsPage()), settings);
+          case AccountEditPage.changeEmailRouteName:
+            return generatePageRoute((context) => const AccountEditPage(EditingType.changeEmail), settings);
+          case AccountEditPage.changePasswordRouteName:
+            return generatePageRoute((context) => const AccountEditPage(EditingType.changePassword), settings);
+          case AccountEditPage.changeDisplayNameRouteName:
+            return generatePageRoute((context) => const AccountEditPage(EditingType.changeDisplayName), settings);
+          case AccountEditPage.deleteRouteName:
+            return generatePageRoute((context) => const AccountEditPage(EditingType.delete), settings);
+          default:
+            return null;
         }
+
+        // "/memorize_card/create": (context) => const MemorizeCardCreatePage(),
+        // "/memorize_card/view": (context) =>
+        // CardViewPage(arguments: settings.arguments),
+        // "/memorize_card/test": (context) => const CardTestPage(),
+        // "/memorize_card/graph": (context) => const CardGraphPage(),
+        // "/memorize_card/forum": (context) => const CardForumPage(),
       },
     );
+  }
+  
+  PageRoute<T> generatePageRoute<T>(WidgetBuilder builder, RouteSettings settings) {
+    if (Platform.isIOS || Platform.isMacOS) {
+      return CupertinoPageRoute<T>(
+          builder: builder, title: "asdf", settings: settings);
+    } else {
+      return MaterialPageRoute<T>(
+          builder: builder, settings: settings);
+    }
   }
 
   void initFirebase() async {

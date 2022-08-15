@@ -8,8 +8,10 @@ import 'package:submon/isar_db/isar_timetable.dart' as db;
 class TimetableEditPage extends StatefulWidget {
   const TimetableEditPage({Key? key}) : super(key: key);
 
+  static const routeName = "/timetable/edit";
+
   @override
-  _TimetableEditPageState createState() => _TimetableEditPageState();
+  State<TimetableEditPage> createState() => _TimetableEditPageState();
 }
 
 class _TimetableEditPageState extends State<TimetableEditPage> {

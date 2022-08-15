@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage(this.title, {Key? key, this.page}) : super(key: key);
+  const SettingsPage(this.title, this.body, {Key? key}) : super(key: key);
 
-  final Widget? page;
+  final Widget? body;
   final String title;
 
   @override
@@ -12,7 +12,7 @@ class SettingsPage extends StatelessWidget {
         appBar: AppBar(
           title: Text(title),
         ),
-        body: page);
+        body: body);
   }
 }
 

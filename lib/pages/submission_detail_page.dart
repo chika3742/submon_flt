@@ -8,6 +8,7 @@ import 'package:submon/components/submissions/formatted_date_remaining.dart';
 import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/main.dart';
+import 'package:submon/pages/submission_edit_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -17,11 +18,19 @@ import '../utils/ad_unit_ids.dart';
 class SubmissionDetailPage extends StatefulWidget {
   const SubmissionDetailPage(this.submissionId, {Key? key}) : super(key: key);
 
+  static const routeName = "/submission/detail";
+
   final int submissionId;
 
   @override
   // ignore: library_private_types_in_public_api
   _SubmissionDetailPageState createState() => _SubmissionDetailPageState();
+}
+
+class SubmissionDetailPageArguments {
+  final int submissionId;
+
+  SubmissionDetailPageArguments(this.submissionId);
 }
 
 class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
@@ -102,8 +111,8 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
-              await Navigator.pushNamed(context, "/submission/edit",
-                  arguments: {"submissionId": widget.submissionId});
+              await Navigator.pushNamed(context, SubmissionEditPage.routeName,
+                  arguments: SubmissionEditPageArguments(widget.submissionId));
               SubmissionProvider().use((provider) async {
                 await provider.get(widget.submissionId).then((value) {
                   setState(() {

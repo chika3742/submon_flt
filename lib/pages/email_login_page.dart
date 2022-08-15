@@ -7,19 +7,27 @@ import 'package:submon/utils/ui.dart';
 import '../utils/dynamic_links.dart';
 import '../utils/utils.dart';
 
-class EmailLoginPage extends StatefulWidget {
-  const EmailLoginPage({
+class EmailSignInPage extends StatefulWidget {
+  const EmailSignInPage({
     Key? key,
-    this.reAuth = false,
+    required this.reAuth,
   }) : super(key: key);
+
+  static const routeName = "/sign-in/email";
 
   final bool reAuth;
 
   @override
-  State<StatefulWidget> createState() => EmailLoginPageState();
+  State<StatefulWidget> createState() => EmailSignInPageState();
 }
 
-class EmailLoginPageState extends State<EmailLoginPage>
+class EmailSignInPageArguments {
+  final bool reAuth;
+
+  const EmailSignInPageArguments({this.reAuth = false});
+}
+
+class EmailSignInPageState extends State<EmailSignInPage>
     with SingleTickerProviderStateMixin {
   var enableEmailForm = true;
   var enablePWForm = false;

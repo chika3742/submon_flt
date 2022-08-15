@@ -6,8 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:submon/utils/dynamic_links.dart';
 
-import 'method_channel/channels.dart';
-import 'method_channel/main.dart';
+import '../method_channel/channels.dart';
+import '../method_channel/main.dart';
 
 class AppleSignIn {
   String clientId = "net.chikach.submon.asi";
@@ -43,11 +43,16 @@ class AppleSignIn {
     return authResult;
   }
 
-  Future<AuthorizationCredentialAppleID> waitForUri() async {
-    var completer = Completer<AuthorizationCredentialAppleID>();
+  Future<AuthorizationCredentialAppleID?> waitForUri() async {
+    var completer = Completer<AuthorizationCredentialAppleID?>();
     var subscription = const EventChannel(EventChannels.signInUri)
         .receiveBroadcastStream()
         .listen((event) {
+      if (event == null) {
+        completer.complete(null);
+        return;
+      }
+
       var query = Uri.splitQueryString(event);
       completer.complete(AuthorizationCredentialAppleID(
         userIdentifier: null,

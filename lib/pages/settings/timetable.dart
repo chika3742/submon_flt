@@ -20,11 +20,13 @@ import '../../utils/utils.dart';
 class TimetableSettingsPage extends StatefulWidget {
   const TimetableSettingsPage({Key? key}) : super(key: key);
 
+  static const routeName = "/settings/functions/timetable";
+
   @override
-  TimetableSettingsPageState createState() => TimetableSettingsPageState();
+  State<TimetableSettingsPage> createState() => _TimetableSettingsPageState();
 }
 
-class TimetableSettingsPageState extends State<TimetableSettingsPage> {
+class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
   // int? hours;
   // bool? showSaturday;
   SharedPrefs? prefs;

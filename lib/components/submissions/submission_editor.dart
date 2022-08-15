@@ -1,8 +1,5 @@
-import 'package:collection/collection.dart';
-import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
-import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:intl/intl.dart';
 import 'package:submon/components/color_picker_dialog.dart';
 import 'package:submon/db/shared_prefs.dart';
@@ -10,7 +7,7 @@ import 'package:submon/events.dart';
 import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/main.dart';
 import 'package:submon/ui_components/tappable_card.dart';
-import 'package:submon/utils/dynamic_links.dart';
+import 'package:submon/utils/google_tasks.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
@@ -312,7 +309,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
       });
 
       if (_writeGoogleTasks && _googleTasksAvailable == true) {
-        writeToGoogleTasks(_submission);
+        addToGoogleTasks(_submission);
       }
     });
 
@@ -394,56 +391,32 @@ class SubmissionEditorState extends State<SubmissionEditor> {
       FirebaseAnalytics.instance.logEvent(name: "create_submission");
     }
 
-    Navigator.of(context, rootNavigator: true).maybePop(_submission.id);
+    if (mounted) Navigator.of(context, rootNavigator: true).maybePop(_submission.id);
   }
 
-  Future<tasks.Task> makeTaskRequest(Submission data) async {
-    var linkData = await buildShortDynamicLink("/submission?id=${data.id}");
-    return tasks.Task(
-      id: data.googleTasksTaskId,
-      title: "${data.title} (Submon)",
-      notes: "Submon アプリ内で開く: ${linkData.shortUrl}",
-      due: data.due.toUtc().toIso8601String(),
-    );
-  }
 
-  Future<void> writeToGoogleTasks(Submission data) async {
-    var client = await googleSignIn.authenticatedClient();
-    if (client == null) {
-      showSnackBar(Application.globalKey.currentContext!,
-          "Google Tasksへの追加に失敗しました。(認証に失敗しました。)");
-      return;
-    }
+  Future<void> addToGoogleTasks(Submission data) async {
+    var result = await GoogleTasksHelper.addTask(data);
 
-    var tasksApi = tasks.TasksApi(client);
+    switch (result) {
+      case GoogleApiError.failedToAuthenticate:
+        showSnackBar(globalContext!,
+            "Google Tasksへの追加に失敗しました。(認証に失敗しました。)");
+        break;
 
-    try {
-      var tasklist =
-          (await tasksApi.tasklists.list(maxResults: 1)).items?.firstOrNull;
-      if (tasklist == null) {
-        showSnackBar(Application.globalKey.currentContext!,
+      case GoogleApiError.taskListDoesNotExist:
+        showSnackBar(globalContext!,
             "Google Tasksのタスクリストが存在しません。Tasksアプリでタスクリストを作成してください。");
-        return;
-      }
+        break;
 
-      if (data.googleTasksTaskId != null) {
-        await tasksApi.tasks.update(
-            await makeTaskRequest(data), tasklist.id!, data.googleTasksTaskId!);
-      } else {
-        var result = await tasksApi.tasks
-            .insert(await makeTaskRequest(data), tasklist.id!);
+      case GoogleApiError.unknown:
+        showSnackBar(globalContext!,
+            "Google Tasksへの追加に失敗しました。");
+        break;
 
-        SubmissionProvider().use((provider) async {
-          await provider.writeTransaction(() async {
-            await provider.put(data..googleTasksTaskId = result.id);
-          });
-        });
-      }
-    } catch (e, st) {
-      showSnackBar(
-          Application.globalKey.currentContext!, "Google Tasksへの追加に失敗しました。");
-      debugPrint(e.toString());
-      debugPrintStack(stackTrace: st);
+      case null:
+        // Successful
     }
   }
+
 }

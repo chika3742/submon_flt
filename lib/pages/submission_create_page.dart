@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:submon/components/submissions/submission_editor.dart';
 
-class SubmissionCreatePage extends StatelessWidget {
-  const SubmissionCreatePage(
+class CreateSubmissionPage extends StatelessWidget {
+  const CreateSubmissionPage(
       {Key? key, this.initialTitle, this.initialDeadline})
       : super(key: key);
+
+  static const routeName = "/submission/create";
 
   final String? initialTitle;
   final DateTime? initialDeadline;
@@ -28,5 +30,12 @@ class SubmissionCreatePage extends StatelessWidget {
           },
         ));
   }
+}
+
+class CreateSubmissionPageArguments {
+  final String? initialTitle;
+  final DateTime? initialDeadline;
+
+  CreateSubmissionPageArguments({this.initialTitle, this.initialDeadline});
 }
 

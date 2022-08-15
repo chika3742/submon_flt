@@ -13,6 +13,7 @@ class UserConfig {
   TimetableConfig? timetable;
   bool? isSEEnabled;
   Color? colorSubmissionAddedFromLms;
+  List<String> digestiveNotifications;
 
   static const pathTimetableShowSaturday = "timetable.showSaturday";
   static const pathTimetablePeriodCountToDisplay = "timetable.periodCountToDisplay";
@@ -31,6 +32,7 @@ class UserConfig {
     this.timetable,
     this.isSEEnabled,
     this.colorSubmissionAddedFromLms,
+    required this.digestiveNotifications,
   });
 
   factory UserConfig.fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot, SnapshotOptions? options) {
@@ -52,7 +54,8 @@ class UserConfig {
       lms: Lms.fromMap(data?["lms"]),
       timetable: TimetableConfig.fromMap(data?["timetable"]),
       isSEEnabled: data?["isSEEnabled"],
-      colorSubmissionAddedFromLms: data?["colorSubmissionAddedFromLms"] != null ? Color(data!["colorSubmissionAddedFromLms"]) : null
+      colorSubmissionAddedFromLms: data?["colorSubmissionAddedFromLms"] != null ? Color(data!["colorSubmissionAddedFromLms"]) : null,
+      digestiveNotifications: (data?["digestiveNotifications"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? <String>[]
     );
   }
 

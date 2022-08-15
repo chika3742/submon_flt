@@ -20,6 +20,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.FileProvider
+import androidx.core.os.postDelayed
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import net.chikach.submon.*
@@ -33,7 +34,6 @@ class MainMethodChannelHandler(private val activity: MainActivity) :
     private var takePictureResult: MethodChannel.Result? = null
     private var pictureFile: File? = null
     var pendingUri: Uri? = null
-    private var openWebPageResult: MethodChannel.Result? = null
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
@@ -94,10 +94,18 @@ class MainMethodChannelHandler(private val activity: MainActivity) :
         val ctIntent = CustomTabsIntent.Builder().build()
         val pm = activity.packageManager
         if (!chromiumBrowserPackages.contains(
-                pm.resolveActivity(
-                    Intent("android.intent.action.VIEW", Uri.parse("http://")),
-                    PackageManager.MATCH_DEFAULT_ONLY
-                )?.activityInfo?.packageName
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    pm.resolveActivity(
+                        Intent("android.intent.action.VIEW", Uri.parse("http://")),
+                        PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong())
+                    )
+                } else {
+                    @Suppress("DEPRECATION")
+                    pm.resolveActivity(
+                        Intent("android.intent.action.VIEW", Uri.parse("http://")),
+                        PackageManager.MATCH_DEFAULT_ONLY
+                    )
+                }?.activityInfo?.packageName
             )
         ) {
             val `package` = chromiumBrowserPackages.firstOrNull {
@@ -123,8 +131,14 @@ class MainMethodChannelHandler(private val activity: MainActivity) :
         result.success(null)
     }
 
-    fun completeCustomTabs() {
-//        openWebPageResult?.success(null)
+    fun completeCustomTabs(query: String?) {
+        if (query == null) {
+            Handler(activity.mainLooper).postDelayed({
+                activity.twitterSignInUriEventSink?.success(null)
+            }, 1000)
+        } else {
+            activity.twitterSignInUriEventSink?.success(query)
+        }
     }
 
     /**
@@ -217,6 +231,7 @@ class MainMethodChannelHandler(private val activity: MainActivity) :
             activity.window.decorView.windowInsetsController?.systemBarsBehavior =
                 WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         } else {
+            @Suppress("DEPRECATION")
             activity.window.decorView.systemUiVisibility =
                 View.SYSTEM_UI_FLAG_IMMERSIVE or View.SYSTEM_UI_FLAG_FULLSCREEN
         }
@@ -226,6 +241,7 @@ class MainMethodChannelHandler(private val activity: MainActivity) :
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             activity.window.decorView.windowInsetsController?.show(WindowInsets.Type.statusBars())
         } else {
+            @Suppress("DEPRECATION")
             activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
         }
     }

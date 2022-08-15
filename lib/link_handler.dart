@@ -5,12 +5,18 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:submon/auth/sign_in_handler.dart';
 import 'package:submon/events.dart';
 import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
-import 'package:submon/pages/sign_in_page.dart';
+import 'package:submon/models/sign_in_result.dart';
+import 'package:submon/pages/focus_timer_page.dart';
+import 'package:submon/pages/home_page.dart';
+import 'package:submon/pages/submission_create_page.dart';
+import 'package:submon/pages/submission_detail_page.dart';
+import 'package:submon/pages/welcome_page.dart';
 import 'package:submon/utils/dynamic_links.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
@@ -54,30 +60,35 @@ StreamSubscription initUriHandler() {
 }
 
 void handleDynamicLink(Uri url) {
-  if (url.host == getAppDomain("") || url.scheme == "submon") {
-    switch (url.path.split("/")[1]) {
-      case "__":
-        if (url.path == "/__/auth/action") {
-          handleAuthUri(url, [AuthUriMode.verifyAndChangeEmail]);
-        }
-        break;
+  try {
+    if (url.host == getAppDomain("") || url.scheme == "submon") {
+        switch (url.path.split("/")[1]) {
+          case "__":
+            if (url.path == "/__/auth/action") {
+              handleAuthUri(url, [AuthUriMode.verifyAndChangeEmail]);
+            }
+            break;
 
-      case "submission":
-        openSubmission(url);
-        break;
-      case "submission-sharing":
-        showSubmissionSharingDialog(url);
-        break;
-      case "create-submission":
-        openCreateSubmissionPage();
-        break;
-      case "focus-timer":
-        openFocusTimer(url);
-        break;
-      case "tab":
-        setDefaultTab(url);
-        break;
-    }
+          case "submission":
+            openSubmission(url);
+            break;
+          case "submission-sharing":
+            showSubmissionSharingDialog(url);
+            break;
+          case "create-submission":
+            openCreateSubmissionPage();
+            break;
+          case "focus-timer":
+            openFocusTimer(url);
+            break;
+          case "tab":
+            setDefaultTab(url);
+            break;
+        }
+      }
+  } on RangeError catch (e, stack) {
+    debugPrint("Malformed URL or the URL should not be handled here");
+    debugPrintStack(stackTrace: stack);
   }
 }
 
@@ -89,10 +100,6 @@ void handleSignInDynamicLink(Uri url) {
           AuthUriMode.verifyAndChangeEmail,
           AuthUriMode.signInWithEmailLink
         ]);
-        break;
-
-      case "/asi-callback":
-        eventBus.fire(AppleSignInResult(url));
         break;
     }
   }
@@ -133,11 +140,11 @@ void handleAuthUri(Uri url, List<AuthUriMode> acceptableMode) async {
           var result = await auth.signInWithEmailLink(
               email: email, emailLink: url.toString());
 
-          await completeLogin(result, globalContext!);
+          await SignInHandler(SignInMode.normal).handleSignInResult(SignInResult(credential: result));
           navigator.pop(); // dismiss loading modal
 
-          navigator.popUntil(ModalRoute.withName("welcome"));
-          navigator.pushReplacementNamed("/");
+          navigator.popUntil(ModalRoute.withName(WelcomePage.routeName));
+          navigator.pushReplacementNamed(HomePage.routeName);
 
           return;
         } else {
@@ -165,18 +172,23 @@ void handleAuthUri(Uri url, List<AuthUriMode> acceptableMode) async {
 
 void openSubmission(Uri url) {
   var id = url.queryParameters["id"];
+  var uid = url.queryParameters["uid"];
+  print(url.toString());
   var context = globalContext!;
   if (id == null) {
     showSnackBar(context, "パラメーターが不足しています。");
     return;
   }
+  if (uid != null && uid != FirebaseAuth.instance.currentUser?.uid) {
+    showSnackBar(context, "このアカウントで作成された提出物ではありません。");
+    return;
+  }
   if (int.tryParse(id) == null) {
     showSnackBar(context, "idが整数ではありません");
+    return;
   }
 
-  Navigator.pushNamed(context, "/submission/detail", arguments: {
-    "id": int.parse(id),
-  });
+  Navigator.pushNamed(context, SubmissionDetailPage.routeName, arguments: SubmissionDetailPageArguments(int.parse(id)));
 }
 
 void showSubmissionSharingDialog(Uri url) {
@@ -218,7 +230,7 @@ void showSubmissionSharingDialog(Uri url) {
 }
 
 void openCreateSubmissionPage() {
-  Navigator.pushNamed(globalContext!, "/submission/create", arguments: {})
+  Navigator.pushNamed(globalContext!, CreateSubmissionPage.routeName, arguments: CreateSubmissionPageArguments())
       .then((insertedId) {
     if (insertedId != null) {
       eventBus.fire(SubmissionInserted(insertedId as int));
@@ -231,8 +243,9 @@ void openFocusTimer(Uri url) {
     var digestive =
         await provider.get(int.parse(url.queryParameters["digestiveId"]!));
     if (digestive != null) {
-      Navigator.of(globalContext!, rootNavigator: true)
-          .pushNamed("/focus-timer", arguments: {"digestive": digestive});
+      var result = await Navigator.of(globalContext!, rootNavigator: true)
+          .pushNamed<bool>(FocusTimerPage.routeName, arguments: FocusTimerPageArguments(digestive));
+
     } else {
       showSnackBar(globalContext!, "このDigestiveはすでに削除されています");
     }

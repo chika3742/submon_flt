@@ -5,18 +5,25 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:submon/auth/sign_in_handler.dart';
 import 'package:submon/browser.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/link_handler.dart';
+import 'package:submon/main.dart';
+import 'package:submon/pages/sign_in_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'home_page.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({Key? key}) : super(key: key);
 
+  static const routeName = "welcome";
+
   @override
-  _WelcomePageState createState() => _WelcomePageState();
+  State<WelcomePage> createState() => _WelcomePageState();
 }
 
 class _WelcomePageState extends State<WelcomePage> {
@@ -63,9 +70,9 @@ class _WelcomePageState extends State<WelcomePage> {
                     child: ElevatedButton(
                       onPressed: () async {
                         var result =
-                            await Navigator.pushNamed(context, "/signIn");
-                        if (result == true) {
-                          Navigator.pushReplacementNamed(context, "/");
+                            await Navigator.pushNamed(context, SignInPage.routeName, arguments: const SignInPageArguments(SignInMode.normal));
+                        if (result == true && mounted) {
+                          Navigator.pushReplacementNamed(context, HomePage.routeName);
                         }
                       },
                       style:
@@ -98,13 +105,13 @@ class _WelcomePageState extends State<WelcomePage> {
                               await FirebaseAuth.instance.signInAnonymously();
                               await FirestoreProvider.initializeUser();
 
-                              showSnackBar(context, "お試しモードでスタートしました！");
+                              showSnackBar(globalContext!, "お試しモードでスタートしました！");
                             } catch (e) {
                               showSnackBar(context, "エラーが発生しました");
                             }
 
-                            Navigator.pop(context);
-                            Navigator.pushReplacementNamed(context, "/");
+                            Navigator.pop(globalContext!);
+                            Navigator.pushReplacementNamed(globalContext!, HomePage.routeName);
                           },
                         );
                       },

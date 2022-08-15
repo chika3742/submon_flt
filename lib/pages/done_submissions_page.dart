@@ -4,6 +4,8 @@ import 'package:submon/components/submissions/submission_list.dart';
 class DoneSubmissionsPage extends StatefulWidget {
   const DoneSubmissionsPage({Key? key}) : super(key: key);
 
+  static const routeName = "/done-submissions";
+
   @override
   _DoneSubmissionsPageState createState() => _DoneSubmissionsPageState();
 }

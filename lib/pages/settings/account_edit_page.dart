@@ -1,17 +1,25 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:submon/auth/sign_in_handler.dart';
+import 'package:submon/pages/sign_in_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
+import '../../main.dart';
 import '../../utils/dynamic_links.dart';
 
 class AccountEditPage extends StatefulWidget {
   const AccountEditPage(this.type, {Key? key}) : super(key: key);
 
+  static const changeEmailRouteName = "/account/changeEmail";
+  static const changePasswordRouteName = "/account/changePassword";
+  static const changeDisplayNameRouteName = "/account/changeDisplayName";
+  static const deleteRouteName = "/account/delete";
+
   final EditingType type;
 
   @override
-  _AccountEditPageState createState() => _AccountEditPageState();
+  State<AccountEditPage> createState() => _AccountEditPageState();
 }
 
 class _AccountEditPageState extends State<AccountEditPage> {
@@ -153,8 +161,8 @@ class _AccountEditPageState extends State<AccountEditPage> {
           _form1Error = "このメールアドレスは既に使用されています";
           break;
         case "requires-recent-login":
-          var result = await Navigator.pushNamed(context, "/signIn",
-              arguments: {'reAuth': true});
+          var result = await Navigator.pushNamed(context, SignInPage.routeName,
+              arguments: const SignInPageArguments(SignInMode.reauthenticate));
           if (result == true) await changeEmail();
           break;
         default:
@@ -274,14 +282,13 @@ class _AccountEditPageState extends State<AccountEditPage> {
     try {
       await FirebaseAuth.instance.currentUser!.delete();
 
-      showSnackBar(context, "アカウントを削除しました。");
-      backToWelcomePage(context);
+      showSnackBar(globalContext!, "アカウントを削除しました。");
+      backToWelcomePage(globalContext!);
     } on FirebaseAuthException catch (e, stack) {
       if (e.code == "requires-recent-login") {
         showSnackBar(context, "セキュリティのため再ログインが必要です。");
-        var result = await Navigator.pushNamed(context, "/signIn", arguments: {
-          "reAuth": true,
-        });
+        var result = await Navigator.pushNamed(context, SignInPage.routeName,
+            arguments: const SignInPageArguments(SignInMode.reauthenticate));
         if (result == true) {
           await executeAccountDeletion();
         }

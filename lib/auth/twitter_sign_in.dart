@@ -4,29 +4,23 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:submon/method_channel/channels.dart';
-import 'package:submon/utils/ui.dart';
+import 'package:submon/models/sign_in_result.dart';
+import 'package:submon/models/twitter_sign_in_result.dart';
 
-import 'method_channel/main.dart';
+import '../method_channel/main.dart';
 
 class TwitterSignIn {
-  final String apiKey;
-  final String apiSecret;
-  final String redirectUri;
-  final BuildContext context;
+  late final String apiKey;
+  late final String apiSecret;
+  late final String redirectUri;
 
-  TwitterSignIn(
-      {required this.apiKey,
-      required this.apiSecret,
-      required this.redirectUri,
-      required this.context});
-
-  static TwitterSignIn getInstance(BuildContext context) {
+  TwitterSignIn() {
     String apiKey;
     String apiSecret;
 
@@ -38,24 +32,16 @@ class TwitterSignIn {
       apiSecret = dotenv.env["TWITTER_API_SECRET_DEV"]!;
     }
 
-    return TwitterSignIn(
-      apiKey: apiKey,
-      apiSecret: apiSecret,
-      redirectUri: "submon://",
-      context: context,
-    );
+    this.apiKey = apiKey;
+    this.apiSecret = apiSecret;
+    redirectUri = "submon://";
   }
 
-  Future<TwitterAuthResult?> signIn() async {
-    var modalShown = true;
-    showLoadingModal(context);
+  Future<TwitterSignInResult> signIn() async {
     try {
       var reqToken = await _getRequestToken();
 
-      Navigator.of(context, rootNavigator: true).pop(); // pop modal loading
-      modalShown = false;
-
-      AuthResult authResult;
+      AuthResult? authResult;
       final url =
           "https://api.twitter.com/oauth/authorize?oauth_token=${reqToken!.oauthToken}";
 
@@ -69,27 +55,26 @@ class TwitterSignIn {
           authResult =
               AuthResult(query["oauth_token"]!, query["oauth_verifier"]!);
         } else {
-          return null;
+          authResult = null;
         }
       }
+
+      if (authResult == null) return TwitterSignInResult(errorCode: SignInError.cancelled);
 
       var result = await getAccessToken(authResult);
 
       return result;
     } on SocketException {
-      return TwitterAuthResult(errorMessage: "エラーが発生しました。インターネット接続をご確認ください。");
+      return TwitterSignInResult(errorCode: SignInError.socketError, errorMessage: "エラーが発生しました。インターネット接続をご確認ください。");
     } on TwitterRequestFailedException catch (e) {
       if (e.code == 135) {
-        return TwitterAuthResult(errorMessage: "端末の時刻がサーバー時刻と大幅にずれています。");
+        return TwitterSignInResult(errorCode: SignInError.twitterTimeOutOfSync, errorMessage: "端末の時刻がサーバー時刻と大幅にずれています。");
       } else {
-        return TwitterAuthResult(errorMessage: "エラーが発生しました。(${e.code})");
+        return TwitterSignInResult(errorCode: SignInError.twitterRequestTokenRequestFailed, errorMessage: "エラーが発生しました。(${e.code})");
       }
     } catch (e, stackTrace) {
-      debugPrint(e.toString());
-      debugPrint(stackTrace.toString());
-      return TwitterAuthResult(errorMessage: "エラーが発生しました。");
-    } finally {
-      if (modalShown) Navigator.of(context, rootNavigator: true).pop();
+      FirebaseCrashlytics.instance.recordError(e, stackTrace);
+      return TwitterSignInResult(errorCode: SignInError.unknown, errorMessage: "エラーが発生しました。");
     }
   }
 
@@ -129,7 +114,7 @@ class TwitterSignIn {
         query["oauth_token"]!, query["oauth_token_secret"]!);
   }
 
-  Future<TwitterAuthResult?> getAccessToken(AuthResult auth) async {
+  Future<TwitterSignInResult> getAccessToken(AuthResult auth) async {
     var baseUri = Uri(
         scheme: "https", host: "api.twitter.com", path: "/oauth/access_token");
     var params = {
@@ -145,10 +130,12 @@ class TwitterSignIn {
     var result = await http.post(baseUri.replace(queryParameters: params),
         headers: headers);
 
-    if (result.statusCode != 200) return null;
+    if (result.statusCode != 200) {
+      return TwitterSignInResult(errorCode: SignInError.twitterAccessTokenRequestFailed, errorMessage: "エラーが発生しました。");
+    }
 
     var query = Uri.splitQueryString(result.body);
-    return TwitterAuthResult(
+    return TwitterSignInResult(
       accessToken: query["oauth_token"]!,
       accessTokenSecret: query["oauth_token_secret"]!,
     );
@@ -178,14 +165,18 @@ class TwitterSignIn {
     return base64.encode(digest.bytes);
   }
 
-  Future<AuthResult> waitForUri() async {
-    var completer = Completer<AuthResult>();
+  Future<AuthResult?> waitForUri() async {
+    var completer = Completer<AuthResult?>();
     var subscription = const EventChannel(EventChannels.signInUri)
         .receiveBroadcastStream()
         .listen((event) {
-      var query = Uri.splitQueryString(event);
-      completer.complete(
-          AuthResult(query["oauth_token"]!, query["oauth_verifier"]!));
+      if (event != null) {
+        var query = Uri.splitQueryString(event);
+        completer.complete(
+            AuthResult(query["oauth_token"]!, query["oauth_verifier"]!));
+      } else {
+        completer.complete(null);
+      }
     });
 
     var result = await completer.future;
@@ -212,20 +203,6 @@ class AuthResult {
   @override
   String toString() {
     return "oauthToken: $oauthToken, oauthVerifier: $oauthVerifier";
-  }
-}
-
-class TwitterAuthResult {
-  TwitterAuthResult(
-      {this.accessToken, this.accessTokenSecret, this.errorMessage});
-
-  final String? accessToken;
-  final String? accessTokenSecret;
-  final String? errorMessage;
-
-  @override
-  String toString() {
-    return "oauthToken: $accessToken, oauthSecret: $accessTokenSecret";
   }
 }
 

@@ -4,27 +4,35 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:submon/auth/sign_in_handler.dart';
 import 'package:submon/components/dropdown_time_picker_bottom_sheet.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/method_channel/messaging.dart';
+import 'package:submon/pages/settings/account_edit_page.dart';
+import 'package:submon/pages/settings/canvas_lms_sync.dart';
+import 'package:submon/pages/settings/google_tasks.dart';
+import 'package:submon/pages/settings/timetable.dart';
 import 'package:submon/pages/sign_in_page.dart';
 import 'package:submon/ui_components/settings_ui.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
 import '../../user_config.dart';
+import '../welcome_page.dart';
 
 class FunctionsSettingsPage extends StatefulWidget {
   const FunctionsSettingsPage({Key? key}) : super(key: key);
 
+  static const routeName = "/settings/functions";
+
   @override
-  FunctionsSettingsPageState createState() => FunctionsSettingsPageState();
+  State<FunctionsSettingsPage> createState() => _FunctionsSettingsPageState();
 }
 
-class FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
+class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
   bool _pwEnabled = true;
   bool? _enableSE;
   TimeOfDay? _reminderTime;
@@ -127,22 +135,17 @@ class FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
         SettingsCategory(title: "アカウント", tiles: [
           if (auth.currentUser != null && !auth.currentUser!.isAnonymous)
             SettingsTile(
-              title: auth.currentUser != null ? "ログアウト" : "ログイン / 新規登録",
+              title: "ログアウト",
               onTap: () async {
-                if (auth.currentUser == null) {
-                  await pushPage(context, SignInPage());
-                  setState(() {});
-                } else {
-                  showSimpleDialog(context, "確認", "ログアウトしますか？",
-                      onOKPressed: () async {
-                        await auth.signOut();
-                    await GoogleSignIn().signOut();
-                    MainMethodPlugin.updateWidgets();
-                    Navigator.pop(globalContext!);
-                    Navigator.pushReplacementNamed(globalContext!, "welcome");
-                    showSnackBar(globalContext!, "ログアウトしました");
-                  }, showCancel: true);
-              }
+                showSimpleDialog(context, "確認", "ログアウトしますか？",
+                    onOKPressed: () async {
+                      await auth.signOut();
+                  await GoogleSignIn().signOut();
+                  MainMethodPlugin.updateWidgets();
+                  Navigator.pop(globalContext!);
+                  Navigator.pushReplacementNamed(globalContext!, WelcomePage.routeName);
+                  showSnackBar(globalContext!, "ログアウトしました");
+                }, showCancel: true);
             },
           ),
           if (auth.currentUser != null &&
@@ -154,7 +157,7 @@ class FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
               onTap: emailChangeable()
                   ? () async {
                       await Navigator.pushNamed(
-                          context, "/account/changeEmail");
+                          context, AccountEditPage.changeEmailRouteName);
                       setState(() {});
                     }
                   : null,
@@ -174,7 +177,7 @@ class FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                   : "未設定",
               onTap: () async {
                 await Navigator.pushNamed(
-                    context, "/account/changeDisplayName");
+                    context, AccountEditPage.changeDisplayNameRouteName);
                 setState(() {});
               },
             ),
@@ -184,9 +187,7 @@ class FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
               subtitle: "お試しアカウントを通常アカウントにアップグレードできます。",
               onTap: () async {
                 var result =
-                    await Navigator.pushNamed(context, "/signIn", arguments: {
-                  "upgrade": true,
-                });
+                    await Navigator.pushNamed(context, SignInPage.routeName, arguments: const SignInPageArguments(SignInMode.upgrade));
                 if (result == true) {
                   setState(() {});
                   showSnackBar(globalContext!, "アカウントがアップグレードされました！");
@@ -200,7 +201,7 @@ class FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                   : "アカウントの削除",
               titleTextStyle: const TextStyle(color: Colors.red),
               onTap: () async {
-                await Navigator.pushNamed(context, "/account/delete");
+                await Navigator.pushNamed(context, AccountEditPage.deleteRouteName);
                 setState(() {});
               },
             ),
@@ -212,7 +213,7 @@ class FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                 "Google Tasksへ提出物を追加し、Google TasksおよびGoogle カレンダーに表示できます。",
             onTap: () async {
               Navigator.pushNamed(
-                  context, "/settings/functions/link-with-google-tasks");
+                  context, GoogleTasksSettingsPage.routeName);
             },
           ),
         ]),
@@ -221,7 +222,7 @@ class FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
             title: "Canvas LMSと連携",
             subtitle: "大学等の学習管理システムから提出物を取得し、自動的に追加します。",
             onTap: () async {
-              Navigator.pushNamed(context, "/settings/functions/canvasLmsSync");
+              Navigator.pushNamed(context, CanvasLmsSyncSettingsPage.routeName);
             },
           )
         ]),
@@ -244,7 +245,7 @@ class FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
           SettingsTile(
             title: "時間割表設定",
             onTap: () {
-              Navigator.pushNamed(context, "/settings/timetable");
+              Navigator.pushNamed(context, TimetableSettingsPage.routeName);
             },
           ),
           if (_deviceCameraUIShouldBeUsed != null)
@@ -296,7 +297,7 @@ class FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
       if (provider.isEmpty) throw FirebaseAuthException(code: "user-not-found");
       Navigator.pop(globalContext!);
       if (provider.first == EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {
-        await Navigator.pushNamed(globalContext!, "/account/changePassword");
+        await Navigator.pushNamed(globalContext!, AccountEditPage.changePasswordRouteName);
         setState(() {});
       } else {
         setState(() {

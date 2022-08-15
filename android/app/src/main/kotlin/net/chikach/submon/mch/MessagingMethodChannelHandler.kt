@@ -1,10 +1,16 @@
 package net.chikach.submon.mch
 
+import android.os.Build
 import com.google.firebase.messaging.FirebaseMessaging
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import net.chikach.submon.MainActivity
 
-class MessagingMethodChannelHandler : MethodChannel.MethodCallHandler {
+const val REQUEST_CODE_NOTIFICATION_PERMISSION = 16
+
+class MessagingMethodChannelHandler(private val activity: MainActivity) : MethodChannel.MethodCallHandler {
+    var methodResult: MethodChannel.Result? = null
+
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "requestNotificationPermission" -> {
@@ -18,7 +24,20 @@ class MessagingMethodChannelHandler : MethodChannel.MethodCallHandler {
     }
 
     private fun requestNotificationPermission(result: MethodChannel.Result) {
-        result.success(NotificationPermissionState.GRANTED.ordinal)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            activity.requestPermissions(arrayOf(), REQUEST_CODE_NOTIFICATION_PERMISSION)
+            methodResult = result
+        } else {
+            result.success(NotificationPermissionState.GRANTED.ordinal)
+        }
+    }
+
+    fun completeRequestNotificationPermission(granted: Boolean) {
+        if (granted) {
+            methodResult?.success(NotificationPermissionState.GRANTED.ordinal)
+        } else {
+            methodResult?.success(NotificationPermissionState.DENIED.ordinal)
+        }
     }
 
     private fun getToken(result: MethodChannel.Result) {

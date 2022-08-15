@@ -18,10 +18,13 @@ const addMinutes = 20;
 const breakMinutes = 10;
 const breakCoolingMinutes = 10;
 
+///
+/// Whether focus timer is finished will be returned.
+///
 class FocusTimerPage extends StatefulWidget {
-  FocusTimerPage({Key? key, required Map<String, dynamic> arguments})
-      : digestive = arguments["digestive"],
-        super(key: key);
+  const FocusTimerPage({Key? key, required this.digestive}): super(key: key);
+
+  static const routeName = "/focus-timer";
 
   final Digestive digestive;
 
@@ -35,6 +38,12 @@ class FocusTimerPage extends StatefulWidget {
 
   @override
   State<FocusTimerPage> createState() => _FocusTimerPageState();
+}
+
+class FocusTimerPageArguments {
+  final Digestive digestive;
+
+  FocusTimerPageArguments(this.digestive);
 }
 
 class _FocusTimerPageState extends State<FocusTimerPage>

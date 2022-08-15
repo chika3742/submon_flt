@@ -9,7 +9,9 @@ import 'package:submon/components/submissions/formatted_date_remaining.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_submission.dart';
+import 'package:submon/main.dart';
 import 'package:submon/pages/submission_detail_page.dart';
+import 'package:submon/pages/submission_edit_page.dart';
 import 'package:submon/utils/dynamic_links.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
@@ -323,14 +325,12 @@ class SubmissionListItemState extends State<SubmissionListItem> {
           DigestiveProvider().use((provider) async {
             await provider.put(data);
           });
-          showSnackBar(context, "作成しました");
+          showSnackBar(globalContext!, "作成しました");
         }
         break;
       case _ContextMenuAction.edit:
         Navigator.of(context, rootNavigator: true)
-            .pushNamed("/submission/edit", arguments: {
-          "submissionId": widget.item.id,
-        });
+            .pushNamed(SubmissionEditPage.routeName, arguments: SubmissionEditPageArguments(widget.item.id!));
         break;
       case _ContextMenuAction.makeDone:
         widget.onDone?.call(true);

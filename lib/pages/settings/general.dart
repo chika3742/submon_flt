@@ -8,8 +8,10 @@ import 'package:submon/ui_components/settings_ui.dart';
 class GeneralSettingsPage extends StatefulWidget {
   const GeneralSettingsPage({Key? key}) : super(key: key);
 
+  static const routeName = "/settings/general";
+
   @override
-  _GeneralSettingsPageState createState() => _GeneralSettingsPageState();
+  State<GeneralSettingsPage> createState() => _GeneralSettingsPageState();
 }
 
 class _GeneralSettingsPageState extends State<GeneralSettingsPage> {

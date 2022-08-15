@@ -2,6 +2,7 @@ package net.chikach.submon
 
 import android.app.NotificationManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationChannelGroupCompat
 import androidx.core.app.NotificationManagerCompat
@@ -12,6 +13,7 @@ import io.flutter.plugin.common.MethodChannel
 import net.chikach.submon.mch.MainMethodChannelHandler
 import net.chikach.submon.mch.MessagingMethodChannelHandler
 import net.chikach.submon.mch.REQUEST_CODE_CUSTOM_TABS
+import net.chikach.submon.mch.REQUEST_CODE_NOTIFICATION_PERMISSION
 
 val chromiumBrowserPackages = listOf(
     "com.android.chrome",
@@ -43,7 +45,7 @@ const val REQUEST_CODE_TAKE_PICTURE = 1
 
 class MainActivity : FlutterActivity() {
     private val mainMethodChannelHandler = MainMethodChannelHandler(this)
-    private val messagingMethodChannelHandler = MessagingMethodChannelHandler()
+    private val messagingMethodChannelHandler = MessagingMethodChannelHandler(this)
     var twitterSignInUriEventSink: EventChannel.EventSink? = null
     var uriEventSink: EventChannel.EventSink? = null
 
@@ -141,15 +143,27 @@ class MainActivity : FlutterActivity() {
                 mainMethodChannelHandler.takePictureCallback(resultCode)
             }
             REQUEST_CODE_CUSTOM_TABS -> {
-                mainMethodChannelHandler.completeCustomTabs()
+                mainMethodChannelHandler.completeCustomTabs(null)
             }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_NOTIFICATION_PERMISSION) {
+            messagingMethodChannelHandler
+                .completeRequestNotificationPermission(grantResults.all { it == PackageManager.PERMISSION_GRANTED })
         }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (intent.data != null) {
-            twitterSignInUriEventSink?.success(intent.data!!.query)
+            mainMethodChannelHandler.completeCustomTabs(intent.data?.query)
             uriEventSink?.success(intent.data.toString())
         }
     }

@@ -19,7 +19,9 @@ import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/home_tabs/tab_digestive_list.dart';
 import 'package:submon/pages/home_tabs/tab_others.dart';
 import 'package:submon/pages/home_tabs/tab_submissions.dart';
+import 'package:submon/pages/settings/timetable.dart';
 import 'package:submon/pages/submission_create_page.dart';
+import 'package:submon/pages/timetable_table_view_page.dart';
 import 'package:submon/ui_components/hidable_progress_indicator.dart';
 import 'package:submon/utils/firestore.dart';
 import 'package:submon/utils/ui.dart';
@@ -31,6 +33,8 @@ import 'home_tabs/tab_timetable_2.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
+
+  static const routeName = "/";
 
   @override
   HomePageState createState() => HomePageState();
@@ -121,10 +125,10 @@ class HomePageState extends State<HomePage> {
     if (_prefs?.showTimetableMenu != false)
       [
         ActionItem(Icons.table_view, "テーブルビュー", () async {
-          await Navigator.pushNamed(context, "/timetable/table-view");
+          await Navigator.pushNamed(context, TimetableTableViewPage.routeName);
         }),
         ActionItem(Icons.settings, "設定", () async {
-          await Navigator.pushNamed(context, "/settings/timetable");
+          await Navigator.pushNamed(context, TimetableSettingsPage.routeName);
           eventBus.fire(TimetableListChanged());
         }),
       ],
@@ -301,7 +305,7 @@ class HomePageState extends State<HomePage> {
             },
           ),
           openBuilder: (context, callback) {
-            return const SubmissionCreatePage();
+            return const CreateSubmissionPage();
           },
           onClosed: (result) {
             if (result != null) eventBus.fire(SubmissionInserted(result));

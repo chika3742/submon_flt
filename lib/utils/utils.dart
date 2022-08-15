@@ -11,6 +11,7 @@ import 'package:googleapis/oauth2/v2.dart' as oauth;
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:submon/browser.dart';
 import 'package:submon/main.dart';
+import 'package:submon/pages/submission_create_page.dart';
 import 'package:submon/utils/ui.dart';
 
 Future<dynamic> pushPage(BuildContext context, Widget page) async {
@@ -124,10 +125,10 @@ void createNewSubmissionForTimetable(
     }
   }
   Navigator.of(context, rootNavigator: true)
-      .pushNamed("/submission/create", arguments: {
-    "initialTitle": name,
-    "initialDeadline": deadline,
-  });
+      .pushNamed(CreateSubmissionPage.routeName, arguments: CreateSubmissionPageArguments(
+    initialTitle: name,
+    initialDeadline: deadline,
+  ));
 }
 
 void recordErrorToCrashlytics(dynamic exception, StackTrace stackTrace) {
