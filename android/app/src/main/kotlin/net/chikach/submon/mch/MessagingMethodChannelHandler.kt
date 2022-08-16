@@ -1,5 +1,6 @@
 package net.chikach.submon.mch
 
+import android.Manifest
 import android.os.Build
 import com.google.firebase.messaging.FirebaseMessaging
 import io.flutter.plugin.common.MethodCall
@@ -25,7 +26,7 @@ class MessagingMethodChannelHandler(private val activity: MainActivity) : Method
 
     private fun requestNotificationPermission(result: MethodChannel.Result) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            activity.requestPermissions(arrayOf(), REQUEST_CODE_NOTIFICATION_PERMISSION)
+            activity.requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_CODE_NOTIFICATION_PERMISSION)
             methodResult = result
         } else {
             result.success(NotificationPermissionState.GRANTED.ordinal)
