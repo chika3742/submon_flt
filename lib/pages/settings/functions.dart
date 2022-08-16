@@ -3,13 +3,11 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:submon/auth/sign_in_handler.dart';
 import 'package:submon/components/dropdown_time_picker_bottom_sheet.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/main.dart';
-import 'package:submon/method_channel/main.dart';
 import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/settings/account_edit_page.dart';
 import 'package:submon/pages/settings/canvas_lms_sync.dart';
@@ -21,7 +19,6 @@ import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
 import '../../user_config.dart';
-import '../welcome_page.dart';
 
 class FunctionsSettingsPage extends StatefulWidget {
   const FunctionsSettingsPage({Key? key}) : super(key: key);
@@ -97,7 +94,8 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                     await MessagingPlugin.requestNotificationPermission();
                 if (requestPermissionResult ==
                     NotificationPermissionState.denied) {
-                  showSnackBar(globalContext!, "通知の表示が許可されていません。本体設定から許可してください。");
+                  showSnackBar(
+                      globalContext!, "通知の表示が許可されていません。本体設定から許可してください。");
                 } else {
                   var result = await showRoundedBottomSheet<TimeOfDay>(
                     context: context,
@@ -139,15 +137,11 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
               onTap: () async {
                 showSimpleDialog(context, "確認", "ログアウトしますか？",
                     onOKPressed: () async {
-                      await auth.signOut();
-                  await GoogleSignIn().signOut();
-                  MainMethodPlugin.updateWidgets();
-                  Navigator.pop(globalContext!);
-                  Navigator.pushReplacementNamed(globalContext!, WelcomePage.routeName);
+                  await SignInHandler.signOut();
                   showSnackBar(globalContext!, "ログアウトしました");
                 }, showCancel: true);
-            },
-          ),
+              },
+            ),
           if (auth.currentUser != null &&
               auth.currentUser!.email != "" &&
               !auth.currentUser!.isAnonymous)
@@ -186,8 +180,9 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
               title: "アカウントをアップグレード",
               subtitle: "お試しアカウントを通常アカウントにアップグレードできます。",
               onTap: () async {
-                var result =
-                    await Navigator.pushNamed(context, SignInPage.routeName, arguments: const SignInPageArguments(SignInMode.upgrade));
+                var result = await Navigator.pushNamed(
+                    context, SignInPage.routeName,
+                    arguments: const SignInPageArguments(SignInMode.upgrade));
                 if (result == true) {
                   setState(() {});
                   showSnackBar(globalContext!, "アカウントがアップグレードされました！");
@@ -201,7 +196,8 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                   : "アカウントの削除",
               titleTextStyle: const TextStyle(color: Colors.red),
               onTap: () async {
-                await Navigator.pushNamed(context, AccountEditPage.deleteRouteName);
+                await Navigator.pushNamed(
+                    context, AccountEditPage.deleteRouteName);
                 setState(() {});
               },
             ),
@@ -212,8 +208,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
             subtitle:
                 "Google Tasksへ提出物を追加し、Google TasksおよびGoogle カレンダーに表示できます。",
             onTap: () async {
-              Navigator.pushNamed(
-                  context, GoogleTasksSettingsPage.routeName);
+              Navigator.pushNamed(context, GoogleTasksSettingsPage.routeName);
             },
           ),
         ]),
@@ -236,7 +231,8 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                 SharedPrefs.use((prefs) {
                   prefs.isSEEnabled = value;
                 });
-                FirestoreProvider.updateUserConfig(UserConfig.pathIsSEEnabled, value);
+                FirestoreProvider.updateUserConfig(
+                    UserConfig.pathIsSEEnabled, value);
                 setState(() {
                   _enableSE = value;
                 });
@@ -297,7 +293,8 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
       if (provider.isEmpty) throw FirebaseAuthException(code: "user-not-found");
       Navigator.pop(globalContext!);
       if (provider.first == EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {
-        await Navigator.pushNamed(globalContext!, AccountEditPage.changePasswordRouteName);
+        await Navigator.pushNamed(
+            globalContext!, AccountEditPage.changePasswordRouteName);
         setState(() {});
       } else {
         setState(() {

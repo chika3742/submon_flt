@@ -29,6 +29,15 @@ class SignInHandler {
 
   SignInHandler(this.mode);
 
+  static Future<void> signOut() async {
+    showLoadingModal(globalContext!);
+    await FirestoreProvider.removeNotificationToken();
+    await FirebaseAuth.instance.signOut();
+    await GoogleSignIn().signOut();
+    MainMethodPlugin.updateWidgets();
+    backToWelcomePage(globalContext!);
+  }
+
   Future<void> handleSignInResult(SignInResult result) async {
     if (result.errorCode != null) {
       switch (result.errorCode) {
