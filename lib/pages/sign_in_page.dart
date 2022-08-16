@@ -8,7 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:submon/auth/sign_in_handler.dart';
 import 'package:submon/browser.dart';
 import 'package:submon/main.dart';
-import 'package:submon/pages/email_login_page.dart';
+import 'package:submon/pages/email_sign_in_page.dart';
 import 'package:submon/ui_components/hidable_progress_indicator.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';

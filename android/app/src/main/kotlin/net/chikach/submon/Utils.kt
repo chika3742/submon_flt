@@ -41,7 +41,7 @@ object Utils {
         }
     }
 
-    fun initAppCheck(): Unit {
+    fun initAppCheck() {
         @Suppress("KotlinConstantConditions")
         if (BuildConfig.BUILD_TYPE == "release") {
             FirebaseAppCheck.getInstance().installAppCheckProviderFactory(

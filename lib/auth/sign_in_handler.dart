@@ -9,7 +9,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:submon/auth/twitter_sign_in.dart';
 import 'package:submon/main.dart';
 import 'package:submon/models/sign_in_result.dart';
-import 'package:submon/pages/email_login_page.dart';
+import 'package:submon/pages/email_sign_in_page.dart';
 
 import '../db/firestore_provider.dart';
 import '../db/shared_prefs.dart';
@@ -51,7 +51,6 @@ class SignInHandler {
           break;
 
         case SignInError.userNotFound:
-          showSnackBar(globalContext!, "アカウントを作成しています。しばらくお待ち下さい...");
           await signupUser(result.credential!);
           showSnackBar(globalContext!, "アカウントを作成しました！");
           // enter to home screen
@@ -82,7 +81,18 @@ class SignInHandler {
 
     var completionResult = await completeSignIn(result.credential!);
 
-    return SignInResult(errorCode: completionResult);
+    return SignInResult(
+        credential: result.credential, errorCode: completionResult);
+  }
+
+  Future<SignInResult> signInWithLink(
+      {required String email, required String emailLink}) async {
+    var result =
+        await _auth.signInWithEmailLink(email: email, emailLink: emailLink);
+
+    var completionResult = await completeSignIn(result);
+
+    return SignInResult(credential: result, errorCode: completionResult);
   }
 
   Future<SignInResult> _signInByProvider(AuthProvider provider,
@@ -103,8 +113,10 @@ class SignInHandler {
             context!, EmailSignInPage.routeName,
             arguments: EmailSignInPageArguments(
                 reAuth: mode == SignInMode.reauthenticate));
-        assert(result != null);
-        return result!;
+        if (result == null) {
+          return SignInResult(errorCode: SignInError.cancelled);
+        }
+        return result;
 
       default:
         throw "not implemented";

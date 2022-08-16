@@ -18,8 +18,10 @@ import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/method_channel/main.dart';
+import 'package:submon/models/sign_in_result.dart';
 import 'package:submon/pages/done_submissions_page.dart';
-import 'package:submon/pages/email_login_page.dart';
+import 'package:submon/pages/email_registration_page.dart';
+import 'package:submon/pages/email_sign_in_page.dart';
 import 'package:submon/pages/focus_timer_page.dart';
 import 'package:submon/pages/home_page.dart';
 import 'package:submon/pages/settings/account_edit_page.dart';
@@ -239,8 +241,13 @@ class _ApplicationState extends State<Application> {
                 settings);
           case EmailSignInPage.routeName:
             var args = settings.arguments as EmailSignInPageArguments;
-            return generatePageRoute(
+            return generatePageRoute<SignInResult>(
                 (context) => EmailSignInPage(reAuth: args.reAuth), settings);
+          case EmailRegistrationPage.routeName:
+            var args = settings.arguments as EmailRegistrationPageArguments;
+            return generatePageRoute<UserCredential>(
+                (context) => EmailRegistrationPage(email: args.email),
+                settings);
           case CustomizeSettingsPage.routeName:
             return generatePageRoute(
                 (context) =>

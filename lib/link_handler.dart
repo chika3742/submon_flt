@@ -11,12 +11,9 @@ import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
-import 'package:submon/models/sign_in_result.dart';
 import 'package:submon/pages/focus_timer_page.dart';
-import 'package:submon/pages/home_page.dart';
 import 'package:submon/pages/submission_create_page.dart';
 import 'package:submon/pages/submission_detail_page.dart';
-import 'package:submon/pages/welcome_page.dart';
 import 'package:submon/utils/dynamic_links.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
@@ -137,19 +134,12 @@ void handleAuthUri(Uri url, List<AuthUriMode> acceptableMode) async {
         final pref = SharedPrefs(await SharedPreferences.getInstance());
         final email = pref.emailForUrlLogin;
         if (email != null) {
-          var result = await auth.signInWithEmailLink(
+          var handler = SignInHandler(SignInMode.normal);
+          var result = await handler.signInWithLink(
               email: email, emailLink: url.toString());
-
-          await SignInHandler(SignInMode.normal).handleSignInResult(SignInResult(credential: result));
-          navigator.pop(); // dismiss loading modal
-
-          navigator.popUntil(ModalRoute.withName(WelcomePage.routeName));
-          navigator.pushReplacementNamed(HomePage.routeName);
-
-          return;
+          await handler.handleSignInResult(result);
         } else {
-          showSimpleDialog(
-              globalContext!, "エラー", "メールアドレスが保存されていません。再度この端末でメールを送信してください。");
+          showSnackBar(globalContext!, "エラーが発生しました。(emailNotFound)");
         }
       } else {
         showSnackBar(globalContext!, "既にログインされています。ログアウトしてからお試しください。");
