@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:animations/animations.dart';
@@ -45,25 +46,27 @@ const screenShotMode = bool.fromEnvironment("SCREENSHOT_MODE");
 BuildContext? get globalContext => Application.globalKey.currentContext;
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load();
-  googleSignIn.signInSilently();
-  MobileAds.instance.initialize();
-  // getTemporaryDirectory().then((value) async {
-  //   var directory = Directory(p.join(value.path, tempImgDirName));
-  //   if (await directory.exists()) {
-  //     directory.delete(recursive: true);
-  //   }
-  // });
-  LicenseRegistry.addLicense(() async* {
-    yield LicenseEntryWithLineBreaks(["google_fonts"],
-        await rootBundle.loadString('assets/google_fonts/Murecho/OFL.txt'));
-    yield LicenseEntryWithLineBreaks(["google_fonts"],
-        await rootBundle.loadString('assets/google_fonts/B612_Mono/OFL.txt'));
-    yield LicenseEntryWithLineBreaks(["google_fonts"],
-        await rootBundle.loadString('assets/google_fonts/Play/OFL.txt'));
-  });
-  runApp(const Application());
+  runZonedGuarded<Future<void>>(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await dotenv.load();
+    googleSignIn.signInSilently();
+    MobileAds.instance.initialize();
+    // getTemporaryDirectory().then((value) async {
+    //   var directory = Directory(p.join(value.path, tempImgDirName));
+    //   if (await directory.exists()) {
+    //     directory.delete(recursive: true);
+    //   }
+    // });
+    LicenseRegistry.addLicense(() async* {
+      yield LicenseEntryWithLineBreaks(["google_fonts"],
+          await rootBundle.loadString('assets/google_fonts/Murecho/OFL.txt'));
+      yield LicenseEntryWithLineBreaks(["google_fonts"],
+          await rootBundle.loadString('assets/google_fonts/B612_Mono/OFL.txt'));
+      yield LicenseEntryWithLineBreaks(["google_fonts"],
+          await rootBundle.loadString('assets/google_fonts/Play/OFL.txt'));
+    });
+    runApp(const Application());
+  }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack, fatal: true));
 }
 
 class Application extends StatefulWidget {

@@ -212,16 +212,11 @@ class SignInHandler {
         await FirestoreProvider.saveNotificationToken(notificationToken);
         MainMethodPlugin.updateWidgets();
 
-        if (data.reminderNotificationTime != null ||
-            data.timetableNotificationTime != null ||
-            data.digestiveNotifications.isNotEmpty) {
-          var requestPermissionResult =
-          await MessagingPlugin.requestNotificationPermission();
-          if (requestPermissionResult ==
-              NotificationPermissionState.denied) {
-            return SignInError.notificationPermissionDenied;
-          }
+        var requestPermResult = await requestNotificationPermissionIfEnabled(data);
+        if (requestPermResult == NotificationPermissionState.denied) {
+          return SignInError.notificationPermissionDenied;
         }
+
         return null;
       } on FirebaseException catch (e) {
         if (e.code == "permission-denied") {
@@ -230,10 +225,19 @@ class SignInHandler {
           rethrow;
         }
       }
-    } catch (e) {
-      FirebaseCrashlytics.instance.recordError(e, (e as dynamic).stackTrace);
+    } catch (e, stack) {
+      FirebaseCrashlytics.instance.recordError(e, stack);
       return SignInError.unknown;
     }
+  }
+
+  Future<NotificationPermissionState?> requestNotificationPermissionIfEnabled(UserConfig data) async {
+    if (data.reminderNotificationTime != null ||
+        data.timetableNotificationTime != null ||
+        data.digestiveNotifications.isNotEmpty) {
+      return await MessagingPlugin.requestNotificationPermission();
+    }
+    return null;
   }
 
   Future<void> signupUser(UserCredential userCred) async {
