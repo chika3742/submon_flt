@@ -224,6 +224,7 @@ class _SignInPageState extends State<SignInPage> {
     } catch (e, stack) {
       FirebaseCrashlytics.instance.recordError(e, stack);
       showSnackBar(context, "エラーが発生しました。($e)");
+      return null;
     } finally {
       setState(() {
         loading = false;

@@ -90,8 +90,10 @@ class SignInHandler {
 
       case AuthProvider.email:
         assert(context != null);
-        var result =
-            await Navigator.pushNamed<SignInResult>(context!, EmailSignInPage.routeName);
+        var result = await Navigator.pushNamed<SignInResult>(
+            context!, EmailSignInPage.routeName,
+            arguments: EmailSignInPageArguments(
+                reAuth: mode == SignInMode.reauthenticate));
         assert(result != null);
         return result!;
 

@@ -170,6 +170,11 @@ class SubmissionListState extends State<SubmissionList> {
           label: "元に戻す",
           textColor: Colors.pinkAccent,
           onPressed: () {
+            SubmissionProvider().use((provider) {
+              return provider.writeTransaction(() async {
+                provider.invertDone(item);
+              });
+            });
             try {
               setState(() {
                 var actualIndex =
@@ -180,11 +185,6 @@ class SubmissionListState extends State<SubmissionList> {
             } catch (e, st) {
               recordErrorToCrashlytics(e, st);
             }
-            SubmissionProvider().use((provider) {
-              return provider.writeTransaction(() async {
-                provider.invertDone(item);
-              });
-            });
           },
         ));
   }
