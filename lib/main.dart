@@ -66,7 +66,9 @@ void main() async {
           await rootBundle.loadString('assets/google_fonts/Play/OFL.txt'));
     });
     runApp(const Application());
-  }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack, fatal: true));
+  },
+      (error, stack) =>
+          FirebaseCrashlytics.instance.recordError(error, stack, fatal: true));
 }
 
 class Application extends StatefulWidget {
@@ -86,7 +88,8 @@ class _ApplicationState extends State<Application> {
   void initState() {
     initFirebase();
     SharedPrefs.use((prefs) async {
-      prefs.lastVersionCode = int.parse((await PackageInfo.fromPlatform()).buildNumber);
+      prefs.lastVersionCode =
+          int.parse((await PackageInfo.fromPlatform()).buildNumber);
     });
     super.initState();
   }
@@ -152,6 +155,11 @@ class _ApplicationState extends State<Application> {
       fontFamily: "Murecho",
     );
 
+    const pageTransitionsTheme = PageTransitionsTheme(builders: {
+      TargetPlatform.android: SharedAxisPageTransitionsBuilder(
+          transitionType: SharedAxisTransitionType.horizontal),
+      TargetPlatform.iOS: CupertinoPageTransitionsBuilder()
+    });
     return MaterialApp(
       title: 'Submon',
       debugShowCheckedModeBanner: !screenShotMode,
@@ -164,11 +172,7 @@ class _ApplicationState extends State<Application> {
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
             unselectedItemColor: Colors.black45,
             selectedItemColor: Colors.black),
-        pageTransitionsTheme: const PageTransitionsTheme(builders: {
-          TargetPlatform.android: SharedAxisPageTransitionsBuilder(
-              transitionType: SharedAxisTransitionType.scaled),
-          TargetPlatform.iOS: CupertinoPageTransitionsBuilder()
-        }),
+        pageTransitionsTheme: pageTransitionsTheme,
         textTheme: textTheme,
       ),
       darkTheme: ThemeData(
@@ -176,11 +180,7 @@ class _ApplicationState extends State<Application> {
         brightness: Brightness.dark,
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
             unselectedItemColor: Colors.grey, selectedItemColor: Colors.white),
-        pageTransitionsTheme: const PageTransitionsTheme(builders: {
-          TargetPlatform.android: SharedAxisPageTransitionsBuilder(
-              transitionType: SharedAxisTransitionType.scaled),
-          TargetPlatform.iOS: CupertinoPageTransitionsBuilder()
-        }),
+        pageTransitionsTheme: pageTransitionsTheme,
         textTheme: ThemeData.dark().textTheme.merge(textTheme),
       ),
       supportedLocales: const [Locale("ja", "JP")],
@@ -189,60 +189,104 @@ class _ApplicationState extends State<Application> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      initialRoute: FirebaseAuth.instance.currentUser == null && screenShotMode == false ? WelcomePage.routeName : HomePage.routeName,
+      initialRoute:
+          FirebaseAuth.instance.currentUser == null && screenShotMode == false
+              ? WelcomePage.routeName
+              : HomePage.routeName,
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case HomePage.routeName:
             return generatePageRoute((context) => const HomePage(), settings);
           case WelcomePage.routeName:
-            return generatePageRoute((context) => const WelcomePage(), settings);
+            return generatePageRoute(
+                (context) => const WelcomePage(), settings);
           case FocusTimerPage.routeName:
             var args = settings.arguments as FocusTimerPageArguments;
-            return generatePageRoute<bool>((context) => FocusTimerPage(digestive: args.digestive), settings);
+            return generatePageRoute<bool>(
+                (context) => FocusTimerPage(digestive: args.digestive),
+                settings);
           case SubmissionEditPage.routeName:
             var args = settings.arguments as SubmissionEditPageArguments;
-            return generatePageRoute((context) => SubmissionEditPage(args.submissionId), settings);
+            return generatePageRoute(
+                (context) => SubmissionEditPage(args.submissionId), settings);
           case CreateSubmissionPage.routeName:
             var args = settings.arguments as CreateSubmissionPageArguments;
-            return generatePageRoute<int>((context) => CreateSubmissionPage(initialTitle: args.initialTitle, initialDeadline: args.initialDeadline), settings);
+            return generatePageRoute<int>(
+                (context) => CreateSubmissionPage(
+                    initialTitle: args.initialTitle,
+                    initialDeadline: args.initialDeadline),
+                settings);
           case SubmissionDetailPage.routeName:
             var args = settings.arguments as SubmissionDetailPageArguments;
-            return generatePageRoute((context) => SubmissionDetailPage(args.submissionId), settings);
+            return generatePageRoute(
+                (context) => SubmissionDetailPage(args.submissionId), settings);
           case TimetableEditPage.routeName:
-            return generatePageRoute((context) => const TimetableEditPage(), settings);
+            return generatePageRoute(
+                (context) => const TimetableEditPage(), settings);
           case TimetableTableViewPage.routeName:
-            return generatePageRoute((context) => const TimetableTableViewPage(), settings);
+            return generatePageRoute(
+                (context) => const TimetableTableViewPage(), settings);
           case DoneSubmissionsPage.routeName:
-            return generatePageRoute((context) => const DoneSubmissionsPage(), settings);
+            return generatePageRoute(
+                (context) => const DoneSubmissionsPage(), settings);
           case SignInPage.routeName:
             var args = settings.arguments as SignInPageArguments;
-            return generatePageRoute<bool>((context) => SignInPage(
-              initialCred: args.initialCred,
-              mode: args.mode,
-            ), settings);
+            return generatePageRoute<bool>(
+                (context) => SignInPage(
+                      initialCred: args.initialCred,
+                      mode: args.mode,
+                    ),
+                settings);
           case EmailSignInPage.routeName:
             var args = settings.arguments as EmailSignInPageArguments;
-            return generatePageRoute((context) => EmailSignInPage(reAuth: args.reAuth), settings);
+            return generatePageRoute(
+                (context) => EmailSignInPage(reAuth: args.reAuth), settings);
           case CustomizeSettingsPage.routeName:
-            return generatePageRoute((context) => const SettingsPage("カスタマイズ設定", CustomizeSettingsPage()), settings);
+            return generatePageRoute(
+                (context) =>
+                    const SettingsPage("カスタマイズ設定", CustomizeSettingsPage()),
+                settings);
           case FunctionsSettingsPage.routeName:
-            return generatePageRoute((context) => const SettingsPage("機能設定", FunctionsSettingsPage()), settings);
+            return generatePageRoute(
+                (context) =>
+                    const SettingsPage("機能設定", FunctionsSettingsPage()),
+                settings);
           case GeneralSettingsPage.routeName:
-            return generatePageRoute((context) => const SettingsPage("全般", GeneralSettingsPage()), settings);
+            return generatePageRoute(
+                (context) => const SettingsPage("全般", GeneralSettingsPage()),
+                settings);
           case TimetableSettingsPage.routeName:
-            return generatePageRoute((context) => const SettingsPage("時間割表設定", TimetableSettingsPage()), settings);
+            return generatePageRoute(
+                (context) =>
+                    const SettingsPage("時間割表設定", TimetableSettingsPage()),
+                settings);
           case GoogleTasksSettingsPage.routeName:
-            return generatePageRoute((context) => const SettingsPage("Google Tasksと連携", GoogleTasksSettingsPage()), settings);
+            return generatePageRoute(
+                (context) => const SettingsPage(
+                    "Google Tasksと連携", GoogleTasksSettingsPage()),
+                settings);
           case CanvasLmsSyncSettingsPage.routeName:
-            return generatePageRoute((context) => const SettingsPage("Canvas と連携", CanvasLmsSyncSettingsPage()), settings);
+            return generatePageRoute(
+                (context) => const SettingsPage(
+                    "Canvas と連携", CanvasLmsSyncSettingsPage()),
+                settings);
           case AccountEditPage.changeEmailRouteName:
-            return generatePageRoute((context) => const AccountEditPage(EditingType.changeEmail), settings);
+            return generatePageRoute(
+                (context) => const AccountEditPage(EditingType.changeEmail),
+                settings);
           case AccountEditPage.changePasswordRouteName:
-            return generatePageRoute((context) => const AccountEditPage(EditingType.changePassword), settings);
+            return generatePageRoute(
+                (context) => const AccountEditPage(EditingType.changePassword),
+                settings);
           case AccountEditPage.changeDisplayNameRouteName:
-            return generatePageRoute((context) => const AccountEditPage(EditingType.changeDisplayName), settings);
+            return generatePageRoute(
+                (context) =>
+                    const AccountEditPage(EditingType.changeDisplayName),
+                settings);
           case AccountEditPage.deleteRouteName:
-            return generatePageRoute((context) => const AccountEditPage(EditingType.delete), settings);
+            return generatePageRoute(
+                (context) => const AccountEditPage(EditingType.delete),
+                settings);
           default:
             return null;
         }
@@ -256,14 +300,14 @@ class _ApplicationState extends State<Application> {
       },
     );
   }
-  
-  PageRoute<T> generatePageRoute<T>(WidgetBuilder builder, RouteSettings settings) {
+
+  PageRoute<T> generatePageRoute<T>(
+      WidgetBuilder builder, RouteSettings settings) {
     if (Platform.isIOS || Platform.isMacOS) {
       return CupertinoPageRoute<T>(
           builder: builder, title: "asdf", settings: settings);
     } else {
-      return MaterialPageRoute<T>(
-          builder: builder, settings: settings);
+      return MaterialPageRoute<T>(builder: builder, settings: settings);
     }
   }
 
