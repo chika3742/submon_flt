@@ -79,12 +79,16 @@ class EmailSignInPageState extends State<EmailSignInPage>
                   Text(message!),
                   const SizedBox(height: 16),
                   TextFormField(
-                      enabled: enableEmailForm,
-                      controller: emailController,
-                      decoration: InputDecoration(
-                          labelText: "メールアドレス",
-                          border: const OutlineInputBorder(),
-                          errorText: emailError)),
+                    enabled: enableEmailForm,
+                    controller: emailController,
+                    decoration: InputDecoration(
+                        labelText: "メールアドレス",
+                        border: const OutlineInputBorder(),
+                        errorText: emailError),
+                    onFieldSubmitted: (_) {
+                      next();
+                    },
+                  ),
                   const SizedBox(height: 16),
                   SlideTransition(
                     position: Tween(
@@ -100,24 +104,28 @@ class EmailSignInPageState extends State<EmailSignInPage>
                         child: Column(
                           children: [
                             TextFormField(
-                                obscureText: !visiblePW,
-                                enabled: enablePWForm,
-                                controller: pwController,
-                                decoration: InputDecoration(
-                                  labelText: "パスワード",
-                                  suffixIcon: IconButton(
-                                    icon: Icon(visiblePW
-                                        ? Icons.visibility_off
-                                        : Icons.visibility),
-                                    onPressed: () {
-                                      setState(() {
-                                        visiblePW = !visiblePW;
-                                      });
-                                    },
-                                  ),
-                                  border: const OutlineInputBorder(),
-                                  errorText: pwError,
-                                )),
+                              obscureText: !visiblePW,
+                              enabled: enablePWForm,
+                              controller: pwController,
+                              decoration: InputDecoration(
+                                labelText: "パスワード",
+                                suffixIcon: IconButton(
+                                  icon: Icon(visiblePW
+                                      ? Icons.visibility_off
+                                      : Icons.visibility),
+                                  onPressed: () {
+                                    setState(() {
+                                      visiblePW = !visiblePW;
+                                    });
+                                  },
+                                ),
+                                border: const OutlineInputBorder(),
+                                errorText: pwError,
+                              ),
+                              onFieldSubmitted: (_) {
+                                next();
+                              },
+                            ),
                             const SizedBox(height: 8),
                             OutlinedButton(
                               onPressed: onPWForgot,
