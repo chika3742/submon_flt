@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:submon/auth/sign_in_handler.dart';
@@ -220,6 +221,9 @@ class _SignInPageState extends State<SignInPage> {
       } else {
         rethrow;
       }
+    } catch (e, stack) {
+      FirebaseCrashlytics.instance.recordError(e, stack);
+      showSnackBar(context, "エラーが発生しました。($e)");
     } finally {
       setState(() {
         loading = false;

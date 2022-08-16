@@ -33,30 +33,33 @@ class SignInHandler {
     if (result.errorCode != null) {
       switch (result.errorCode) {
         case SignInError.cancelled:
-        // do nothing
-          break;
+          // do nothing
+          return;
 
         case SignInError.notificationPermissionDenied:
           showSnackBar(globalContext!, "通知が許可されなかったため、通知が受信できません。");
-          Navigator.pop(globalContext!);
+          // enter to home screen
           break;
 
         case SignInError.userNotFound:
           showSnackBar(globalContext!, "アカウントを作成しています。しばらくお待ち下さい...");
           await signupUser(result.credential!);
           showSnackBar(globalContext!, "アカウントを作成しました！");
-          Navigator.pop(globalContext!);
+          // enter to home screen
           break;
 
         default:
           showSnackBar(globalContext!, result.toErrorMessageString());
+          // cancel
+          return;
       }
     } else {
-      if (mode != SignInMode.reauthenticate) {
-        Navigator.popUntil(globalContext!, ModalRoute.withName(WelcomePage.routeName));
-        Navigator.pushReplacementNamed(globalContext!, HomePage.routeName);
-        showSnackBar(globalContext!, "ログインしました。");
-      }
+      showSnackBar(globalContext!, "ログインしました。");
+    }
+
+    if (mode != SignInMode.reauthenticate) {
+      Navigator.popUntil(globalContext!, ModalRoute.withName(WelcomePage.routeName));
+      Navigator.pushReplacementNamed(globalContext!, HomePage.routeName);
     }
   }
 
