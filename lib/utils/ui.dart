@@ -40,7 +40,7 @@ String getUnsetOrString(String? string, bool loading) {
 Color getRemainingDateColor(BuildContext context, int remainingHours) {
   var dark = Theme.of(context).brightness == Brightness.dark;
   if (remainingHours < 0) {
-    return dark ? Colors.redAccent : Colors.red;
+    return dark ? Colors.redAccent.shade200 : Colors.redAccent;
   } else if (0 <= remainingHours && remainingHours <= 2 * 24) {
     return dark ? Colors.orange : Colors.orange.shade600;
   } else {

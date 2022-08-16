@@ -4,19 +4,13 @@ import 'package:animations/animations.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:submon/components/submissions/formatted_date_remaining.dart';
+import 'package:submon/components/submissions/submission_list_item_bottom_sheet.dart';
 import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/isar_db/isar_digestive.dart';
+import 'package:submon/firebase/analytics.dart';
 import 'package:submon/isar_db/isar_submission.dart';
-import 'package:submon/main.dart';
 import 'package:submon/pages/submission_detail_page.dart';
-import 'package:submon/pages/submission_edit_page.dart';
-import 'package:submon/utils/dynamic_links.dart';
 import 'package:submon/utils/ui.dart';
-import 'package:submon/utils/utils.dart';
-
-import '../digestive_edit_bottom_sheet.dart';
 
 class SubmissionListItem extends StatefulWidget {
   const SubmissionListItem(this.item,
@@ -68,7 +62,7 @@ class SubmissionListItemState extends State<SubmissionListItem> {
       onDismissed: (direction) async {
         if (direction == DismissDirection.startToEnd) {
           widget.onDone?.call(false);
-          _logMarkedAsDone("swipe");
+          AnalyticsHelper.logMarkedAsDone(widget.item.done, "swipe");
         } else if (direction == DismissDirection.endToStart) {
           widget.onDelete?.call(false);
         }
@@ -85,6 +79,7 @@ class SubmissionListItemState extends State<SubmissionListItem> {
           closedShape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(8))),
           closedBuilder: (context, callback) {
+            var overdue = widget.item.due.isBefore(DateTime.now());
             return Material(
               color: _item.getColorToDisplay(widget.prefs).withOpacity(0.2),
               child: InkWell(
@@ -107,7 +102,7 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                                         bottomRight: Radius.circular(16)),
                                     border: Border.all(
                                         color: Theme.of(context).brightness ==
-                                                Brightness.light
+                                            Brightness.light
                                             ? Colors.black.withOpacity(0.6)
                                             : Colors.white.withOpacity(0.6),
                                         width: 3)),
@@ -131,39 +126,41 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                           ),
                         ),
                         const Spacer(),
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(left: 8, right: 8, top: 4),
-                          child: Text.rich(
-                            TextSpan(
-                                children: [
-                                  TextSpan(
-                                      text: "${_item.due.month}/",
-                                      style: const TextStyle(fontSize: 20)),
-                                  TextSpan(
-                                      text: "${_item.due.day}",
-                                      style: const TextStyle(fontSize: 28)),
-                                  TextSpan(
-                                      text:
-                                          " (${getWeekdayString(_item.due.weekday - 1)})",
-                                      style: const TextStyle(fontSize: 20)),
-                                  if (_item.due.hour != 23 ||
-                                      _item.due.minute != 59)
+                        Container(
+                          child: Padding(
+                            padding:
+                            const EdgeInsets.symmetric(
+                                vertical: 4, horizontal: 16),
+                            child: Text.rich(
+                              TextSpan(
+                                  children: [
                                     TextSpan(
-                                      text:
-                                          " ${DateFormat("HH:mm").format(_item.due)}",
-                                      style: const TextStyle(fontSize: 20),
-                                    )
-                                ],
-                                style: TextStyle(
-                                    letterSpacing: 2,
-                                    color:
-                                        widget.item.due.isBefore(DateTime.now())
-                                            ? Colors.red
-                                            : Theme.of(context)
-                                                .textTheme
-                                                .headlineMedium!
-                                                .color)),
+                                        text: "${_item.due.month}/",
+                                        style: const TextStyle(fontSize: 20)),
+                                    TextSpan(
+                                        text: "${_item.due.day}",
+                                        style: const TextStyle(fontSize: 28)),
+                                    TextSpan(
+                                        text:
+                                        " (${getWeekdayString(
+                                            _item.due.weekday - 1)})",
+                                        style: const TextStyle(fontSize: 20)),
+                                    if (_item.due.hour != 23 ||
+                                        _item.due.minute != 59)
+                                      TextSpan(
+                                        text:
+                                        " ${DateFormat("HH:mm").format(
+                                            _item.due)}",
+                                        style: const TextStyle(fontSize: 20),
+                                      )
+                                  ],
+                                  style: TextStyle(
+                                      letterSpacing: 2,
+                                      fontWeight: overdue
+                                          ? FontWeight.bold
+                                          : null,
+                                      color: getDueTextColor())),
+                            ),
                           ),
                         )
                       ],
@@ -206,51 +203,10 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                   showRoundedBottomSheet(
                     context: context,
                     useRootNavigator: true,
-                    child: Column(
-                      children: [
-                        ListTile(
-                          leading: const Icon(Icons.share),
-                          title: const Text("共有"),
-                          onTap: () {
-                            _handleContextMenuAction(_ContextMenuAction.share);
-                            FirebaseAnalytics.instance.logShare(
-                              contentType: "submission",
-                              itemId: widget.item.id.toString(),
-                              method: "longPressMenu",
-                            );
-                          },
-                        ),
-                        ListTile(
-                          leading: const Icon(Icons.add),
-                          title: const Text("Digestive を追加"),
-                          onTap: () {
-                            _handleContextMenuAction(
-                                _ContextMenuAction.addDigestive);
-                          },
-                        ),
-                        ListTile(
-                          leading: const Icon(Icons.edit),
-                          title: const Text("編集"),
-                          onTap: () {
-                            _handleContextMenuAction(_ContextMenuAction.edit);
-                          },
-                        ),
-                        ListTile(
-                          leading: const Icon(Icons.check),
-                          title: const Text("完了にする"),
-                          onTap: () {
-                            _handleContextMenuAction(
-                                _ContextMenuAction.makeDone);
-                          },
-                        ),
-                        ListTile(
-                          leading: const Icon(Icons.delete),
-                          title: const Text("削除"),
-                          onTap: () {
-                            _handleContextMenuAction(_ContextMenuAction.delete);
-                          },
-                        ),
-                      ],
+                    child: SubmissionListItemBottomSheet(
+                      item: widget.item,
+                      onDone: widget.onDone,
+                      onDelete: widget.onDelete,
                     ),
                   );
                 },
@@ -279,6 +235,24 @@ class SubmissionListItemState extends State<SubmissionListItem> {
     );
   }
 
+  Color getDueTextColor() {
+    if (widget.item.due.isBefore(DateTime.now())) {
+      if (Theme
+          .of(context)
+          .brightness == Brightness.light) {
+        return Colors.redAccent;
+      } else {
+        return Colors.redAccent.shade200;
+      }
+    } else {
+      return Theme
+          .of(context)
+          .textTheme
+          .headlineMedium!
+          .color!;
+    }
+  }
+
   void toggleImportant() {
     setState(() {
       _item.important = !_item.important;
@@ -290,77 +264,4 @@ class SubmissionListItemState extends State<SubmissionListItem> {
     });
   }
 
-  Future<void> _handleContextMenuAction(_ContextMenuAction action) async {
-    Navigator.of(context, rootNavigator: true).pop(context);
-
-    switch (action) {
-      case _ContextMenuAction.share:
-        showLoadingModal(context);
-
-        buildShortDynamicLink("/submission-sharing"
-            "?title=${Uri.encodeComponent(widget.item.title)}"
-            "&date=${widget.item.due.toUtc().toIso8601String()}"
-            "${widget.item.details != "" ? "&details=${Uri.encodeComponent(widget.item.details)}" : ""}"
-            "&color=${widget.item.color.value}")
-            .then((link) {
-          Share.share(link.shortUrl.toString());
-        }).onError((error, stackTrace) {
-          showSnackBar(context, "エラーが発生しました。");
-          recordErrorToCrashlytics(error, stackTrace);
-        }).whenComplete(() {
-          if (mounted) {
-            Navigator.of(context, rootNavigator: true).pop(context);
-          }
-        });
-        break;
-
-      case _ContextMenuAction.addDigestive:
-        var data = await showRoundedBottomSheet<Digestive>(
-          context: context,
-          useRootNavigator: true,
-          title: "Digestive 新規作成",
-          child: DigestiveEditBottomSheet(submissionId: widget.item.id),
-        );
-        if (data != null) {
-          DigestiveProvider().use((provider) async {
-            await provider.put(data);
-          });
-          showSnackBar(globalContext!, "作成しました");
-        }
-        break;
-      case _ContextMenuAction.edit:
-        Navigator.of(context, rootNavigator: true)
-            .pushNamed(SubmissionEditPage.routeName, arguments: SubmissionEditPageArguments(widget.item.id!));
-        break;
-      case _ContextMenuAction.makeDone:
-        widget.onDone?.call(true);
-        _logMarkedAsDone("longPressMenu");
-        break;
-      case _ContextMenuAction.delete:
-        widget.onDelete?.call(true);
-        break;
-    }
-  }
-
-  void _logMarkedAsDone(String method) {
-    if (!widget.item.done) {
-      FirebaseAnalytics.instance
-          .logEvent(name: "marked_submission_as_done", parameters: {
-        "method": method,
-      });
-    } else {
-      FirebaseAnalytics.instance
-          .logEvent(name: "unmarked_submission_as_done", parameters: {
-        "method": method,
-      });
-    }
-  }
-}
-
-enum _ContextMenuAction {
-  share,
-  addDigestive,
-  edit,
-  makeDone,
-  delete,
 }
