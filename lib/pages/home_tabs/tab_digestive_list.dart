@@ -7,6 +7,7 @@ import 'package:submon/events.dart';
 import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/main.dart';
+import 'package:submon/pages/submission_detail_page.dart';
 
 import '../../components/digestive_edit_bottom_sheet.dart';
 import '../../sample_data.dart';
@@ -46,18 +47,7 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
         ),
       ];
     } else {
-      DigestiveProvider().use((provider) async {
-        SubmissionProvider().use((sProvider) async {
-          var digestiveList = await provider.getUndoneDigestives();
-          _digestiveList = await Future.wait(digestiveList.map((e) async {
-            var submission = e.submissionId != null
-                ? await sProvider.get(e.submissionId!)
-                : null;
-            return DigestiveWithSubmission.fromObject(e, submission);
-          }).toList());
-          setState(() {});
-        });
-      });
+      fetchDigestives();
     }
 
     listener = eventBus.on<DigestiveAddButtonPressed>().listen((event) async {
@@ -84,6 +74,21 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
     });
 
     super.initState();
+  }
+
+  void fetchDigestives() {
+    DigestiveProvider().use((provider) async {
+      SubmissionProvider().use((sProvider) async {
+        var digestiveList = await provider.getUndoneDigestives();
+        _digestiveList = await Future.wait(digestiveList.map((e) async {
+          var submission = e.submissionId != null
+              ? await sProvider.get(e.submissionId!)
+              : null;
+          return DigestiveWithSubmission.fromObject(e, submission);
+        }).toList());
+        setState(() {});
+      });
+    });
   }
 
   @override
@@ -113,39 +118,50 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
         var remainingString =
             diff != null ? getRemainingString(diff, false) : null;
         if (e.submission != null) {
-          widgets.add(Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  flex: 100,
-                  child: Text(
-                    e.submission!.title,
-                    style: Theme.of(context).textTheme.titleMedium,
-                    softWrap: false,
-                    overflow: TextOverflow.fade,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text.rich(TextSpan(
-                    text:
-                        "${DateFormat("M/d (E)", "ja").format(e.submission!.due)}・あと ",
-                    children: [
-                      TextSpan(
-                          text: remainingString![0],
-                          style: TextStyle(
-                            color:
-                                getRemainingDateColor(context, diff!.inHours),
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          )),
-                      TextSpan(
-                        text: remainingString[1],
+          widgets.add(Material(
+            child: InkWell(
+              onTap: () async {
+                await Navigator.of(context, rootNavigator: true).pushNamed(
+                    SubmissionDetailPage.routeName,
+                    arguments:
+                        SubmissionDetailPageArguments(e.submission!.id!));
+                fetchDigestives();
+              },
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      flex: 100,
+                      child: Text(
+                        e.submission!.title,
+                        style: Theme.of(context).textTheme.titleMedium,
+                        softWrap: false,
+                        overflow: TextOverflow.fade,
                       ),
-                    ])),
-              ],
+                    ),
+                    const SizedBox(width: 8),
+                    Text.rich(TextSpan(
+                        text:
+                            "${DateFormat("M/d (E)", "ja").format(e.submission!.due)}・あと ",
+                        children: [
+                          TextSpan(
+                              text: remainingString![0],
+                              style: TextStyle(
+                                color: getRemainingDateColor(
+                                    context, diff!.inHours),
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              )),
+                          TextSpan(
+                            text: remainingString[1],
+                          ),
+                        ])),
+                  ],
+                ),
+              ),
             ),
           ));
         }
