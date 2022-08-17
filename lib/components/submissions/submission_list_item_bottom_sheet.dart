@@ -32,7 +32,7 @@ class SubmissionListItemBottomSheet extends StatelessWidget {
           leading: const Icon(Icons.share),
           title: const Text("共有"),
           onTap: () {
-            _handleContextMenuAction(context, _ContextMenuAction.share);
+            _handleContextMenuAction(_ContextMenuAction.share);
             FirebaseAnalytics.instance.logShare(
               contentType: "submission",
               itemId: item.id.toString(),
@@ -44,60 +44,59 @@ class SubmissionListItemBottomSheet extends StatelessWidget {
           leading: const Icon(Icons.add),
           title: const Text("Digestive を追加"),
           onTap: () {
-            _handleContextMenuAction(context, _ContextMenuAction.addDigestive);
+            _handleContextMenuAction(_ContextMenuAction.addDigestive);
           },
         ),
         ListTile(
           leading: const Icon(Icons.edit),
           title: const Text("編集"),
           onTap: () {
-            _handleContextMenuAction(context, _ContextMenuAction.edit);
+            _handleContextMenuAction(_ContextMenuAction.edit);
           },
         ),
         ListTile(
           leading: const Icon(Icons.check),
           title: const Text("完了にする"),
           onTap: () {
-            _handleContextMenuAction(context, _ContextMenuAction.makeDone);
+            _handleContextMenuAction(_ContextMenuAction.makeDone);
           },
         ),
         ListTile(
           leading: const Icon(Icons.delete),
           title: const Text("削除"),
           onTap: () {
-            _handleContextMenuAction(context, _ContextMenuAction.delete);
+            _handleContextMenuAction(_ContextMenuAction.delete);
           },
         ),
       ],
     );
   }
 
-  Future<void> _handleContextMenuAction(
-      BuildContext context, _ContextMenuAction action) async {
-    Navigator.of(context, rootNavigator: true).pop(context);
+  Future<void> _handleContextMenuAction(_ContextMenuAction action) async {
+    Navigator.of(globalContext!, rootNavigator: true).pop();
 
     switch (action) {
       case _ContextMenuAction.share:
-        showLoadingModal(context);
+        showLoadingModal(globalContext!);
 
-        buildShortDynamicLink("/submission-sharing"
-                "?title=${Uri.encodeComponent(item.title)}"
-                "&date=${item.due.toUtc().toIso8601String()}"
-                "${item.details != "" ? "&details=${Uri.encodeComponent(item.details)}" : ""}"
-                "&color=${item.color.value}")
-            .then((link) {
+        try {
+          var link = await buildShortDynamicLink("/submission-sharing"
+              "?title=${Uri.encodeComponent(item.title)}"
+              "&date=${item.due.toUtc().toIso8601String()}"
+              "${item.details != "" ? "&details=${Uri.encodeComponent(item.details)}" : ""}"
+              "&color=${item.color.value}");
           Share.share(link.shortUrl.toString());
-        }).onError((error, stackTrace) {
-          showSnackBar(context, "エラーが発生しました。");
+        } catch (error, stackTrace) {
+          showSnackBar(globalContext!, "エラーが発生しました。");
           recordErrorToCrashlytics(error, stackTrace);
-        }).whenComplete(() {
-          Navigator.of(context, rootNavigator: true).pop(context);
-        });
+        } finally {
+          Navigator.of(globalContext!, rootNavigator: true).pop();
+        }
         break;
 
       case _ContextMenuAction.addDigestive:
         var data = await showRoundedBottomSheet<Digestive>(
-          context: context,
+          context: globalContext!,
           useRootNavigator: true,
           title: "Digestive 新規作成",
           child: DigestiveEditBottomSheet(submissionId: item.id),
@@ -110,7 +109,7 @@ class SubmissionListItemBottomSheet extends StatelessWidget {
         }
         break;
       case _ContextMenuAction.edit:
-        Navigator.of(context, rootNavigator: true).pushNamed(
+        Navigator.of(globalContext!, rootNavigator: true).pushNamed(
             SubmissionEditPage.routeName,
             arguments: SubmissionEditPageArguments(item.id!));
         break;

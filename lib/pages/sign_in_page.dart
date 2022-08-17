@@ -93,7 +93,7 @@ class _SignInPageState extends State<SignInPage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orange.shade800,
                         ),
-                        label: const Text("メールアドレスでログイン",
+                        label: const Text("メールアドレスでサインイン",
                             style: TextStyle(color: Colors.white)),
                         onPressed: (!loading && widget.mode != SignInMode.reauthenticate)
                             ? () {

@@ -66,7 +66,8 @@ class SignInHandler {
     }
 
     if (mode != SignInMode.reauthenticate) {
-      Navigator.popUntil(globalContext!, ModalRoute.withName(WelcomePage.routeName));
+      Navigator.popUntil(
+          globalContext!, ModalRoute.withName(WelcomePage.routeName));
       Navigator.pushReplacementNamed(globalContext!, HomePage.routeName);
     }
   }
@@ -145,7 +146,8 @@ class SignInHandler {
 
     final googleUser = await googleSignIn.signIn();
     if (googleUser == null) {
-      return SignInResult(errorCode: SignInError.cancelled); // if canceled (aborted)
+      return SignInResult(
+          errorCode: SignInError.cancelled); // if canceled (aborted)
     }
 
     final googleAuth = await googleUser.authentication;
@@ -177,7 +179,8 @@ class SignInHandler {
 
     AuthorizationCredentialAppleID? appleCredential;
     if (Platform.isIOS || Platform.isMacOS) {
-      appleCredential = await SignInWithApple.getAppleIDCredential(
+      try {
+        appleCredential = await SignInWithApple.getAppleIDCredential(
           scopes: [
             AppleIDAuthorizationScopes.email,
             AppleIDAuthorizationScopes.fullName,
@@ -187,12 +190,24 @@ class SignInHandler {
           webAuthenticationOptions: WebAuthenticationOptions(
               clientId: "net.chikach.submon.asi",
               redirectUri: Uri.parse(
-                  "https://asia-northeast1-submon-mgr.cloudfunctions.net/appleSignInRedirector")));
+                  "https://asia-northeast1-submon-mgr.cloudfunctions.net/appleSignInRedirector")),
+        );
+      } on SignInWithAppleAuthorizationException catch (e) {
+        if (e.code == AuthorizationErrorCode.canceled) {
+          return SignInResult(errorCode: SignInError.cancelled);
+        } else {
+          return SignInResult(
+              errorCode: SignInError.appleSignInFailed,
+              errorMessage: "サインインに失敗しました");
+        }
+      }
     } else {
       appleCredential = await AppleSignIn().signIn(state: state, nonce: nonce);
     }
 
-    if (appleCredential == null) return SignInResult(errorCode: SignInError.cancelled);
+    if (appleCredential == null) {
+      return SignInResult(errorCode: SignInError.cancelled);
+    }
 
     if (state != appleCredential.state) {
       FirebaseCrashlytics.instance
@@ -235,7 +250,8 @@ class SignInHandler {
         await FirestoreProvider.saveNotificationToken(notificationToken);
         MainMethodPlugin.updateWidgets();
 
-        var requestPermResult = await requestNotificationPermissionIfEnabled(data);
+        var requestPermResult =
+            await requestNotificationPermissionIfEnabled(data);
         if (requestPermResult == NotificationPermissionState.denied) {
           return SignInError.notificationPermissionDenied;
         }
@@ -254,7 +270,8 @@ class SignInHandler {
     }
   }
 
-  Future<NotificationPermissionState?> requestNotificationPermissionIfEnabled(UserConfig data) async {
+  Future<NotificationPermissionState?> requestNotificationPermissionIfEnabled(
+      UserConfig data) async {
     if (data.reminderNotificationTime != null ||
         data.timetableNotificationTime != null ||
         data.digestiveNotifications.isNotEmpty) {

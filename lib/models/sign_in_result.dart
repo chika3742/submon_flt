@@ -18,6 +18,7 @@ enum SignInError {
   twitterTimeOutOfSync,
   twitterRequestTokenRequestFailed,
   twitterAccessTokenRequestFailed,
+  appleSignInFailed,
   notificationPermissionDenied,
   userNotFound,
   unknown,
