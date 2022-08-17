@@ -102,8 +102,10 @@ class SubmissionListItemBottomSheet extends StatelessWidget {
           child: DigestiveEditBottomSheet(submissionId: item.id),
         );
         if (data != null) {
-          DigestiveProvider().use((provider) async {
-            await provider.put(data);
+          await DigestiveProvider().use((provider) async {
+            await provider.writeTransaction(() async {
+              await provider.put(data);
+            });
           });
           showSnackBar(globalContext!, "作成しました");
         }

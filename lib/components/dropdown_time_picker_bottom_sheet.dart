@@ -35,8 +35,8 @@ class _DropdownTimePickerBottomSheetState extends State<DropdownTimePickerBottom
                 child: DropdownButtonFormField<int>(
                   items: range(0, 23).map((e) => DropdownMenuItem(
                     value: e,
-                    child: Text(e.toString()),
-                  )).toList(),
+                            child: Text("$e 時"),
+                          )).toList(),
                   value: _selectedTime.hour,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
@@ -54,8 +54,8 @@ class _DropdownTimePickerBottomSheetState extends State<DropdownTimePickerBottom
                 child: DropdownButtonFormField<int>(
                   items: range(0, 55, 5).map((e) => DropdownMenuItem(
                     value: e,
-                    child: Text(e.toString()),
-                  )).toList(),
+                            child: Text("$e 分"),
+                          )).toList(),
                   value: _selectedTime.minute,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),

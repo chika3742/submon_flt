@@ -36,10 +36,12 @@ class DigestiveDetailCardState extends State<DigestiveDetailCard> {
     super.initState();
 
     listener = eventBus.on<OnDigestiveDoneChanged>().listen((event) {
-      setState(() {
-        widget.digestive.done = event.done;
-      });
-      widget.onChanged?.call();
+      if (event.digestiveId == widget.digestive.id) {
+        setState(() {
+          widget.digestive.done = event.done;
+        });
+        widget.onChanged?.call();
+      }
     });
   }
 
@@ -218,16 +220,16 @@ class DigestiveDetailCardState extends State<DigestiveDetailCard> {
         await provider.put(digestive..done = done);
       });
     });
-    eventBus.fire(OnDigestiveDoneChanged(true));
-    showSnackBar(Application.globalKey.currentContext!,
-        done ? "完了しました" : "完了マークを外しました",
+    eventBus.fire(OnDigestiveDoneChanged(digestive.id!, done));
+    showSnackBar(
+        Application.globalKey.currentContext!, done ? "完了しました" : "完了マークを外しました",
         action: SnackBarAction(
           label: "元に戻す",
           onPressed: () {
             DigestiveProvider().use((provider) async {
               provider.writeTransaction(() async {
                 await provider.put(digestive..done = !done);
-                eventBus.fire(OnDigestiveDoneChanged(false));
+                eventBus.fire(OnDigestiveDoneChanged(digestive.id!, !done));
               });
             });
           },
