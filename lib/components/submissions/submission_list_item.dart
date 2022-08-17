@@ -109,16 +109,27 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 2, horizontal: 12),
-                                  child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        _weekView = !_weekView;
-                                      });
-                                    },
-                                    borderRadius: BorderRadius.circular(4),
-                                    child: FormattedDateRemaining(
-                                        _item.due.difference(DateTime.now()),
-                                        weekView: _weekView),
+                                  child: Row(
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            _weekView = !_weekView;
+                                          });
+                                        },
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: FormattedDateRemaining(
+                                            _item.due
+                                                .difference(DateTime.now()),
+                                            weekView: _weekView),
+                                      ),
+                                      if (_item.important)
+                                        const Padding(
+                                          padding: EdgeInsets.only(left: 8.0),
+                                          child: Icon(Icons.star,
+                                              color: Colors.orange),
+                                        )
+                                    ],
                                   ),
                                 ),
                               ),
@@ -126,41 +137,35 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                           ),
                         ),
                         const Spacer(),
-                        Container(
-                          child: Padding(
-                            padding:
-                            const EdgeInsets.symmetric(
-                                vertical: 4, horizontal: 16),
-                            child: Text.rich(
-                              TextSpan(
-                                  children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 4, horizontal: 16),
+                          child: Text.rich(
+                            TextSpan(
+                                children: [
+                                  TextSpan(
+                                      text: "${_item.due.month}/",
+                                      style: const TextStyle(fontSize: 20)),
+                                  TextSpan(
+                                      text: "${_item.due.day}",
+                                      style: const TextStyle(fontSize: 28)),
+                                  TextSpan(
+                                      text:
+                                          " (${getWeekdayString(_item.due.weekday - 1)})",
+                                      style: const TextStyle(fontSize: 20)),
+                                  if (_item.due.hour != 23 ||
+                                      _item.due.minute != 59)
                                     TextSpan(
-                                        text: "${_item.due.month}/",
-                                        style: const TextStyle(fontSize: 20)),
-                                    TextSpan(
-                                        text: "${_item.due.day}",
-                                        style: const TextStyle(fontSize: 28)),
-                                    TextSpan(
-                                        text:
-                                        " (${getWeekdayString(
-                                            _item.due.weekday - 1)})",
-                                        style: const TextStyle(fontSize: 20)),
-                                    if (_item.due.hour != 23 ||
-                                        _item.due.minute != 59)
-                                      TextSpan(
-                                        text:
-                                        " ${DateFormat("HH:mm").format(
-                                            _item.due)}",
-                                        style: const TextStyle(fontSize: 20),
-                                      )
-                                  ],
-                                  style: TextStyle(
-                                      letterSpacing: 2,
-                                      fontWeight: overdue
-                                          ? FontWeight.bold
-                                          : null,
-                                      color: getDueTextColor())),
-                            ),
+                                      text:
+                                          " ${DateFormat("HH:mm").format(_item.due)}",
+                                      style: const TextStyle(fontSize: 20),
+                                    )
+                                ],
+                                style: TextStyle(
+                                    letterSpacing: 2,
+                                    fontWeight:
+                                        overdue ? FontWeight.bold : null,
+                                    color: getDueTextColor())),
                           ),
                         )
                       ],
