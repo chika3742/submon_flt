@@ -93,6 +93,7 @@ void handleSignInDynamicLink(Uri url) {
   if (url.host == getAppDomain("") || url.scheme == "submon") {
     switch (url.path) {
       case "/__/auth/action":
+      case "/__/auth/handler":
         handleAuthUri(url, [
           AuthUriMode.verifyAndChangeEmail,
           AuthUriMode.signInWithEmailLink
@@ -233,9 +234,7 @@ void openFocusTimer(Uri url) {
     var digestive =
         await provider.get(int.parse(url.queryParameters["digestiveId"]!));
     if (digestive != null) {
-      var result = await Navigator.of(globalContext!, rootNavigator: true)
-          .pushNamed<bool>(FocusTimerPage.routeName, arguments: FocusTimerPageArguments(digestive));
-
+      FocusTimerPage.openFocusTimer(globalContext!, digestive);
     } else {
       showSnackBar(globalContext!, "このDigestiveはすでに削除されています");
     }

@@ -3,9 +3,15 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/foundation.dart';
 
 ActionCodeSettings actionCodeSettings(String url) {
+  String androidPackageName;
+  if (kReleaseMode) {
+    androidPackageName = "net.chikach.submon";
+  } else {
+    androidPackageName = "net.chikach.submon.debug";
+  }
   return ActionCodeSettings(
     url: url,
-    androidPackageName: "net.chikach.submon",
+    androidPackageName: androidPackageName,
     iOSBundleId: "net.chikach.submon",
     handleCodeInApp: true,
     dynamicLinkDomain: getDynamicLinkDomain(),
