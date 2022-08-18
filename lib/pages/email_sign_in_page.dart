@@ -335,7 +335,7 @@ class EmailSignInPageState extends State<EmailSignInPage>
         .sendSignInLinkToEmail(
       email: emailController.text,
       actionCodeSettings:
-          actionCodeSettings(getAppDomain("", withScheme: true)),
+          actionCodeSettings("https://submon.app/sign-in-from-email"),
     )
         .whenComplete(() {
       Navigator.pop(Application.globalKey.currentContext!);

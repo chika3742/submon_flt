@@ -30,6 +30,7 @@ class _WelcomePageState extends State<WelcomePage> {
   var _disableStatistics = false;
   final _scaffoldKey = GlobalKey();
   StreamSubscription? _dynamicLinkListener;
+  StreamSubscription? _uriListener;
 
   @override
   void initState() {
@@ -37,6 +38,7 @@ class _WelcomePageState extends State<WelcomePage> {
 
     Future(() {
       _dynamicLinkListener = initSignInDynamicLinks();
+      _uriListener = initSignInUriHandler();
     });
   }
 

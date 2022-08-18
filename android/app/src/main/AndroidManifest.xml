@@ -18,16 +18,16 @@
     </queries>
 
     <application
-            android:icon="@mipmap/ic_launcher"
-            android:label="${applicationLabel}">
+        android:icon="@mipmap/ic_launcher"
+        android:label="${applicationLabel}">
         <activity
-                android:name=".MainActivity"
-                android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-                android:exported="true"
-                android:hardwareAccelerated="true"
-                android:launchMode="singleTop"
-                android:theme="@style/LaunchTheme"
-                android:windowSoftInputMode="adjustResize">
+            android:name=".MainActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleTop"
+            android:theme="@style/LaunchTheme"
+            android:windowSoftInputMode="adjustResize">
 
             <!--
                  Specifies an Android theme to apply to this Activity as soon as
@@ -61,8 +61,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                        android:host="${appLinkHostName}"
-                        android:scheme="https" />
+                    android:host="${appLinkHostName}"
+                    android:scheme="https" />
             </intent-filter>
 
             <intent-filter android:autoVerify="true">
@@ -72,13 +72,13 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                        android:scheme="signinwithapple"
-                        android:path="callback" />
+                    android:path="callback"
+                    android:scheme="signinwithapple" />
             </intent-filter>
 
             <meta-data
-                    android:name="android.app.shortcuts"
-                    android:resource="@xml/shortcuts" />
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
 
         <activity
@@ -97,33 +97,33 @@
         </receiver>
 
         <receiver
-                android:name=".ListItemActionBroadcastReceiver"
-                android:exported="false" />
+            android:name=".ListItemActionBroadcastReceiver"
+            android:exported="false" />
 
         <receiver
-                android:name=".DoneDigestiveBroadcastReceiver"
-                android:exported="false" />
+            android:name=".DoneDigestiveBroadcastReceiver"
+            android:exported="false" />
 
         <service
-                android:name=".AppWidgetSubmissionListService"
-                android:permission="android.permission.BIND_REMOTEVIEWS" />
+            android:name=".AppWidgetSubmissionListService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <service
-                android:name=".MyFirebaseMessagingService"
-                android:exported="false">
+            android:name=".MyFirebaseMessagingService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
         <provider
-                android:name="androidx.core.content.FileProvider"
-                android:authorities="${applicationId}.fileprovider"
-                android:exported="false"
-                android:grantUriPermissions="true">
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
-                    android:name="android.support.FILE_PROVIDER_PATHS"
-                    android:resource="@xml/provider_paths" />
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
         </provider>
 
         <!--

@@ -32,6 +32,19 @@ StreamSubscription initSignInDynamicLinks() {
   });
 }
 
+StreamSubscription initSignInUriHandler() {
+  MainMethodPlugin.getPendingUri().then((uriString) {
+    if (uriString != null) {
+      handleSignInDynamicLink(Uri.parse(uriString));
+    }
+  });
+  return const EventChannel(EventChannels.uri)
+      .receiveBroadcastStream()
+      .listen((uriString) {
+    handleSignInDynamicLink(Uri.parse(uriString));
+  });
+}
+
 StreamSubscription initDynamicLinks() {
   FirebaseDynamicLinks.instance.getInitialLink().then((linkData) {
     if (linkData != null) {
