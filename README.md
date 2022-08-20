@@ -10,6 +10,4 @@
 
 私が追加したIssueは、メモとして使っているのでかなり書き方が雑です。ご了承ください。
 
-PRは歓迎します。
-
-2022 chika All rights reserved.
+©chika 2022
