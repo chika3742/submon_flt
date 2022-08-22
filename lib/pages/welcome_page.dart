@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -9,11 +8,11 @@ import 'package:submon/auth/sign_in_handler.dart';
 import 'package:submon/browser.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/link_handler.dart';
 import 'package:submon/main.dart';
 import 'package:submon/pages/sign_in_page.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import 'home_page.dart';
 
@@ -29,17 +28,10 @@ class WelcomePage extends StatefulWidget {
 class _WelcomePageState extends State<WelcomePage> {
   var _disableStatistics = false;
   final _scaffoldKey = GlobalKey();
-  StreamSubscription? _dynamicLinkListener;
-  StreamSubscription? _uriListener;
 
   @override
   void initState() {
     super.initState();
-
-    Future(() {
-      _dynamicLinkListener = initSignInDynamicLinks();
-      _uriListener = initSignInUriHandler();
-    });
   }
 
   @override
@@ -71,14 +63,17 @@ class _WelcomePageState extends State<WelcomePage> {
                     width: 240,
                     child: ElevatedButton(
                       onPressed: () async {
-                        var result =
-                            await Navigator.pushNamed(context, SignInPage.routeName, arguments: const SignInPageArguments(SignInMode.normal));
+                        var result = await Navigator.pushNamed(
+                            context, SignInPage.routeName,
+                            arguments:
+                                const SignInPageArguments(SignInMode.normal));
                         if (result == true && mounted) {
-                          Navigator.pushReplacementNamed(context, HomePage.routeName);
+                          Navigator.pushReplacementNamed(
+                              context, HomePage.routeName);
                         }
                       },
-                      style:
-                          ElevatedButton.styleFrom(primary: Colors.redAccent),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.redAccent),
                       child: const Text('ログインして始める',
                           style: TextStyle(
                               color: Colors.white,
@@ -113,11 +108,13 @@ class _WelcomePageState extends State<WelcomePage> {
                             }
 
                             Navigator.pop(globalContext!);
-                            Navigator.pushReplacementNamed(globalContext!, HomePage.routeName);
+                            Navigator.pushReplacementNamed(
+                                globalContext!, HomePage.routeName);
                           },
                         );
                       },
-                      style: ElevatedButton.styleFrom(primary: Colors.grey),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey),
                       child: const Text('お試しモードで開始',
                           style: TextStyle(color: Colors.white, fontSize: 16)),
                     ),
@@ -169,12 +166,12 @@ class _WelcomePageState extends State<WelcomePage> {
                                 "「次へ」をタップすると移行用サイトに移動します。詳細はこのサイトをご覧ください。",
                             okText: "次へ",
                             showCancel: true, onOKPressed: () async {
-                          launch("https://submon.chikach.net/migrate",
-                              forceSafariVC: true);
+                          launchUrlString("https://submon.chikach.net/migrate",
+                              mode: LaunchMode.externalApplication);
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                          primary: Colors.orange.shade900),
+                          backgroundColor: Colors.orange.shade900),
                       child: const Text('旧「提出物マネージャー」\nからアカウント移行',
                           style: TextStyle(
                             color: Colors.white,
@@ -229,11 +226,5 @@ class _WelcomePageState extends State<WelcomePage> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _dynamicLinkListener?.cancel();
   }
 }

@@ -1,10 +1,6 @@
-import 'dart:io';
-
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:googleapis/oauth2/v2.dart' as oauth;
@@ -14,14 +10,9 @@ import 'package:submon/main.dart';
 import 'package:submon/pages/submission_create_page.dart';
 import 'package:submon/utils/ui.dart';
 
-Future<dynamic> pushPage(BuildContext context, Widget page) async {
-  PageRoute route;
-  if (Platform.isIOS || Platform.isMacOS) {
-    route = CupertinoPageRoute(builder: (settings) => page);
-  } else {
-    route = MaterialPageRoute(builder: (settings) => page);
-  }
-  return await Navigator.of(context, rootNavigator: true).push(route);
+bool get isAdEnabled {
+  return FirebaseAuth.instance.currentUser?.email !=
+      "kazu.chika.shima@gmail.com";
 }
 
 int getTimetableCellId(int period, int weekday) {

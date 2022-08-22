@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -21,251 +22,262 @@ import 'package:submon/utils/utils.dart';
 import 'db/shared_prefs.dart';
 import 'method_channel/channels.dart';
 
-StreamSubscription initSignInDynamicLinks() {
-  FirebaseDynamicLinks.instance.getInitialLink().then((linkData) {
-    if (linkData != null) {
-      handleSignInDynamicLink(linkData.link);
-    }
-  });
-  return FirebaseDynamicLinks.instance.onLink.listen((linkData) async {
-    handleSignInDynamicLink(linkData.link);
-  });
-}
+class LinkListeners {
+  StreamSubscription? _dynamicLinksListener;
+  StreamSubscription? _uriListener;
 
-StreamSubscription initSignInUriHandler() {
-  MainMethodPlugin.getPendingUri().then((uriString) {
-    if (uriString != null) {
-      handleSignInDynamicLink(Uri.parse(uriString));
-    }
-  });
-  return const EventChannel(EventChannels.uri)
-      .receiveBroadcastStream()
-      .listen((uriString) {
-    handleSignInDynamicLink(Uri.parse(uriString));
-  });
-}
+  void initialize() {
+    _initDynamicLinksListener();
+    _initUriHandler();
+  }
 
-StreamSubscription initDynamicLinks() {
-  FirebaseDynamicLinks.instance.getInitialLink().then((linkData) {
-    if (linkData != null) {
-      handleDynamicLink(linkData.link);
-    }
-  });
-  return FirebaseDynamicLinks.instance.onLink.listen((linkData) async {
-    handleDynamicLink(linkData.link);
-  });
-}
+  void cancel() {
+    _dynamicLinksListener?.cancel();
+    _uriListener?.cancel();
+  }
 
-StreamSubscription initUriHandler() {
-  MainMethodPlugin.getPendingUri().then((uriString) {
-    if (uriString != null) {
-      handleDynamicLink(Uri.parse(uriString));
-    }
-  });
-  return const EventChannel(EventChannels.uri)
-      .receiveBroadcastStream()
-      .listen((uriString) {
-    handleDynamicLink(Uri.parse(uriString));
-  });
-}
+  void _initDynamicLinksListener() {
+    FirebaseDynamicLinks.instance.getInitialLink().then((linkData) {
+      if (linkData != null) {
+        _handleLink(linkData.link);
+      }
+    });
+    _dynamicLinksListener =
+        FirebaseDynamicLinks.instance.onLink.listen((linkData) async {
+      _handleLink(linkData.link);
+    });
+  }
 
-void handleDynamicLink(Uri url) {
-  try {
-    if (url.host == getAppDomain("") || url.scheme == "submon") {
-        switch (url.path.split("/")[1]) {
-          case "__":
-            if (url.path == "/__/auth/action") {
-              handleAuthUri(url, [AuthUriMode.verifyAndChangeEmail]);
-            }
-            break;
+  void _initUriHandler() {
+    MainMethodPlugin.getPendingUri().then((uriString) {
+      if (uriString != null) {
+        _handleLink(Uri.parse(uriString));
+      }
+    });
+    _uriListener = const EventChannel(EventChannels.uri)
+        .receiveBroadcastStream()
+        .listen((uriString) {
+      _handleLink(Uri.parse(uriString));
+    });
+  }
 
-          case "submission":
-            openSubmission(url);
-            break;
-          case "submission-sharing":
-            showSubmissionSharingDialog(url);
-            break;
-          case "create-submission":
-            openCreateSubmissionPage();
-            break;
-          case "focus-timer":
-            openFocusTimer(url);
-            break;
-          case "tab":
-            setDefaultTab(url);
-            break;
+  void _handleLink(Uri url) {
+    try {
+      if (url.host == getAppDomain("") || url.scheme == "submon") {
+        if (url.path == "/__/auth/action") {
+          AuthLinkHelper.handle(url);
+        } else {
+          OpenerUrlHelper.handle(url);
         }
       }
-  } on RangeError catch (e, stack) {
-    debugPrint("Malformed URL or the URL should not be handled here");
-    debugPrintStack(stackTrace: stack);
-  }
-}
-
-void handleSignInDynamicLink(Uri url) {
-  if (url.host == getAppDomain("") || url.scheme == "submon") {
-    switch (url.path) {
-      case "/__/auth/action":
-      case "/__/auth/handler":
-        handleAuthUri(url, [
-          AuthUriMode.verifyAndChangeEmail,
-          AuthUriMode.signInWithEmailLink
-        ]);
-        break;
+    } on RangeError catch (e, stack) {
+      debugPrint("Malformed URL or the URL should not be handled here");
+      debugPrintStack(stackTrace: stack);
     }
   }
 }
 
-void handleAuthUri(Uri url, List<AuthUriMode> acceptableMode) async {
-  var navigator = Navigator.of(globalContext!, rootNavigator: true);
-  var auth = FirebaseAuth.instance;
-  var code = url.queryParameters["oobCode"];
-  if (code == null) return;
+class AuthLinkHelper {
+  AuthLinkHelper._();
 
-  showLoadingModal(globalContext!);
-
-  ActionCodeInfo codeInfo;
-  try {
-    codeInfo = await auth.checkActionCode(code);
-  } on FirebaseAuthException catch (e, stack) {
-    navigator.pop();
-    switch (e.code) {
-      case "invalid-action-code":
-      case "firebase_auth/invalid-action-code":
-        showSnackBar(globalContext!, "このリンクは無効です。期限が切れたか、形式が正しくありません。");
+  static void handle(Uri url) {
+    switch (url.queryParameters["mode"]) {
+      case "signIn":
+        _handleSignIn(url);
+        break;
+      case "verifyAndChangeEmail":
+        _handleVerifyAndChangeEmail(url);
         break;
       default:
-        handleAuthError(e, stack, globalContext!);
-        break;
+        showSnackBar(globalContext!, "URLの形式が正しくありません");
     }
-    return;
   }
 
-  try {
-    if (acceptableMode.contains(AuthUriMode.signInWithEmailLink) &&
-        auth.isSignInWithEmailLink(url.toString())) {
-      if (auth.currentUser == null) {
+  static Future<void> _handleSignIn(Uri url) async {
+    var codeInfo = await _checkAuthActionCode(url);
+
+    if (codeInfo != null &&
+        codeInfo.operation == ActionCodeInfoOperation.emailSignIn) {
+      if (FirebaseAuth.instance.currentUser == null) {
         final pref = SharedPrefs(await SharedPreferences.getInstance());
         final email = pref.emailForUrlLogin;
         if (email != null) {
           var handler = SignInHandler(SignInMode.normal);
-          var result = await handler.signInWithLink(
-              email: email, emailLink: url.toString());
-          await handler.handleSignInResult(result);
+          showLoadingModal(globalContext!);
+          try {
+            var result = await handler.signInWithLink(
+                email: email, emailLink: url.toString());
+            await handler.handleSignInResult(result);
+          } catch (e, stack) {
+            showSnackBar(globalContext!, "エラーが発生しました。");
+            FirebaseCrashlytics.instance.recordError(e, stack);
+          } finally {
+            Navigator.of(globalContext!, rootNavigator: true).pop();
+          }
         } else {
-          showSnackBar(globalContext!, "エラーが発生しました。(emailNotFound)");
+          showSnackBar(globalContext!, "エラーが発生しました。");
         }
       } else {
         showSnackBar(globalContext!, "既にログインされています。ログアウトしてからお試しください。");
       }
-    } else if (acceptableMode.contains(AuthUriMode.verifyAndChangeEmail) &&
+    }
+  }
+
+  static Future<void> _handleVerifyAndChangeEmail(Uri url) async {
+    var codeInfo = await _checkAuthActionCode(url);
+
+    if (codeInfo != null &&
         codeInfo.operation == ActionCodeInfoOperation.verifyAndChangeEmail) {
-      await auth.applyActionCode(code);
+      var auth = FirebaseAuth.instance;
+      await auth.applyActionCode(url.queryParameters["oobCode"]!);
       await auth.signOut();
-      navigator.pop(); // dismiss loading modal
       showSnackBar(globalContext!, "メールアドレスの変更が完了しました。再度ログインが必要となります。");
       backToWelcomePage(globalContext!);
-    } else {
-      navigator.pop();
     }
-  } on FirebaseAuthException catch (e, stack) {
-    navigator.pop(); // dismiss loading modal
-    handleAuthError(e, stack, globalContext!);
+  }
+
+  static Future<ActionCodeInfo?> _checkAuthActionCode(Uri url) async {
+    var oobCode = url.queryParameters["oobCode"];
+    if (oobCode == null) {
+      showSnackBar(globalContext!, "URLの形式が正しくありません");
+      return null;
+    }
+
+    showLoadingModal(globalContext!);
+
+    try {
+      return await FirebaseAuth.instance.checkActionCode(oobCode);
+    } on FirebaseAuthException catch (e, stack) {
+      switch (e.code) {
+        case "invalid-action-code":
+        case "firebase_auth/invalid-action-code":
+          showSnackBar(globalContext!, "URLの有効期限が切れたか、コードが正しくありません。");
+          break;
+        default:
+          handleAuthError(e, stack, globalContext!);
+          break;
+      }
+    } catch (e, stack) {
+      showSnackBar(globalContext!, "エラーが発生しました。");
+      FirebaseCrashlytics.instance.recordError(e, stack);
+    } finally {
+      Navigator.of(globalContext!, rootNavigator: true).pop();
+    }
+    return null;
   }
 }
 
-void openSubmission(Uri url) {
-  var id = url.queryParameters["id"];
-  var uid = url.queryParameters["uid"];
-  print(url.toString());
-  var context = globalContext!;
-  if (id == null) {
-    showSnackBar(context, "パラメーターが不足しています。");
-    return;
-  }
-  if (uid != null && uid != FirebaseAuth.instance.currentUser?.uid) {
-    showSnackBar(context, "このアカウントで作成された提出物ではありません。");
-    return;
-  }
-  if (int.tryParse(id) == null) {
-    showSnackBar(context, "idが整数ではありません");
-    return;
-  }
+class OpenerUrlHelper {
+  OpenerUrlHelper._();
 
-  Navigator.pushNamed(context, SubmissionDetailPage.routeName, arguments: SubmissionDetailPageArguments(int.parse(id)));
-}
+  static void handle(Uri url) {
+    if (FirebaseAuth.instance.currentUser == null) {
+      showSnackBar(globalContext!, "ログインする必要があります");
+      return;
+    }
 
-void showSubmissionSharingDialog(Uri url) {
-  var title = url.queryParameters["title"];
-  var date = url.queryParameters["date"];
-  var detail = url.queryParameters["detail"] ?? "";
-  var color = url.queryParameters["color"];
-
-  var context = globalContext!;
-
-  if (title == null || date == null || color == null) {
-    showSnackBar(context, "パラメーターが不足しています。");
-    return;
+    switch (url.path.split("/")[1]) {
+      case "submission":
+        _openSubmissionDetailPage(url);
+        break;
+      case "submission-sharing":
+        _showSubmissionSharingDialog(url);
+        break;
+      case "create-submission":
+        _openCreateSubmissionPage();
+        break;
+      case "focus-timer":
+        _openFocusTimer(url);
+        break;
+      case "tab":
+        _setDefaultTab(url);
+        break;
+    }
   }
 
-  showSimpleDialog(
-    context,
-    "提出物のシェア",
-    "以下の内容で登録します。よろしいですか？\n\n"
-        "タイトル: $title\n"
-        "期限: ${DateTime.parse(date).toLocal().toString()}\n"
-        "詳細: $detail",
-    showCancel: true,
-    onOKPressed: () async {
-      await SubmissionProvider().use((provider) async {
-        provider.writeTransaction(() async {
-          var id = await provider.put(Submission.from(
-            title: title,
-            due: DateTime.parse(date).toLocal(),
-            details: detail,
-            color: Color(int.parse(color)),
-          ));
-          eventBus.fire(SubmissionInserted(id));
+  static void _openSubmissionDetailPage(Uri url) {
+    var id = url.queryParameters["id"];
+    var uid = url.queryParameters["uid"];
+
+    // Insufficient parameter
+    if (id == null) {
+      showSnackBar(globalContext!, "パラメーターが不足しています。");
+      return;
+    }
+    // UID provided and mismatch
+    if (uid != null && uid != FirebaseAuth.instance.currentUser?.uid) {
+      showSnackBar(globalContext!, "このアカウントで作成された提出物ではありません。");
+      return;
+    }
+    // ID is not integer
+    if (int.tryParse(id) == null) {
+      showSnackBar(globalContext!, "idが整数ではありません");
+      return;
+    }
+
+    Navigator.pushNamed(globalContext!, SubmissionDetailPage.routeName,
+        arguments: SubmissionDetailPageArguments(int.parse(id)));
+  }
+
+  static void _showSubmissionSharingDialog(Uri url) {
+    var title = url.queryParameters["title"];
+    var date = url.queryParameters["date"];
+    var detail = url.queryParameters["detail"] ?? "";
+    var color = url.queryParameters["color"];
+
+    if (title == null || date == null || color == null) {
+      showSnackBar(globalContext!, "パラメーターが不足しています。");
+      return;
+    }
+
+    showSimpleDialog(
+      globalContext!,
+      "提出物のシェア",
+      "以下の内容で登録します。よろしいですか？\n\n"
+          "タイトル: $title\n"
+          "期限: ${DateTime.parse(date).toLocal().toString()}\n"
+          "詳細: $detail",
+      showCancel: true,
+      onOKPressed: () async {
+        await SubmissionProvider().use((provider) async {
+          provider.writeTransaction(() async {
+            var id = await provider.put(Submission.from(
+              title: title,
+              due: DateTime.parse(date).toLocal(),
+              details: detail,
+              color: Color(int.parse(color)),
+            ));
+            eventBus.fire(SubmissionInserted(id));
+          });
         });
-      });
-      showSnackBar(globalContext!, "作成しました。");
-    },
-  );
-}
-
-void openCreateSubmissionPage() {
-  Navigator.pushNamed(globalContext!, CreateSubmissionPage.routeName, arguments: CreateSubmissionPageArguments())
-      .then((insertedId) {
-    if (insertedId != null) {
-      eventBus.fire(SubmissionInserted(insertedId as int));
-    }
-  });
-}
-
-void openFocusTimer(Uri url) {
-  DigestiveProvider().use((provider) async {
-    var digestive =
-        await provider.get(int.parse(url.queryParameters["digestiveId"]!));
-    if (digestive != null) {
-      FocusTimerPage.openFocusTimer(globalContext!, digestive);
-    } else {
-      showSnackBar(globalContext!, "このDigestiveはすでに削除されています");
-    }
-  });
-}
-
-void setDefaultTab(Uri url) {
-  switch (url.path.split("/")[2]) {
-    case "digestive":
-      eventBus.fire(SwitchBottomNav("digestive"));
-      break;
-    case "timetable":
-      eventBus.fire(SwitchBottomNav("timetable"));
-      break;
+        showSnackBar(globalContext!, "作成しました。");
+      },
+    );
   }
-}
 
-enum AuthUriMode {
-  signInWithEmailLink,
-  verifyAndChangeEmail,
+  static void _openCreateSubmissionPage() {
+    Navigator.pushNamed(globalContext!, CreateSubmissionPage.routeName,
+            arguments: CreateSubmissionPageArguments())
+        .then((insertedId) {
+      if (insertedId != null) {
+        eventBus.fire(SubmissionInserted(insertedId as int));
+      }
+    });
+  }
+
+  static void _openFocusTimer(Uri url) {
+    DigestiveProvider().use((provider) async {
+      var digestive =
+          await provider.get(int.parse(url.queryParameters["digestiveId"]!));
+      if (digestive != null) {
+        FocusTimerPage.openFocusTimer(globalContext!, digestive);
+      } else {
+        showSnackBar(globalContext!, "このDigestiveはすでに削除されています");
+      }
+    });
+  }
+
+  static void _setDefaultTab(Uri url) {
+    eventBus.fire(SwitchBottomNav(url.path.split("/")[2]));
+  }
 }

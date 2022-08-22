@@ -12,7 +12,6 @@ import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
 import 'package:submon/isar_db/isar_provider.dart';
-import 'package:submon/link_handler.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/method_channel/messaging.dart';
@@ -43,8 +42,6 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
   StreamSubscription? hideAdListener;
-  StreamSubscription? uriListener;
-  StreamSubscription? dynamicLinksListener;
   StreamSubscription? switchBottomNavListener;
 
   var tabIndex = 0;
@@ -146,7 +143,7 @@ class HomePageState extends State<HomePage> {
     });
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (!screenShotMode) {
+      if (!screenShotMode && isAdEnabled) {
         AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
                 MediaQuery.of(context).size.width.truncate())
             .then((adSize) {
@@ -171,9 +168,6 @@ class HomePageState extends State<HomePage> {
       });
     });
 
-    // initMethodCallHandler();
-    uriListener = initUriHandler();
-    dynamicLinksListener = initDynamicLinks();
     switchBottomNavListener = eventBus.on<SwitchBottomNav>().listen((event) {
       Timer.periodic(const Duration(milliseconds: 25), (timer) {
         if (_navigatorKey.currentState != null && IsarProvider.opening == false) {
@@ -201,8 +195,6 @@ class HomePageState extends State<HomePage> {
   void dispose() {
     hideAdListener?.cancel();
     bannerAd?.dispose();
-    uriListener?.cancel();
-    dynamicLinksListener?.cancel();
     switchBottomNavListener?.cancel();
     super.dispose();
   }

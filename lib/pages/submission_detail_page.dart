@@ -10,6 +10,7 @@ import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/main.dart';
 import 'package:submon/pages/submission_edit_page.dart';
 import 'package:submon/utils/ui.dart';
+import 'package:submon/utils/utils.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../sample_data.dart';
@@ -66,7 +67,7 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
       setState(() {});
     });
 
-    if (!screenShotMode) {
+    if (!screenShotMode && isAdEnabled) {
       _bannerAd = BannerAd(
         adUnitId: AdUnits.submissionDetailBanner!,
         size: AdSize.banner,
