@@ -43,7 +43,6 @@ class AuthLinkHelper {
           } catch (e, stack) {
             showSnackBar(globalContext!, "エラーが発生しました。");
             FirebaseCrashlytics.instance.recordError(e, stack);
-          } finally {
             Navigator.of(globalContext!, rootNavigator: true).pop();
           }
         } else {
