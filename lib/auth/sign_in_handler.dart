@@ -66,8 +66,10 @@ class SignInHandler {
     }
 
     if (mode != SignInMode.reauthenticate) {
-      Navigator.popUntil(
-          globalContext!, ModalRoute.withName(WelcomePage.routeName));
+      if (Navigator.canPop(globalContext!)) {
+        Navigator.popUntil(
+            globalContext!, ModalRoute.withName(WelcomePage.routeName));
+      }
       Navigator.pushReplacementNamed(globalContext!, HomePage.routeName);
     }
   }

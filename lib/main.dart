@@ -17,7 +17,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/link_handler.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/models/sign_in_result.dart';
 import 'package:submon/pages/done_submissions_page.dart';
@@ -40,6 +39,8 @@ import 'package:submon/pages/submission_edit_page.dart';
 import 'package:submon/pages/timetable_edit_page.dart';
 import 'package:submon/pages/timetable_table_view_page.dart';
 import 'package:submon/pages/welcome_page.dart';
+
+import 'link_handler/link_listeners.dart';
 
 var scopes = [tasks.TasksApi.tasksScope];
 var googleSignIn = GoogleSignIn(scopes: scopes);
