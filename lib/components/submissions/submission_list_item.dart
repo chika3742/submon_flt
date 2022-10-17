@@ -9,6 +9,7 @@ import 'package:submon/components/submissions/submission_list_item_bottom_sheet.
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/firebase/analytics.dart';
 import 'package:submon/isar_db/isar_submission.dart';
+import 'package:submon/main.dart';
 import 'package:submon/pages/submission_detail_page.dart';
 import 'package:submon/utils/ui.dart';
 
@@ -219,19 +220,21 @@ class SubmissionListItemState extends State<SubmissionListItem> {
             );
           },
           onClosed: (result) {
-            SubmissionProvider().use((provider) async {
-              await provider.get(_item.id!).then((obj) {
-                if (obj != null) {
-                  setState(() {
-                    _item = obj;
-                  });
-                } else {
-                  Timer(const Duration(milliseconds: 300), () {
-                    widget.onDelete?.call(true);
-                  });
-                }
+            if (!screenShotMode) {
+              SubmissionProvider().use((provider) async {
+                await provider.get(_item.id!).then((obj) {
+                  if (obj != null) {
+                    setState(() {
+                      _item = obj;
+                    });
+                  } else {
+                    Timer(const Duration(milliseconds: 300), () {
+                      widget.onDelete?.call(true);
+                    });
+                  }
+                });
               });
-            });
+            }
           },
           openBuilder: (context, cb) => SubmissionDetailPage(widget.item.id!),
           transitionDuration: const Duration(milliseconds: 300),
