@@ -1,3 +1,9 @@
+name: Deploy to Internal Track
+
+concurrency:
+  group: deploy-internal
+  cancel-in-progress: true
+
 on:
   push:
     branches:
@@ -28,7 +34,7 @@ jobs:
 
       - name: Get Android Changed Files
         id: android-changed-files
-        uses: tj-actions/changed-files@v31
+        uses: tj-actions/changed-files@v32
         with:
           files: |
             android/**
@@ -46,8 +52,45 @@ jobs:
       - get-changed-files
     if: ${{ needs.get-changed-files.outputs.android == 'true' }}
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
+
+      - name: Init Flutter CLI
+        uses: ./.github/actions/init-flutter-cli
+
+      - run: flutter pub get
+
+      - name: Import Keystore
+        run: |
+          echo -n '
+          ${{ secrets.ANDROID_LOCAL_PROPERTIES }}' >> android/local.properties
+          echo -n "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > android/app/release.jks
+
+      - name: Import .env
+        run: echo -n "${{ secrets.DOTENV }}" > .env
+
+      - name: Import google-services.json
+        run: |
+          mkdir -p android/app/src/release
+          echo -n ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON_BASE64 }} | base64 -d > android/app/src/release/google-services.json
+
+      - name: Build App Bundle for Android
+        run: |
+          build_num=$((${{ github.run_number }}+105))
+          flutter build appbundle --build-number $build_num
+
+      - name: Generate Native Debug Symbols
+        run: zip -r native_debug_symbols.zip ./build/app/intermediates/merged_native_libs/release/out/lib/* -x "*x86/*"
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-aab
+          path: |
+            build/app/outputs/bundle/release/app-release.aab
+            native_debug_symbols.zip
+            build/app/outputs/mapping/release/mapping.txt
 
   build-ios:
     name: Build for iOS
@@ -55,6 +98,31 @@ jobs:
       - get-changed-files
     if: ${{ needs.get-changed-files.outputs.ios == 'true' }}
     runs-on: macos-latest
+
     steps:
       - uses: actions/checkout@v3
 
+  deploy-android:
+    name: Deploy to Google Play
+    needs:
+      - build-android
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: android-aab
+
+      - run: ls
+
+  deploy-ios:
+    name: Deploy to App Store
+    needs:
+      - build-ios
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3

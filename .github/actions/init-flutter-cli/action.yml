@@ -20,7 +20,7 @@ runs:
 
     - name: Flutter Channel Switch
       shell: bash
-      run: flutter channel beta
+      run: flutter channel stable
 
     - name: Flutter Upgrade
       shell: bash
