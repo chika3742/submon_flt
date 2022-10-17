@@ -1,0 +1,60 @@
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+  repository_dispatch:
+
+jobs:
+  get-changed-files:
+    name: Get Changed Files
+    runs-on: ubuntu-latest
+    outputs:
+      android: ${{
+        steps.android-changed-files.outputs.only_changed == 'false' &&
+        steps.ios-changed-files.outputs.only_changed == 'false' ||
+        steps.android-changed-files.outputs.any_changed == 'true'
+        }}
+      ios: ${{
+        steps.android-changed-files.outputs.only_changed == 'false' &&
+        steps.ios-changed-files.outputs.only_changed == 'false' ||
+        steps.ios-changed-files.outputs.any_changed == 'true'
+        }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get Android Changed Files
+        id: android-changed-files
+        uses: tj-actions/changed-files@v31
+        with:
+          files: |
+            android/**
+
+      - name: Get iOS Changed Files
+        id: ios-changed-files
+        uses: tj-actions/changed-files@v31
+        with:
+          files: |
+            ios/**
+
+  build-android:
+    name: Build for Android
+    needs:
+      - get-changed-files
+    if: ${{ needs.get-changed-files.outputs.android == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+  build-ios:
+    name: Build for iOS
+    needs:
+      - get-changed-files
+    if: ${{ needs.get-changed-files.outputs.ios == 'true' }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+
