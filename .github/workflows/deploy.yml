@@ -125,6 +125,9 @@ jobs:
       - name: Import GoogleService-Info.plist
         run: echo -n "${{ secrets.APPLE_GOOGLE_SERVICE_INFO_RELEASE_PLIST_BASE64 }}" | base64 -d > ios/GoogleService-Info-release.plist
 
+      - run: pod install --repo-update
+        working-directory: ios
+
       - name: Build IPA for App Store
         run: flutter build ipa --build-number $((${{ github.run_number  }}+105)) --export-options-plist ios/exportOptions.plist
 
