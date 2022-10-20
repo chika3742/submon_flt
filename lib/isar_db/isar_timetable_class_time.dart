@@ -2,54 +2,55 @@ import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/isar_db/isar_provider.dart';
+import 'package:submon/utils/utils.dart';
 
 part '../generated/isar_db/isar_timetable_class_time.g.dart';
 
 @Collection()
 class TimetableClassTime {
-  @Id()
-  late int period;
-  @TimeOfDayConverter()
-  late TimeOfDay start;
-  @TimeOfDayConverter()
-  late TimeOfDay end;
+  late Id period;
+  late String start;
+  late String end;
 
   TimetableClassTime();
 
-  TimetableClassTime.fromStartEnd(this.start, this.end);
+  @ignore
+  TimeOfDay get startTime {
+    var split = start.split(":");
+    return TimeOfDay(hour: int.parse(split[0]), minute: int.parse(split[1]));
+  }
+
+  @ignore
+  TimeOfDay get endTime {
+    var split = end.split(":");
+    return TimeOfDay(hour: int.parse(split[0]), minute: int.parse(split[1]));
+  }
+
+  TimetableClassTime.fromStartEnd(TimeOfDay start, TimeOfDay end) {
+    this.start = start.toSimpleString();
+    this.end = end.toSimpleString();
+  }
 
   TimetableClassTime.fromMap(Map<String, dynamic> map)
       : period = map["period"],
-        start = const TimeOfDayConverter().fromIsar(map["start"]),
-        end = const TimeOfDayConverter().fromIsar(map["end"]);
+        start = map["start"],
+        end = map["end"];
 
   Map<String, dynamic> toMap() {
     return {
       "period": period,
-      "start": const TimeOfDayConverter().toIsar(start),
-      "end": const TimeOfDayConverter().toIsar(end),
+      "start": start,
+      "end": end,
     };
   }
 
   TimetableClassTime.from({
     required this.period,
-    required this.start,
-    required this.end,
-  });
-}
-
-class TimeOfDayConverter extends TypeConverter<TimeOfDay, String> {
-  const TimeOfDayConverter();
-
-  @override
-  TimeOfDay fromIsar(String object) {
-    var split = object.split(":");
-    return TimeOfDay(hour: int.parse(split[0]), minute: int.parse(split[1]));
-  }
-
-  @override
-  String toIsar(TimeOfDay object) {
-    return "${object.hour}:${object.minute}";
+    required TimeOfDay start,
+    required TimeOfDay end,
+  }) {
+    this.start = start.toSimpleString();
+    this.end = end.toSimpleString();
   }
 }
 

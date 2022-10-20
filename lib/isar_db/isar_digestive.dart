@@ -7,7 +7,7 @@ part '../generated/isar_db/isar_digestive.g.dart';
 
 @Collection()
 class Digestive {
-  int? id;
+  Id? id;
   int? submissionId;
   bool done = false;
   late DateTime startAt;
@@ -52,24 +52,38 @@ class DigestiveProvider extends IsarProvider<Digestive> {
   /// このメソッドは[writeTransaction]でラップしないこと。
   ///
   Future<void> deleteBySubmissionId(int submissionId) async {
-    var items =
-        await collection.filter().submissionIdEqualTo(submissionId).findAll();
+    var items = await this
+        .collection
+        .filter()
+        .submissionIdEqualTo(submissionId)
+        .findAll();
 
     await writeTransaction(() {
-      return collection.deleteAll(items.map((e) => e.id!).toList());
+      return this.collection.deleteAll(items.map((e) => e.id!).toList());
     });
   }
 
   Future<List<Digestive>> getUndoneDigestives() {
-    return collection.filter().doneEqualTo(false).sortByStartAt().findAll();
+    return this
+        .collection
+        .filter()
+        .doneEqualTo(false)
+        .sortByStartAt()
+        .findAll();
   }
 
   Future<List<Digestive>> getDoneDigestives() {
-    return collection.filter().doneEqualTo(true).sortByStartAtDesc().findAll();
+    return this
+        .collection
+        .filter()
+        .doneEqualTo(true)
+        .sortByStartAtDesc()
+        .findAll();
   }
 
   Future<List<Digestive>> getDigestivesBySubmissionId(int submissionId) {
-    return collection
+    return this
+        .collection
         .filter()
         .submissionIdEqualTo(submissionId)
         .sortByStartAt()

@@ -16,7 +16,7 @@ class SampleData {
         due: DateTime.now()
             .add(const Duration(hours: 10))
             .applied(const TimeOfDay(hour: 17, minute: 0)),
-        color: Colors.white),
+        color: SubmissionColor.white),
     Submission.from(
         id: 1,
         title: "提出物2",
@@ -24,7 +24,7 @@ class SampleData {
         due: DateTime.now()
             .add(const Duration(days: 1))
             .applied(const TimeOfDay(hour: 23, minute: 59)),
-        color: Colors.red),
+        color: SubmissionColor.red),
     Submission.from(
         id: 2,
         title: "提出物3",
@@ -32,7 +32,7 @@ class SampleData {
         due: DateTime.now()
             .add(const Duration(days: 8))
             .applied(const TimeOfDay(hour: 23, minute: 59)),
-        color: Colors.blue),
+        color: SubmissionColor.blue),
   ];
 
   static final timetable = [
