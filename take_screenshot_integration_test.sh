@@ -17,11 +17,11 @@ function takeScreenshots() {
     flutter drive --driver test_driver/integration_test.dart --target integration_test/screenshot_test.dart --dart-define SCREENSHOT_MODE=true --dart-define SCREENSHOT_NAME="$1"
 }
 
-takeScreenshotsAndroid Pixel_4_API_31 android/5.7-inch
+takeScreenshotsAndroid Pixel_4_API_31 android/ja-JP/images/phoneScreenshots/5.7-inch
 
-takeScreenshotsAndroid 7-inch_Tablet_API_32 android/7-inch
+takeScreenshotsAndroid 7-inch_Tablet_API_32 android/ja-JP/images/phoneScreenshots/7-inch
 
-takeScreenshotsAndroid 10-inch_Tablet_API_32 android/10-inch
+takeScreenshotsAndroid 10-inch_Tablet_API_32 android/ja-JP/images/phoneScreenshots/10-inch
 
 takeScreenshotsApple 1093BC2A-ADB9-431A-B235-A069421F1E38 apple/5.5-inch
 
