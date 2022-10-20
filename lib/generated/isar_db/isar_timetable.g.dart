@@ -6,99 +6,95 @@ part of '../../isar_db/isar_timetable.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters
 
 extension GetTimetableCollection on Isar {
-  IsarCollection<Timetable> get timetables => getCollection();
+  IsarCollection<Timetable> get timetables => this.collection();
 }
 
 const TimetableSchema = CollectionSchema(
-  name: 'Timetable',
-  schema:
-      '{"name":"Timetable","idName":"id","properties":[{"name":"cellId","type":"Long"},{"name":"note","type":"String"},{"name":"room","type":"String"},{"name":"subject","type":"String"},{"name":"tableId","type":"Long"},{"name":"teacher","type":"String"}],"indexes":[],"links":[]}',
-  idName: 'id',
-  propertyIds: {
-    'cellId': 0,
-    'note': 1,
-    'room': 2,
-    'subject': 3,
-    'tableId': 4,
-    'teacher': 5
+  name: r'Timetable',
+  id: 6380985727860081250,
+  properties: {
+    r'cellId': PropertySchema(
+      id: 0,
+      name: r'cellId',
+      type: IsarType.long,
+    ),
+    r'note': PropertySchema(
+      id: 1,
+      name: r'note',
+      type: IsarType.string,
+    ),
+    r'room': PropertySchema(
+      id: 2,
+      name: r'room',
+      type: IsarType.string,
+    ),
+    r'subject': PropertySchema(
+      id: 3,
+      name: r'subject',
+      type: IsarType.string,
+    ),
+    r'tableId': PropertySchema(
+      id: 4,
+      name: r'tableId',
+      type: IsarType.long,
+    ),
+    r'teacher': PropertySchema(
+      id: 5,
+      name: r'teacher',
+      type: IsarType.string,
+    )
   },
-  listProperties: {},
-  indexIds: {},
-  indexValueTypes: {},
-  linkIds: {},
-  backlinkLinkNames: {},
+  estimateSize: _timetableEstimateSize,
+  serialize: _timetableSerialize,
+  deserialize: _timetableDeserialize,
+  deserializeProp: _timetableDeserializeProp,
+  idName: r'id',
+  indexes: {},
+  links: {},
+  embeddedSchemas: {},
   getId: _timetableGetId,
-  setId: _timetableSetId,
   getLinks: _timetableGetLinks,
-  attachLinks: _timetableAttachLinks,
-  serializeNative: _timetableSerializeNative,
-  deserializeNative: _timetableDeserializeNative,
-  deserializePropNative: _timetableDeserializePropNative,
-  serializeWeb: _timetableSerializeWeb,
-  deserializeWeb: _timetableDeserializeWeb,
-  deserializePropWeb: _timetableDeserializePropWeb,
-  version: 3,
+  attach: _timetableAttach,
+  version: '3.0.2',
 );
 
-int? _timetableGetId(Timetable object) {
-  if (object.id == Isar.autoIncrement) {
-    return null;
-  } else {
-    return object.id;
-  }
+int _timetableEstimateSize(
+  Timetable object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  bytesCount += 3 + object.note.length * 3;
+  bytesCount += 3 + object.room.length * 3;
+  bytesCount += 3 + object.subject.length * 3;
+  bytesCount += 3 + object.teacher.length * 3;
+  return bytesCount;
 }
 
-void _timetableSetId(Timetable object, int id) {
-  object.id = id;
+void _timetableSerialize(
+  Timetable object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeLong(offsets[0], object.cellId);
+  writer.writeString(offsets[1], object.note);
+  writer.writeString(offsets[2], object.room);
+  writer.writeString(offsets[3], object.subject);
+  writer.writeLong(offsets[4], object.tableId);
+  writer.writeString(offsets[5], object.teacher);
 }
 
-List<IsarLinkBase> _timetableGetLinks(Timetable object) {
-  return [];
-}
-
-void _timetableSerializeNative(
-    IsarCollection<Timetable> collection,
-    IsarRawObject rawObj,
-    Timetable object,
-    int staticSize,
-    List<int> offsets,
-    AdapterAlloc alloc) {
-  var dynamicSize = 0;
-  final value0 = object.cellId;
-  final _cellId = value0;
-  final value1 = object.note;
-  final _note = IsarBinaryWriter.utf8Encoder.convert(value1);
-  dynamicSize += (_note.length) as int;
-  final value2 = object.room;
-  final _room = IsarBinaryWriter.utf8Encoder.convert(value2);
-  dynamicSize += (_room.length) as int;
-  final value3 = object.subject;
-  final _subject = IsarBinaryWriter.utf8Encoder.convert(value3);
-  dynamicSize += (_subject.length) as int;
-  final value4 = object.tableId;
-  final _tableId = value4;
-  final value5 = object.teacher;
-  final _teacher = IsarBinaryWriter.utf8Encoder.convert(value5);
-  dynamicSize += (_teacher.length) as int;
-  final size = staticSize + dynamicSize;
-
-  rawObj.buffer = alloc(size);
-  rawObj.buffer_length = size;
-  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-  final writer = IsarBinaryWriter(buffer, staticSize);
-  writer.writeLong(offsets[0], _cellId);
-  writer.writeBytes(offsets[1], _note);
-  writer.writeBytes(offsets[2], _room);
-  writer.writeBytes(offsets[3], _subject);
-  writer.writeLong(offsets[4], _tableId);
-  writer.writeBytes(offsets[5], _teacher);
-}
-
-Timetable _timetableDeserializeNative(IsarCollection<Timetable> collection,
-    int id, IsarBinaryReader reader, List<int> offsets) {
+Timetable _timetableDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   final object = Timetable();
   object.cellId = reader.readLong(offsets[0]);
   object.id = id;
@@ -110,11 +106,13 @@ Timetable _timetableDeserializeNative(IsarCollection<Timetable> collection,
   return object;
 }
 
-P _timetableDeserializePropNative<P>(
-    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-  switch (propertyIndex) {
-    case -1:
-      return id as P;
+P _timetableDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
     case 0:
       return (reader.readLong(offset)) as P;
     case 1:
@@ -128,123 +126,96 @@ P _timetableDeserializePropNative<P>(
     case 5:
       return (reader.readString(offset)) as P;
     default:
-      throw 'Illegal propertyIndex';
+      throw IsarError('Unknown property with id $propertyId');
   }
 }
 
-dynamic _timetableSerializeWeb(
-    IsarCollection<Timetable> collection, Timetable object) {
-  final jsObj = IsarNative.newJsObject();
-  IsarNative.jsObjectSet(jsObj, 'cellId', object.cellId);
-  IsarNative.jsObjectSet(jsObj, 'id', object.id);
-  IsarNative.jsObjectSet(jsObj, 'note', object.note);
-  IsarNative.jsObjectSet(jsObj, 'room', object.room);
-  IsarNative.jsObjectSet(jsObj, 'subject', object.subject);
-  IsarNative.jsObjectSet(jsObj, 'tableId', object.tableId);
-  IsarNative.jsObjectSet(jsObj, 'teacher', object.teacher);
-  return jsObj;
+Id _timetableGetId(Timetable object) {
+  return object.id ?? Isar.autoIncrement;
 }
 
-Timetable _timetableDeserializeWeb(
-    IsarCollection<Timetable> collection, dynamic jsObj) {
-  final object = Timetable();
-  object.cellId =
-      IsarNative.jsObjectGet(jsObj, 'cellId') ?? double.negativeInfinity;
-  object.id = IsarNative.jsObjectGet(jsObj, 'id');
-  object.note = IsarNative.jsObjectGet(jsObj, 'note') ?? '';
-  object.room = IsarNative.jsObjectGet(jsObj, 'room') ?? '';
-  object.subject = IsarNative.jsObjectGet(jsObj, 'subject') ?? '';
-  object.tableId =
-      IsarNative.jsObjectGet(jsObj, 'tableId') ?? double.negativeInfinity;
-  object.teacher = IsarNative.jsObjectGet(jsObj, 'teacher') ?? '';
-  return object;
+List<IsarLinkBase<dynamic>> _timetableGetLinks(Timetable object) {
+  return [];
 }
 
-P _timetableDeserializePropWeb<P>(Object jsObj, String propertyName) {
-  switch (propertyName) {
-    case 'cellId':
-      return (IsarNative.jsObjectGet(jsObj, 'cellId') ??
-          double.negativeInfinity) as P;
-    case 'id':
-      return (IsarNative.jsObjectGet(jsObj, 'id')) as P;
-    case 'note':
-      return (IsarNative.jsObjectGet(jsObj, 'note') ?? '') as P;
-    case 'room':
-      return (IsarNative.jsObjectGet(jsObj, 'room') ?? '') as P;
-    case 'subject':
-      return (IsarNative.jsObjectGet(jsObj, 'subject') ?? '') as P;
-    case 'tableId':
-      return (IsarNative.jsObjectGet(jsObj, 'tableId') ??
-          double.negativeInfinity) as P;
-    case 'teacher':
-      return (IsarNative.jsObjectGet(jsObj, 'teacher') ?? '') as P;
-    default:
-      throw 'Illegal propertyName';
-  }
+void _timetableAttach(IsarCollection<dynamic> col, Id id, Timetable object) {
+  object.id = id;
 }
-
-void _timetableAttachLinks(IsarCollection col, int id, Timetable object) {}
 
 extension TimetableQueryWhereSort
     on QueryBuilder<Timetable, Timetable, QWhere> {
   QueryBuilder<Timetable, Timetable, QAfterWhere> anyId() {
-    return addWhereClauseInternal(const IdWhereClause.any());
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(const IdWhereClause.any());
+    });
   }
 }
 
 extension TimetableQueryWhere
     on QueryBuilder<Timetable, Timetable, QWhereClause> {
-  QueryBuilder<Timetable, Timetable, QAfterWhereClause> idEqualTo(int id) {
-    return addWhereClauseInternal(IdWhereClause.between(
-      lower: id,
-      includeLower: true,
-      upper: id,
-      includeUpper: true,
-    ));
+  QueryBuilder<Timetable, Timetable, QAfterWhereClause> idEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(
+        lower: id,
+        upper: id,
+      ));
+    });
   }
 
-  QueryBuilder<Timetable, Timetable, QAfterWhereClause> idNotEqualTo(int id) {
-    if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(
-        IdWhereClause.lessThan(upper: id, includeUpper: false),
-      ).addWhereClauseInternal(
-        IdWhereClause.greaterThan(lower: id, includeLower: false),
-      );
-    } else {
-      return addWhereClauseInternal(
-        IdWhereClause.greaterThan(lower: id, includeLower: false),
-      ).addWhereClauseInternal(
-        IdWhereClause.lessThan(upper: id, includeUpper: false),
-      );
-    }
+  QueryBuilder<Timetable, Timetable, QAfterWhereClause> idNotEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
+      }
+    });
   }
 
-  QueryBuilder<Timetable, Timetable, QAfterWhereClause> idGreaterThan(int id,
+  QueryBuilder<Timetable, Timetable, QAfterWhereClause> idGreaterThan(Id id,
       {bool include = false}) {
-    return addWhereClauseInternal(
-      IdWhereClause.greaterThan(lower: id, includeLower: include),
-    );
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
+      );
+    });
   }
 
-  QueryBuilder<Timetable, Timetable, QAfterWhereClause> idLessThan(int id,
+  QueryBuilder<Timetable, Timetable, QAfterWhereClause> idLessThan(Id id,
       {bool include = false}) {
-    return addWhereClauseInternal(
-      IdWhereClause.lessThan(upper: id, includeUpper: include),
-    );
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
+      );
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterWhereClause> idBetween(
-    int lowerId,
-    int upperId, {
+    Id lowerId,
+    Id upperId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(IdWhereClause.between(
-      lower: lowerId,
-      includeLower: includeLower,
-      upper: upperId,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(
+        lower: lowerId,
+        includeLower: includeLower,
+        upper: upperId,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 }
 
@@ -252,35 +223,38 @@ extension TimetableQueryFilter
     on QueryBuilder<Timetable, Timetable, QFilterCondition> {
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> cellIdEqualTo(
       int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'cellId',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'cellId',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> cellIdGreaterThan(
     int value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'cellId',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'cellId',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> cellIdLessThan(
     int value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'cellId',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'cellId',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> cellIdBetween(
@@ -289,411 +263,511 @@ extension TimetableQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'cellId',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'cellId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> idIsNull() {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.isNull,
-      property: 'id',
-      value: null,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> idIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'id',
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> idEqualTo(
-      int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'id',
-      value: value,
-    ));
+      Id? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> idGreaterThan(
-    int value, {
+    Id? value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> idLessThan(
-    int value, {
+    Id? value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> idBetween(
-    int lower,
-    int upper, {
+    Id? lower,
+    Id? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'id',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> noteEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'note',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'note',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> noteGreaterThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'note',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'note',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> noteLessThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'note',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'note',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> noteBetween(
     String lower,
     String upper, {
-    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'note',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'note',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> noteStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'note',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'note',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> noteEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'note',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'note',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> noteContains(
       String value,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'note',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'note',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> noteMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'note',
-      value: pattern,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'note',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> noteIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'note',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> noteIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'note',
+        value: '',
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> roomEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'room',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'room',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> roomGreaterThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'room',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'room',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> roomLessThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'room',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'room',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> roomBetween(
     String lower,
     String upper, {
-    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'room',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'room',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> roomStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'room',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'room',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> roomEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'room',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'room',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> roomContains(
       String value,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'room',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'room',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> roomMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'room',
-      value: pattern,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'room',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> roomIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'room',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> roomIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'room',
+        value: '',
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> subjectEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'subject',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'subject',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> subjectGreaterThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'subject',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'subject',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> subjectLessThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'subject',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'subject',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> subjectBetween(
     String lower,
     String upper, {
-    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'subject',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'subject',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> subjectStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'subject',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'subject',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> subjectEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'subject',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'subject',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> subjectContains(
       String value,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'subject',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'subject',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> subjectMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'subject',
-      value: pattern,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'subject',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> subjectIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'subject',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition>
+      subjectIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'subject',
+        value: '',
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tableIdEqualTo(
       int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'tableId',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'tableId',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tableIdGreaterThan(
     int value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'tableId',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'tableId',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tableIdLessThan(
     int value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'tableId',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'tableId',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tableIdBetween(
@@ -702,302 +776,400 @@ extension TimetableQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'tableId',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'tableId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> teacherEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'teacher',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'teacher',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> teacherGreaterThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'teacher',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'teacher',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> teacherLessThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'teacher',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'teacher',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> teacherBetween(
     String lower,
     String upper, {
-    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'teacher',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'teacher',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> teacherStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'teacher',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'teacher',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> teacherEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'teacher',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'teacher',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> teacherContains(
       String value,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'teacher',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'teacher',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> teacherMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'teacher',
-      value: pattern,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'teacher',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> teacherIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'teacher',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition>
+      teacherIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'teacher',
+        value: '',
+      ));
+    });
   }
 }
+
+extension TimetableQueryObject
+    on QueryBuilder<Timetable, Timetable, QFilterCondition> {}
 
 extension TimetableQueryLinks
     on QueryBuilder<Timetable, Timetable, QFilterCondition> {}
 
-extension TimetableQueryWhereSortBy
-    on QueryBuilder<Timetable, Timetable, QSortBy> {
+extension TimetableQuerySortBy on QueryBuilder<Timetable, Timetable, QSortBy> {
   QueryBuilder<Timetable, Timetable, QAfterSortBy> sortByCellId() {
-    return addSortByInternal('cellId', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cellId', Sort.asc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> sortByCellIdDesc() {
-    return addSortByInternal('cellId', Sort.desc);
-  }
-
-  QueryBuilder<Timetable, Timetable, QAfterSortBy> sortById() {
-    return addSortByInternal('id', Sort.asc);
-  }
-
-  QueryBuilder<Timetable, Timetable, QAfterSortBy> sortByIdDesc() {
-    return addSortByInternal('id', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cellId', Sort.desc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> sortByNote() {
-    return addSortByInternal('note', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'note', Sort.asc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> sortByNoteDesc() {
-    return addSortByInternal('note', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'note', Sort.desc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> sortByRoom() {
-    return addSortByInternal('room', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'room', Sort.asc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> sortByRoomDesc() {
-    return addSortByInternal('room', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'room', Sort.desc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> sortBySubject() {
-    return addSortByInternal('subject', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'subject', Sort.asc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> sortBySubjectDesc() {
-    return addSortByInternal('subject', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'subject', Sort.desc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> sortByTableId() {
-    return addSortByInternal('tableId', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tableId', Sort.asc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> sortByTableIdDesc() {
-    return addSortByInternal('tableId', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tableId', Sort.desc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> sortByTeacher() {
-    return addSortByInternal('teacher', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'teacher', Sort.asc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> sortByTeacherDesc() {
-    return addSortByInternal('teacher', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'teacher', Sort.desc);
+    });
   }
 }
 
-extension TimetableQueryWhereSortThenBy
+extension TimetableQuerySortThenBy
     on QueryBuilder<Timetable, Timetable, QSortThenBy> {
   QueryBuilder<Timetable, Timetable, QAfterSortBy> thenByCellId() {
-    return addSortByInternal('cellId', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cellId', Sort.asc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> thenByCellIdDesc() {
-    return addSortByInternal('cellId', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cellId', Sort.desc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> thenById() {
-    return addSortByInternal('id', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> thenByIdDesc() {
-    return addSortByInternal('id', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> thenByNote() {
-    return addSortByInternal('note', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'note', Sort.asc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> thenByNoteDesc() {
-    return addSortByInternal('note', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'note', Sort.desc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> thenByRoom() {
-    return addSortByInternal('room', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'room', Sort.asc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> thenByRoomDesc() {
-    return addSortByInternal('room', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'room', Sort.desc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> thenBySubject() {
-    return addSortByInternal('subject', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'subject', Sort.asc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> thenBySubjectDesc() {
-    return addSortByInternal('subject', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'subject', Sort.desc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> thenByTableId() {
-    return addSortByInternal('tableId', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tableId', Sort.asc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> thenByTableIdDesc() {
-    return addSortByInternal('tableId', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tableId', Sort.desc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> thenByTeacher() {
-    return addSortByInternal('teacher', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'teacher', Sort.asc);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QAfterSortBy> thenByTeacherDesc() {
-    return addSortByInternal('teacher', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'teacher', Sort.desc);
+    });
   }
 }
 
 extension TimetableQueryWhereDistinct
     on QueryBuilder<Timetable, Timetable, QDistinct> {
   QueryBuilder<Timetable, Timetable, QDistinct> distinctByCellId() {
-    return addDistinctByInternal('cellId');
-  }
-
-  QueryBuilder<Timetable, Timetable, QDistinct> distinctById() {
-    return addDistinctByInternal('id');
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'cellId');
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QDistinct> distinctByNote(
       {bool caseSensitive = true}) {
-    return addDistinctByInternal('note', caseSensitive: caseSensitive);
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'note', caseSensitive: caseSensitive);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QDistinct> distinctByRoom(
       {bool caseSensitive = true}) {
-    return addDistinctByInternal('room', caseSensitive: caseSensitive);
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'room', caseSensitive: caseSensitive);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QDistinct> distinctBySubject(
       {bool caseSensitive = true}) {
-    return addDistinctByInternal('subject', caseSensitive: caseSensitive);
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'subject', caseSensitive: caseSensitive);
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QDistinct> distinctByTableId() {
-    return addDistinctByInternal('tableId');
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'tableId');
+    });
   }
 
   QueryBuilder<Timetable, Timetable, QDistinct> distinctByTeacher(
       {bool caseSensitive = true}) {
-    return addDistinctByInternal('teacher', caseSensitive: caseSensitive);
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'teacher', caseSensitive: caseSensitive);
+    });
   }
 }
 
 extension TimetableQueryProperty
     on QueryBuilder<Timetable, Timetable, QQueryProperty> {
-  QueryBuilder<Timetable, int, QQueryOperations> cellIdProperty() {
-    return addPropertyNameInternal('cellId');
+  QueryBuilder<Timetable, int, QQueryOperations> idProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'id');
+    });
   }
 
-  QueryBuilder<Timetable, int?, QQueryOperations> idProperty() {
-    return addPropertyNameInternal('id');
+  QueryBuilder<Timetable, int, QQueryOperations> cellIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'cellId');
+    });
   }
 
   QueryBuilder<Timetable, String, QQueryOperations> noteProperty() {
-    return addPropertyNameInternal('note');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'note');
+    });
   }
 
   QueryBuilder<Timetable, String, QQueryOperations> roomProperty() {
-    return addPropertyNameInternal('room');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'room');
+    });
   }
 
   QueryBuilder<Timetable, String, QQueryOperations> subjectProperty() {
-    return addPropertyNameInternal('subject');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'subject');
+    });
   }
 
   QueryBuilder<Timetable, int, QQueryOperations> tableIdProperty() {
-    return addPropertyNameInternal('tableId');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'tableId');
+    });
   }
 
   QueryBuilder<Timetable, String, QQueryOperations> teacherProperty() {
-    return addPropertyNameInternal('teacher');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'teacher');
+    });
   }
 }

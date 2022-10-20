@@ -19,7 +19,7 @@ abstract class IsarProvider<T> {
 
   static Future<void> clear() async {
     var isar = await _openInternal();
-    await isar.writeTxn((isar) async {
+    await isar.writeTxn(() async {
       await isar.clear();
     });
   }
@@ -31,7 +31,7 @@ abstract class IsarProvider<T> {
     } else {
       opening = true;
       var dir = await getApplicationSupportDirectory();
-      instance = await Isar.open(schemas: [
+      instance = await Isar.open([
         SubmissionSchema,
         DigestiveSchema,
         TimetableSchema,
@@ -44,7 +44,7 @@ abstract class IsarProvider<T> {
     }
   }
 
-  IsarCollection<T> get collection => isar.getCollection<T>();
+  IsarCollection<T> get collection => isar.collection<T>();
 
   Future<void> open() async {
     isar = await _openInternal();
@@ -114,7 +114,7 @@ abstract class IsarProvider<T> {
   /// 書き込みトランザクションを行う。
   ///
   Future<void> writeTransaction(Future<void> Function() transaction) {
-    return isar.writeTxn((isar) async {
+    return isar.writeTxn(() async {
       await transaction();
     });
   }

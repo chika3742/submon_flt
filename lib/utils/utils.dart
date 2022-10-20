@@ -126,9 +126,15 @@ void recordErrorToCrashlytics(dynamic exception, StackTrace stackTrace) {
   FirebaseCrashlytics.instance.recordError(exception, stackTrace);
 }
 
-extension TimeOfDayToMinutes on TimeOfDay {
+extension TimeOfDayExtension on TimeOfDay {
   int toMinutes() {
     return hour * 60 + minute;
+  }
+
+  ///
+  /// format: H:m
+  String toSimpleString() {
+    return "$hour:$minute";
   }
 
   bool isInsideRange(TimeOfDay start, TimeOfDay end) {
