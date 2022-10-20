@@ -176,9 +176,6 @@ jobs:
           wget https://github.com/mikefarah/yq/releases/download/v4.28.2/yq_darwin_amd64.tar.gz -O - |\
           tar xz && mv yq_darwin_amd64 /usr/bin/yq
 
-      - name: Install Gems
-        run: bundle install
-
       - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
