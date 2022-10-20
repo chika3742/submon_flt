@@ -174,7 +174,8 @@ jobs:
       - name: Install yq
         run: |
           wget https://github.com/mikefarah/yq/releases/download/v4.28.2/yq_darwin_amd64.tar.gz -O - |\
-          tar xz && mv yq_darwin_amd64 /usr/bin/yq
+          tar xz
+          echo "$(pwd)/yq_darwin_amd64" >> $GITHUB_PATH
 
       - name: Download Artifacts
         uses: actions/download-artifact@v3
