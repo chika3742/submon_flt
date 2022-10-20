@@ -8,7 +8,9 @@ runs:
       uses: actions/cache@v3
       with:
         key: ${{ runner.os }}-flutter
-        path: ./flutter
+        path: |
+          ./flutter
+          ~/.pub-cache
 
     - name: Flutter Command Initialize
       shell: bash
