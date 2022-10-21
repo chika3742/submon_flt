@@ -12,20 +12,21 @@ on:
   repository_dispatch:
 
 jobs:
-  get-changed-files:
-    name: Get Changed Files
+  build-info:
+    name: Get Build Info
     runs-on: ubuntu-latest
     outputs:
-      android: ${{
+      should_build_for_android: ${{
         steps.android-changed-files.outputs.only_changed == 'false' &&
         steps.ios-changed-files.outputs.only_changed == 'false' ||
         steps.android-changed-files.outputs.any_changed == 'true'
         }}
-      ios: ${{
+      should_build_for_ios: ${{
         steps.android-changed-files.outputs.only_changed == 'false' &&
         steps.ios-changed-files.outputs.only_changed == 'false' ||
         steps.ios-changed-files.outputs.any_changed == 'true'
         }}
+      version_code: ${{ steps.version-code.outputs.version_code }}
 
     steps:
       - uses: actions/checkout@v3
@@ -46,11 +47,15 @@ jobs:
           files: |
             ios/**
 
+      - name: Get Version Code
+        id: version-code
+        run: echo "version_code=$((${{ github.run_number }}+105))" >> $GITHUB_OUTPUT
+
   build-android:
     name: Build for Android
     needs:
-      - get-changed-files
-    if: ${{ needs.get-changed-files.outputs.android == 'true' }}
+      - build-info
+    if: ${{ needs.build-info.outputs.should_build_for_android == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -66,7 +71,7 @@ jobs:
       - name: Init Flutter CLI
         uses: ./.github/actions/init-flutter-cli
 
-      - run: flutter pub get
+      - run: echo $version_code && flutter pub get
 
       - name: Import Keystore
         run: |
@@ -83,9 +88,7 @@ jobs:
           echo -n ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON_BASE64 }} | base64 -d > android/app/src/release/google-services.json
 
       - name: Build App Bundle for Android
-        run: |
-          build_num=$((${{ github.run_number }}+105))
-          flutter build appbundle --build-number $build_num
+        run: flutter build appbundle --build-number ${{ needs.build-info.outputs.version_code }}
 
       - name: Generate Native Debug Symbols
         run: zip -r native_debug_symbols.zip ./build/app/intermediates/merged_native_libs/release/out/lib/* -x "*x86/*"
@@ -102,8 +105,8 @@ jobs:
   build-ios:
     name: Build for iOS
     needs:
-      - get-changed-files
-    if: ${{ needs.get-changed-files.outputs.ios == 'true' }}
+      - build-info
+    if: ${{ needs.build-info.outputs.should_build_for_ios == 'true' }}
     runs-on: macos-12
 
     steps:
@@ -145,7 +148,7 @@ jobs:
         working-directory: ios
 
       - name: Build IPA for App Store
-        run: flutter build ipa --build-number $((${{ github.run_number  }}+105)) --export-options-plist ios/exportOptions.plist
+        run: flutter build ipa --build-number ${{ needs.build-info.outputs.version_code }} --export-options-plist ios/exportOptions.plist
 
       - name: Compress IPA
         run: zip submon.zip ./build/ios/ipa/Submon.ipa
@@ -187,11 +190,8 @@ jobs:
 
       - name: Deploy to Google Play
         run: |
-          if [ "${{ inputs.track }}" == "internal" ]; then
-            versionNameOption="--version_name $(cat pubspec.yaml | yq -r '.version | split("+") | .[0]')-b$((${{ inputs.run-number }}+58))"
-          else
-            versionNameOption=
-          fi
+          versionName=$(cat pubspec.yaml | yq -r '.version | split("+") | .[0]')
+          versionNameOption="--version_name $versionName-b${{ needs.build-info.outputs.version_code }}"
           
           bundle exec fastlane supply \
           --aab build/app/outputs/bundle/release/app-release.aab \
