@@ -45,8 +45,8 @@ use_modular_headers!
 target 'Runner' do
   google_utilities
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-  pod 'Firebase/Messaging'
-  pod 'Firebase/AppCheck'
+  pod 'FirebaseMessaging'
+  pod 'FirebaseAppCheck'
 end
 
 target 'WidgetKitExtension' do
@@ -55,7 +55,7 @@ target 'WidgetKitExtension' do
   pod 'FirebaseAuth'
   pod 'FirebaseFirestore'
   pod 'FirebaseAnalytics'
-  pod 'Firebase/AppCheck'
+  pod 'FirebaseAppCheck'
 end
 
 post_install do |installer|
