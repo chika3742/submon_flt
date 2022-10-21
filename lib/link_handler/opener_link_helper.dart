@@ -88,7 +88,7 @@ class OpenerLinkHelper {
               title: title,
               due: DateTime.parse(date).toLocal(),
               details: detail,
-              color: SubmissionColor.of(int.parse(color)),
+              color: Color(int.parse(color)),
             ));
             eventBus.fire(SubmissionInserted(id));
           });

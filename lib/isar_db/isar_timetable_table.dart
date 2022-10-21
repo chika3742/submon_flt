@@ -7,7 +7,7 @@ part '../generated/isar_db/isar_timetable_table.g.dart';
 
 @Collection()
 class TimetableTable {
-  Id? id;
+  int? id;
   late String title;
 
   TimetableTable();

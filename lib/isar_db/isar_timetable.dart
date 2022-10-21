@@ -9,7 +9,7 @@ part '../generated/isar_db/isar_timetable.g.dart';
 
 @Collection()
 class Timetable {
-  Id? id;
+  int? id;
 
   late int tableId;
   late int cellId;
@@ -60,7 +60,7 @@ class TimetableProvider extends IsarProvider<Timetable> {
   }
 
   Future<List<Timetable>> getTableByTableId(int tableId) async {
-    return await this.collection.filter().tableIdEqualTo(tableId).findAll();
+    return await collection.filter().tableIdEqualTo(tableId).findAll();
   }
 
   Future<void> putToCurrentTable(Timetable data) async {
@@ -68,28 +68,27 @@ class TimetableProvider extends IsarProvider<Timetable> {
   }
 
   Future<void> deleteFromCurrentTable(int cellId) async {
-    var data = await this
-        .collection
+    var data = await collection
         .filter()
         .cellIdEqualTo(cellId)
         .and()
         .tableIdEqualTo(currentTableId)
         .findFirst();
     if (data != null) {
-      await this.collection.delete(data.id!);
+      await collection.delete(data.id!);
     }
     deleteFirestoreByCellId(cellId);
   }
 
   Future<void> deleteAllInTableLocalOnly(int tableId) async {
-    var data = await this.collection.filter().tableIdEqualTo(tableId).findAll();
-    await this.collection.deleteAll(data.map((e) => e.id!).toList());
+    var data = await collection.filter().tableIdEqualTo(tableId).findAll();
+    await collection.deleteAll(data.map((e) => e.id!).toList());
   }
 
   Future<void> clearCurrentTable() {
     FirestoreProvider.timetable.set(currentTableId.toString(),
         {"cells": FieldValue.delete()}, SetOptions(merge: true));
-    return this.collection.clear();
+    return collection.clear();
   }
 
   Future<void> deleteFirestoreByCellId(int cellId) async {

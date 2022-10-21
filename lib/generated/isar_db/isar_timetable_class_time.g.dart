@@ -6,185 +6,214 @@ part of '../../isar_db/isar_timetable_class_time.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// coverage:ignore-file
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetTimetableClassTimeCollection on Isar {
-  IsarCollection<TimetableClassTime> get timetableClassTimes =>
-      this.collection();
+  IsarCollection<TimetableClassTime> get timetableClassTimes => getCollection();
 }
 
 const TimetableClassTimeSchema = CollectionSchema(
-  name: r'TimetableClassTime',
-  id: -601753054573602595,
-  properties: {
-    r'end': PropertySchema(
-      id: 0,
-      name: r'end',
-      type: IsarType.string,
-    ),
-    r'start': PropertySchema(
-      id: 1,
-      name: r'start',
-      type: IsarType.string,
-    )
-  },
-  estimateSize: _timetableClassTimeEstimateSize,
-  serialize: _timetableClassTimeSerialize,
-  deserialize: _timetableClassTimeDeserialize,
-  deserializeProp: _timetableClassTimeDeserializeProp,
-  idName: r'period',
-  indexes: {},
-  links: {},
-  embeddedSchemas: {},
+  name: 'TimetableClassTime',
+  schema:
+      '{"name":"TimetableClassTime","idName":"period","properties":[{"name":"end","type":"String"},{"name":"start","type":"String"}],"indexes":[],"links":[]}',
+  idName: 'period',
+  propertyIds: {'end': 0, 'start': 1},
+  listProperties: {},
+  indexIds: {},
+  indexValueTypes: {},
+  linkIds: {},
+  backlinkLinkNames: {},
   getId: _timetableClassTimeGetId,
+  setId: _timetableClassTimeSetId,
   getLinks: _timetableClassTimeGetLinks,
-  attach: _timetableClassTimeAttach,
-  version: '3.0.2',
+  attachLinks: _timetableClassTimeAttachLinks,
+  serializeNative: _timetableClassTimeSerializeNative,
+  deserializeNative: _timetableClassTimeDeserializeNative,
+  deserializePropNative: _timetableClassTimeDeserializePropNative,
+  serializeWeb: _timetableClassTimeSerializeWeb,
+  deserializeWeb: _timetableClassTimeDeserializeWeb,
+  deserializePropWeb: _timetableClassTimeDeserializePropWeb,
+  version: 3,
 );
 
-int _timetableClassTimeEstimateSize(
-  TimetableClassTime object,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  var bytesCount = offsets.last;
-  bytesCount += 3 + object.end.length * 3;
-  bytesCount += 3 + object.start.length * 3;
-  return bytesCount;
-}
-
-void _timetableClassTimeSerialize(
-  TimetableClassTime object,
-  IsarWriter writer,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  writer.writeString(offsets[0], object.end);
-  writer.writeString(offsets[1], object.start);
-}
-
-TimetableClassTime _timetableClassTimeDeserialize(
-  Id id,
-  IsarReader reader,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  final object = TimetableClassTime();
-  object.end = reader.readString(offsets[0]);
-  object.period = id;
-  object.start = reader.readString(offsets[1]);
-  return object;
-}
-
-P _timetableClassTimeDeserializeProp<P>(
-  IsarReader reader,
-  int propertyId,
-  int offset,
-  Map<Type, List<int>> allOffsets,
-) {
-  switch (propertyId) {
-    case 0:
-      return (reader.readString(offset)) as P;
-    case 1:
-      return (reader.readString(offset)) as P;
-    default:
-      throw IsarError('Unknown property with id $propertyId');
+int? _timetableClassTimeGetId(TimetableClassTime object) {
+  if (object.period == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.period;
   }
 }
 
-Id _timetableClassTimeGetId(TimetableClassTime object) {
-  return object.period;
+void _timetableClassTimeSetId(TimetableClassTime object, int id) {
+  object.period = id;
 }
 
-List<IsarLinkBase<dynamic>> _timetableClassTimeGetLinks(
-    TimetableClassTime object) {
+List<IsarLinkBase> _timetableClassTimeGetLinks(TimetableClassTime object) {
   return [];
 }
 
-void _timetableClassTimeAttach(
-    IsarCollection<dynamic> col, Id id, TimetableClassTime object) {
-  object.period = id;
+const _timetableClassTimeTimeOfDayConverter = TimeOfDayConverter();
+
+void _timetableClassTimeSerializeNative(
+    IsarCollection<TimetableClassTime> collection,
+    IsarRawObject rawObj,
+    TimetableClassTime object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = _timetableClassTimeTimeOfDayConverter.toIsar(object.end);
+  final _end = IsarBinaryWriter.utf8Encoder.convert(value0);
+  dynamicSize += (_end.length) as int;
+  final value1 = _timetableClassTimeTimeOfDayConverter.toIsar(object.start);
+  final _start = IsarBinaryWriter.utf8Encoder.convert(value1);
+  dynamicSize += (_start.length) as int;
+  final size = staticSize + dynamicSize;
+
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeBytes(offsets[0], _end);
+  writer.writeBytes(offsets[1], _start);
 }
+
+TimetableClassTime _timetableClassTimeDeserializeNative(
+    IsarCollection<TimetableClassTime> collection,
+    int id,
+    IsarBinaryReader reader,
+    List<int> offsets) {
+  final object = TimetableClassTime();
+  object.end = _timetableClassTimeTimeOfDayConverter
+      .fromIsar(reader.readString(offsets[0]));
+  object.period = id;
+  object.start = _timetableClassTimeTimeOfDayConverter
+      .fromIsar(reader.readString(offsets[1]));
+  return object;
+}
+
+P _timetableClassTimeDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
+    case 0:
+      return (_timetableClassTimeTimeOfDayConverter
+          .fromIsar(reader.readString(offset))) as P;
+    case 1:
+      return (_timetableClassTimeTimeOfDayConverter
+          .fromIsar(reader.readString(offset))) as P;
+    default:
+      throw 'Illegal propertyIndex';
+  }
+}
+
+dynamic _timetableClassTimeSerializeWeb(
+    IsarCollection<TimetableClassTime> collection, TimetableClassTime object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(
+      jsObj, 'end', _timetableClassTimeTimeOfDayConverter.toIsar(object.end));
+  IsarNative.jsObjectSet(jsObj, 'period', object.period);
+  IsarNative.jsObjectSet(jsObj, 'start',
+      _timetableClassTimeTimeOfDayConverter.toIsar(object.start));
+  return jsObj;
+}
+
+TimetableClassTime _timetableClassTimeDeserializeWeb(
+    IsarCollection<TimetableClassTime> collection, dynamic jsObj) {
+  final object = TimetableClassTime();
+  object.end = _timetableClassTimeTimeOfDayConverter
+      .fromIsar(IsarNative.jsObjectGet(jsObj, 'end') ?? '');
+  object.period =
+      IsarNative.jsObjectGet(jsObj, 'period') ?? double.negativeInfinity;
+  object.start = _timetableClassTimeTimeOfDayConverter
+      .fromIsar(IsarNative.jsObjectGet(jsObj, 'start') ?? '');
+  return object;
+}
+
+P _timetableClassTimeDeserializePropWeb<P>(Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'end':
+      return (_timetableClassTimeTimeOfDayConverter
+          .fromIsar(IsarNative.jsObjectGet(jsObj, 'end') ?? '')) as P;
+    case 'period':
+      return (IsarNative.jsObjectGet(jsObj, 'period') ??
+          double.negativeInfinity) as P;
+    case 'start':
+      return (_timetableClassTimeTimeOfDayConverter
+          .fromIsar(IsarNative.jsObjectGet(jsObj, 'start') ?? '')) as P;
+    default:
+      throw 'Illegal propertyName';
+  }
+}
+
+void _timetableClassTimeAttachLinks(
+    IsarCollection col, int id, TimetableClassTime object) {}
 
 extension TimetableClassTimeQueryWhereSort
     on QueryBuilder<TimetableClassTime, TimetableClassTime, QWhere> {
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterWhere>
       anyPeriod() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(const IdWhereClause.any());
-    });
+    return addWhereClauseInternal(const IdWhereClause.any());
   }
 }
 
 extension TimetableClassTimeQueryWhere
     on QueryBuilder<TimetableClassTime, TimetableClassTime, QWhereClause> {
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterWhereClause>
-      periodEqualTo(Id period) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: period,
-        upper: period,
-      ));
-    });
+      periodEqualTo(int period) {
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: period,
+      includeLower: true,
+      upper: period,
+      includeUpper: true,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterWhereClause>
-      periodNotEqualTo(Id period) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: period, includeUpper: false),
-            )
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: period, includeLower: false),
-            );
-      } else {
-        return query
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: period, includeLower: false),
-            )
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: period, includeUpper: false),
-            );
-      }
-    });
-  }
-
-  QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterWhereClause>
-      periodGreaterThan(Id period, {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: period, includeLower: include),
+      periodNotEqualTo(int period) {
+    if (whereSortInternal == Sort.asc) {
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: period, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: period, includeLower: false),
       );
-    });
+    } else {
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: period, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: period, includeUpper: false),
+      );
+    }
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterWhereClause>
-      periodLessThan(Id period, {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.lessThan(upper: period, includeUpper: include),
-      );
-    });
+      periodGreaterThan(int period, {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: period, includeLower: include),
+    );
+  }
+
+  QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterWhereClause>
+      periodLessThan(int period, {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: period, includeUpper: include),
+    );
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterWhereClause>
       periodBetween(
-    Id lowerPeriod,
-    Id upperPeriod, {
+    int lowerPeriod,
+    int upperPeriod, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerPeriod,
-        includeLower: includeLower,
-        upper: upperPeriod,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerPeriod,
+      includeLower: includeLower,
+      upper: upperPeriod,
+      includeUpper: includeUpper,
+    ));
   }
 }
 
@@ -192,412 +221,336 @@ extension TimetableClassTimeQueryFilter
     on QueryBuilder<TimetableClassTime, TimetableClassTime, QFilterCondition> {
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       endEqualTo(
-    String value, {
+    TimeOfDay value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'end',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'end',
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       endGreaterThan(
-    String value, {
-    bool include = false,
+    TimeOfDay value, {
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'end',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'end',
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       endLessThan(
-    String value, {
-    bool include = false,
+    TimeOfDay value, {
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'end',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'end',
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       endBetween(
-    String lower,
-    String upper, {
+    TimeOfDay lower,
+    TimeOfDay upper, {
+    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'end',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'end',
+      lower: _timetableClassTimeTimeOfDayConverter.toIsar(lower),
+      includeLower: includeLower,
+      upper: _timetableClassTimeTimeOfDayConverter.toIsar(upper),
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       endStartsWith(
-    String value, {
+    TimeOfDay value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'end',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'end',
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       endEndsWith(
-    String value, {
+    TimeOfDay value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'end',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'end',
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
-      endContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'end',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+      endContains(TimeOfDay value, {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'end',
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       endMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'end',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'end',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
-      endIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'end',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
-      endIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'end',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
-      periodEqualTo(Id value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'period',
-        value: value,
-      ));
-    });
+      periodEqualTo(int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'period',
+      value: value,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       periodGreaterThan(
-    Id value, {
+    int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'period',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'period',
+      value: value,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       periodLessThan(
-    Id value, {
+    int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'period',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'period',
+      value: value,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       periodBetween(
-    Id lower,
-    Id upper, {
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'period',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'period',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       startEqualTo(
-    String value, {
+    TimeOfDay value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'start',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'start',
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       startGreaterThan(
-    String value, {
-    bool include = false,
+    TimeOfDay value, {
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'start',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'start',
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       startLessThan(
-    String value, {
-    bool include = false,
+    TimeOfDay value, {
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'start',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'start',
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       startBetween(
-    String lower,
-    String upper, {
+    TimeOfDay lower,
+    TimeOfDay upper, {
+    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'start',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'start',
+      lower: _timetableClassTimeTimeOfDayConverter.toIsar(lower),
+      includeLower: includeLower,
+      upper: _timetableClassTimeTimeOfDayConverter.toIsar(upper),
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       startStartsWith(
-    String value, {
+    TimeOfDay value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'start',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'start',
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       startEndsWith(
-    String value, {
+    TimeOfDay value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'start',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'start',
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
-      startContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'start',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+      startContains(TimeOfDay value, {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'start',
+      value: _timetableClassTimeTimeOfDayConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
       startMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'start',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
-      startIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'start',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterFilterCondition>
-      startIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'start',
-        value: '',
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'start',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
   }
 }
-
-extension TimetableClassTimeQueryObject
-    on QueryBuilder<TimetableClassTime, TimetableClassTime, QFilterCondition> {}
 
 extension TimetableClassTimeQueryLinks
     on QueryBuilder<TimetableClassTime, TimetableClassTime, QFilterCondition> {}
 
-extension TimetableClassTimeQuerySortBy
+extension TimetableClassTimeQueryWhereSortBy
     on QueryBuilder<TimetableClassTime, TimetableClassTime, QSortBy> {
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterSortBy>
       sortByEnd() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'end', Sort.asc);
-    });
+    return addSortByInternal('end', Sort.asc);
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterSortBy>
       sortByEndDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'end', Sort.desc);
-    });
+    return addSortByInternal('end', Sort.desc);
+  }
+
+  QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterSortBy>
+      sortByPeriod() {
+    return addSortByInternal('period', Sort.asc);
+  }
+
+  QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterSortBy>
+      sortByPeriodDesc() {
+    return addSortByInternal('period', Sort.desc);
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterSortBy>
       sortByStart() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'start', Sort.asc);
-    });
+    return addSortByInternal('start', Sort.asc);
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterSortBy>
       sortByStartDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'start', Sort.desc);
-    });
+    return addSortByInternal('start', Sort.desc);
   }
 }
 
-extension TimetableClassTimeQuerySortThenBy
+extension TimetableClassTimeQueryWhereSortThenBy
     on QueryBuilder<TimetableClassTime, TimetableClassTime, QSortThenBy> {
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterSortBy>
       thenByEnd() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'end', Sort.asc);
-    });
+    return addSortByInternal('end', Sort.asc);
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterSortBy>
       thenByEndDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'end', Sort.desc);
-    });
+    return addSortByInternal('end', Sort.desc);
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterSortBy>
       thenByPeriod() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'period', Sort.asc);
-    });
+    return addSortByInternal('period', Sort.asc);
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterSortBy>
       thenByPeriodDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'period', Sort.desc);
-    });
+    return addSortByInternal('period', Sort.desc);
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterSortBy>
       thenByStart() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'start', Sort.asc);
-    });
+    return addSortByInternal('start', Sort.asc);
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QAfterSortBy>
       thenByStartDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'start', Sort.desc);
-    });
+    return addSortByInternal('start', Sort.desc);
   }
 }
 
@@ -605,36 +558,32 @@ extension TimetableClassTimeQueryWhereDistinct
     on QueryBuilder<TimetableClassTime, TimetableClassTime, QDistinct> {
   QueryBuilder<TimetableClassTime, TimetableClassTime, QDistinct> distinctByEnd(
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'end', caseSensitive: caseSensitive);
-    });
+    return addDistinctByInternal('end', caseSensitive: caseSensitive);
+  }
+
+  QueryBuilder<TimetableClassTime, TimetableClassTime, QDistinct>
+      distinctByPeriod() {
+    return addDistinctByInternal('period');
   }
 
   QueryBuilder<TimetableClassTime, TimetableClassTime, QDistinct>
       distinctByStart({bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'start', caseSensitive: caseSensitive);
-    });
+    return addDistinctByInternal('start', caseSensitive: caseSensitive);
   }
 }
 
 extension TimetableClassTimeQueryProperty
     on QueryBuilder<TimetableClassTime, TimetableClassTime, QQueryProperty> {
+  QueryBuilder<TimetableClassTime, TimeOfDay, QQueryOperations> endProperty() {
+    return addPropertyNameInternal('end');
+  }
+
   QueryBuilder<TimetableClassTime, int, QQueryOperations> periodProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'period');
-    });
+    return addPropertyNameInternal('period');
   }
 
-  QueryBuilder<TimetableClassTime, String, QQueryOperations> endProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'end');
-    });
-  }
-
-  QueryBuilder<TimetableClassTime, String, QQueryOperations> startProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'start');
-    });
+  QueryBuilder<TimetableClassTime, TimeOfDay, QQueryOperations>
+      startProperty() {
+    return addPropertyNameInternal('start');
   }
 }

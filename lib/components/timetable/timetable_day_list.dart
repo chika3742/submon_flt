@@ -60,7 +60,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
       setState(() {
         var currentTime = TimeOfDay.now();
         var currentPeriod = widget.classTimeItems.firstWhereOrNull((element) {
-          return currentTime.isInsideRange(element.startTime, element.endTime);
+          return currentTime.isInsideRange(element.start, element.end);
         });
 
         if (currentPeriod != null) {
@@ -70,16 +70,15 @@ class _TimetableDayListState extends State<TimetableDayList> {
           _markerPos = getWidgetPos(currentContext)!.dy -
               16 +
               getWidgetSize(currentContext)!.height *
-                  ((currentTime.toMinutes() -
-                          currentPeriod.startTime.toMinutes()) /
-                      (currentPeriod.endTime.toMinutes() -
-                          currentPeriod.startTime.toMinutes()));
+                  ((currentTime.toMinutes() - currentPeriod.start.toMinutes()) /
+                      (currentPeriod.end.toMinutes() -
+                          currentPeriod.start.toMinutes()));
         } else {
           var interval = widget.classTimeItems.firstWhereOrNull((e) {
-            return e.endTime.toMinutes() < currentTime.toMinutes() &&
+            return e.end.toMinutes() < currentTime.toMinutes() &&
                 widget.classTimeItems.any((element) =>
-                    element.period == e.period + 1 &&
-                    currentTime.toMinutes() < element.startTime.toMinutes());
+                element.period == e.period + 1 &&
+                    currentTime.toMinutes() < element.start.toMinutes());
           });
           if (interval != null) {
             var currentContext =
@@ -228,12 +227,12 @@ class _TimetableDayListState extends State<TimetableDayList> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(timeItem?.startTime.format(context) ?? "--:--"),
+                    Text(timeItem?.start.format(context) ?? "--:--"),
                     Transform.rotate(
                       angle: pi / 2,
                       child: const Icon(Icons.arrow_right),
                     ),
-                    Text(timeItem?.endTime.format(context) ?? "--:--"),
+                    Text(timeItem?.end.format(context) ?? "--:--"),
                   ],
                 ),
               ),

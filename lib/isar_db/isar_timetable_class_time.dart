@@ -2,55 +2,54 @@ import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/isar_db/isar_provider.dart';
-import 'package:submon/utils/utils.dart';
 
 part '../generated/isar_db/isar_timetable_class_time.g.dart';
 
 @Collection()
 class TimetableClassTime {
-  late Id period;
-  late String start;
-  late String end;
+  @Id()
+  late int period;
+  @TimeOfDayConverter()
+  late TimeOfDay start;
+  @TimeOfDayConverter()
+  late TimeOfDay end;
 
   TimetableClassTime();
 
-  @ignore
-  TimeOfDay get startTime {
-    var split = start.split(":");
-    return TimeOfDay(hour: int.parse(split[0]), minute: int.parse(split[1]));
-  }
-
-  @ignore
-  TimeOfDay get endTime {
-    var split = end.split(":");
-    return TimeOfDay(hour: int.parse(split[0]), minute: int.parse(split[1]));
-  }
-
-  TimetableClassTime.fromStartEnd(TimeOfDay start, TimeOfDay end) {
-    this.start = start.toSimpleString();
-    this.end = end.toSimpleString();
-  }
+  TimetableClassTime.fromStartEnd(this.start, this.end);
 
   TimetableClassTime.fromMap(Map<String, dynamic> map)
       : period = map["period"],
-        start = map["start"],
-        end = map["end"];
+        start = const TimeOfDayConverter().fromIsar(map["start"]),
+        end = const TimeOfDayConverter().fromIsar(map["end"]);
 
   Map<String, dynamic> toMap() {
     return {
       "period": period,
-      "start": start,
-      "end": end,
+      "start": const TimeOfDayConverter().toIsar(start),
+      "end": const TimeOfDayConverter().toIsar(end),
     };
   }
 
   TimetableClassTime.from({
     required this.period,
-    required TimeOfDay start,
-    required TimeOfDay end,
-  }) {
-    this.start = start.toSimpleString();
-    this.end = end.toSimpleString();
+    required this.start,
+    required this.end,
+  });
+}
+
+class TimeOfDayConverter extends TypeConverter<TimeOfDay, String> {
+  const TimeOfDayConverter();
+
+  @override
+  TimeOfDay fromIsar(String object) {
+    var split = object.split(":");
+    return TimeOfDay(hour: int.parse(split[0]), minute: int.parse(split[1]));
+  }
+
+  @override
+  String toIsar(TimeOfDay object) {
+    return "${object.hour}:${object.minute}";
   }
 }
 

@@ -16,23 +16,21 @@ part '../generated/isar_db/isar_submission.g.dart';
 
 @Collection()
 class Submission {
-  Id? id;
+  @Id()
+  int? id;
 
   late String title;
   late String details;
   late DateTime due;
   bool done = false;
   bool important = false;
-  @Enumerated(EnumType.value, 'value')
+  @RepeatConverter()
   Repeat repeat = Repeat.none;
-  @Enumerated(EnumType.value, 'value')
-  SubmissionColor color = SubmissionColor.white;
+  @ColorConverter()
+  Color color = Colors.white;
   String? googleTasksTaskId;
   int? canvasPlannableId;
   bool? repeatSubmissionCreated;
-
-  @ignore
-  Color get uiColor => Color(color.value);
 
   Submission() {
     var nextDate = DateTime.now()..add(const Duration(days: 1)).toLocal();
@@ -55,8 +53,8 @@ class Submission {
       "due": due.toUtc().toIso8601String(),
       "done": done,
       "important": important,
-      "repeat": repeat.value,
-      "color": color.value,
+      "repeat": const RepeatConverter().toIsar(repeat),
+      "color": const ColorConverter().toIsar(color),
       "googleTasksTaskId": googleTasksTaskId,
       "canvasPlannableId": canvasPlannableId,
       "repeatSubmissionCreated": repeatSubmissionCreated,
@@ -65,9 +63,9 @@ class Submission {
 
   Color getColorToDisplay(SharedPrefs? pref) {
     if (canvasPlannableId != null && color.value == 0xFFFFFFFF) {
-      return pref?.colorSubmissionsAddedFromLms ?? Color(color.value);
+      return pref?.colorSubmissionsAddedFromLms ?? color;
     }
-    return Color(color.value);
+    return color;
   }
 
   Submission.fromMap(Map<String, dynamic> map)
@@ -77,48 +75,31 @@ class Submission {
         due = DateTime.parse(map["due"]).toLocal(),
         done = map["done"] is bool ? map["done"] : map["done"] == 1,
         important = map["important"],
-        repeat = Repeat.of(map["repeat"]),
-        color = SubmissionColor.of(map["color"]),
+        repeat = const RepeatConverter().fromIsar(map["repeat"]),
+        color = const ColorConverter().fromIsar(map["color"]),
         googleTasksTaskId = map["googleTasksTaskId"],
         canvasPlannableId = map["canvasPlannableId"],
         repeatSubmissionCreated = map["repeatSubmissionCreated"];
 }
 
-enum Repeat {
-  none(0),
-  weekly(1),
-  monthly(2);
+class RepeatConverter extends TypeConverter<Repeat, int> {
+  const RepeatConverter();
 
-  const Repeat(this.value);
-
-  factory Repeat.of(short value) {
-    return Repeat.values.firstWhere((e) => e.value == value);
+  @override
+  Repeat fromIsar(int object) {
+    return Repeat.values[object];
   }
 
-  final short value;
+  @override
+  int toIsar(Repeat object) {
+    return object.index;
+  }
 }
 
-enum SubmissionColor {
-  white(0xFFFFFFFF),
-  pink(0xFFE91E63),
-  red(0xFFF44336),
-  deepOrange(0xFFFF5722),
-  orange(0xFFFF9800),
-  amber(0xFFFFC107),
-  lime(0xFFCDDC39),
-  lightGreen(0xFF8BC34A),
-  green(0xFF4CAF50),
-  teal(0xFF009688),
-  cyan(0xFF00BCD4),
-  blue(0xFF2196F3);
-
-  const SubmissionColor(this.value);
-
-  factory SubmissionColor.of(short value) {
-    return SubmissionColor.values.firstWhere((e) => e.value == value);
-  }
-
-  final int value;
+enum Repeat {
+  none,
+  weekly,
+  monthly,
 }
 
 extension RepeatToLocaleString on Repeat {
@@ -131,6 +112,20 @@ extension RepeatToLocaleString on Repeat {
       case Repeat.monthly:
         return "毎月";
     }
+  }
+}
+
+class ColorConverter extends TypeConverter<Color, int> {
+  const ColorConverter();
+
+  @override
+  Color fromIsar(int object) {
+    return Color(object);
+  }
+
+  @override
+  int toIsar(Color object) {
+    return object.value;
   }
 }
 
@@ -149,8 +144,7 @@ class SubmissionProvider extends IsarProvider<Submission> {
   }
 
   Future<List<Submission>> getUndoneSubmissions() {
-    return this
-        .collection
+    return collection
         .filter()
         .doneEqualTo(false)
         .sortByImportantDesc()
@@ -159,7 +153,7 @@ class SubmissionProvider extends IsarProvider<Submission> {
   }
 
   Future<List<Submission>> getDoneSubmissions() {
-    return this.collection.filter().doneEqualTo(true).sortByDueDesc().findAll();
+    return collection.filter().doneEqualTo(true).sortByDueDesc().findAll();
   }
 
   Future<void> invertDone(Submission data) {

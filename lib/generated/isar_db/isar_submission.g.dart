@@ -6,130 +6,124 @@ part of '../../isar_db/isar_submission.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// coverage:ignore-file
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetSubmissionCollection on Isar {
-  IsarCollection<Submission> get submissions => this.collection();
+  IsarCollection<Submission> get submissions => getCollection();
 }
 
 const SubmissionSchema = CollectionSchema(
-  name: r'Submission',
-  id: -3538876163806880374,
-  properties: {
-    r'canvasPlannableId': PropertySchema(
-      id: 0,
-      name: r'canvasPlannableId',
-      type: IsarType.long,
-    ),
-    r'color': PropertySchema(
-      id: 1,
-      name: r'color',
-      type: IsarType.long,
-      enumMap: _SubmissioncolorEnumValueMap,
-    ),
-    r'details': PropertySchema(
-      id: 2,
-      name: r'details',
-      type: IsarType.string,
-    ),
-    r'done': PropertySchema(
-      id: 3,
-      name: r'done',
-      type: IsarType.bool,
-    ),
-    r'due': PropertySchema(
-      id: 4,
-      name: r'due',
-      type: IsarType.dateTime,
-    ),
-    r'googleTasksTaskId': PropertySchema(
-      id: 5,
-      name: r'googleTasksTaskId',
-      type: IsarType.string,
-    ),
-    r'important': PropertySchema(
-      id: 6,
-      name: r'important',
-      type: IsarType.bool,
-    ),
-    r'repeat': PropertySchema(
-      id: 7,
-      name: r'repeat',
-      type: IsarType.int,
-      enumMap: _SubmissionrepeatEnumValueMap,
-    ),
-    r'repeatSubmissionCreated': PropertySchema(
-      id: 8,
-      name: r'repeatSubmissionCreated',
-      type: IsarType.bool,
-    ),
-    r'title': PropertySchema(
-      id: 9,
-      name: r'title',
-      type: IsarType.string,
-    )
+  name: 'Submission',
+  schema:
+      '{"name":"Submission","idName":"id","properties":[{"name":"canvasPlannableId","type":"Long"},{"name":"color","type":"Long"},{"name":"details","type":"String"},{"name":"done","type":"Bool"},{"name":"due","type":"Long"},{"name":"googleTasksTaskId","type":"String"},{"name":"important","type":"Bool"},{"name":"repeat","type":"Long"},{"name":"repeatSubmissionCreated","type":"Bool"},{"name":"title","type":"String"}],"indexes":[],"links":[]}',
+  idName: 'id',
+  propertyIds: {
+    'canvasPlannableId': 0,
+    'color': 1,
+    'details': 2,
+    'done': 3,
+    'due': 4,
+    'googleTasksTaskId': 5,
+    'important': 6,
+    'repeat': 7,
+    'repeatSubmissionCreated': 8,
+    'title': 9
   },
-  estimateSize: _submissionEstimateSize,
-  serialize: _submissionSerialize,
-  deserialize: _submissionDeserialize,
-  deserializeProp: _submissionDeserializeProp,
-  idName: r'id',
-  indexes: {},
-  links: {},
-  embeddedSchemas: {},
+  listProperties: {},
+  indexIds: {},
+  indexValueTypes: {},
+  linkIds: {},
+  backlinkLinkNames: {},
   getId: _submissionGetId,
+  setId: _submissionSetId,
   getLinks: _submissionGetLinks,
-  attach: _submissionAttach,
-  version: '3.0.2',
+  attachLinks: _submissionAttachLinks,
+  serializeNative: _submissionSerializeNative,
+  deserializeNative: _submissionDeserializeNative,
+  deserializePropNative: _submissionDeserializePropNative,
+  serializeWeb: _submissionSerializeWeb,
+  deserializeWeb: _submissionDeserializeWeb,
+  deserializePropWeb: _submissionDeserializePropWeb,
+  version: 3,
 );
 
-int _submissionEstimateSize(
-  Submission object,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  var bytesCount = offsets.last;
-  bytesCount += 3 + object.details.length * 3;
-  {
-    final value = object.googleTasksTaskId;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
+int? _submissionGetId(Submission object) {
+  if (object.id == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.id;
   }
-  bytesCount += 3 + object.title.length * 3;
-  return bytesCount;
 }
 
-void _submissionSerialize(
-  Submission object,
-  IsarWriter writer,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  writer.writeLong(offsets[0], object.canvasPlannableId);
-  writer.writeLong(offsets[1], object.color.value);
-  writer.writeString(offsets[2], object.details);
-  writer.writeBool(offsets[3], object.done);
-  writer.writeDateTime(offsets[4], object.due);
-  writer.writeString(offsets[5], object.googleTasksTaskId);
-  writer.writeBool(offsets[6], object.important);
-  writer.writeInt(offsets[7], object.repeat.value);
-  writer.writeBool(offsets[8], object.repeatSubmissionCreated);
-  writer.writeString(offsets[9], object.title);
+void _submissionSetId(Submission object, int id) {
+  object.id = id;
 }
 
-Submission _submissionDeserialize(
-  Id id,
-  IsarReader reader,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+List<IsarLinkBase> _submissionGetLinks(Submission object) {
+  return [];
+}
+
+const _submissionColorConverter = ColorConverter();
+const _submissionRepeatConverter = RepeatConverter();
+
+void _submissionSerializeNative(
+    IsarCollection<Submission> collection,
+    IsarRawObject rawObj,
+    Submission object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = object.canvasPlannableId;
+  final _canvasPlannableId = value0;
+  final value1 = _submissionColorConverter.toIsar(object.color);
+  final _color = value1;
+  final value2 = object.details;
+  final _details = IsarBinaryWriter.utf8Encoder.convert(value2);
+  dynamicSize += (_details.length) as int;
+  final value3 = object.done;
+  final _done = value3;
+  final value4 = object.due;
+  final _due = value4;
+  final value5 = object.googleTasksTaskId;
+  IsarUint8List? _googleTasksTaskId;
+  if (value5 != null) {
+    _googleTasksTaskId = IsarBinaryWriter.utf8Encoder.convert(value5);
+  }
+  dynamicSize += (_googleTasksTaskId?.length ?? 0) as int;
+  final value6 = object.important;
+  final _important = value6;
+  final value7 = _submissionRepeatConverter.toIsar(object.repeat);
+  final _repeat = value7;
+  final value8 = object.repeatSubmissionCreated;
+  final _repeatSubmissionCreated = value8;
+  final value9 = object.title;
+  final _title = IsarBinaryWriter.utf8Encoder.convert(value9);
+  dynamicSize += (_title.length) as int;
+  final size = staticSize + dynamicSize;
+
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeLong(offsets[0], _canvasPlannableId);
+  writer.writeLong(offsets[1], _color);
+  writer.writeBytes(offsets[2], _details);
+  writer.writeBool(offsets[3], _done);
+  writer.writeDateTime(offsets[4], _due);
+  writer.writeBytes(offsets[5], _googleTasksTaskId);
+  writer.writeBool(offsets[6], _important);
+  writer.writeLong(offsets[7], _repeat);
+  writer.writeBool(offsets[8], _repeatSubmissionCreated);
+  writer.writeBytes(offsets[9], _title);
+}
+
+Submission _submissionDeserializeNative(IsarCollection<Submission> collection,
+    int id, IsarBinaryReader reader, List<int> offsets) {
   final object = Submission();
   object.canvasPlannableId = reader.readLongOrNull(offsets[0]);
   object.color =
-      _SubmissioncolorValueEnumMap[reader.readLongOrNull(offsets[1])] ??
-          SubmissionColor.white;
+      _submissionColorConverter.fromIsar(reader.readLong(offsets[1]));
   object.details = reader.readString(offsets[2]);
   object.done = reader.readBool(offsets[3]);
   object.due = reader.readDateTime(offsets[4]);
@@ -137,25 +131,21 @@ Submission _submissionDeserialize(
   object.id = id;
   object.important = reader.readBool(offsets[6]);
   object.repeat =
-      _SubmissionrepeatValueEnumMap[reader.readIntOrNull(offsets[7])] ??
-          Repeat.none;
+      _submissionRepeatConverter.fromIsar(reader.readLong(offsets[7]));
   object.repeatSubmissionCreated = reader.readBoolOrNull(offsets[8]);
   object.title = reader.readString(offsets[9]);
   return object;
 }
 
-P _submissionDeserializeProp<P>(
-  IsarReader reader,
-  int propertyId,
-  int offset,
-  Map<Type, List<int>> allOffsets,
-) {
-  switch (propertyId) {
+P _submissionDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
     case 0:
       return (reader.readLongOrNull(offset)) as P;
     case 1:
-      return (_SubmissioncolorValueEnumMap[reader.readLongOrNull(offset)] ??
-          SubmissionColor.white) as P;
+      return (_submissionColorConverter.fromIsar(reader.readLong(offset))) as P;
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
@@ -167,142 +157,163 @@ P _submissionDeserializeProp<P>(
     case 6:
       return (reader.readBool(offset)) as P;
     case 7:
-      return (_SubmissionrepeatValueEnumMap[reader.readIntOrNull(offset)] ??
-          Repeat.none) as P;
+      return (_submissionRepeatConverter.fromIsar(reader.readLong(offset)))
+          as P;
     case 8:
       return (reader.readBoolOrNull(offset)) as P;
     case 9:
       return (reader.readString(offset)) as P;
     default:
-      throw IsarError('Unknown property with id $propertyId');
+      throw 'Illegal propertyIndex';
   }
 }
 
-const _SubmissioncolorEnumValueMap = {
-  'white': 4294967295,
-  'pink': 4293467747,
-  'red': 4294198070,
-  'deepOrange': 4294924066,
-  'orange': 4294940672,
-  'amber': 4294951175,
-  'lime': 4291681337,
-  'lightGreen': 4287349578,
-  'green': 4283215696,
-  'teal': 4278228616,
-  'cyan': 4278238420,
-  'blue': 4280391411,
-};
-const _SubmissioncolorValueEnumMap = {
-  4294967295: SubmissionColor.white,
-  4293467747: SubmissionColor.pink,
-  4294198070: SubmissionColor.red,
-  4294924066: SubmissionColor.deepOrange,
-  4294940672: SubmissionColor.orange,
-  4294951175: SubmissionColor.amber,
-  4291681337: SubmissionColor.lime,
-  4287349578: SubmissionColor.lightGreen,
-  4283215696: SubmissionColor.green,
-  4278228616: SubmissionColor.teal,
-  4278238420: SubmissionColor.cyan,
-  4280391411: SubmissionColor.blue,
-};
-const _SubmissionrepeatEnumValueMap = {
-  'none': 0,
-  'weekly': 1,
-  'monthly': 2,
-};
-const _SubmissionrepeatValueEnumMap = {
-  0: Repeat.none,
-  1: Repeat.weekly,
-  2: Repeat.monthly,
-};
-
-Id _submissionGetId(Submission object) {
-  return object.id ?? Isar.autoIncrement;
+dynamic _submissionSerializeWeb(
+    IsarCollection<Submission> collection, Submission object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'canvasPlannableId', object.canvasPlannableId);
+  IsarNative.jsObjectSet(
+      jsObj, 'color', _submissionColorConverter.toIsar(object.color));
+  IsarNative.jsObjectSet(jsObj, 'details', object.details);
+  IsarNative.jsObjectSet(jsObj, 'done', object.done);
+  IsarNative.jsObjectSet(
+      jsObj, 'due', object.due.toUtc().millisecondsSinceEpoch);
+  IsarNative.jsObjectSet(jsObj, 'googleTasksTaskId', object.googleTasksTaskId);
+  IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  IsarNative.jsObjectSet(jsObj, 'important', object.important);
+  IsarNative.jsObjectSet(
+      jsObj, 'repeat', _submissionRepeatConverter.toIsar(object.repeat));
+  IsarNative.jsObjectSet(
+      jsObj, 'repeatSubmissionCreated', object.repeatSubmissionCreated);
+  IsarNative.jsObjectSet(jsObj, 'title', object.title);
+  return jsObj;
 }
 
-List<IsarLinkBase<dynamic>> _submissionGetLinks(Submission object) {
-  return [];
+Submission _submissionDeserializeWeb(
+    IsarCollection<Submission> collection, dynamic jsObj) {
+  final object = Submission();
+  object.canvasPlannableId = IsarNative.jsObjectGet(jsObj, 'canvasPlannableId');
+  object.color = _submissionColorConverter.fromIsar(
+      IsarNative.jsObjectGet(jsObj, 'color') ?? double.negativeInfinity);
+  object.details = IsarNative.jsObjectGet(jsObj, 'details') ?? '';
+  object.done = IsarNative.jsObjectGet(jsObj, 'done') ?? false;
+  object.due = IsarNative.jsObjectGet(jsObj, 'due') != null
+      ? DateTime.fromMillisecondsSinceEpoch(
+              IsarNative.jsObjectGet(jsObj, 'due'),
+              isUtc: true)
+          .toLocal()
+      : DateTime.fromMillisecondsSinceEpoch(0);
+  object.googleTasksTaskId = IsarNative.jsObjectGet(jsObj, 'googleTasksTaskId');
+  object.id = IsarNative.jsObjectGet(jsObj, 'id');
+  object.important = IsarNative.jsObjectGet(jsObj, 'important') ?? false;
+  object.repeat = _submissionRepeatConverter.fromIsar(
+      IsarNative.jsObjectGet(jsObj, 'repeat') ?? double.negativeInfinity);
+  object.repeatSubmissionCreated =
+      IsarNative.jsObjectGet(jsObj, 'repeatSubmissionCreated');
+  object.title = IsarNative.jsObjectGet(jsObj, 'title') ?? '';
+  return object;
 }
 
-void _submissionAttach(IsarCollection<dynamic> col, Id id, Submission object) {
-  object.id = id;
+P _submissionDeserializePropWeb<P>(Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'canvasPlannableId':
+      return (IsarNative.jsObjectGet(jsObj, 'canvasPlannableId')) as P;
+    case 'color':
+      return (_submissionColorConverter.fromIsar(
+          IsarNative.jsObjectGet(jsObj, 'color') ??
+              double.negativeInfinity)) as P;
+    case 'details':
+      return (IsarNative.jsObjectGet(jsObj, 'details') ?? '') as P;
+    case 'done':
+      return (IsarNative.jsObjectGet(jsObj, 'done') ?? false) as P;
+    case 'due':
+      return (IsarNative.jsObjectGet(jsObj, 'due') != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+                  IsarNative.jsObjectGet(jsObj, 'due'),
+                  isUtc: true)
+              .toLocal()
+          : DateTime.fromMillisecondsSinceEpoch(0)) as P;
+    case 'googleTasksTaskId':
+      return (IsarNative.jsObjectGet(jsObj, 'googleTasksTaskId')) as P;
+    case 'id':
+      return (IsarNative.jsObjectGet(jsObj, 'id')) as P;
+    case 'important':
+      return (IsarNative.jsObjectGet(jsObj, 'important') ?? false) as P;
+    case 'repeat':
+      return (_submissionRepeatConverter.fromIsar(
+          IsarNative.jsObjectGet(jsObj, 'repeat') ??
+              double.negativeInfinity)) as P;
+    case 'repeatSubmissionCreated':
+      return (IsarNative.jsObjectGet(jsObj, 'repeatSubmissionCreated')) as P;
+    case 'title':
+      return (IsarNative.jsObjectGet(jsObj, 'title') ?? '') as P;
+    default:
+      throw 'Illegal propertyName';
+  }
 }
+
+void _submissionAttachLinks(IsarCollection col, int id, Submission object) {}
 
 extension SubmissionQueryWhereSort
     on QueryBuilder<Submission, Submission, QWhere> {
   QueryBuilder<Submission, Submission, QAfterWhere> anyId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(const IdWhereClause.any());
-    });
+    return addWhereClauseInternal(const IdWhereClause.any());
   }
 }
 
 extension SubmissionQueryWhere
     on QueryBuilder<Submission, Submission, QWhereClause> {
-  QueryBuilder<Submission, Submission, QAfterWhereClause> idEqualTo(Id id) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
-    });
+  QueryBuilder<Submission, Submission, QAfterWhereClause> idEqualTo(int id) {
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: id,
+      includeLower: true,
+      upper: id,
+      includeUpper: true,
+    ));
   }
 
-  QueryBuilder<Submission, Submission, QAfterWhereClause> idNotEqualTo(Id id) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            )
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            );
-      } else {
-        return query
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            )
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            );
-      }
-    });
-  }
-
-  QueryBuilder<Submission, Submission, QAfterWhereClause> idGreaterThan(Id id,
-      {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: id, includeLower: include),
+  QueryBuilder<Submission, Submission, QAfterWhereClause> idNotEqualTo(int id) {
+    if (whereSortInternal == Sort.asc) {
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
       );
-    });
+    } else {
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      );
+    }
   }
 
-  QueryBuilder<Submission, Submission, QAfterWhereClause> idLessThan(Id id,
+  QueryBuilder<Submission, Submission, QAfterWhereClause> idGreaterThan(int id,
       {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.lessThan(upper: id, includeUpper: include),
-      );
-    });
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: id, includeLower: include),
+    );
+  }
+
+  QueryBuilder<Submission, Submission, QAfterWhereClause> idLessThan(int id,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: id, includeUpper: include),
+    );
   }
 
   QueryBuilder<Submission, Submission, QAfterWhereClause> idBetween(
-    Id lowerId,
-    Id upperId, {
+    int lowerId,
+    int upperId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerId,
+      includeLower: includeLower,
+      upper: upperId,
+      includeUpper: includeUpper,
+    ));
   }
 }
 
@@ -310,30 +321,20 @@ extension SubmissionQueryFilter
     on QueryBuilder<Submission, Submission, QFilterCondition> {
   QueryBuilder<Submission, Submission, QAfterFilterCondition>
       canvasPlannableIdIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'canvasPlannableId',
-      ));
-    });
-  }
-
-  QueryBuilder<Submission, Submission, QAfterFilterCondition>
-      canvasPlannableIdIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'canvasPlannableId',
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.isNull,
+      property: 'canvasPlannableId',
+      value: null,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition>
       canvasPlannableIdEqualTo(int? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'canvasPlannableId',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'canvasPlannableId',
+      value: value,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition>
@@ -341,13 +342,12 @@ extension SubmissionQueryFilter
     int? value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'canvasPlannableId',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'canvasPlannableId',
+      value: value,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition>
@@ -355,13 +355,12 @@ extension SubmissionQueryFilter
     int? value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'canvasPlannableId',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'canvasPlannableId',
+      value: value,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition>
@@ -371,246 +370,207 @@ extension SubmissionQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'canvasPlannableId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'canvasPlannableId',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> colorEqualTo(
-      SubmissionColor value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'color',
-        value: value,
-      ));
-    });
+      Color value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'color',
+      value: _submissionColorConverter.toIsar(value),
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> colorGreaterThan(
-    SubmissionColor value, {
+    Color value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'color',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'color',
+      value: _submissionColorConverter.toIsar(value),
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> colorLessThan(
-    SubmissionColor value, {
+    Color value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'color',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'color',
+      value: _submissionColorConverter.toIsar(value),
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> colorBetween(
-    SubmissionColor lower,
-    SubmissionColor upper, {
+    Color lower,
+    Color upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'color',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'color',
+      lower: _submissionColorConverter.toIsar(lower),
+      includeLower: includeLower,
+      upper: _submissionColorConverter.toIsar(upper),
+      includeUpper: includeUpper,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> detailsEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'details',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'details',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition>
       detailsGreaterThan(
     String value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'details',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'details',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> detailsLessThan(
     String value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'details',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'details',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> detailsBetween(
     String lower,
     String upper, {
+    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'details',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'details',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> detailsStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'details',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'details',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> detailsEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'details',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'details',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> detailsContains(
       String value,
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'details',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'details',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> detailsMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'details',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Submission, Submission, QAfterFilterCondition> detailsIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'details',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Submission, Submission, QAfterFilterCondition>
-      detailsIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'details',
-        value: '',
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'details',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> doneEqualTo(
       bool value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'done',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'done',
+      value: value,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> dueEqualTo(
       DateTime value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'due',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'due',
+      value: value,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> dueGreaterThan(
     DateTime value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'due',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'due',
+      value: value,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> dueLessThan(
     DateTime value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'due',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'due',
+      value: value,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> dueBetween(
@@ -619,33 +579,22 @@ extension SubmissionQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'due',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'due',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition>
       googleTasksTaskIdIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'googleTasksTaskId',
-      ));
-    });
-  }
-
-  QueryBuilder<Submission, Submission, QAfterFilterCondition>
-      googleTasksTaskIdIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'googleTasksTaskId',
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.isNull,
+      property: 'googleTasksTaskId',
+      value: null,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition>
@@ -653,65 +602,60 @@ extension SubmissionQueryFilter
     String? value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'googleTasksTaskId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'googleTasksTaskId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition>
       googleTasksTaskIdGreaterThan(
     String? value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'googleTasksTaskId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'googleTasksTaskId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition>
       googleTasksTaskIdLessThan(
     String? value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'googleTasksTaskId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'googleTasksTaskId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition>
       googleTasksTaskIdBetween(
     String? lower,
     String? upper, {
+    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'googleTasksTaskId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'googleTasksTaskId',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition>
@@ -719,13 +663,12 @@ extension SubmissionQueryFilter
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'googleTasksTaskId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'googleTasksTaskId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition>
@@ -733,170 +676,130 @@ extension SubmissionQueryFilter
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'googleTasksTaskId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'googleTasksTaskId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition>
       googleTasksTaskIdContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'googleTasksTaskId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'googleTasksTaskId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition>
       googleTasksTaskIdMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'googleTasksTaskId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Submission, Submission, QAfterFilterCondition>
-      googleTasksTaskIdIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'googleTasksTaskId',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Submission, Submission, QAfterFilterCondition>
-      googleTasksTaskIdIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'googleTasksTaskId',
-        value: '',
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'googleTasksTaskId',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> idIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'id',
-      ));
-    });
-  }
-
-  QueryBuilder<Submission, Submission, QAfterFilterCondition> idIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'id',
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.isNull,
+      property: 'id',
+      value: null,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> idEqualTo(
-      Id? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
-    });
+      int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'id',
+      value: value,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> idGreaterThan(
-    Id? value, {
+    int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'id',
+      value: value,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> idLessThan(
-    Id? value, {
+    int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'id',
+      value: value,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> idBetween(
-    Id? lower,
-    Id? upper, {
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'id',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> importantEqualTo(
       bool value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'important',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'important',
+      value: value,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> repeatEqualTo(
       Repeat value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'repeat',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'repeat',
+      value: _submissionRepeatConverter.toIsar(value),
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> repeatGreaterThan(
     Repeat value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'repeat',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'repeat',
+      value: _submissionRepeatConverter.toIsar(value),
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> repeatLessThan(
     Repeat value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'repeat',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'repeat',
+      value: _submissionRepeatConverter.toIsar(value),
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> repeatBetween(
@@ -905,446 +808,327 @@ extension SubmissionQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'repeat',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'repeat',
+      lower: _submissionRepeatConverter.toIsar(lower),
+      includeLower: includeLower,
+      upper: _submissionRepeatConverter.toIsar(upper),
+      includeUpper: includeUpper,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition>
       repeatSubmissionCreatedIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'repeatSubmissionCreated',
-      ));
-    });
-  }
-
-  QueryBuilder<Submission, Submission, QAfterFilterCondition>
-      repeatSubmissionCreatedIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'repeatSubmissionCreated',
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.isNull,
+      property: 'repeatSubmissionCreated',
+      value: null,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition>
       repeatSubmissionCreatedEqualTo(bool? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'repeatSubmissionCreated',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'repeatSubmissionCreated',
+      value: value,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> titleEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'title',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> titleGreaterThan(
     String value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'title',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> titleLessThan(
     String value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'title',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> titleBetween(
     String lower,
     String upper, {
+    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'title',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'title',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> titleStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'title',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> titleEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'title',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> titleContains(
       String value,
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'title',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Submission, Submission, QAfterFilterCondition> titleMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'title',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Submission, Submission, QAfterFilterCondition> titleIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'title',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Submission, Submission, QAfterFilterCondition>
-      titleIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'title',
-        value: '',
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'title',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
   }
 }
-
-extension SubmissionQueryObject
-    on QueryBuilder<Submission, Submission, QFilterCondition> {}
 
 extension SubmissionQueryLinks
     on QueryBuilder<Submission, Submission, QFilterCondition> {}
 
-extension SubmissionQuerySortBy
+extension SubmissionQueryWhereSortBy
     on QueryBuilder<Submission, Submission, QSortBy> {
   QueryBuilder<Submission, Submission, QAfterSortBy> sortByCanvasPlannableId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'canvasPlannableId', Sort.asc);
-    });
+    return addSortByInternal('canvasPlannableId', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy>
       sortByCanvasPlannableIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'canvasPlannableId', Sort.desc);
-    });
+    return addSortByInternal('canvasPlannableId', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> sortByColor() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.asc);
-    });
+    return addSortByInternal('color', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> sortByColorDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.desc);
-    });
+    return addSortByInternal('color', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> sortByDetails() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'details', Sort.asc);
-    });
+    return addSortByInternal('details', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> sortByDetailsDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'details', Sort.desc);
-    });
+    return addSortByInternal('details', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> sortByDone() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'done', Sort.asc);
-    });
+    return addSortByInternal('done', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> sortByDoneDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'done', Sort.desc);
-    });
+    return addSortByInternal('done', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> sortByDue() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'due', Sort.asc);
-    });
+    return addSortByInternal('due', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> sortByDueDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'due', Sort.desc);
-    });
+    return addSortByInternal('due', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> sortByGoogleTasksTaskId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'googleTasksTaskId', Sort.asc);
-    });
+    return addSortByInternal('googleTasksTaskId', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy>
       sortByGoogleTasksTaskIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'googleTasksTaskId', Sort.desc);
-    });
+    return addSortByInternal('googleTasksTaskId', Sort.desc);
+  }
+
+  QueryBuilder<Submission, Submission, QAfterSortBy> sortById() {
+    return addSortByInternal('id', Sort.asc);
+  }
+
+  QueryBuilder<Submission, Submission, QAfterSortBy> sortByIdDesc() {
+    return addSortByInternal('id', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> sortByImportant() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'important', Sort.asc);
-    });
+    return addSortByInternal('important', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> sortByImportantDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'important', Sort.desc);
-    });
+    return addSortByInternal('important', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> sortByRepeat() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'repeat', Sort.asc);
-    });
+    return addSortByInternal('repeat', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> sortByRepeatDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'repeat', Sort.desc);
-    });
+    return addSortByInternal('repeat', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy>
       sortByRepeatSubmissionCreated() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'repeatSubmissionCreated', Sort.asc);
-    });
+    return addSortByInternal('repeatSubmissionCreated', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy>
       sortByRepeatSubmissionCreatedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'repeatSubmissionCreated', Sort.desc);
-    });
+    return addSortByInternal('repeatSubmissionCreated', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> sortByTitle() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'title', Sort.asc);
-    });
+    return addSortByInternal('title', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> sortByTitleDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'title', Sort.desc);
-    });
+    return addSortByInternal('title', Sort.desc);
   }
 }
 
-extension SubmissionQuerySortThenBy
+extension SubmissionQueryWhereSortThenBy
     on QueryBuilder<Submission, Submission, QSortThenBy> {
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByCanvasPlannableId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'canvasPlannableId', Sort.asc);
-    });
+    return addSortByInternal('canvasPlannableId', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy>
       thenByCanvasPlannableIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'canvasPlannableId', Sort.desc);
-    });
+    return addSortByInternal('canvasPlannableId', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByColor() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.asc);
-    });
+    return addSortByInternal('color', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByColorDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.desc);
-    });
+    return addSortByInternal('color', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByDetails() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'details', Sort.asc);
-    });
+    return addSortByInternal('details', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByDetailsDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'details', Sort.desc);
-    });
+    return addSortByInternal('details', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByDone() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'done', Sort.asc);
-    });
+    return addSortByInternal('done', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByDoneDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'done', Sort.desc);
-    });
+    return addSortByInternal('done', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByDue() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'due', Sort.asc);
-    });
+    return addSortByInternal('due', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByDueDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'due', Sort.desc);
-    });
+    return addSortByInternal('due', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByGoogleTasksTaskId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'googleTasksTaskId', Sort.asc);
-    });
+    return addSortByInternal('googleTasksTaskId', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy>
       thenByGoogleTasksTaskIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'googleTasksTaskId', Sort.desc);
-    });
+    return addSortByInternal('googleTasksTaskId', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> thenById() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.asc);
-    });
+    return addSortByInternal('id', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.desc);
-    });
+    return addSortByInternal('id', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByImportant() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'important', Sort.asc);
-    });
+    return addSortByInternal('important', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByImportantDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'important', Sort.desc);
-    });
+    return addSortByInternal('important', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByRepeat() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'repeat', Sort.asc);
-    });
+    return addSortByInternal('repeat', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByRepeatDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'repeat', Sort.desc);
-    });
+    return addSortByInternal('repeat', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy>
       thenByRepeatSubmissionCreated() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'repeatSubmissionCreated', Sort.asc);
-    });
+    return addSortByInternal('repeatSubmissionCreated', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy>
       thenByRepeatSubmissionCreatedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'repeatSubmissionCreated', Sort.desc);
-    });
+    return addSortByInternal('repeatSubmissionCreated', Sort.desc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByTitle() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'title', Sort.asc);
-    });
+    return addSortByInternal('title', Sort.asc);
   }
 
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByTitleDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'title', Sort.desc);
-    });
+    return addSortByInternal('title', Sort.desc);
   }
 }
 
@@ -1352,138 +1136,100 @@ extension SubmissionQueryWhereDistinct
     on QueryBuilder<Submission, Submission, QDistinct> {
   QueryBuilder<Submission, Submission, QDistinct>
       distinctByCanvasPlannableId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'canvasPlannableId');
-    });
+    return addDistinctByInternal('canvasPlannableId');
   }
 
   QueryBuilder<Submission, Submission, QDistinct> distinctByColor() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'color');
-    });
+    return addDistinctByInternal('color');
   }
 
   QueryBuilder<Submission, Submission, QDistinct> distinctByDetails(
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'details', caseSensitive: caseSensitive);
-    });
+    return addDistinctByInternal('details', caseSensitive: caseSensitive);
   }
 
   QueryBuilder<Submission, Submission, QDistinct> distinctByDone() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'done');
-    });
+    return addDistinctByInternal('done');
   }
 
   QueryBuilder<Submission, Submission, QDistinct> distinctByDue() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'due');
-    });
+    return addDistinctByInternal('due');
   }
 
   QueryBuilder<Submission, Submission, QDistinct> distinctByGoogleTasksTaskId(
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'googleTasksTaskId',
-          caseSensitive: caseSensitive);
-    });
+    return addDistinctByInternal('googleTasksTaskId',
+        caseSensitive: caseSensitive);
+  }
+
+  QueryBuilder<Submission, Submission, QDistinct> distinctById() {
+    return addDistinctByInternal('id');
   }
 
   QueryBuilder<Submission, Submission, QDistinct> distinctByImportant() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'important');
-    });
+    return addDistinctByInternal('important');
   }
 
   QueryBuilder<Submission, Submission, QDistinct> distinctByRepeat() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'repeat');
-    });
+    return addDistinctByInternal('repeat');
   }
 
   QueryBuilder<Submission, Submission, QDistinct>
       distinctByRepeatSubmissionCreated() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'repeatSubmissionCreated');
-    });
+    return addDistinctByInternal('repeatSubmissionCreated');
   }
 
   QueryBuilder<Submission, Submission, QDistinct> distinctByTitle(
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'title', caseSensitive: caseSensitive);
-    });
+    return addDistinctByInternal('title', caseSensitive: caseSensitive);
   }
 }
 
 extension SubmissionQueryProperty
     on QueryBuilder<Submission, Submission, QQueryProperty> {
-  QueryBuilder<Submission, int, QQueryOperations> idProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'id');
-    });
-  }
-
   QueryBuilder<Submission, int?, QQueryOperations> canvasPlannableIdProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'canvasPlannableId');
-    });
+    return addPropertyNameInternal('canvasPlannableId');
   }
 
-  QueryBuilder<Submission, SubmissionColor, QQueryOperations> colorProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'color');
-    });
+  QueryBuilder<Submission, Color, QQueryOperations> colorProperty() {
+    return addPropertyNameInternal('color');
   }
 
   QueryBuilder<Submission, String, QQueryOperations> detailsProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'details');
-    });
+    return addPropertyNameInternal('details');
   }
 
   QueryBuilder<Submission, bool, QQueryOperations> doneProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'done');
-    });
+    return addPropertyNameInternal('done');
   }
 
   QueryBuilder<Submission, DateTime, QQueryOperations> dueProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'due');
-    });
+    return addPropertyNameInternal('due');
   }
 
   QueryBuilder<Submission, String?, QQueryOperations>
-  googleTasksTaskIdProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'googleTasksTaskId');
-    });
+      googleTasksTaskIdProperty() {
+    return addPropertyNameInternal('googleTasksTaskId');
+  }
+
+  QueryBuilder<Submission, int?, QQueryOperations> idProperty() {
+    return addPropertyNameInternal('id');
   }
 
   QueryBuilder<Submission, bool, QQueryOperations> importantProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'important');
-    });
+    return addPropertyNameInternal('important');
   }
 
   QueryBuilder<Submission, Repeat, QQueryOperations> repeatProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'repeat');
-    });
+    return addPropertyNameInternal('repeat');
   }
 
   QueryBuilder<Submission, bool?, QQueryOperations>
-  repeatSubmissionCreatedProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'repeatSubmissionCreated');
-    });
+      repeatSubmissionCreatedProperty() {
+    return addPropertyNameInternal('repeatSubmissionCreated');
   }
 
   QueryBuilder<Submission, String, QQueryOperations> titleProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'title');
-    });
+    return addPropertyNameInternal('title');
   }
 }

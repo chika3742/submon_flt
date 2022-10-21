@@ -6,86 +6,92 @@ part of '../../isar_db/isar_digestive.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// coverage:ignore-file
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetDigestiveCollection on Isar {
-  IsarCollection<Digestive> get digestives => this.collection();
+  IsarCollection<Digestive> get digestives => getCollection();
 }
 
 const DigestiveSchema = CollectionSchema(
-  name: r'Digestive',
-  id: 4988416188117964617,
-  properties: {
-    r'content': PropertySchema(
-      id: 0,
-      name: r'content',
-      type: IsarType.string,
-    ),
-    r'done': PropertySchema(
-      id: 1,
-      name: r'done',
-      type: IsarType.bool,
-    ),
-    r'minute': PropertySchema(
-      id: 2,
-      name: r'minute',
-      type: IsarType.long,
-    ),
-    r'startAt': PropertySchema(
-      id: 3,
-      name: r'startAt',
-      type: IsarType.dateTime,
-    ),
-    r'submissionId': PropertySchema(
-      id: 4,
-      name: r'submissionId',
-      type: IsarType.long,
-    )
+  name: 'Digestive',
+  schema:
+      '{"name":"Digestive","idName":"id","properties":[{"name":"content","type":"String"},{"name":"done","type":"Bool"},{"name":"minute","type":"Long"},{"name":"startAt","type":"Long"},{"name":"submissionId","type":"Long"}],"indexes":[],"links":[]}',
+  idName: 'id',
+  propertyIds: {
+    'content': 0,
+    'done': 1,
+    'minute': 2,
+    'startAt': 3,
+    'submissionId': 4
   },
-  estimateSize: _digestiveEstimateSize,
-  serialize: _digestiveSerialize,
-  deserialize: _digestiveDeserialize,
-  deserializeProp: _digestiveDeserializeProp,
-  idName: r'id',
-  indexes: {},
-  links: {},
-  embeddedSchemas: {},
+  listProperties: {},
+  indexIds: {},
+  indexValueTypes: {},
+  linkIds: {},
+  backlinkLinkNames: {},
   getId: _digestiveGetId,
+  setId: _digestiveSetId,
   getLinks: _digestiveGetLinks,
-  attach: _digestiveAttach,
-  version: '3.0.2',
+  attachLinks: _digestiveAttachLinks,
+  serializeNative: _digestiveSerializeNative,
+  deserializeNative: _digestiveDeserializeNative,
+  deserializePropNative: _digestiveDeserializePropNative,
+  serializeWeb: _digestiveSerializeWeb,
+  deserializeWeb: _digestiveDeserializeWeb,
+  deserializePropWeb: _digestiveDeserializePropWeb,
+  version: 3,
 );
 
-int _digestiveEstimateSize(
-  Digestive object,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  var bytesCount = offsets.last;
-  bytesCount += 3 + object.content.length * 3;
-  return bytesCount;
+int? _digestiveGetId(Digestive object) {
+  if (object.id == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.id;
+  }
 }
 
-void _digestiveSerialize(
-  Digestive object,
-  IsarWriter writer,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  writer.writeString(offsets[0], object.content);
-  writer.writeBool(offsets[1], object.done);
-  writer.writeLong(offsets[2], object.minute);
-  writer.writeDateTime(offsets[3], object.startAt);
-  writer.writeLong(offsets[4], object.submissionId);
+void _digestiveSetId(Digestive object, int id) {
+  object.id = id;
 }
 
-Digestive _digestiveDeserialize(
-  Id id,
-  IsarReader reader,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+List<IsarLinkBase> _digestiveGetLinks(Digestive object) {
+  return [];
+}
+
+void _digestiveSerializeNative(
+    IsarCollection<Digestive> collection,
+    IsarRawObject rawObj,
+    Digestive object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = object.content;
+  final _content = IsarBinaryWriter.utf8Encoder.convert(value0);
+  dynamicSize += (_content.length) as int;
+  final value1 = object.done;
+  final _done = value1;
+  final value2 = object.minute;
+  final _minute = value2;
+  final value3 = object.startAt;
+  final _startAt = value3;
+  final value4 = object.submissionId;
+  final _submissionId = value4;
+  final size = staticSize + dynamicSize;
+
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeBytes(offsets[0], _content);
+  writer.writeBool(offsets[1], _done);
+  writer.writeLong(offsets[2], _minute);
+  writer.writeDateTime(offsets[3], _startAt);
+  writer.writeLong(offsets[4], _submissionId);
+}
+
+Digestive _digestiveDeserializeNative(IsarCollection<Digestive> collection,
+    int id, IsarBinaryReader reader, List<int> offsets) {
   final object = Digestive();
   object.content = reader.readString(offsets[0]);
   object.done = reader.readBool(offsets[1]);
@@ -96,13 +102,11 @@ Digestive _digestiveDeserialize(
   return object;
 }
 
-P _digestiveDeserializeProp<P>(
-  IsarReader reader,
-  int propertyId,
-  int offset,
-  Map<Type, List<int>> allOffsets,
-) {
-  switch (propertyId) {
+P _digestiveDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
@@ -114,96 +118,128 @@ P _digestiveDeserializeProp<P>(
     case 4:
       return (reader.readLongOrNull(offset)) as P;
     default:
-      throw IsarError('Unknown property with id $propertyId');
+      throw 'Illegal propertyIndex';
   }
 }
 
-Id _digestiveGetId(Digestive object) {
-  return object.id ?? Isar.autoIncrement;
+dynamic _digestiveSerializeWeb(
+    IsarCollection<Digestive> collection, Digestive object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'content', object.content);
+  IsarNative.jsObjectSet(jsObj, 'done', object.done);
+  IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  IsarNative.jsObjectSet(jsObj, 'minute', object.minute);
+  IsarNative.jsObjectSet(
+      jsObj, 'startAt', object.startAt.toUtc().millisecondsSinceEpoch);
+  IsarNative.jsObjectSet(jsObj, 'submissionId', object.submissionId);
+  return jsObj;
 }
 
-List<IsarLinkBase<dynamic>> _digestiveGetLinks(Digestive object) {
-  return [];
+Digestive _digestiveDeserializeWeb(
+    IsarCollection<Digestive> collection, dynamic jsObj) {
+  final object = Digestive();
+  object.content = IsarNative.jsObjectGet(jsObj, 'content') ?? '';
+  object.done = IsarNative.jsObjectGet(jsObj, 'done') ?? false;
+  object.id = IsarNative.jsObjectGet(jsObj, 'id');
+  object.minute =
+      IsarNative.jsObjectGet(jsObj, 'minute') ?? double.negativeInfinity;
+  object.startAt = IsarNative.jsObjectGet(jsObj, 'startAt') != null
+      ? DateTime.fromMillisecondsSinceEpoch(
+              IsarNative.jsObjectGet(jsObj, 'startAt'),
+              isUtc: true)
+          .toLocal()
+      : DateTime.fromMillisecondsSinceEpoch(0);
+  object.submissionId = IsarNative.jsObjectGet(jsObj, 'submissionId');
+  return object;
 }
 
-void _digestiveAttach(IsarCollection<dynamic> col, Id id, Digestive object) {
-  object.id = id;
+P _digestiveDeserializePropWeb<P>(Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'content':
+      return (IsarNative.jsObjectGet(jsObj, 'content') ?? '') as P;
+    case 'done':
+      return (IsarNative.jsObjectGet(jsObj, 'done') ?? false) as P;
+    case 'id':
+      return (IsarNative.jsObjectGet(jsObj, 'id')) as P;
+    case 'minute':
+      return (IsarNative.jsObjectGet(jsObj, 'minute') ??
+          double.negativeInfinity) as P;
+    case 'startAt':
+      return (IsarNative.jsObjectGet(jsObj, 'startAt') != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+                  IsarNative.jsObjectGet(jsObj, 'startAt'),
+                  isUtc: true)
+              .toLocal()
+          : DateTime.fromMillisecondsSinceEpoch(0)) as P;
+    case 'submissionId':
+      return (IsarNative.jsObjectGet(jsObj, 'submissionId')) as P;
+    default:
+      throw 'Illegal propertyName';
+  }
 }
+
+void _digestiveAttachLinks(IsarCollection col, int id, Digestive object) {}
 
 extension DigestiveQueryWhereSort
     on QueryBuilder<Digestive, Digestive, QWhere> {
   QueryBuilder<Digestive, Digestive, QAfterWhere> anyId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(const IdWhereClause.any());
-    });
+    return addWhereClauseInternal(const IdWhereClause.any());
   }
 }
 
 extension DigestiveQueryWhere
     on QueryBuilder<Digestive, Digestive, QWhereClause> {
-  QueryBuilder<Digestive, Digestive, QAfterWhereClause> idEqualTo(Id id) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
-    });
+  QueryBuilder<Digestive, Digestive, QAfterWhereClause> idEqualTo(int id) {
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: id,
+      includeLower: true,
+      upper: id,
+      includeUpper: true,
+    ));
   }
 
-  QueryBuilder<Digestive, Digestive, QAfterWhereClause> idNotEqualTo(Id id) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            )
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            );
-      } else {
-        return query
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            )
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            );
-      }
-    });
-  }
-
-  QueryBuilder<Digestive, Digestive, QAfterWhereClause> idGreaterThan(Id id,
-      {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: id, includeLower: include),
+  QueryBuilder<Digestive, Digestive, QAfterWhereClause> idNotEqualTo(int id) {
+    if (whereSortInternal == Sort.asc) {
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
       );
-    });
+    } else {
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      );
+    }
   }
 
-  QueryBuilder<Digestive, Digestive, QAfterWhereClause> idLessThan(Id id,
+  QueryBuilder<Digestive, Digestive, QAfterWhereClause> idGreaterThan(int id,
       {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.lessThan(upper: id, includeUpper: include),
-      );
-    });
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: id, includeLower: include),
+    );
+  }
+
+  QueryBuilder<Digestive, Digestive, QAfterWhereClause> idLessThan(int id,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: id, includeUpper: include),
+    );
   }
 
   QueryBuilder<Digestive, Digestive, QAfterWhereClause> idBetween(
-    Id lowerId,
-    Id upperId, {
+    int lowerId,
+    int upperId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerId,
+      includeLower: includeLower,
+      upper: upperId,
+      includeUpper: includeUpper,
+    ));
   }
 }
 
@@ -213,246 +249,201 @@ extension DigestiveQueryFilter
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'content',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'content',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> contentGreaterThan(
     String value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'content',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'content',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> contentLessThan(
     String value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'content',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'content',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> contentBetween(
     String lower,
     String upper, {
+    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'content',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'content',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> contentStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'content',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'content',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> contentEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'content',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'content',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> contentContains(
       String value,
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'content',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'content',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> contentMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'content',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Digestive, Digestive, QAfterFilterCondition> contentIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'content',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Digestive, Digestive, QAfterFilterCondition>
-      contentIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'content',
-        value: '',
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'content',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> doneEqualTo(
       bool value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'done',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'done',
+      value: value,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> idIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'id',
-      ));
-    });
-  }
-
-  QueryBuilder<Digestive, Digestive, QAfterFilterCondition> idIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'id',
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.isNull,
+      property: 'id',
+      value: null,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> idEqualTo(
-      Id? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
-    });
+      int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'id',
+      value: value,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> idGreaterThan(
-    Id? value, {
+    int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'id',
+      value: value,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> idLessThan(
-    Id? value, {
+    int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'id',
+      value: value,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> idBetween(
-    Id? lower,
-    Id? upper, {
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'id',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> minuteEqualTo(
       int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'minute',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'minute',
+      value: value,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> minuteGreaterThan(
     int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'minute',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'minute',
+      value: value,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> minuteLessThan(
     int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'minute',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'minute',
+      value: value,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> minuteBetween(
@@ -461,51 +452,46 @@ extension DigestiveQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'minute',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'minute',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> startAtEqualTo(
       DateTime value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'startAt',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'startAt',
+      value: value,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> startAtGreaterThan(
     DateTime value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'startAt',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'startAt',
+      value: value,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> startAtLessThan(
     DateTime value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'startAt',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'startAt',
+      value: value,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> startAtBetween(
@@ -514,43 +500,31 @@ extension DigestiveQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'startAt',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'startAt',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition>
       submissionIdIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'submissionId',
-      ));
-    });
-  }
-
-  QueryBuilder<Digestive, Digestive, QAfterFilterCondition>
-      submissionIdIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'submissionId',
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.isNull,
+      property: 'submissionId',
+      value: null,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> submissionIdEqualTo(
       int? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'submissionId',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'submissionId',
+      value: value,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition>
@@ -558,13 +532,12 @@ extension DigestiveQueryFilter
     int? value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'submissionId',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'submissionId',
+      value: value,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition>
@@ -572,13 +545,12 @@ extension DigestiveQueryFilter
     int? value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'submissionId',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'submissionId',
+      value: value,
+    ));
   }
 
   QueryBuilder<Digestive, Digestive, QAfterFilterCondition> submissionIdBetween(
@@ -587,158 +559,118 @@ extension DigestiveQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'submissionId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'submissionId',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
   }
 }
-
-extension DigestiveQueryObject
-    on QueryBuilder<Digestive, Digestive, QFilterCondition> {}
 
 extension DigestiveQueryLinks
     on QueryBuilder<Digestive, Digestive, QFilterCondition> {}
 
-extension DigestiveQuerySortBy on QueryBuilder<Digestive, Digestive, QSortBy> {
+extension DigestiveQueryWhereSortBy
+    on QueryBuilder<Digestive, Digestive, QSortBy> {
   QueryBuilder<Digestive, Digestive, QAfterSortBy> sortByContent() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.asc);
-    });
+    return addSortByInternal('content', Sort.asc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> sortByContentDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.desc);
-    });
+    return addSortByInternal('content', Sort.desc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> sortByDone() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'done', Sort.asc);
-    });
+    return addSortByInternal('done', Sort.asc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> sortByDoneDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'done', Sort.desc);
-    });
+    return addSortByInternal('done', Sort.desc);
+  }
+
+  QueryBuilder<Digestive, Digestive, QAfterSortBy> sortById() {
+    return addSortByInternal('id', Sort.asc);
+  }
+
+  QueryBuilder<Digestive, Digestive, QAfterSortBy> sortByIdDesc() {
+    return addSortByInternal('id', Sort.desc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> sortByMinute() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'minute', Sort.asc);
-    });
+    return addSortByInternal('minute', Sort.asc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> sortByMinuteDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'minute', Sort.desc);
-    });
+    return addSortByInternal('minute', Sort.desc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> sortByStartAt() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'startAt', Sort.asc);
-    });
+    return addSortByInternal('startAt', Sort.asc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> sortByStartAtDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'startAt', Sort.desc);
-    });
+    return addSortByInternal('startAt', Sort.desc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> sortBySubmissionId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'submissionId', Sort.asc);
-    });
+    return addSortByInternal('submissionId', Sort.asc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> sortBySubmissionIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'submissionId', Sort.desc);
-    });
+    return addSortByInternal('submissionId', Sort.desc);
   }
 }
 
-extension DigestiveQuerySortThenBy
+extension DigestiveQueryWhereSortThenBy
     on QueryBuilder<Digestive, Digestive, QSortThenBy> {
   QueryBuilder<Digestive, Digestive, QAfterSortBy> thenByContent() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.asc);
-    });
+    return addSortByInternal('content', Sort.asc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> thenByContentDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.desc);
-    });
+    return addSortByInternal('content', Sort.desc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> thenByDone() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'done', Sort.asc);
-    });
+    return addSortByInternal('done', Sort.asc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> thenByDoneDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'done', Sort.desc);
-    });
+    return addSortByInternal('done', Sort.desc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> thenById() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.asc);
-    });
+    return addSortByInternal('id', Sort.asc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> thenByIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.desc);
-    });
+    return addSortByInternal('id', Sort.desc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> thenByMinute() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'minute', Sort.asc);
-    });
+    return addSortByInternal('minute', Sort.asc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> thenByMinuteDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'minute', Sort.desc);
-    });
+    return addSortByInternal('minute', Sort.desc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> thenByStartAt() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'startAt', Sort.asc);
-    });
+    return addSortByInternal('startAt', Sort.asc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> thenByStartAtDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'startAt', Sort.desc);
-    });
+    return addSortByInternal('startAt', Sort.desc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> thenBySubmissionId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'submissionId', Sort.asc);
-    });
+    return addSortByInternal('submissionId', Sort.asc);
   }
 
   QueryBuilder<Digestive, Digestive, QAfterSortBy> thenBySubmissionIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'submissionId', Sort.desc);
-    });
+    return addSortByInternal('submissionId', Sort.desc);
   }
 }
 
@@ -746,71 +678,53 @@ extension DigestiveQueryWhereDistinct
     on QueryBuilder<Digestive, Digestive, QDistinct> {
   QueryBuilder<Digestive, Digestive, QDistinct> distinctByContent(
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'content', caseSensitive: caseSensitive);
-    });
+    return addDistinctByInternal('content', caseSensitive: caseSensitive);
   }
 
   QueryBuilder<Digestive, Digestive, QDistinct> distinctByDone() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'done');
-    });
+    return addDistinctByInternal('done');
+  }
+
+  QueryBuilder<Digestive, Digestive, QDistinct> distinctById() {
+    return addDistinctByInternal('id');
   }
 
   QueryBuilder<Digestive, Digestive, QDistinct> distinctByMinute() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'minute');
-    });
+    return addDistinctByInternal('minute');
   }
 
   QueryBuilder<Digestive, Digestive, QDistinct> distinctByStartAt() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'startAt');
-    });
+    return addDistinctByInternal('startAt');
   }
 
   QueryBuilder<Digestive, Digestive, QDistinct> distinctBySubmissionId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'submissionId');
-    });
+    return addDistinctByInternal('submissionId');
   }
 }
 
 extension DigestiveQueryProperty
     on QueryBuilder<Digestive, Digestive, QQueryProperty> {
-  QueryBuilder<Digestive, int, QQueryOperations> idProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'id');
-    });
-  }
-
   QueryBuilder<Digestive, String, QQueryOperations> contentProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'content');
-    });
+    return addPropertyNameInternal('content');
   }
 
   QueryBuilder<Digestive, bool, QQueryOperations> doneProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'done');
-    });
+    return addPropertyNameInternal('done');
+  }
+
+  QueryBuilder<Digestive, int?, QQueryOperations> idProperty() {
+    return addPropertyNameInternal('id');
   }
 
   QueryBuilder<Digestive, int, QQueryOperations> minuteProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'minute');
-    });
+    return addPropertyNameInternal('minute');
   }
 
   QueryBuilder<Digestive, DateTime, QQueryOperations> startAtProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'startAt');
-    });
+    return addPropertyNameInternal('startAt');
   }
 
   QueryBuilder<Digestive, int?, QQueryOperations> submissionIdProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'submissionId');
-    });
+    return addPropertyNameInternal('submissionId');
   }
 }
