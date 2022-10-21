@@ -227,14 +227,4 @@ jobs:
       - name: Extract Artifacts
         run: unzip submon.zip
 
-      - name: Import App Store Connect API Key
-        run: |
-          mkdir ~/private_keys
-          echo -n "${{ secrets.APP_STORE_PRIVKEY_P8 }}" > ~/private_keys/AuthKey_${{ secrets.APP_STORE_PRIVKEY_ID }}.p8
-
-      - name: Deploy to App Store
-        run: xcrun altool --upload-app --type ios -f "./build/ios/ipa/Submon.ipa" --apiKey ${{ secrets.APP_STORE_PRIVKEY_ID }} --apiIssuer ${{ secrets.APP_STORE_CONNECT_API_ISSUER }}
-
-      - uses: geekyeggo/delete-artifact@v1
-        with:
-          name: apple-ipa
+      - run: ls
