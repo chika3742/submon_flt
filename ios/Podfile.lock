@@ -1107,7 +1107,7 @@ SPEC CHECKSUMS:
   GTMAppAuth: 0ff230db599948a9ad7470ca667337803b3fc4dd
   GTMSessionFetcher: ffbb25ec00ebcb5201adab0a56d808f6f1902d9f
   integration_test: a1e7d09bd98eca2fc37aefd79d4f41ad37bdbbe5
-  isar_flutter_libs: bc88affa0adeeb8800ffd2ca0177669dc18cd201
+  isar_flutter_libs: 5a34aebdd82e388db81dad8dd26786a642bb5b90
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   Libuv-gRPC: 55e51798e14ef436ad9bc45d12d43b77b49df378
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431

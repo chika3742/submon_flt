@@ -104,7 +104,7 @@ jobs:
     needs:
       - get-changed-files
     if: ${{ needs.get-changed-files.outputs.ios == 'true' }}
-    runs-on: macos-12
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v3
@@ -165,48 +165,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.1
-          bundler-cache: true
-
-      - name: Install yq
-        run: |
-          wget https://github.com/mikefarah/yq/releases/download/v4.28.2/yq_darwin_amd64.tar.gz -O - |\
-          tar xz && mv yq_darwin_amd64 /usr/bin/yq
-
-      - name: Install Gems
-        run: bundle install
-
       - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
           name: android-aab
 
-      - run: flutter pub get
-
-      - name: Import Service Account Key
-        run: echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_BASE64 }}' | base64 -d > service_account_key.json
-
-      - name: Deploy to Google Play
-        run: |
-          if [ "${{ inputs.track }}" == "internal" ]; then
-            versionNameOption="--version_name $(cat pubspec.yaml | yq -r '.version | split("+") | .[0]')-b$((${{ inputs.run-number }}+58))"
-          else
-            versionNameOption=
-          fi
-          
-          bundle exec fastlane supply \
-          --aab build/app/outputs/bundle/release/app-release.aab \
-          --mapping_paths native_debug_symbols.zip,build/app/outputs/mapping/release/mapping.txt \
-          --track internal \
-          --skip_upload_images \
-          --skip_upload_metadata \
-          --skip_upload_changelogs \
-          --package_name net.chikach.submon \
-          $versionNameOption \
-          --json_key service_account_key.json
+      - run: ls
 
       - uses: geekyeggo/delete-artifact@v1
         with:
