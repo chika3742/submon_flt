@@ -17,18 +17,18 @@ function takeScreenshots() {
     flutter drive --driver test_driver/integration_test.dart --target integration_test/screenshot_test.dart --dart-define SCREENSHOT_MODE=true --dart-define SCREENSHOT_NAME="$1"
 }
 
-takeScreenshotsAndroid Pixel_4_API_31 screenshots/android/5.7-inch
+takeScreenshotsAndroid Pixel_4_API_31 android/ja-JP/images/phoneScreenshots/5.7-inch
 
-takeScreenshotsAndroid 7-inch_Tablet_API_32 screenshots/android/7-inch
+takeScreenshotsAndroid 7-inch_Tablet_API_32 android/ja-JP/images/phoneScreenshots/7-inch
 
-takeScreenshotsAndroid 10-inch_Tablet_API_32 screenshots/android/10-inch
+takeScreenshotsAndroid 10-inch_Tablet_API_32 android/ja-JP/images/phoneScreenshots/10-inch
 
-takeScreenshotsApple F9439CBB-BCF0-48A6-9013-B2D12451CCA0 screenshots/apple/5.5-inch
+takeScreenshotsApple 1093BC2A-ADB9-431A-B235-A069421F1E38 apple/5.5-inch
 
-takeScreenshotsApple 6C90BC3A-18DB-4AFD-B5AB-97EAA2A07419 screenshots/apple/6.5-inch
+takeScreenshotsApple 89D51A1C-43C9-4922-8902-47A9D07F7B7C apple/6.5-inch
 
-takeScreenshotsApple 5B7D79DE-882B-49CB-8DC9-1F19ED29181B screenshots/apple/12.9-inch-gen2
+takeScreenshotsApple 5147861C-76EB-462F-90D3-5130CF226BBD apple/12.9-inch-gen2
 
-takeScreenshotsApple 26CF19A9-845A-4DB0-A3B2-64A9F8952A09 screenshots/apple/12.9-inch-gen3
+takeScreenshotsApple 4AAE26EA-B530-4AD1-B544-594F68E7BAE2 apple/12.9-inch-gen3
 
 echo "Completed!"
