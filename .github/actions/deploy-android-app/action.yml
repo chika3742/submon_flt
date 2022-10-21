@@ -1,0 +1,101 @@
+name: 'Build and Deploy Android App'
+description: "Deploys Android App to Google Play."
+inputs:
+  track:
+    description: 'Track to upload'
+    required: true
+    default: 'internal'
+  run-number:
+    description: "GITHUB_RUN_NUMBER"
+    required: true
+  local-properties:
+    description: "local.properties"
+    required: true
+  keystore:
+    description: "Keystore base64"
+    required: true
+  dotenv:
+    description: ".env content"
+    required: true
+  google-services-json-base64:
+    description: "google-services.json base64"
+    required: true
+  google-service-account-key-base64:
+    description: "Google service account key base64"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.1
+        bundler-cache: true
+
+    - name: Install Fastlane
+      shell: bash
+      run: |
+        echo -n "source \"https://rubygems.org\"
+        
+        gem \"fastlane\"" > ./Gemfile
+        bundle install
+        bundle update
+
+    - name: Setup Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.9
+
+    - name: Install Dependencies
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        pip install yq
+
+    - name: Flutter Pub Get
+      shell: bash
+      run: flutter pub get
+
+    - name: Inport Keystore
+      shell: bash
+      run: |
+        echo -n '
+        ${{ inputs.local-properties }}' >> android/local.properties
+        echo -n "${{ inputs.keystore }}" | base64 -d > android/app/release.jks
+
+    - name: Import .env
+      shell: bash
+      run: echo -n "${{ inputs.dotenv }}" > .env
+
+    - name: Import google-services.json
+      shell: bash
+      run: |
+        mkdir -p android/app/src/release
+        echo -n ${{ inputs.google-services-json-base64 }} | base64 -d > android/app/src/release/google-services.json
+
+    - name: Build App Bundle for Android
+      shell: bash
+      run: |
+        buildNumber=$((${{ inputs.run-number }}+58))
+        flutter build appbundle --build-number $buildNumber
+
+    - name: Import Service Account Key
+      shell: bash
+      run: echo '${{ inputs.google-service-account-key-base64 }}' | base64 -d > service_account_key.json
+
+    - name: Deploy to Google Play
+      shell: bash
+      run: |
+        zip -r native_debug_symbols.zip ./build/app/intermediates/merged_native_libs/release/out/lib/* -x "*x86/*"
+        
+        if [ "${{ inputs.track }}" == "internal" ]; then
+          versionNameOption="--version_name $(cat pubspec.yaml | yq -r '.version | split("+") | .[0]')-b$((${{ inputs.run-number }}+58))"
+        else
+          versionNameOption=
+        fi
+        bundle exec fastlane supply --aab build/app/outputs/bundle/release/app-release.aab --mapping_paths native_debug_symbols.zip,build/app/outputs/mapping/release/mapping.txt --track ${{ inputs.track }} --skip_upload_metadata --skip_upload_changelogs --skip_upload_screenshots --package_name net.chikach.submon $versionNameOption --json_key service_account_key.json
+
+    - name: Cancel if failed
+      uses: andymckay/cancel-action@0.2
+      if: failure()
