@@ -102,41 +102,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Init Flutter CLI
-        uses: ./.github/actions/init-flutter-cli
-
-      - run: flutter pub get
-
-      - name: Import Apple Provisioning Profiles
-        run: |
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo -n ${{ secrets.PROVISIONING_PROFILE }} | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/Submon_distribution.mobileprovision
-          echo -n ${{ secrets.PROVISIONING_PROFILE_WIDGETKIT }} | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/Submon_WidgetKit_Production.mobileprovision
-
-      - name: Import Code-Signing Certificates
-        uses: Apple-Actions/import-codesign-certs@v1
-        with:
-          p12-file-base64: ${{ secrets.APPLE_CERTIFICATES_P12_BASE64 }}
-          p12-password: ${{ secrets.APPLE_CERTIFICATES_PASSWORD }}
-
-      - name: Import .env
-        run: echo -n "${{ secrets.DOTENV }}" > .env
-
-      - name: Import GoogleService-Info.plist
-        run: echo -n "${{ secrets.APPLE_GOOGLE_SERVICE_INFO_RELEASE_PLIST_BASE64 }}" | base64 -d > ios/GoogleService-Info-release.plist
-
-      - name: Build IPA for App Store
-        run: flutter build ipa --build-number $((${{ github.run_number  }}+105)) --export-options-plist ios/exportOptions.plist
-
-      - name: Compress IPA
-        run: zip submon.zip ./build/ios/ipa/Submon.ipa
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: apple-ipa
-          path: submon.zip
-
   deploy-android:
     name: Deploy to Google Play
     needs:
@@ -153,10 +118,6 @@ jobs:
 
       - run: ls
 
-      - uses: geekyeggo/delete-artifact@v1
-        with:
-          name: android-aab
-
   deploy-ios:
     name: Deploy to App Store
     needs:
@@ -165,13 +126,3 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Download Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: apple-ipa
-
-      - name: Extract Artifacts
-        run: unzip submon.zip
-
-      - run: ls
