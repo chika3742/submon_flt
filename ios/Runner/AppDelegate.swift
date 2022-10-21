@@ -47,7 +47,7 @@ import WidgetKit
         Messaging.messaging().delegate = self
         application.registerForRemoteNotifications()
         
-        GeneratedPluginRegistrant.register(with: self)
+        GeneratedPluginRegistrant.register(withRegistry: self)
 
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
