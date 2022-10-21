@@ -6,12 +6,11 @@ Future<void> main() async {
   try {
     await integrationDriver(
       onScreenshot: (String screenshotName, List<int> screenshotBytes) async {
-        final File image = await File('screenshots/$screenshotName.png')
-            .create(recursive: true);
-        image.writeAsBytesSync(screenshotBytes);
-        return true;
-      }
-    );
+      final File image =
+          await File('$screenshotName.png').create(recursive: true);
+      image.writeAsBytesSync(screenshotBytes);
+      return true;
+    });
   } catch (e) {
     print("Error occurred: $e");
   }
