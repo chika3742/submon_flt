@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - dev
+      - workflow
   workflow_dispatch:
   repository_dispatch:
 
