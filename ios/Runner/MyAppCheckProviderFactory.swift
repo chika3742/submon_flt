@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Firebase
+import FirebaseCore
 import FirebaseAppCheck
 
 class MyAppCheckProviderFactory : NSObject, AppCheckProviderFactory {
