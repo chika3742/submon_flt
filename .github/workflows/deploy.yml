@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - dev
+      - workflow
   workflow_dispatch:
   repository_dispatch:
 
@@ -162,6 +163,7 @@ jobs:
   deploy-android:
     name: Deploy to Google Play
     needs:
+      - build-info
       - build-android
     runs-on: ubuntu-latest
 

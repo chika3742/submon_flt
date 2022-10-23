@@ -622,9 +622,6 @@ PODS:
     - Flutter
   - Firebase/Analytics (9.6.0):
     - Firebase/Core
-  - Firebase/AppCheck (9.6.0):
-    - Firebase/CoreOnly
-    - FirebaseAppCheck (~> 9.6.0)
   - Firebase/Auth (9.6.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 9.6.0)
@@ -645,9 +642,6 @@ PODS:
   - Firebase/Functions (9.6.0):
     - Firebase/CoreOnly
     - FirebaseFunctions (~> 9.6.0)
-  - Firebase/Messaging (9.6.0):
-    - Firebase/CoreOnly
-    - FirebaseMessaging (~> 9.6.0)
   - Firebase/Performance (9.6.0):
     - Firebase/CoreOnly
     - FirebasePerformance (~> 9.6.0)
@@ -933,8 +927,6 @@ DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - cloud_functions (from `.symlinks/plugins/cloud_functions/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
-  - Firebase/AppCheck
-  - Firebase/Messaging
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
@@ -942,9 +934,11 @@ DEPENDENCIES:
   - firebase_dynamic_links (from `.symlinks/plugins/firebase_dynamic_links/ios`)
   - firebase_performance (from `.symlinks/plugins/firebase_performance/ios`)
   - FirebaseAnalytics
+  - FirebaseAppCheck
   - FirebaseAuth
   - FirebaseCore
   - FirebaseFirestore
+  - FirebaseMessaging
   - Flutter (from `Flutter`)
   - flutter_exif_rotation (from `.symlinks/plugins/flutter_exif_rotation/ios`)
   - google_mobile_ads (from `.symlinks/plugins/google_mobile_ads/ios`)
@@ -1120,6 +1114,6 @@ SPEC CHECKSUMS:
   sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
   url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
 
-PODFILE CHECKSUM: 3de116d80dc8e8a74073b1e37cefe6e4ed7e3a1a
+PODFILE CHECKSUM: 53f6d34a8dac301da161725b3e6deeb2cf65a279
 
 COCOAPODS: 1.11.3
