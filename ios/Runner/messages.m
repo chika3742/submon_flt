@@ -31,27 +31,27 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 }
 
 
-@interface FLTSignInResponse ()
-+ (FLTSignInResponse *)fromMap:(NSDictionary *)dict;
-+ (nullable FLTSignInResponse *)nullableFromMap:(NSDictionary *)dict;
+@interface FLTSignInCallback ()
++ (FLTSignInCallback *)fromMap:(NSDictionary *)dict;
++ (nullable FLTSignInCallback *)nullableFromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
 
-@implementation FLTSignInResponse
-+ (instancetype)makeWithResponseUri:(nullable NSString *)responseUri {
-  FLTSignInResponse* pigeonResult = [[FLTSignInResponse alloc] init];
-  pigeonResult.responseUri = responseUri;
+@implementation FLTSignInCallback
++ (instancetype)makeWithUri:(nullable NSString *)uri {
+  FLTSignInCallback* pigeonResult = [[FLTSignInCallback alloc] init];
+  pigeonResult.uri = uri;
   return pigeonResult;
 }
-+ (FLTSignInResponse *)fromMap:(NSDictionary *)dict {
-  FLTSignInResponse *pigeonResult = [[FLTSignInResponse alloc] init];
-  pigeonResult.responseUri = GetNullableObject(dict, @"responseUri");
++ (FLTSignInCallback *)fromMap:(NSDictionary *)dict {
+  FLTSignInCallback *pigeonResult = [[FLTSignInCallback alloc] init];
+  pigeonResult.uri = GetNullableObject(dict, @"uri");
   return pigeonResult;
 }
-+ (nullable FLTSignInResponse *)nullableFromMap:(NSDictionary *)dict { return (dict) ? [FLTSignInResponse fromMap:dict] : nil; }
++ (nullable FLTSignInCallback *)nullableFromMap:(NSDictionary *)dict { return (dict) ? [FLTSignInCallback fromMap:dict] : nil; }
 - (NSDictionary *)toMap {
   return @{
-    @"responseUri" : (self.responseUri ?: [NSNull null]),
+    @"uri" : (self.uri ?: [NSNull null]),
   };
 }
 @end
@@ -63,7 +63,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 {
   switch (type) {
     case 128:     
-      return [FLTSignInResponse fromMap:[self readValue]];
+      return [FLTSignInCallback fromMap:[self readValue]];
     
     default:    
       return [super readValueOfType:type];
@@ -77,7 +77,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 @implementation FLTUtilsApiCodecWriter
 - (void)writeValue:(id)value 
 {
-  if ([value isKindOfClass:[FLTSignInResponse class]]) {
+  if ([value isKindOfClass:[FLTSignInCallback class]]) {
     [self writeByte:128];
     [self writeValue:[value toMap]];
   } else 
@@ -145,7 +145,7 @@ void FLTUtilsApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTUt
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSString *arg_url = GetNullableObjectAtIndex(args, 0);
-        [api openSignInCustomTabUrl:arg_url completion:^(FLTSignInResponse *_Nullable output, FlutterError *_Nullable error) {
+        [api openSignInCustomTabUrl:arg_url completion:^(FLTSignInCallback *_Nullable output, FlutterError *_Nullable error) {
           callback(wrapResult(output, error));
         }];
       }];

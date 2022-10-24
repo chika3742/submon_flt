@@ -23,19 +23,6 @@ class MainMethodPlugin {
     });
   }
 
-  static void openWebPage(String title, String url) {
-    channel.invokeMethod("openWebPage", {
-      "title": title,
-      "url": url,
-    });
-  }
-
-  static Future<String?> openCustomTabs(String url) async {
-    return await channel.invokeMethod<String>("openCustomTabs", {
-      "url": url,
-    });
-  }
-
   static void updateWidgets() {
     channel.invokeMethod("updateWidgets");
   }

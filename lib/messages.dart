@@ -7,23 +7,23 @@ import 'dart:typed_data' show Float64List, Int32List, Int64List, Uint8List;
 import 'package:flutter/foundation.dart' show ReadBuffer, WriteBuffer;
 import 'package:flutter/services.dart';
 
-class SignInResponse {
-  SignInResponse({
-    this.responseUri,
+class SignInCallback {
+  SignInCallback({
+    this.uri,
   });
 
-  String? responseUri;
+  String? uri;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
-    pigeonMap['responseUri'] = responseUri;
+    pigeonMap['uri'] = uri;
     return pigeonMap;
   }
 
-  static SignInResponse decode(Object message) {
+  static SignInCallback decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
-    return SignInResponse(
-      responseUri: pigeonMap['responseUri'] as String?,
+    return SignInCallback(
+      uri: pigeonMap['uri'] as String?,
     );
   }
 }
@@ -33,19 +33,18 @@ class _UtilsApiCodec extends StandardMessageCodec {
 
   @override
   void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is SignInResponse) {
+    if (value is SignInCallback) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
     }
   }
-
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case 128:
-        return SignInResponse.decode(readValue(buffer)!);
+        return SignInCallback.decode(readValue(buffer)!);
 
       default:
         return super.readValueOfType(type, buffer);
@@ -90,7 +89,7 @@ class UtilsApi {
   ///
   /// Opens Custom Tab for signing in. Returns response URI with token query parameters.
   ///
-  Future<SignInResponse> openSignInCustomTab(String arg_url) async {
+  Future<SignInCallback> openSignInCustomTab(String arg_url) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.UtilsApi.openSignInCustomTab', codec,
         binaryMessenger: _binaryMessenger);
@@ -115,7 +114,7 @@ class UtilsApi {
         message: 'Host platform returned null value for non-null return value.',
       );
     } else {
-      return (replyMap['result'] as SignInResponse?)!;
+      return (replyMap['result'] as SignInCallback?)!;
     }
   }
 }

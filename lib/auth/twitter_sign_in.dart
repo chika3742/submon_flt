@@ -34,7 +34,7 @@ class TwitterSignIn {
 
     this.apiKey = apiKey;
     this.apiSecret = apiSecret;
-    redirectUri = "submon://auth-response/twitter";
+    redirectUri = "submon://auth-callback/twitter";
   }
 
   Future<TwitterSignInResult> signIn() async {
@@ -45,9 +45,9 @@ class TwitterSignIn {
       final url =
           "https://api.twitter.com/oauth/authorize?oauth_token=${reqToken!.oauthToken}";
 
-      var browserResponse = await UtilsApi().openSignInCustomTab(url);
-      if (browserResponse.responseUri != null) {
-        var query = Uri.parse(browserResponse.responseUri!).queryParameters;
+      var callback = await UtilsApi().openSignInCustomTab(url);
+      if (callback.uri != null) {
+        var query = Uri.parse(callback.uri!).queryParameters;
         authResult =
             AuthResult(query["oauth_token"]!, query["oauth_verifier"]!);
       } else {

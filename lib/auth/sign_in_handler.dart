@@ -190,9 +190,9 @@ class SignInHandler {
           nonce: nonce,
           state: state,
           webAuthenticationOptions: WebAuthenticationOptions(
-              clientId: "net.chikach.submon.asi",
-              redirectUri: Uri.parse(
-                  "https://asia-northeast1-submon-mgr.cloudfunctions.net/appleSignInRedirector")),
+            clientId: "net.chikach.submon.asi",
+            redirectUri: Uri.parse(getAppleSignInRedirectorUrl()),
+          ),
         );
       } on SignInWithAppleAuthorizationException catch (e) {
         if (e.code == AuthorizationErrorCode.canceled) {
@@ -214,7 +214,9 @@ class SignInHandler {
     if (state != appleCredential.state) {
       FirebaseCrashlytics.instance
           .recordError(Exception("Apple sign in state mismatch."), null);
-      return SignInResult(errorMessage: "State mismatch.");
+      return SignInResult(
+          errorMessage: "State mismatch.",
+          errorCode: SignInError.appleSignInFailed);
     }
 
     final credential = OAuthProvider("apple.com").credential(

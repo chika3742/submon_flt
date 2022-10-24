@@ -4,77 +4,124 @@
 package net.chikach.submon;
 
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MessageCodec;
 import io.flutter.plugin.common.StandardMessageCodec;
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
-/**
- * Generated class from Pigeon.
- */
+/**Generated class from Pigeon. */
 @SuppressWarnings({"unused", "unchecked", "CodeBlock2Expr", "RedundantSuppression"})
 public class Messages {
 
-  @NonNull
-  private static Map<String, Object> wrapError(@NonNull Throwable exception) {
-    Map<String, Object> errorMap = new HashMap<>();
-    errorMap.put("message", exception.toString());
-    errorMap.put("code", exception.getClass().getSimpleName());
-    errorMap.put("details", "Cause: " + exception.getCause() + ", Stacktrace: " + Log.getStackTraceString(exception));
-    return errorMap;
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class SignInCallback {
+    private @Nullable String uri;
+    public @Nullable String getUri() { return uri; }
+    public void setUri(@Nullable String setterArg) {
+      this.uri = setterArg;
+    }
+
+    public static final class Builder {
+      private @Nullable String uri;
+      public @NonNull Builder setUri(@Nullable String setterArg) {
+        this.uri = setterArg;
+        return this;
+      }
+      public @NonNull SignInCallback build() {
+        SignInCallback pigeonReturn = new SignInCallback();
+        pigeonReturn.setUri(uri);
+        return pigeonReturn;
+      }
+    }
+    @NonNull Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("uri", uri);
+      return toMapResult;
+    }
+    static @NonNull SignInCallback fromMap(@NonNull Map<String, Object> map) {
+      SignInCallback pigeonResult = new SignInCallback();
+      Object uri = map.get("uri");
+      pigeonResult.setUri((String)uri);
+      return pigeonResult;
+    }
   }
 
   public interface Result<T> {
     void success(T result);
-
     void error(Throwable error);
   }
-
-  /**
-   * Generated interface from Pigeon that represents a handler of messages from Flutter.
-   */
-  public interface UtilsApi {
-    /**
-     * The codec used by UtilsApi.
-     */
-    static MessageCodec<Object> getCodec() {
-      return UtilsApiCodec.INSTANCE;
+  private static class UtilsApiCodec extends StandardMessageCodec {
+    public static final UtilsApiCodec INSTANCE = new UtilsApiCodec();
+    private UtilsApiCodec() {}
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte)128:         
+          return SignInCallback.fromMap((Map<String, Object>) readValue(buffer));
+        
+        default:        
+          return super.readValueOfType(type, buffer);
+        
+      }
     }
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value)     {
+      if (value instanceof SignInCallback) {
+        stream.write(128);
+        writeValue(stream, ((SignInCallback) value).toMap());
+      } else 
+{
+        super.writeValue(stream, value);
+      }
+    }
+  }
 
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface UtilsApi {
+    void openWebPage(@NonNull String title, @NonNull String url);
     /**
-     * Sets up an instance of `UtilsApi` to handle messages through the `binaryMessenger`.
+     *
+     * Opens Custom Tab for signing in. Returns response URI with token query parameters.
+     *
      */
+    void openSignInCustomTab(@NonNull String url, Result<SignInCallback> result);
+
+    /** The codec used by UtilsApi. */
+    static MessageCodec<Object> getCodec() {
+      return       UtilsApiCodec.INSTANCE;    }
+    /**Sets up an instance of `UtilsApi` to handle messages through the `binaryMessenger`. */
     static void setup(BinaryMessenger binaryMessenger, UtilsApi api) {
       {
         BasicMessageChannel<Object> channel =
-                new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.UtilsApi.openWebPage", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.UtilsApi.openWebPage", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
             try {
-              ArrayList<Object> args = (ArrayList<Object>) message;
+              ArrayList<Object> args = (ArrayList<Object>)message;
               assert args != null;
-              String titleArg = (String) args.get(0);
+              String titleArg = (String)args.get(0);
               if (titleArg == null) {
                 throw new NullPointerException("titleArg unexpectedly null.");
               }
-              String urlArg = (String) args.get(1);
+              String urlArg = (String)args.get(1);
               if (urlArg == null) {
                 throw new NullPointerException("urlArg unexpectedly null.");
               }
               api.openWebPage(titleArg, urlArg);
               wrapped.put("result", null);
-            } catch (Error | RuntimeException exception) {
+            }
+            catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));
             }
             reply.reply(wrapped);
@@ -85,23 +132,22 @@ public class Messages {
       }
       {
         BasicMessageChannel<Object> channel =
-                new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.UtilsApi.openSignInCustomTab", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.UtilsApi.openSignInCustomTab", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
             try {
-              ArrayList<Object> args = (ArrayList<Object>) message;
+              ArrayList<Object> args = (ArrayList<Object>)message;
               assert args != null;
-              String urlArg = (String) args.get(0);
+              String urlArg = (String)args.get(0);
               if (urlArg == null) {
                 throw new NullPointerException("urlArg unexpectedly null.");
               }
-              Result<SignInResponse> resultCallback = new Result<SignInResponse>() {
-                public void success(SignInResponse result) {
+              Result<SignInCallback> resultCallback = new Result<SignInCallback>() {
+                public void success(SignInCallback result) {
                   wrapped.put("result", result);
                   reply.reply(wrapped);
                 }
-
                 public void error(Throwable error) {
                   wrapped.put("error", wrapError(error));
                   reply.reply(wrapped);
@@ -109,7 +155,8 @@ public class Messages {
               };
 
               api.openSignInCustomTab(urlArg, resultCallback);
-            } catch (Error | RuntimeException exception) {
+            }
+            catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));
               reply.reply(wrapped);
             }
@@ -119,85 +166,12 @@ public class Messages {
         }
       }
     }
-
-    void openWebPage(@NonNull String title, @NonNull String url);
-
-    /**
-     * Opens Custom Tab for signing in. Returns response URI with token query parameters.
-     */
-    void openSignInCustomTab(@NonNull String url, Result<SignInResponse> result);
   }
-
-  /**
-   * Generated class from Pigeon that represents data sent in messages.
-   */
-  public static class SignInResponse {
-    private @Nullable String responseUri;
-
-    static @NonNull SignInResponse fromMap(@NonNull Map<String, Object> map) {
-      SignInResponse pigeonResult = new SignInResponse();
-      Object responseUri = map.get("responseUri");
-      pigeonResult.setResponseUri((String) responseUri);
-      return pigeonResult;
-    }
-
-    public @Nullable String getResponseUri() {
-      return responseUri;
-    }
-
-    public void setResponseUri(@Nullable String setterArg) {
-      this.responseUri = setterArg;
-    }
-
-    @NonNull
-    Map<String, Object> toMap() {
-      Map<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("responseUri", responseUri);
-      return toMapResult;
-    }
-
-    public static final class Builder {
-      private @Nullable String responseUri;
-
-      public @NonNull Builder setResponseUri(@Nullable String setterArg) {
-        this.responseUri = setterArg;
-        return this;
-      }
-
-      public @NonNull SignInResponse build() {
-        SignInResponse pigeonReturn = new SignInResponse();
-        pigeonReturn.setResponseUri(responseUri);
-        return pigeonReturn;
-      }
-    }
-  }
-
-  private static class UtilsApiCodec extends StandardMessageCodec {
-    public static final UtilsApiCodec INSTANCE = new UtilsApiCodec();
-
-    private UtilsApiCodec() {
-    }
-
-    @Override
-    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-      switch (type) {
-        case (byte) 128:
-          return SignInResponse.fromMap((Map<String, Object>) readValue(buffer));
-
-        default:
-          return super.readValueOfType(type, buffer);
-
-      }
-    }
-
-    @Override
-    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-      if (value instanceof SignInResponse) {
-        stream.write(128);
-        writeValue(stream, ((SignInResponse) value).toMap());
-      } else {
-        super.writeValue(stream, value);
-      }
-    }
+  @NonNull private static Map<String, Object> wrapError(@NonNull Throwable exception) {
+    Map<String, Object> errorMap = new HashMap<>();
+    errorMap.put("message", exception.toString());
+    errorMap.put("code", exception.getClass().getSimpleName());
+    errorMap.put("details", "Cause: " + exception.getCause() + ", Stacktrace: " + Log.getStackTraceString(exception));
+    return errorMap;
   }
 }

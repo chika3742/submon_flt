@@ -9,7 +9,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import net.chikach.submon.mch.REQUEST_CODE_CUSTOM_TABS
 
 class UtilsAndroidApi(private val activity: MainActivity) : Messages.UtilsApi {
-    private var signInCustomTabResult: Messages.Result<Messages.SignInResponse>? = null
+    private var signInCustomTabResult: Messages.Result<Messages.SignInCallback>? = null
 
     /**
      * Opens web page with WebActivity
@@ -27,7 +27,7 @@ class UtilsAndroidApi(private val activity: MainActivity) : Messages.UtilsApi {
 
     override fun openSignInCustomTab(
         url: String,
-        result: Messages.Result<Messages.SignInResponse>
+        result: Messages.Result<Messages.SignInCallback>
     ) {
         val ctIntent = CustomTabsIntent.Builder().build()
 
@@ -77,9 +77,9 @@ class UtilsAndroidApi(private val activity: MainActivity) : Messages.UtilsApi {
         signInCustomTabResult = null
     }
 
-    fun completeOpenSignInCustomTabWithResponseUri(responseUri: String?) {
-        signInCustomTabResult?.success(Messages.SignInResponse().also {
-            it.responseUri = responseUri
+    fun completeOpenSignInCustomTabWithResponseUri(responseUri: String) {
+        signInCustomTabResult?.success(Messages.SignInCallback().also {
+            it.uri = responseUri
         })
         signInCustomTabResult = null
     }

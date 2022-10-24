@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Handler
+import android.util.Log
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationChannelGroupCompat
 import androidx.core.app.NotificationManagerCompat
@@ -172,8 +173,8 @@ class MainActivity : FlutterActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (intent.data != null) {
-            if (intent.data!!.host == "auth-response") {
-                utilsApi.completeOpenSignInCustomTabWithResponseUri(intent.data?.toString())
+            if (intent.data!!.host == "auth-callback") {
+                utilsApi.completeOpenSignInCustomTabWithResponseUri(intent.data!!.toString())
             } else {
                 uriEventSink?.success(intent.data.toString())
             }

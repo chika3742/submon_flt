@@ -37,8 +37,6 @@ class MainMethodChannelHandler(private val activity: MainActivity) :
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
-            "openWebPage" -> openWebPage(call, result)
-            "openCustomTabs" -> openCustomTabs(call, result)
             "updateWidgets" -> {
                 updateWidgets(); result.success(null)
             }
@@ -64,81 +62,6 @@ class MainMethodChannelHandler(private val activity: MainActivity) :
     private fun getPendingUri(result: MethodChannel.Result) {
         result.success(pendingUri?.toString())
         pendingUri = null
-    }
-
-    /**
-     * Opens web page with WebActivity
-     *
-     * @param call [MethodCall]
-     * @param result [MethodChannel.Result]
-     */
-    private fun openWebPage(call: MethodCall, result: MethodChannel.Result) {
-        val title = call.argument<String>("title")
-        val url = call.argument<String>("url")
-        activity.startActivity(
-            Intent(activity, WebPageActivity::class.java)
-                .putExtra("title", title)
-                .putExtra("url", url)
-        )
-        result.success(null)
-    }
-
-    /**
-     * Opens web page with Custom Tabs for authentication.
-     * Firefox custom tabs are not properly called back, so uses other custom tabs to display them.
-     *
-     * @param call [MethodCall]
-     * @param result [MethodChannel.Result]
-     */
-    private fun openCustomTabs(call: MethodCall, result: MethodChannel.Result) {
-        val ctIntent = CustomTabsIntent.Builder().build()
-        val pm = activity.packageManager
-        if (!chromiumBrowserPackages.contains(
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    pm.resolveActivity(
-                        Intent("android.intent.action.VIEW", Uri.parse("http://")),
-                        PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong())
-                    )
-                } else {
-                    @Suppress("DEPRECATION")
-                    pm.resolveActivity(
-                        Intent("android.intent.action.VIEW", Uri.parse("http://")),
-                        PackageManager.MATCH_DEFAULT_ONLY
-                    )
-                }?.activityInfo?.packageName
-            )
-        ) {
-            val `package` = chromiumBrowserPackages.firstOrNull {
-                try {
-                    pm.getApplicationEnabledSetting(it) == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT
-                } catch (e: IllegalArgumentException) {
-                    false
-                }
-            }
-            if (`package` != null) {
-                ctIntent.intent.setPackage(`package`)
-            } else {
-                Toast.makeText(
-                    activity,
-                    "Google Chromeもしくは、それ以外のChromium系ブラウザーをインストールする必要があります",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return
-            }
-        }
-        ctIntent.intent.data = Uri.parse(call.argument("url"))
-        activity.startActivityForResult(ctIntent.intent, REQUEST_CODE_CUSTOM_TABS)
-        result.success(null)
-    }
-
-    fun completeCustomTabs(query: String?) {
-        if (query == null) {
-            Handler(activity.mainLooper).postDelayed({
-                activity.twitterSignInUriEventSink?.success(null)
-            }, 1000)
-        } else {
-            activity.twitterSignInUriEventSink?.success(query)
-        }
     }
 
     /**

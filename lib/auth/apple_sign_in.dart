@@ -2,12 +2,19 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:submon/utils/dynamic_links.dart';
 
-import '../method_channel/channels.dart';
-import '../method_channel/main.dart';
+import '../messages.dart';
+
+String getAppleSignInRedirectorUrl() {
+  if (kReleaseMode) {
+    return "https://submon.app/api/v1/redirectToAppleSignInCallback";
+  } else {
+    return "https://dev.submon.app/api/v1/redirectToAppleSignInCallback";
+  }
+}
 
 class AppleSignIn {
   String clientId = "net.chikach.submon.asi";
@@ -36,39 +43,27 @@ class AppleSignIn {
       },
     );
 
-    MainMethodPlugin.openCustomTabs(uri.toString());
+    try {
+      var callback = await UtilsApi().openSignInCustomTab(uri.toString());
 
-    var authResult = await waitForUri();
-
-    return authResult;
-  }
-
-  Future<AuthorizationCredentialAppleID?> waitForUri() async {
-    var completer = Completer<AuthorizationCredentialAppleID?>();
-    var subscription = const EventChannel(EventChannels.signInUri)
-        .receiveBroadcastStream()
-        .listen((event) {
-      if (event == null) {
-        completer.complete(null);
-        return;
+      if (callback.uri != null) {
+        var query = Uri.splitQueryString(Uri.parse(callback.uri!).query);
+        return AuthorizationCredentialAppleID(
+          userIdentifier: null,
+          givenName: null,
+          familyName: null,
+          authorizationCode: query["code"]!,
+          email: null,
+          identityToken: query["id_token"],
+          state: query["state"],
+        );
       }
-
-      var query = Uri.splitQueryString(event);
-      completer.complete(AuthorizationCredentialAppleID(
-        userIdentifier: null,
-        givenName: null,
-        familyName: null,
-        authorizationCode: query["code"]!,
-        email: null,
-        identityToken: query["id_token"],
-        state: query["state"],
-      ));
-    });
-
-    var result = await completer.future;
-
-    subscription.cancel();
-
-    return result;
+      return null;
+    } on PlatformException catch (e) {
+      if (e.message!.contains("canceled")) {
+        return null;
+      }
+      rethrow;
+    }
   }
 }

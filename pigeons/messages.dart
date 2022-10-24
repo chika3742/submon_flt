@@ -1,7 +1,7 @@
 import 'package:pigeon/pigeon.dart';
 
-class SignInResponse {
-  String? responseUri;
+class SignInCallback {
+  String? uri;
 }
 
 @HostApi()
@@ -12,5 +12,5 @@ abstract class UtilsApi {
   /// Opens Custom Tab for signing in. Returns response URI with token query parameters.
   ///
   @async
-  SignInResponse openSignInCustomTab(String url);
+  SignInCallback openSignInCustomTab(String url);
 }

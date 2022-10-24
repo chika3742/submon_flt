@@ -34,14 +34,6 @@ String getAppDomain(String path, {bool withScheme = false}) {
   }
 }
 
-String getAppleSignInRedirectorUrl() {
-  if (kReleaseMode) {
-    return "https://asia-northeast1-submon-prod.cloudfunctions.net/appleSignInRedirector";
-  } else {
-    return "https://asia-northeast1-submon-mgr.cloudfunctions.net/appleSignInRedirector";
-  }
-}
-
 Future<ShortDynamicLink> buildShortDynamicLink(String path) {
   return FirebaseDynamicLinks.instance.buildShortLink(DynamicLinkParameters(
     link: Uri.parse(getAppDomain(path, withScheme: true)),

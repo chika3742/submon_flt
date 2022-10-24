@@ -16,6 +16,8 @@
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		C766556C28614B0E00B244CA /* MyAppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C766556B28614B0E00B244CA /* MyAppCheckProviderFactory.swift */; };
 		C766556D28614B0E00B244CA /* MyAppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C766556B28614B0E00B244CA /* MyAppCheckProviderFactory.swift */; };
+		C77C99642906D9F300720580 /* messages.m in Sources */ = {isa = PBXBuildFile; fileRef = C77C99622906D9F300720580 /* messages.m */; };
+		C77C99662906DA4800720580 /* UtilsApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77C99652906DA4800720580 /* UtilsApi.swift */; };
 		C7908098283E221D001C7835 /* Info-Debug.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7908096283E221D001C7835 /* Info-Debug.plist */; };
 		C7908099283E221D001C7835 /* Info-Release.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7908097283E221D001C7835 /* Info-Release.plist */; };
 		C79080A6283E22B1001C7835 /* MessagingMethodChannelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79080A3283E22B1001C7835 /* MessagingMethodChannelHandler.swift */; };
@@ -92,6 +94,9 @@
 		C7263CC7285853D000416681 /* RunnerRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerRelease.entitlements; sourceTree = "<group>"; };
 		C73B6CC228AC684B0022A6B3 /* RunnerDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerDebug.entitlements; sourceTree = "<group>"; };
 		C766556B28614B0E00B244CA /* MyAppCheckProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAppCheckProviderFactory.swift; sourceTree = "<group>"; };
+		C77C99622906D9F300720580 /* messages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = messages.m; sourceTree = "<group>"; };
+		C77C99632906D9F300720580 /* messages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = messages.h; sourceTree = "<group>"; };
+		C77C99652906DA4800720580 /* UtilsApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilsApi.swift; sourceTree = "<group>"; };
 		C7908096283E221D001C7835 /* Info-Debug.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-Debug.plist"; sourceTree = "<group>"; };
 		C7908097283E221D001C7835 /* Info-Release.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-Release.plist"; sourceTree = "<group>"; };
 		C79080A3283E22B1001C7835 /* MessagingMethodChannelHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagingMethodChannelHandler.swift; sourceTree = "<group>"; };
@@ -171,6 +176,8 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				C77C99632906D9F300720580 /* messages.h */,
+				C77C99622906D9F300720580 /* messages.m */,
 				C73B6CC228AC684B0022A6B3 /* RunnerDebug.entitlements */,
 				C7263CC7285853D000416681 /* RunnerRelease.entitlements */,
 				C79080FD283E2D0A001C7835 /* Runner.entitlements */,
@@ -185,6 +192,7 @@
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 				C766556B28614B0E00B244CA /* MyAppCheckProviderFactory.swift */,
+				C77C99652906DA4800720580 /* UtilsApi.swift */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -482,10 +490,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				C79080A7283E22B1001C7835 /* UriEventChannelHandler.swift in Sources */,
+				C77C99662906DA4800720580 /* UtilsApi.swift in Sources */,
 				C766556C28614B0E00B244CA /* MyAppCheckProviderFactory.swift in Sources */,
 				C79080A8283E22B1001C7835 /* MainMethodChannelHandler.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
+				C77C99642906D9F300720580 /* messages.m in Sources */,
 				C79080A6283E22B1001C7835 /* MessagingMethodChannelHandler.swift in Sources */,
 				C7AAF56E283E71D300FB3CDE /* WidgetKit.intentdefinition in Sources */,
 			);

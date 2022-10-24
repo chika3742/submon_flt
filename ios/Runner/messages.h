@@ -8,11 +8,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class FLTSignInResponse;
+@class FLTSignInCallback;
 
-@interface FLTSignInResponse : NSObject
-+ (instancetype)makeWithResponseUri:(nullable NSString *)responseUri;
-@property(nonatomic, copy, nullable) NSString * responseUri;
+@interface FLTSignInCallback : NSObject
++ (instancetype)makeWithUri:(nullable NSString *)uri;
+@property(nonatomic, copy, nullable) NSString * uri;
 @end
 
 /// The codec used by FLTUtilsApi.
@@ -23,7 +23,7 @@ NSObject<FlutterMessageCodec> *FLTUtilsApiGetCodec(void);
 ///
 /// Opens Custom Tab for signing in. Returns response URI with token query parameters.
 ///
-- (void)openSignInCustomTabUrl:(NSString *)url completion:(void(^)(FLTSignInResponse *_Nullable, FlutterError *_Nullable))completion;
+- (void)openSignInCustomTabUrl:(NSString *)url completion:(void(^)(FLTSignInCallback *_Nullable, FlutterError *_Nullable))completion;
 @end
 
 extern void FLTUtilsApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTUtilsApi> *_Nullable api);
