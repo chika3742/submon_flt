@@ -9,7 +9,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:submon/components/digestive_detail_card.dart';
 import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_submission.dart';
-import 'package:submon/method_channel/main.dart';
+import 'package:submon/messages.dart';
 import 'package:submon/utils/ui.dart';
 
 import '../utils/ad_unit_ids.dart';
@@ -79,9 +79,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
       });
     }
 
-    if (!kIsWeb && Platform.isAndroid) {
-      MainMethodPlugin.enterFullscreen();
-    }
+    UtilsApi().setFullscreen(true);
 
     _checkDndAccessGranted();
 
@@ -106,10 +104,10 @@ class _FocusTimerPageState extends State<FocusTimerPage>
     _stopBreakTimer();
     _stopBlinkTimer(inDispose: true);
     _player.release();
-    MainMethodPlugin.disableWakeLock();
-    if (!kIsWeb && Platform.isAndroid) {
-      MainMethodPlugin.exitFullscreen();
-    }
+    UtilsApi()
+      ..setWakeLock(false)
+      ..setFullscreen(false);
+
     if (Platform.isAndroid) {
       FlutterDnd.setInterruptionFilter(FlutterDnd.INTERRUPTION_FILTER_ALL);
     }
@@ -401,7 +399,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
   }
 
   void _startTimer() {
-    MainMethodPlugin.enableWakeLock();
+    UtilsApi().setWakeLock(true);
     _enableDnd();
     _stopBreakTimer();
     _stopBlinkTimer();

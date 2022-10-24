@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:submon/db/firestore_provider.dart';
 
@@ -23,10 +20,6 @@ class MainMethodPlugin {
     });
   }
 
-  static void updateWidgets() {
-    channel.invokeMethod("updateWidgets");
-  }
-
   /// Takes a picture with native ui.
   static Future<String?> takePictureNative() async {
     return await channel.invokeMethod<String>("takePictureNative");
@@ -34,29 +27,5 @@ class MainMethodPlugin {
 
   static Future<String?> getPendingUri() async {
     return await channel.invokeMethod<String>("getPendingUri");
-  }
-
-  static Future<bool> requestIDFA() async {
-    if (!kIsWeb && (Platform.isIOS || Platform.isMacOS)) {
-      return await channel.invokeMethod("requestIDFA");
-    } else {
-      return true;
-    }
-  }
-
-  static void enableWakeLock() {
-    channel.invokeMethod("enableWakeLock");
-  }
-
-  static void disableWakeLock() {
-    channel.invokeMethod("disableWakeLock");
-  }
-
-  static void enterFullscreen() {
-    channel.invokeMethod("enterFullscreen");
-  }
-
-  static void exitFullscreen() {
-    channel.invokeMethod("exitFullscreen");
   }
 }

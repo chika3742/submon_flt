@@ -1,9 +1,17 @@
 package net.chikach.submon
 
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.view.View
+import android.view.WindowInsets
+import android.view.WindowInsetsController
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
 import net.chikach.submon.mch.REQUEST_CODE_CUSTOM_TABS
@@ -72,15 +80,65 @@ class UtilsAndroidApi(private val activity: MainActivity) : Messages.UtilsApi {
         signInCustomTabResult = result
     }
 
+    override fun updateWidgets() {
+        Handler(activity.mainLooper).postDelayed({
+            val aws = activity.getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager
+            val widgetIds = aws.getAppWidgetIds(
+                ComponentName(
+                    activity,
+                    SubmissionListAppWidgetProvider::class.java
+                )
+            )
+
+            activity.sendBroadcast(
+                Intent(activity, SubmissionListAppWidgetProvider::class.java)
+                    .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
+                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
+            )
+        }, 2000)
+    }
+
+    override fun requestIDFA(result: Messages.Result<Boolean>) {
+        // Do nothing
+        result.success(true)
+    }
+
+    override fun setFullscreen(fullscreen: Boolean) {
+        if (fullscreen) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                activity.window.decorView.windowInsetsController?.hide(WindowInsets.Type.statusBars())
+                activity.window.decorView.windowInsetsController?.systemBarsBehavior =
+                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            } else {
+                @Suppress("DEPRECATION")
+                activity.window.decorView.systemUiVisibility =
+                    View.SYSTEM_UI_FLAG_IMMERSIVE or View.SYSTEM_UI_FLAG_FULLSCREEN
+            }
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                activity.window.decorView.windowInsetsController?.show(WindowInsets.Type.statusBars())
+            } else {
+                @Suppress("DEPRECATION")
+                activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
+            }
+        }
+    }
+
+    override fun setWakeLock(wakeLock: Boolean) {
+        if (wakeLock) {
+            activity.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            activity.window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+    }
+
     fun completeOpenSignInCustomTabWithError(error: Throwable) {
         signInCustomTabResult?.error(error)
         signInCustomTabResult = null
     }
 
-    fun completeOpenSignInCustomTabWithResponseUri(responseUri: String) {
-        signInCustomTabResult?.success(Messages.SignInCallback().also {
-            it.uri = responseUri
-        })
+    fun completeOpenSignInCustomTabWithUri(uri: String) {
+        signInCustomTabResult?.success(Messages.SignInCallback.Builder().setUri(uri).build())
         signInCustomTabResult = null
     }
 }

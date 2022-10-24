@@ -8,13 +8,13 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:submon/auth/twitter_sign_in.dart';
 import 'package:submon/main.dart';
+import 'package:submon/messages.dart';
 import 'package:submon/models/sign_in_result.dart';
 import 'package:submon/pages/email_sign_in_page.dart';
 
 import '../db/firestore_provider.dart';
 import '../db/shared_prefs.dart';
 import '../isar_db/isar_provider.dart';
-import '../method_channel/main.dart';
 import '../method_channel/messaging.dart';
 import '../pages/home_page.dart';
 import '../pages/welcome_page.dart';
@@ -34,7 +34,7 @@ class SignInHandler {
     await FirestoreProvider.removeNotificationToken();
     await FirebaseAuth.instance.signOut();
     await GoogleSignIn().signOut();
-    MainMethodPlugin.updateWidgets();
+    UtilsApi().updateWidgets();
     backToWelcomePage(globalContext!);
   }
 
@@ -252,7 +252,7 @@ class SignInHandler {
         // save messaging token
         var notificationToken = await MessagingPlugin.getToken();
         await FirestoreProvider.saveNotificationToken(notificationToken);
-        MainMethodPlugin.updateWidgets();
+        UtilsApi().updateWidgets();
 
         var requestPermResult =
             await requestNotificationPermissionIfEnabled(data);

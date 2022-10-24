@@ -38,7 +38,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 @end
 
 @implementation FLTSignInCallback
-+ (instancetype)makeWithUri:(nullable NSString *)uri {
++ (instancetype)makeWithUri:(NSString *)uri {
   FLTSignInCallback* pigeonResult = [[FLTSignInCallback alloc] init];
   pigeonResult.uri = uri;
   return pigeonResult;
@@ -46,6 +46,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 + (FLTSignInCallback *)fromMap:(NSDictionary *)dict {
   FLTSignInCallback *pigeonResult = [[FLTSignInCallback alloc] init];
   pigeonResult.uri = GetNullableObject(dict, @"uri");
+  NSAssert(pigeonResult.uri != nil, @"");
   return pigeonResult;
 }
 + (nullable FLTSignInCallback *)nullableFromMap:(NSDictionary *)dict { return (dict) ? [FLTSignInCallback fromMap:dict] : nil; }
@@ -110,7 +111,11 @@ NSObject<FlutterMessageCodec> *FLTUtilsApiGetCodec() {
 }
 
 void FLTUtilsApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTUtilsApi> *api) {
-  {
+    ///
+  /// Opens web page with new activity on Android, with SFSafariViewController on iOS.
+  /// On Android, [title] will be the title of activity. On iOS, [title] will be ignored.
+  ///
+{
     FlutterBasicMessageChannel *channel =
       [[FlutterBasicMessageChannel alloc]
         initWithName:@"dev.flutter.pigeon.UtilsApi.openWebPage"
@@ -148,6 +153,96 @@ void FLTUtilsApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTUt
         [api openSignInCustomTabUrl:arg_url completion:^(FLTSignInCallback *_Nullable output, FlutterError *_Nullable error) {
           callback(wrapResult(output, error));
         }];
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+    ///
+  /// Updates App Widgets on Android, WidgetKit on iOS.
+  ///
+{
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.UtilsApi.updateWidgets"
+        binaryMessenger:binaryMessenger
+        codec:FLTUtilsApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(updateWidgetsWithError:)], @"FLTUtilsApi api (%@) doesn't respond to @selector(updateWidgetsWithError:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        [api updateWidgetsWithError:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+    ///
+  /// Requests iOS/macOS ATT permission. On Android, this method does nothing.
+  ///
+  /// Permission requesting result will be returned. On Android, always `true` will be returned.
+  ///
+{
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.UtilsApi.requestIDFA"
+        binaryMessenger:binaryMessenger
+        codec:FLTUtilsApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(requestIDFAWithCompletion:)], @"FLTUtilsApi api (%@) doesn't respond to @selector(requestIDFAWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api requestIDFAWithCompletion:^(NSNumber *_Nullable output, FlutterError *_Nullable error) {
+          callback(wrapResult(output, error));
+        }];
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+    ///
+  /// Sets wake lock mode.
+  ///
+{
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.UtilsApi.setWakeLock"
+        binaryMessenger:binaryMessenger
+        codec:FLTUtilsApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(setWakeLockWakeLock:error:)], @"FLTUtilsApi api (%@) doesn't respond to @selector(setWakeLockWakeLock:error:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        NSNumber *arg_wakeLock = GetNullableObjectAtIndex(args, 0);
+        FlutterError *error;
+        [api setWakeLockWakeLock:arg_wakeLock error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+    ///
+  /// Sets fullscreen mode on Android. Do nothing on iOS.
+  ///
+{
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.UtilsApi.setFullscreen"
+        binaryMessenger:binaryMessenger
+        codec:FLTUtilsApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(setFullscreenFullscreen:error:)], @"FLTUtilsApi api (%@) doesn't respond to @selector(setFullscreenFullscreen:error:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        NSNumber *arg_fullscreen = GetNullableObjectAtIndex(args, 0);
+        FlutterError *error;
+        [api setFullscreenFullscreen:arg_fullscreen error:&error];
+        callback(wrapResult(nil, error));
       }];
     }
     else {

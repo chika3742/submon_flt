@@ -9,10 +9,10 @@ import 'package:flutter/services.dart';
 
 class SignInCallback {
   SignInCallback({
-    this.uri,
+    required this.uri,
   });
 
-  String? uri;
+  String uri;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
@@ -23,7 +23,7 @@ class SignInCallback {
   static SignInCallback decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return SignInCallback(
-      uri: pigeonMap['uri'] as String?,
+      uri: pigeonMap['uri']! as String,
     );
   }
 }
@@ -62,6 +62,10 @@ class UtilsApi {
 
   static const MessageCodec<Object?> codec = _UtilsApiCodec();
 
+  ///
+  /// Opens web page with new activity on Android, with SFSafariViewController on iOS.
+  /// On Android, [title] will be the title of activity. On iOS, [title] will be ignored.
+  ///
   Future<void> openWebPage(String arg_title, String arg_url) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.UtilsApi.openWebPage', codec,
@@ -115,6 +119,121 @@ class UtilsApi {
       );
     } else {
       return (replyMap['result'] as SignInCallback?)!;
+    }
+  }
+
+  ///
+  /// Updates App Widgets on Android, WidgetKit on iOS.
+  ///
+  Future<void> updateWidgets() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.UtilsApi.updateWidgets', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(null) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  ///
+  /// Requests iOS/macOS ATT permission. On Android, this method does nothing.
+  ///
+  /// Permission requesting result will be returned. On Android, always `true` will be returned.
+  ///
+  Future<bool> requestIDFA() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.UtilsApi.requestIDFA', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(null) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else if (replyMap['result'] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyMap['result'] as bool?)!;
+    }
+  }
+
+  ///
+  /// Sets wake lock mode.
+  ///
+  Future<void> setWakeLock(bool arg_wakeLock) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.UtilsApi.setWakeLock', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_wakeLock]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  ///
+  /// Sets fullscreen mode on Android. Do nothing on iOS.
+  ///
+  Future<void> setFullscreen(bool arg_fullscreen) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.UtilsApi.setFullscreen', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_fullscreen]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
     }
   }
 }

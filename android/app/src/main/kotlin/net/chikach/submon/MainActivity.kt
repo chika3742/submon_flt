@@ -4,11 +4,9 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Handler
-import android.util.Log
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationChannelGroupCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.os.postDelayed
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
@@ -174,7 +172,7 @@ class MainActivity : FlutterActivity() {
         super.onNewIntent(intent)
         if (intent.data != null) {
             if (intent.data!!.host == "auth-callback") {
-                utilsApi.completeOpenSignInCustomTabWithResponseUri(intent.data!!.toString())
+                utilsApi.completeOpenSignInCustomTabWithUri(intent.data!!.toString())
             } else {
                 uriEventSink?.success(intent.data.toString())
             }

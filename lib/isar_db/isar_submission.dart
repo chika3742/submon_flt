@@ -8,7 +8,7 @@ import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_provider.dart';
 import 'package:submon/main.dart';
-import 'package:submon/method_channel/main.dart';
+import 'package:submon/messages.dart';
 
 import '../db/shared_prefs.dart';
 
@@ -214,6 +214,6 @@ class SubmissionProvider extends IsarProvider<Submission> {
 
   @override
   void firestoreUpdated() {
-    MainMethodPlugin.updateWidgets();
+    UtilsApi().updateWidgets();
   }
 }

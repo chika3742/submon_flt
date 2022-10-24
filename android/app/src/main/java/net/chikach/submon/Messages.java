@@ -25,15 +25,20 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class SignInCallback {
-    private @Nullable String uri;
-    public @Nullable String getUri() { return uri; }
-    public void setUri(@Nullable String setterArg) {
+    private @NonNull String uri;
+    public @NonNull String getUri() { return uri; }
+    public void setUri(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"uri\" is null.");
+      }
       this.uri = setterArg;
     }
 
+    /**Constructor is private to enforce null safety; use Builder. */
+    private SignInCallback() {}
     public static final class Builder {
       private @Nullable String uri;
-      public @NonNull Builder setUri(@Nullable String setterArg) {
+      public @NonNull Builder setUri(@NonNull String setterArg) {
         this.uri = setterArg;
         return this;
       }
@@ -88,6 +93,12 @@ public class Messages {
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
   public interface UtilsApi {
+    /**
+     *
+     * Opens web page with new activity on Android, with SFSafariViewController on iOS.
+     * On Android, [title] will be the title of activity. On iOS, [title] will be ignored.
+     *
+     */
     void openWebPage(@NonNull String title, @NonNull String url);
     /**
      *
@@ -95,6 +106,32 @@ public class Messages {
      *
      */
     void openSignInCustomTab(@NonNull String url, Result<SignInCallback> result);
+    /**
+     *
+     * Updates App Widgets on Android, WidgetKit on iOS.
+     *
+     */
+    void updateWidgets();
+    /**
+     *
+     * Requests iOS/macOS ATT permission. On Android, this method does nothing.
+     *
+     * Permission requesting result will be returned. On Android, always `true` will be returned.
+     *
+     */
+    void requestIDFA(Result<Boolean> result);
+    /**
+     *
+     * Sets wake lock mode.
+     *
+     */
+    void setWakeLock(@NonNull Boolean wakeLock);
+    /**
+     *
+     * Sets fullscreen mode on Android. Do nothing on iOS.
+     *
+     */
+    void setFullscreen(@NonNull Boolean fullscreen);
 
     /** The codec used by UtilsApi. */
     static MessageCodec<Object> getCodec() {
@@ -160,6 +197,104 @@ public class Messages {
               wrapped.put("error", wrapError(exception));
               reply.reply(wrapped);
             }
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.UtilsApi.updateWidgets", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              api.updateWidgets();
+              wrapped.put("result", null);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.UtilsApi.requestIDFA", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              Result<Boolean> resultCallback = new Result<Boolean>() {
+                public void success(Boolean result) {
+                  wrapped.put("result", result);
+                  reply.reply(wrapped);
+                }
+                public void error(Throwable error) {
+                  wrapped.put("error", wrapError(error));
+                  reply.reply(wrapped);
+                }
+              };
+
+              api.requestIDFA(resultCallback);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+              reply.reply(wrapped);
+            }
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.UtilsApi.setWakeLock", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              assert args != null;
+              Boolean wakeLockArg = (Boolean)args.get(0);
+              if (wakeLockArg == null) {
+                throw new NullPointerException("wakeLockArg unexpectedly null.");
+              }
+              api.setWakeLock(wakeLockArg);
+              wrapped.put("result", null);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.UtilsApi.setFullscreen", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              assert args != null;
+              Boolean fullscreenArg = (Boolean)args.get(0);
+              if (fullscreenArg == null) {
+                throw new NullPointerException("fullscreenArg unexpectedly null.");
+              }
+              api.setFullscreen(fullscreenArg);
+              wrapped.put("result", null);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
           });
         } else {
           channel.setMessageHandler(null);

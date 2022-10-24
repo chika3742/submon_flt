@@ -13,7 +13,6 @@ import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
 import 'package:submon/isar_db/isar_provider.dart';
 import 'package:submon/main.dart';
-import 'package:submon/method_channel/main.dart';
 import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/home_tabs/tab_digestive_list.dart';
 import 'package:submon/pages/home_tabs/tab_others.dart';
@@ -27,6 +26,7 @@ import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
 import '../fade_through_page_route.dart';
+import '../messages.dart';
 import '../utils/ad_unit_ids.dart';
 import 'home_tabs/tab_timetable_2.dart';
 
@@ -147,7 +147,7 @@ class HomePageState extends State<HomePage> {
         AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
                 MediaQuery.of(context).size.width.truncate())
             .then((adSize) {
-          MainMethodPlugin.requestIDFA().then((granted) {
+          UtilsApi().requestIDFA().then((granted) {
             setState(() {
               bannerAd = BannerAd(
                 adUnitId: AdUnits.homeBottomBanner!,
