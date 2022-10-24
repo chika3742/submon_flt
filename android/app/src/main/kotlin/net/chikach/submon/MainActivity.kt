@@ -3,13 +3,16 @@ package net.chikach.submon
 import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Handler
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationChannelGroupCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.os.postDelayed
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
+import net.chikach.submon.Messages.UtilsApi
 import net.chikach.submon.mch.MainMethodChannelHandler
 import net.chikach.submon.mch.MessagingMethodChannelHandler
 import net.chikach.submon.mch.REQUEST_CODE_CUSTOM_TABS
@@ -45,6 +48,7 @@ const val REQUEST_CODE_TAKE_PICTURE = 1
 
 class MainActivity : FlutterActivity() {
     private val mainMethodChannelHandler = MainMethodChannelHandler(this)
+    private val utilsApi = UtilsAndroidApi(this)
     private val messagingMethodChannelHandler = MessagingMethodChannelHandler(this)
     var twitterSignInUriEventSink: EventChannel.EventSink? = null
     var uriEventSink: EventChannel.EventSink? = null
@@ -59,6 +63,7 @@ class MainActivity : FlutterActivity() {
         }
 
         // main method channel
+        UtilsApi.setup(flutterEngine.dartExecutor.binaryMessenger, utilsApi)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_MAIN).apply {
             setMethodCallHandler(mainMethodChannelHandler)
         }
@@ -143,7 +148,11 @@ class MainActivity : FlutterActivity() {
                 mainMethodChannelHandler.takePictureCallback(resultCode)
             }
             REQUEST_CODE_CUSTOM_TABS -> {
-                mainMethodChannelHandler.completeCustomTabs(null)
+                Handler(mainLooper).postDelayed({
+                    utilsApi.completeOpenSignInCustomTabWithError(
+                        SignInCustomTabException(SignInCustomTabException.canceled)
+                    )
+                }, 1000)
             }
         }
     }
@@ -163,9 +172,11 @@ class MainActivity : FlutterActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (intent.data != null) {
-            mainMethodChannelHandler.completeCustomTabs(intent.data?.query)
-            uriEventSink?.success(intent.data.toString())
+            if (intent.data!!.host == "auth-response") {
+                utilsApi.completeOpenSignInCustomTabWithResponseUri(intent.data?.toString())
+            } else {
+                uriEventSink?.success(intent.data.toString())
+            }
         }
     }
-
 }

@@ -14,7 +14,7 @@ packages:
       name: _fe_analyzer_shared
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "49.0.0"
+    version: "47.0.0"
   _flutterfire_internals:
     dependency: transitive
     description:
@@ -28,7 +28,7 @@ packages:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.1.0"
+    version: "4.7.0"
   animations:
     dependency: "direct main"
     description:
@@ -890,6 +890,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.1.0"
+  pigeon:
+    dependency: "direct dev"
+    description:
+      name: pigeon
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.2.3"
   platform:
     dependency: transitive
     description:

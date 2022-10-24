@@ -13,7 +13,7 @@ import 'package:submon/method_channel/channels.dart';
 import 'package:submon/models/sign_in_result.dart';
 import 'package:submon/models/twitter_sign_in_result.dart';
 
-import '../method_channel/main.dart';
+import '../messages.dart';
 
 class TwitterSignIn {
   late final String apiKey;
@@ -34,7 +34,7 @@ class TwitterSignIn {
 
     this.apiKey = apiKey;
     this.apiSecret = apiSecret;
-    redirectUri = "submon://";
+    redirectUri = "submon://auth-response/twitter";
   }
 
   Future<TwitterSignInResult> signIn() async {
@@ -45,36 +45,41 @@ class TwitterSignIn {
       final url =
           "https://api.twitter.com/oauth/authorize?oauth_token=${reqToken!.oauthToken}";
 
-      if (Platform.isAndroid) {
-        MainMethodPlugin.openCustomTabs(url);
-        authResult = await waitForUri();
+      var browserResponse = await UtilsApi().openSignInCustomTab(url);
+      if (browserResponse.responseUri != null) {
+        var query = Uri.parse(browserResponse.responseUri!).queryParameters;
+        authResult =
+            AuthResult(query["oauth_token"]!, query["oauth_verifier"]!);
       } else {
-        var brResult = await MainMethodPlugin.openCustomTabs(url);
-        if (brResult != null) {
-          var query = Uri.parse(brResult).queryParameters;
-          authResult =
-              AuthResult(query["oauth_token"]!, query["oauth_verifier"]!);
-        } else {
-          authResult = null;
-        }
+        return TwitterSignInResult(errorCode: SignInError.unknown);
       }
-
-      if (authResult == null) return TwitterSignInResult(errorCode: SignInError.cancelled);
 
       var result = await getAccessToken(authResult);
 
       return result;
     } on SocketException {
-      return TwitterSignInResult(errorCode: SignInError.socketError, errorMessage: "エラーが発生しました。インターネット接続をご確認ください。");
+      return TwitterSignInResult(
+          errorCode: SignInError.socketError,
+          errorMessage: "エラーが発生しました。インターネット接続をご確認ください。");
     } on TwitterRequestFailedException catch (e) {
       if (e.code == 135) {
-        return TwitterSignInResult(errorCode: SignInError.twitterTimeOutOfSync, errorMessage: "端末の時刻がサーバー時刻と大幅にずれています。");
+        return TwitterSignInResult(
+            errorCode: SignInError.twitterTimeOutOfSync,
+            errorMessage: "端末の時刻がサーバー時刻と大幅にずれています。");
       } else {
-        return TwitterSignInResult(errorCode: SignInError.twitterRequestTokenRequestFailed, errorMessage: "エラーが発生しました。(${e.code})");
+        return TwitterSignInResult(
+            errorCode: SignInError.twitterRequestTokenRequestFailed,
+            errorMessage: "エラーが発生しました。(${e.code})");
       }
+    } on PlatformException catch (e) {
+      if (e.message!.contains("canceled")) {
+        return TwitterSignInResult(errorCode: SignInError.cancelled);
+      }
+      rethrow;
     } catch (e, stackTrace) {
       FirebaseCrashlytics.instance.recordError(e, stackTrace);
-      return TwitterSignInResult(errorCode: SignInError.unknown, errorMessage: "エラーが発生しました。");
+      return TwitterSignInResult(
+          errorCode: SignInError.unknown, errorMessage: "エラーが発生しました。");
     }
   }
 
@@ -82,7 +87,7 @@ class TwitterSignIn {
     var baseUri = Uri(
         scheme: "https", host: "api.twitter.com", path: "/oauth/request_token");
     var params = {
-      "oauth_callback": "submon://",
+      "oauth_callback": redirectUri,
       "oauth_consumer_key": apiKey,
       "oauth_nonce": _generateNonce(11),
       "oauth_signature_method": "HMAC-SHA1",
