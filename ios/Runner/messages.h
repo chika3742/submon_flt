@@ -52,4 +52,11 @@ NSObject<FlutterMessageCodec> *FLTUtilsApiGetCodec(void);
 
 extern void FLTUtilsApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTUtilsApi> *_Nullable api);
 
+/// The codec used by FLTUriApi.
+NSObject<FlutterMessageCodec> *FLTUriApiGetCodec(void);
+
+@interface FLTUriApi : NSObject
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
+- (void)handleUriUri:(NSString *)uri completion:(void(^)(NSError *_Nullable))completion;
+@end
 NS_ASSUME_NONNULL_END

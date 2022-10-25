@@ -237,3 +237,31 @@ class UtilsApi {
     }
   }
 }
+
+abstract class UriApi {
+  static const MessageCodec<Object?> codec = StandardMessageCodec();
+
+  void handleUri(String uri);
+
+  static void setup(UriApi? api, {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.UriApi.handleUri', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.UriApi.handleUri was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final String? arg_uri = (args[0] as String?);
+          assert(arg_uri != null,
+              'Argument for dev.flutter.pigeon.UriApi.handleUri was null, expected non-null String.');
+          api.handleUri(arg_uri!);
+          return;
+        });
+      }
+    }
+  }
+}

@@ -7,11 +7,11 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:submon/app_link_handler.dart';
 import 'package:submon/browser.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
-import 'package:submon/isar_db/isar_provider.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/home_tabs/tab_digestive_list.dart';
@@ -44,7 +44,7 @@ class HomePageState extends State<HomePage> {
   StreamSubscription? hideAdListener;
   StreamSubscription? switchBottomNavListener;
 
-  var tabIndex = 0;
+  var currentTabId = InAppLinkHandler.initialTabId;
   var _loading = false;
   var _hideAd = false;
   SharedPrefs? _prefs;
@@ -83,21 +83,21 @@ class HomePageState extends State<HomePage> {
         ),
       ];
 
-  List<List<ActionItem>> get actions => [
-    [],
-    [
-      ActionItem(Icons.help, "ヘルプ", () {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text("Digestiveとは？"),
-              content: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const Text(
-                        "ダイジェスティブでは、提出物に取り掛かる時間と、何分続けるかをスケジュールすることができます。\n集中タイマーで重い腰を上げるのにも最適。"),
-                    const SizedBox(height: 16),
+  List<BottomNavAction> get actions => [
+        BottomNavAction("home", []),
+        BottomNavAction("digestive", [
+          BottomNavActionItem(Icons.help, "ヘルプ", () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text("Digestiveとは？"),
+                  content: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        const Text(
+                            "ダイジェスティブでは、提出物に取り掛かる時間と、何分続けるかをスケジュールすることができます。\n集中タイマーで重い腰を上げるのにも最適。"),
+                        const SizedBox(height: 16),
                     Image.asset("assets/img/digestive_guide.jpg"),
                     const SizedBox(height: 16),
                     const Text(
@@ -108,29 +108,31 @@ class HomePageState extends State<HomePage> {
               ),
               actions: [
                 TextButton(
-                  child: const Text("OK"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                )
-              ],
+                      child: const Text("OK"),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    )
+                  ],
+                );
+              },
             );
-          },
-        );
-      }),
-    ],
-    if (_prefs?.showTimetableMenu != false)
-      [
-        ActionItem(Icons.table_view, "テーブルビュー", () async {
-          await Navigator.pushNamed(context, TimetableTableViewPage.routeName);
-        }),
-        ActionItem(Icons.settings, "設定", () async {
-          await Navigator.pushNamed(context, TimetableSettingsPage.routeName);
-          eventBus.fire(TimetableListChanged());
-        }),
-      ],
-    [],
-  ];
+          }),
+        ]),
+        if (_prefs?.showTimetableMenu != false)
+          BottomNavAction("timetable", [
+            BottomNavActionItem(Icons.table_view, "テーブルビュー", () async {
+              await Navigator.pushNamed(
+                  context, TimetableTableViewPage.routeName);
+            }),
+            BottomNavActionItem(Icons.settings, "設定", () async {
+              await Navigator.pushNamed(
+                  context, TimetableSettingsPage.routeName);
+              eventBus.fire(TimetableListChanged());
+            }),
+          ]),
+        BottomNavAction("more", []),
+      ];
 
   final _scaffoldKey = GlobalKey();
 
@@ -169,17 +171,13 @@ class HomePageState extends State<HomePage> {
     });
 
     switchBottomNavListener = eventBus.on<SwitchBottomNav>().listen((event) {
-      Timer.periodic(const Duration(milliseconds: 25), (timer) {
-        if (_navigatorKey.currentState != null && IsarProvider.opening == false) {
-          var index = _bottomNavItems.indexWhere((e) => e.path == event.path);
-          if (index != -1) {
-            onBottomNavTap(index);
-          } else {
-            showSnackBar(context, "この機能は無効化されています。カスタマイズ設定から有効化してください。");
-          }
-          timer.cancel();
-        }
-      });
+      print(event.path);
+      var index = _bottomNavItems.indexWhere((e) => e.id == event.path);
+      if (index != -1) {
+        onBottomNavTap(index);
+      } else {
+        showSnackBar(context, "この機能は無効化されています。カスタマイズ設定から有効化してください。");
+      }
     });
 
     fetchData();
@@ -208,8 +206,13 @@ class HomePageState extends State<HomePage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(_bottomNavItems[tabIndex].item.label!),
-        actions: actions[tabIndex]
+        title: Text(_bottomNavItems
+            .firstWhere((e) => e.id == currentTabId)
+            .item
+            .label!),
+        actions: actions
+            .firstWhere((e) => e.tabId == currentTabId)
+            .items
             .map((e) => IconButton(
                   icon: Icon(e.icon),
                   onPressed: e.onPressed,
@@ -270,7 +273,8 @@ class HomePageState extends State<HomePage> {
               ),
             ),
           BottomNavigationBar(
-            currentIndex: tabIndex,
+            currentIndex:
+                _bottomNavItems.indexWhere((e) => e.id == currentTabId),
             items: _bottomNavItems.map((e) => e.item).toList(),
             onTap: onBottomNavTap,
           ),
@@ -280,7 +284,7 @@ class HomePageState extends State<HomePage> {
   }
 
   Widget? _buildFloatingActionButton() {
-    switch (_bottomNavItems[tabIndex].path) {
+    switch (currentTabId) {
       case "home":
         return OpenContainer<int>(
           useRootNavigator: true,
@@ -328,17 +332,17 @@ class HomePageState extends State<HomePage> {
 
   void onBottomNavTap(int index) {
     if (index < 0) return;
-    if (tabIndex == index) {
+    if (_bottomNavItems.indexWhere((element) => element.id == currentTabId) ==
+        index) {
       eventBus.fire(BottomNavDoubleClickEvent(index));
       return;
     }
     setState(() {
-      tabIndex = index;
+      currentTabId = _bottomNavItems[index].id;
     });
-    _navigatorKey.currentState
-        ?.pushReplacementNamed(_bottomNavItems[index].path);
+    _navigatorKey.currentState?.pushReplacementNamed(_bottomNavItems[index].id);
     FirebaseAnalytics.instance
-        .logScreenView(screenName: "/tab/${_bottomNavItems[index].path}");
+        .logScreenView(screenName: "/tab/${_bottomNavItems[index].id}");
   }
 
   void fetchData() async {
@@ -351,8 +355,7 @@ class HomePageState extends State<HomePage> {
       var result = await FirestoreProvider.fetchData();
 
       if (result) {
-        _navigatorKey.currentState
-            ?.pushReplacementNamed(_bottomNavItems[tabIndex].path);
+        _navigatorKey.currentState?.pushReplacementNamed(currentTabId);
       }
     } on FirebaseException catch (e, stackTrace) {
       handleFirebaseError(e, stackTrace, context, "データの取得に失敗しました。");
@@ -380,8 +383,15 @@ class HomePageState extends State<HomePage> {
   }
 }
 
-class ActionItem {
-  ActionItem(this.icon, this.title, this.onPressed);
+class BottomNavAction {
+  BottomNavAction(this.tabId, this.items);
+
+  String tabId;
+  List<BottomNavActionItem> items;
+}
+
+class BottomNavActionItem {
+  BottomNavActionItem(this.icon, this.title, this.onPressed);
 
   final IconData icon;
   final String title;
@@ -389,8 +399,8 @@ class ActionItem {
 }
 
 class BottomNavItem {
-  final String path;
+  final String id;
   final BottomNavigationBarItem item;
 
-  BottomNavItem(this.path, this.item);
+  BottomNavItem(this.id, this.item);
 }

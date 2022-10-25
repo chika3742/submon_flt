@@ -302,6 +302,27 @@ public class Messages {
       }
     }
   }
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
+  public static class UriApi {
+    private final BinaryMessenger binaryMessenger;
+    public UriApi(BinaryMessenger argBinaryMessenger){
+      this.binaryMessenger = argBinaryMessenger;
+    }
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+    /** The codec used by UriApi. */
+    static MessageCodec<Object> getCodec() {
+      return       new StandardMessageCodec();
+    }
+    public void handleUri(@NonNull String uriArg, Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.UriApi.handleUri", getCodec());
+      channel.send(new ArrayList<Object>(Collections.singletonList(uriArg)), channelReply -> {
+        callback.reply(null);
+      });
+    }
+  }
   @NonNull private static Map<String, Object> wrapError(@NonNull Throwable exception) {
     Map<String, Object> errorMap = new HashMap<>();
     errorMap.put("message", exception.toString());

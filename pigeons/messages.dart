@@ -41,3 +41,8 @@ abstract class UtilsApi {
   ///
   void setFullscreen(bool fullscreen);
 }
+
+@FlutterApi()
+abstract class UriApi {
+  void handleUri(String uri);
+}

@@ -250,3 +250,32 @@ void FLTUtilsApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTUt
     }
   }
 }
+NSObject<FlutterMessageCodec> *FLTUriApiGetCodec() {
+  static FlutterStandardMessageCodec *sSharedObject = nil;
+  sSharedObject = [FlutterStandardMessageCodec sharedInstance];
+  return sSharedObject;
+}
+
+@interface FLTUriApi ()
+@property (nonatomic, strong) NSObject<FlutterBinaryMessenger> *binaryMessenger;
+@end
+
+@implementation FLTUriApi
+
+- (instancetype)initWithBinaryMessenger:(NSObject<FlutterBinaryMessenger> *)binaryMessenger {
+  self = [super init];
+  if (self) {
+    _binaryMessenger = binaryMessenger;
+  }
+  return self;
+}
+- (void)handleUriUri:(NSString *)arg_uri completion:(void(^)(NSError *_Nullable))completion {
+  FlutterBasicMessageChannel *channel =
+    [FlutterBasicMessageChannel
+      messageChannelWithName:@"dev.flutter.pigeon.UriApi.handleUri"
+      binaryMessenger:self.binaryMessenger
+      codec:FLTUriApiGetCodec()      ];  [channel sendMessage:@[arg_uri ?: [NSNull null]] reply:^(id reply) {
+    completion(nil);
+  }];
+}
+@end

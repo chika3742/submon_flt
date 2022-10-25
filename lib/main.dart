@@ -9,6 +9,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -16,7 +17,9 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:submon/app_link_handler.dart';
 import 'package:submon/db/shared_prefs.dart';
+import 'package:submon/messages.dart';
 import 'package:submon/method_channel/main.dart';
 import 'package:submon/models/sign_in_result.dart';
 import 'package:submon/pages/done_submissions_page.dart';
@@ -40,7 +43,7 @@ import 'package:submon/pages/timetable_edit_page.dart';
 import 'package:submon/pages/timetable_table_view_page.dart';
 import 'package:submon/pages/welcome_page.dart';
 
-import 'link_handler/link_listeners.dart';
+import 'api/uri_flutter_api.dart';
 
 var scopes = [tasks.TasksApi.tasksScope];
 var googleSignIn = GoogleSignIn(scopes: scopes);
@@ -49,9 +52,12 @@ const screenShotMode = bool.fromEnvironment("SCREENSHOT_MODE");
 
 BuildContext? get globalContext => Application.globalKey.currentContext;
 
+var uriApi = UriFlutterApi();
+
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  UriApi.setup(uriApi);
   runZonedGuarded<Future<void>>(() async {
-    WidgetsFlutterBinding.ensureInitialized();
     await dotenv.load();
     googleSignIn.signInSilently();
     MobileAds.instance.initialize();
@@ -71,7 +77,7 @@ void main() async {
     });
     runApp(const Application());
   },
-      (error, stack) =>
+          (error, stack) =>
           FirebaseCrashlytics.instance.recordError(error, stack, fatal: true));
 }
 
@@ -87,8 +93,6 @@ class Application extends StatefulWidget {
 class _ApplicationState extends State<Application> {
   var _initialized = false;
   var _initializingErrorOccurred = false;
-
-  final _listeners = LinkListeners();
 
   @override
   void initState() {
@@ -337,7 +341,10 @@ class _ApplicationState extends State<Application> {
         setState(() {
           _initialized = true;
         });
-        _listeners.initialize();
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          AppLinkHandler.initDynamicLinksListener();
+          uriApi.contextInitialized();
+        });
         listener.cancel();
       });
     } catch (e) {
