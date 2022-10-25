@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +34,6 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
   TimeOfDay? _reminderTime;
   bool _loadingReminderTime = true;
   Timer? _signInStateCheckTimer;
-  bool? _deviceCameraUIShouldBeUsed;
 
   StreamSubscription? _accountListener;
 
@@ -45,8 +43,6 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
     SharedPrefs.use((prefs) {
       setState(() {
         _enableSE = prefs.isSEEnabled;
-        _deviceCameraUIShouldBeUsed =
-            Platform.isAndroid ? prefs.isDeviceCameraUIShouldBeUsed : null;
       });
     });
 
@@ -244,20 +240,6 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
               Navigator.pushNamed(context, TimetableSettingsPage.routeName);
             },
           ),
-          if (_deviceCameraUIShouldBeUsed != null)
-            CheckBoxSettingsTile(
-              title: "端末側の撮影UIを使用",
-              subtitle: "暗記カードのカメラ入力時、端末側の撮影画面を使用して撮影します。",
-              value: _deviceCameraUIShouldBeUsed!,
-              onChanged: (value) {
-                SharedPrefs.use((prefs) {
-                  prefs.isDeviceCameraUIShouldBeUsed = value!;
-                });
-                setState(() {
-                  _deviceCameraUIShouldBeUsed = value!;
-                });
-              },
-            ),
         ])
       ],
     );
