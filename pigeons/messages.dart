@@ -37,12 +37,21 @@ abstract class UtilsApi {
   void setWakeLock(bool wakeLock);
 
   ///
-  /// Sets fullscreen mode on Android. Do nothing on iOS.
+  /// Sets fullscreen mode.
   ///
   void setFullscreen(bool fullscreen);
 }
 
 @FlutterApi()
-abstract class UriApi {
+abstract class AppLinkHandlerApi {
   void handleUri(String uri);
+}
+
+@FlutterApi()
+abstract class FirestoreApi {
+  void saveMessagingToken(String token);
+}
+
+abstract class FirebaseMessagingApi {
+  String getToken();
 }

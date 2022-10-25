@@ -52,11 +52,11 @@ const screenShotMode = bool.fromEnvironment("SCREENSHOT_MODE");
 
 BuildContext? get globalContext => Application.globalKey.currentContext;
 
-var uriApi = UriFlutterApi();
+var uriApi = AppLinkHandlerFlutterApi();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  UriApi.setup(uriApi);
+  AppLinkHandlerApi.setup(uriApi);
   runZonedGuarded<Future<void>>(() async {
     await dotenv.load();
     googleSignIn.signInSilently();

@@ -227,7 +227,7 @@ void FLTUtilsApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTUt
     }
   }
     ///
-  /// Sets fullscreen mode on Android. Do nothing on iOS.
+  /// Sets fullscreen mode.
   ///
 {
     FlutterBasicMessageChannel *channel =
@@ -250,17 +250,17 @@ void FLTUtilsApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTUt
     }
   }
 }
-NSObject<FlutterMessageCodec> *FLTUriApiGetCodec() {
+NSObject<FlutterMessageCodec> *FLTAppLinkHandlerApiGetCodec() {
   static FlutterStandardMessageCodec *sSharedObject = nil;
   sSharedObject = [FlutterStandardMessageCodec sharedInstance];
   return sSharedObject;
 }
 
-@interface FLTUriApi ()
+@interface FLTAppLinkHandlerApi ()
 @property (nonatomic, strong) NSObject<FlutterBinaryMessenger> *binaryMessenger;
 @end
 
-@implementation FLTUriApi
+@implementation FLTAppLinkHandlerApi
 
 - (instancetype)initWithBinaryMessenger:(NSObject<FlutterBinaryMessenger> *)binaryMessenger {
   self = [super init];
@@ -272,9 +272,38 @@ NSObject<FlutterMessageCodec> *FLTUriApiGetCodec() {
 - (void)handleUriUri:(NSString *)arg_uri completion:(void(^)(NSError *_Nullable))completion {
   FlutterBasicMessageChannel *channel =
     [FlutterBasicMessageChannel
-      messageChannelWithName:@"dev.flutter.pigeon.UriApi.handleUri"
+      messageChannelWithName:@"dev.flutter.pigeon.AppLinkHandlerApi.handleUri"
       binaryMessenger:self.binaryMessenger
-      codec:FLTUriApiGetCodec()      ];  [channel sendMessage:@[arg_uri ?: [NSNull null]] reply:^(id reply) {
+      codec:FLTAppLinkHandlerApiGetCodec()      ];  [channel sendMessage:@[arg_uri ?: [NSNull null]] reply:^(id reply) {
+    completion(nil);
+  }];
+}
+@end
+NSObject<FlutterMessageCodec> *FLTFirestoreApiGetCodec() {
+  static FlutterStandardMessageCodec *sSharedObject = nil;
+  sSharedObject = [FlutterStandardMessageCodec sharedInstance];
+  return sSharedObject;
+}
+
+@interface FLTFirestoreApi ()
+@property (nonatomic, strong) NSObject<FlutterBinaryMessenger> *binaryMessenger;
+@end
+
+@implementation FLTFirestoreApi
+
+- (instancetype)initWithBinaryMessenger:(NSObject<FlutterBinaryMessenger> *)binaryMessenger {
+  self = [super init];
+  if (self) {
+    _binaryMessenger = binaryMessenger;
+  }
+  return self;
+}
+- (void)saveMessagingTokenToken:(NSString *)arg_token completion:(void(^)(NSError *_Nullable))completion {
+  FlutterBasicMessageChannel *channel =
+    [FlutterBasicMessageChannel
+      messageChannelWithName:@"dev.flutter.pigeon.FirestoreApi.saveMessagingToken"
+      binaryMessenger:self.binaryMessenger
+      codec:FLTFirestoreApiGetCodec()      ];  [channel sendMessage:@[arg_token ?: [NSNull null]] reply:^(id reply) {
     completion(nil);
   }];
 }

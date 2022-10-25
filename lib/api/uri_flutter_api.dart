@@ -2,7 +2,7 @@ import 'package:submon/app_link_handler.dart';
 import 'package:submon/main.dart';
 import 'package:submon/messages.dart';
 
-class UriFlutterApi implements UriApi {
+class AppLinkHandlerFlutterApi implements AppLinkHandlerApi {
   String? pendingUri;
 
   ///

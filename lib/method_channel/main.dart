@@ -25,7 +25,4 @@ class MainMethodPlugin {
     return await channel.invokeMethod<String>("takePictureNative");
   }
 
-  static Future<String?> getPendingUri() async {
-    return await channel.invokeMethod<String>("getPendingUri");
-  }
 }

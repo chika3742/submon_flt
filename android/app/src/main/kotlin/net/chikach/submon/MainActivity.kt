@@ -8,17 +8,12 @@ import android.util.Log
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationChannelGroupCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleObserver
 import io.flutter.embedding.android.FlutterActivity
-import io.flutter.embedding.android.FlutterSurfaceView
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.embedding.engine.FlutterEngine.EngineLifecycleListener
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
-import net.chikach.submon.Messages.UriApi
+import net.chikach.submon.Messages.AppLinkHandlerApi
 import net.chikach.submon.Messages.UtilsApi
 import net.chikach.submon.mch.MainMethodChannelHandler
 import net.chikach.submon.mch.MessagingMethodChannelHandler
@@ -70,7 +65,7 @@ class MainActivity : FlutterActivity() {
 
         if (intent.data != null) {
             Log.d("intent", intent.data.toString())
-            UriApi(binaryMessenger).handleUri(intent.data!!.toString()) {}
+            AppLinkHandlerApi(binaryMessenger).handleUri(intent.data!!.toString()) {}
         }
 
         // main method channel
@@ -171,7 +166,7 @@ class MainActivity : FlutterActivity() {
     override fun onFlutterUiDisplayed() {
         super.onFlutterUiDisplayed()
         if (intent.data != null) {
-            UriApi(binaryMessenger).handleUri(intent.data!!.toString()) {}
+            AppLinkHandlerApi(binaryMessenger).handleUri(intent.data!!.toString()) {}
         }
     }
 
@@ -193,7 +188,7 @@ class MainActivity : FlutterActivity() {
             if (intent.data!!.host == "auth-callback") {
                 utilsApi.completeOpenSignInCustomTabWithUri(intent.data!!.toString())
             } else {
-                UriApi(binaryMessenger).handleUri(intent.data.toString()) {}
+                AppLinkHandlerApi(binaryMessenger).handleUri(intent.data.toString()) {}
                 uriEventSink?.success(intent.data.toString())
             }
         }

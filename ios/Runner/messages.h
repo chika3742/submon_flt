@@ -45,18 +45,25 @@ NSObject<FlutterMessageCodec> *FLTUtilsApiGetCodec(void);
 ///
 - (void)setWakeLockWakeLock:(NSNumber *)wakeLock error:(FlutterError *_Nullable *_Nonnull)error;
 ///
-/// Sets fullscreen mode on Android. Do nothing on iOS.
+/// Sets fullscreen mode.
 ///
 - (void)setFullscreenFullscreen:(NSNumber *)fullscreen error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void FLTUtilsApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTUtilsApi> *_Nullable api);
 
-/// The codec used by FLTUriApi.
-NSObject<FlutterMessageCodec> *FLTUriApiGetCodec(void);
+/// The codec used by FLTAppLinkHandlerApi.
+NSObject<FlutterMessageCodec> *FLTAppLinkHandlerApiGetCodec(void);
 
-@interface FLTUriApi : NSObject
+@interface FLTAppLinkHandlerApi : NSObject
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
 - (void)handleUriUri:(NSString *)uri completion:(void(^)(NSError *_Nullable))completion;
+@end
+/// The codec used by FLTFirestoreApi.
+NSObject<FlutterMessageCodec> *FLTFirestoreApiGetCodec(void);
+
+@interface FLTFirestoreApi : NSObject
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
+- (void)saveMessagingTokenToken:(NSString *)token completion:(void(^)(NSError *_Nullable))completion;
 @end
 NS_ASSUME_NONNULL_END

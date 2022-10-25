@@ -128,7 +128,7 @@ public class Messages {
     void setWakeLock(@NonNull Boolean wakeLock);
     /**
      *
-     * Sets fullscreen mode on Android. Do nothing on iOS.
+     * Sets fullscreen mode.
      *
      */
     void setFullscreen(@NonNull Boolean fullscreen);
@@ -303,22 +303,43 @@ public class Messages {
     }
   }
   /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
-  public static class UriApi {
+  public static class AppLinkHandlerApi {
     private final BinaryMessenger binaryMessenger;
-    public UriApi(BinaryMessenger argBinaryMessenger){
+    public AppLinkHandlerApi(BinaryMessenger argBinaryMessenger){
       this.binaryMessenger = argBinaryMessenger;
     }
     public interface Reply<T> {
       void reply(T reply);
     }
-    /** The codec used by UriApi. */
+    /** The codec used by AppLinkHandlerApi. */
     static MessageCodec<Object> getCodec() {
       return       new StandardMessageCodec();
     }
     public void handleUri(@NonNull String uriArg, Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
-          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.UriApi.handleUri", getCodec());
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AppLinkHandlerApi.handleUri", getCodec());
       channel.send(new ArrayList<Object>(Collections.singletonList(uriArg)), channelReply -> {
+        callback.reply(null);
+      });
+    }
+  }
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
+  public static class FirestoreApi {
+    private final BinaryMessenger binaryMessenger;
+    public FirestoreApi(BinaryMessenger argBinaryMessenger){
+      this.binaryMessenger = argBinaryMessenger;
+    }
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+    /** The codec used by FirestoreApi. */
+    static MessageCodec<Object> getCodec() {
+      return       new StandardMessageCodec();
+    }
+    public void saveMessagingToken(@NonNull String tokenArg, Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.FirestoreApi.saveMessagingToken", getCodec());
+      channel.send(new ArrayList<Object>(Collections.singletonList(tokenArg)), channelReply -> {
         callback.reply(null);
       });
     }
