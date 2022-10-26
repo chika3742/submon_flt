@@ -15,9 +15,7 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import net.chikach.submon.Messages.AppLinkHandlerApi
 import net.chikach.submon.Messages.UtilsApi
-import net.chikach.submon.mch.MainMethodChannelHandler
 import net.chikach.submon.mch.MessagingMethodChannelHandler
-import net.chikach.submon.mch.REQUEST_CODE_CUSTOM_TABS
 import net.chikach.submon.mch.REQUEST_CODE_NOTIFICATION_PERMISSION
 
 val chromiumBrowserPackages = listOf(
@@ -41,15 +39,11 @@ const val TIMETABLE_CHANNEL = "timetable"
 const val DO_TIME_CHANNEL = "digestive"
 const val DEFAULT_CHANNEL = "default"
 
-const val METHOD_CHANNEL_MAIN = "net.chikach.submon/main"
 const val METHOD_CHANNEL_MESSAGING = "net.chikach.submon/messaging"
 const val EVENT_CHANNEL_SIGN_IN_URI = "net.chikach.submon/signInUri"
 const val EVENT_CHANNEL_URI = "net.chikach.submon/uri"
 
-const val REQUEST_CODE_TAKE_PICTURE = 1
-
 class MainActivity : FlutterActivity() {
-    private val mainMethodChannelHandler = MainMethodChannelHandler(this)
     private val utilsApi = UtilsAndroidApi(this)
     lateinit var binaryMessenger: BinaryMessenger
     private val messagingMethodChannelHandler = MessagingMethodChannelHandler(this)
@@ -70,9 +64,6 @@ class MainActivity : FlutterActivity() {
 
         // main method channel
         UtilsApi.setup(flutterEngine.dartExecutor.binaryMessenger, utilsApi)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_MAIN).apply {
-            setMethodCallHandler(mainMethodChannelHandler)
-        }
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_MESSAGING).apply {
             setMethodCallHandler(messagingMethodChannelHandler)
@@ -150,9 +141,6 @@ class MainActivity : FlutterActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            REQUEST_CODE_TAKE_PICTURE -> {
-                mainMethodChannelHandler.takePictureCallback(resultCode)
-            }
             REQUEST_CODE_CUSTOM_TABS -> {
                 Handler(mainLooper).postDelayed({
                     utilsApi.completeOpenSignInCustomTabWithError(

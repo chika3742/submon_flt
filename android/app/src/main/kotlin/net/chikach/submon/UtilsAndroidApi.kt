@@ -14,7 +14,8 @@ import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
-import net.chikach.submon.mch.REQUEST_CODE_CUSTOM_TABS
+
+const val REQUEST_CODE_CUSTOM_TABS = 15
 
 class UtilsAndroidApi(private val activity: MainActivity) : Messages.UtilsApi {
     private var signInCustomTabResult: Messages.Result<Messages.SignInCallback>? = null
