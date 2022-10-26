@@ -9,7 +9,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:submon/method_channel/channels.dart';
 import 'package:submon/models/sign_in_result.dart';
 import 'package:submon/models/twitter_sign_in_result.dart';
 
@@ -45,14 +44,18 @@ class TwitterSignIn {
       final url =
           "https://api.twitter.com/oauth/authorize?oauth_token=${reqToken!.oauthToken}";
 
-      var callback = await UtilsApi().openSignInCustomTab(url);
-      if (callback.uri != null) {
-        var query = Uri.parse(callback.uri!).queryParameters;
-        authResult =
-            AuthResult(query["oauth_token"]!, query["oauth_verifier"]!);
-      } else {
-        return TwitterSignInResult(errorCode: SignInError.unknown);
+      SignInCallback callback;
+      try {
+        callback = await UtilsApi().openSignInCustomTab(url);
+      } on PlatformException catch (e) {
+        if (e.message!.contains("canceled")) {
+          return TwitterSignInResult(errorCode: SignInError.cancelled);
+        }
+        rethrow;
       }
+
+      var query = Uri.parse(callback.uri).queryParameters;
+      authResult = AuthResult(query["oauth_token"]!, query["oauth_verifier"]!);
 
       var result = await getAccessToken(authResult);
 
@@ -71,11 +74,6 @@ class TwitterSignIn {
             errorCode: SignInError.twitterRequestTokenRequestFailed,
             errorMessage: "エラーが発生しました。(${e.code})");
       }
-    } on PlatformException catch (e) {
-      if (e.message!.contains("canceled")) {
-        return TwitterSignInResult(errorCode: SignInError.cancelled);
-      }
-      rethrow;
     } catch (e, stackTrace) {
       FirebaseCrashlytics.instance.recordError(e, stackTrace);
       return TwitterSignInResult(
@@ -168,27 +166,6 @@ class TwitterSignIn {
     final hmacsha1 = Hmac(sha1, keyBytes);
     final digest = hmacsha1.convert(bytes);
     return base64.encode(digest.bytes);
-  }
-
-  Future<AuthResult?> waitForUri() async {
-    var completer = Completer<AuthResult?>();
-    var subscription = const EventChannel(EventChannels.signInUri)
-        .receiveBroadcastStream()
-        .listen((event) {
-      if (event != null) {
-        var query = Uri.splitQueryString(event);
-        completer.complete(
-            AuthResult(query["oauth_token"]!, query["oauth_verifier"]!));
-      } else {
-        completer.complete(null);
-      }
-    });
-
-    var result = await completer.future;
-
-    subscription.cancel();
-
-    return result;
   }
 }
 
