@@ -1,4 +1,4 @@
-package net.chikach.submon
+package net.chikach.submon.api
 
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
@@ -14,11 +14,13 @@ import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
+import net.chikach.submon.Messages.*
+import net.chikach.submon.*
 
 const val REQUEST_CODE_CUSTOM_TABS = 15
 
-class UtilsAndroidApi(private val activity: MainActivity) : Messages.UtilsApi {
-    private var signInCustomTabResult: Messages.Result<Messages.SignInCallback>? = null
+class UtilsAndroidApi(private val activity: MainActivity) : UtilsApi {
+    private var signInCustomTabResult: Result<SignInCallback>? = null
 
     /**
      * Opens web page with WebActivity
@@ -36,7 +38,7 @@ class UtilsAndroidApi(private val activity: MainActivity) : Messages.UtilsApi {
 
     override fun openSignInCustomTab(
         url: String,
-        result: Messages.Result<Messages.SignInCallback>
+        result: Result<SignInCallback>
     ) {
         val ctIntent = CustomTabsIntent.Builder().build()
 
@@ -99,7 +101,7 @@ class UtilsAndroidApi(private val activity: MainActivity) : Messages.UtilsApi {
         }, 2000)
     }
 
-    override fun requestIDFA(result: Messages.Result<Boolean>) {
+    override fun requestIDFA(result: Result<Boolean>) {
         // Do nothing
         result.success(true)
     }
@@ -139,7 +141,7 @@ class UtilsAndroidApi(private val activity: MainActivity) : Messages.UtilsApi {
     }
 
     fun completeOpenSignInCustomTabWithUri(uri: String) {
-        signInCustomTabResult?.success(Messages.SignInCallback.Builder().setUri(uri).build())
+        signInCustomTabResult?.success(SignInCallback.Builder().setUri(uri).build())
         signInCustomTabResult = null
     }
 }

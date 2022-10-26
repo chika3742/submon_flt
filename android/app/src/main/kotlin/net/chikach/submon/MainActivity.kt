@@ -13,8 +13,8 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
-import net.chikach.submon.Messages.AppLinkHandlerApi
-import net.chikach.submon.Messages.UtilsApi
+import net.chikach.submon.Messages.*
+import net.chikach.submon.api.*
 import net.chikach.submon.mch.MessagingMethodChannelHandler
 import net.chikach.submon.mch.REQUEST_CODE_NOTIFICATION_PERMISSION
 
