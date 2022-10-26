@@ -7,7 +7,7 @@ import 'package:submon/components/dropdown_time_picker_bottom_sheet.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/main.dart';
-import 'package:submon/method_channel/messaging.dart';
+import 'package:submon/messages.dart';
 import 'package:submon/pages/settings/account_edit_page.dart';
 import 'package:submon/pages/settings/canvas_lms_sync.dart';
 import 'package:submon/pages/settings/google_tasks.dart';
@@ -86,10 +86,9 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
               leading: const Icon(Icons.schedule),
               trailing: _buildReminderTimeTrailing(),
               onTap: () async {
-                var requestPermissionResult =
-                    await MessagingPlugin.requestNotificationPermission();
-                if (requestPermissionResult ==
-                    NotificationPermissionState.denied) {
+                var requestPermissionResult = await FirebaseMessagingApi()
+                    .requestNotificationPermission();
+                if (!requestPermissionResult) {
                   showSnackBar(
                       globalContext!, "通知の表示が許可されていません。本体設定から許可してください。");
                 } else {

@@ -323,25 +323,84 @@ public class Messages {
       });
     }
   }
-  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
-  public static class FirestoreApi {
-    private final BinaryMessenger binaryMessenger;
-    public FirestoreApi(BinaryMessenger argBinaryMessenger){
-      this.binaryMessenger = argBinaryMessenger;
-    }
-    public interface Reply<T> {
-      void reply(T reply);
-    }
-    /** The codec used by FirestoreApi. */
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface FirebaseMessagingApi {
+    /**
+     *
+     * Returns Firebase Cloud Messaging notification token.
+     *
+     */
+    void getToken(Result<String> result);
+    /**
+     *
+     * Requests notification permission. if granted, `true` will be returned.
+     *
+     */
+    void requestNotificationPermission(Result<Boolean> result);
+
+    /** The codec used by FirebaseMessagingApi. */
     static MessageCodec<Object> getCodec() {
-      return       new StandardMessageCodec();
-    }
-    public void saveMessagingToken(@NonNull String tokenArg, Reply<Void> callback) {
-      BasicMessageChannel<Object> channel =
-          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.FirestoreApi.saveMessagingToken", getCodec());
-      channel.send(new ArrayList<Object>(Collections.singletonList(tokenArg)), channelReply -> {
-        callback.reply(null);
-      });
+      return       new StandardMessageCodec();    }
+    /**Sets up an instance of `FirebaseMessagingApi` to handle messages through the `binaryMessenger`. */
+    static void setup(BinaryMessenger binaryMessenger, FirebaseMessagingApi api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.FirebaseMessagingApi.getToken", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              Result<String> resultCallback = new Result<String>() {
+                public void success(String result) {
+                  wrapped.put("result", result);
+                  reply.reply(wrapped);
+                }
+                public void error(Throwable error) {
+                  wrapped.put("error", wrapError(error));
+                  reply.reply(wrapped);
+                }
+              };
+
+              api.getToken(resultCallback);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+              reply.reply(wrapped);
+            }
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.FirebaseMessagingApi.requestNotificationPermission", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              Result<Boolean> resultCallback = new Result<Boolean>() {
+                public void success(Boolean result) {
+                  wrapped.put("result", result);
+                  reply.reply(wrapped);
+                }
+                public void error(Throwable error) {
+                  wrapped.put("error", wrapError(error));
+                  reply.reply(wrapped);
+                }
+              };
+
+              api.requestNotificationPermission(resultCallback);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+              reply.reply(wrapped);
+            }
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
     }
   }
   @NonNull private static Map<String, Object> wrapError(@NonNull Throwable exception) {

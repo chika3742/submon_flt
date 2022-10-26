@@ -45,6 +45,7 @@ const val EVENT_CHANNEL_URI = "net.chikach.submon/uri"
 
 class MainActivity : FlutterActivity() {
     private val utilsApi = UtilsAndroidApi(this)
+    private val firebaseMessagingApi = FirebaseMessagingAndroidApi(this)
     lateinit var binaryMessenger: BinaryMessenger
     private val messagingMethodChannelHandler = MessagingMethodChannelHandler(this)
     var twitterSignInUriEventSink: EventChannel.EventSink? = null
@@ -63,7 +64,9 @@ class MainActivity : FlutterActivity() {
         }
 
         // main method channel
-        UtilsApi.setup(flutterEngine.dartExecutor.binaryMessenger, utilsApi)
+        UtilsApi.setup(binaryMessenger, utilsApi)
+
+        FirebaseMessagingApi.setup(binaryMessenger, firebaseMessagingApi)
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_MESSAGING).apply {
             setMethodCallHandler(messagingMethodChannelHandler)
@@ -165,8 +168,9 @@ class MainActivity : FlutterActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_NOTIFICATION_PERMISSION) {
-            messagingMethodChannelHandler
-                .completeRequestNotificationPermission(grantResults.all { it == PackageManager.PERMISSION_GRANTED })
+            firebaseMessagingApi.completeRequestNotificationPermissionWithResult(
+                grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+            )
         }
     }
 

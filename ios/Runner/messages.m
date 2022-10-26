@@ -279,32 +279,53 @@ NSObject<FlutterMessageCodec> *FLTAppLinkHandlerApiGetCodec() {
   }];
 }
 @end
-NSObject<FlutterMessageCodec> *FLTFirestoreApiGetCodec() {
+NSObject<FlutterMessageCodec> *FLTFirebaseMessagingApiGetCodec() {
   static FlutterStandardMessageCodec *sSharedObject = nil;
   sSharedObject = [FlutterStandardMessageCodec sharedInstance];
   return sSharedObject;
 }
 
-@interface FLTFirestoreApi ()
-@property (nonatomic, strong) NSObject<FlutterBinaryMessenger> *binaryMessenger;
-@end
-
-@implementation FLTFirestoreApi
-
-- (instancetype)initWithBinaryMessenger:(NSObject<FlutterBinaryMessenger> *)binaryMessenger {
-  self = [super init];
-  if (self) {
-    _binaryMessenger = binaryMessenger;
+void FLTFirebaseMessagingApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTFirebaseMessagingApi> *api) {
+    ///
+  /// Returns Firebase Cloud Messaging notification token.
+  ///
+{
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.FirebaseMessagingApi.getToken"
+        binaryMessenger:binaryMessenger
+        codec:FLTFirebaseMessagingApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(getTokenWithCompletion:)], @"FLTFirebaseMessagingApi api (%@) doesn't respond to @selector(getTokenWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api getTokenWithCompletion:^(NSString *_Nullable output, FlutterError *_Nullable error) {
+          callback(wrapResult(output, error));
+        }];
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
   }
-  return self;
+    ///
+  /// Requests notification permission. if granted, `true` will be returned.
+  ///
+{
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.FirebaseMessagingApi.requestNotificationPermission"
+        binaryMessenger:binaryMessenger
+        codec:FLTFirebaseMessagingApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(requestNotificationPermissionWithCompletion:)], @"FLTFirebaseMessagingApi api (%@) doesn't respond to @selector(requestNotificationPermissionWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api requestNotificationPermissionWithCompletion:^(NSNumber *_Nullable output, FlutterError *_Nullable error) {
+          callback(wrapResult(output, error));
+        }];
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
 }
-- (void)saveMessagingTokenToken:(NSString *)arg_token completion:(void(^)(NSError *_Nullable))completion {
-  FlutterBasicMessageChannel *channel =
-    [FlutterBasicMessageChannel
-      messageChannelWithName:@"dev.flutter.pigeon.FirestoreApi.saveMessagingToken"
-      binaryMessenger:self.binaryMessenger
-      codec:FLTFirestoreApiGetCodec()      ];  [channel sendMessage:@[arg_token ?: [NSNull null]] reply:^(id reply) {
-    completion(nil);
-  }];
-}
-@end

@@ -8,12 +8,12 @@ import 'package:submon/isar_db/isar_timetable.dart';
 import 'package:submon/isar_db/isar_timetable_class_time.dart';
 import 'package:submon/isar_db/isar_timetable_table.dart';
 import 'package:submon/main.dart';
+import 'package:submon/messages.dart';
 import 'package:submon/pages/settings/customize.dart';
 import 'package:submon/ui_components/settings_ui.dart';
 import 'package:submon/utils/ui.dart';
 
 import '../../db/firestore_provider.dart';
-import '../../method_channel/messaging.dart';
 import '../../user_config.dart';
 import '../../utils/utils.dart';
 
@@ -201,10 +201,9 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
               leading: const Icon(Icons.schedule),
               trailing: _buildReminderNotificationTimeTrailingIcon(),
               onTap: () async {
-                var requestPermissionResult =
-                    await MessagingPlugin.requestNotificationPermission();
-                if (requestPermissionResult ==
-                    NotificationPermissionState.denied) {
+                var requestPermissionResult = await FirebaseMessagingApi()
+                    .requestNotificationPermission();
+                if (!requestPermissionResult) {
                   showSnackBar(
                       globalContext!, "通知の表示が許可されていません。本体設定から許可してください。");
                 } else {

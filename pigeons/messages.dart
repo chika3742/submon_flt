@@ -47,11 +47,17 @@ abstract class AppLinkHandlerApi {
   void handleUri(String uri);
 }
 
-@FlutterApi()
-abstract class FirestoreApi {
-  void saveMessagingToken(String token);
-}
-
+@HostApi()
 abstract class FirebaseMessagingApi {
+  ///
+  /// Returns Firebase Cloud Messaging notification token.
+  ///
+  @async
   String getToken();
+
+  ///
+  /// Requests notification permission. if granted, `true` will be returned.
+  ///
+  @async
+  bool requestNotificationPermission();
 }

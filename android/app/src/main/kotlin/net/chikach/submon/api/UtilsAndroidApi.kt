@@ -1,5 +1,6 @@
 package net.chikach.submon.api
 
+import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
@@ -19,7 +20,7 @@ import net.chikach.submon.*
 
 const val REQUEST_CODE_CUSTOM_TABS = 15
 
-class UtilsAndroidApi(private val activity: MainActivity) : UtilsApi {
+class UtilsAndroidApi(private val activity: Activity) : UtilsApi {
     private var signInCustomTabResult: Result<SignInCallback>? = null
 
     /**

@@ -10,7 +10,7 @@ import 'package:submon/isar_db/isar_timetable.dart';
 import 'package:submon/isar_db/isar_timetable_class_time.dart';
 import 'package:submon/isar_db/isar_timetable_table.dart';
 import 'package:submon/main.dart';
-import 'package:submon/method_channel/messaging.dart';
+import 'package:submon/messages.dart';
 import 'package:submon/utils/batch_operation.dart';
 import 'package:submon/utils/firestore.dart';
 import 'package:submon/utils/ui.dart';
@@ -96,8 +96,8 @@ class FirestoreProvider {
   }
 
   static Future<void> removeNotificationToken() async {
-    var token = await MessagingPlugin.getToken();
-    if (userDoc != null && token != null) {
+    var token = await FirebaseMessagingApi().getToken();
+    if (userDoc != null) {
       await userDoc!.set({
         "notificationTokens": FieldValue.arrayRemove([token])
       }, SetOptions(merge: true));

@@ -13,7 +13,6 @@ import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
 import 'package:submon/main.dart';
-import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/home_tabs/tab_digestive_list.dart';
 import 'package:submon/pages/home_tabs/tab_others.dart';
 import 'package:submon/pages/home_tabs/tab_submissions.dart';
@@ -140,7 +139,7 @@ class HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    MessagingPlugin.getToken().then((token) {
+    FirebaseMessagingApi().getToken().then((token) {
       FirestoreProvider.saveNotificationToken(token);
     });
 

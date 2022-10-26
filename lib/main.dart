@@ -20,7 +20,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:submon/app_link_handler.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/messages.dart';
-import 'package:submon/method_channel/main.dart';
 import 'package:submon/models/sign_in_result.dart';
 import 'package:submon/pages/done_submissions_page.dart';
 import 'package:submon/pages/email_registration_page.dart';
@@ -329,7 +328,6 @@ class _ApplicationState extends State<Application> {
   void initFirebase() async {
     try {
       await Firebase.initializeApp();
-      MainMethodPlugin.initHandler();
       if (!screenShotMode) {
         FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
       }

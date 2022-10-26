@@ -15,7 +15,6 @@ import 'package:submon/pages/email_sign_in_page.dart';
 import '../db/firestore_provider.dart';
 import '../db/shared_prefs.dart';
 import '../isar_db/isar_provider.dart';
-import '../method_channel/messaging.dart';
 import '../pages/home_page.dart';
 import '../pages/welcome_page.dart';
 import '../user_config.dart';
@@ -250,13 +249,13 @@ class SignInHandler {
             loginMethod: userCred.additionalUserInfo?.providerId ?? "unknown");
 
         // save messaging token
-        var notificationToken = await MessagingPlugin.getToken();
+        var notificationToken = await FirebaseMessagingApi().getToken();
         await FirestoreProvider.saveNotificationToken(notificationToken);
         UtilsApi().updateWidgets();
 
-        var requestPermResult =
+        var requestPermissionResult =
             await requestNotificationPermissionIfEnabled(data);
-        if (requestPermResult == NotificationPermissionState.denied) {
+        if (requestPermissionResult == false) {
           return SignInError.notificationPermissionDenied;
         }
 
@@ -274,12 +273,11 @@ class SignInHandler {
     }
   }
 
-  Future<NotificationPermissionState?> requestNotificationPermissionIfEnabled(
-      UserConfig data) async {
+  Future<bool?> requestNotificationPermissionIfEnabled(UserConfig data) async {
     if (data.reminderNotificationTime != null ||
         data.timetableNotificationTime != null ||
         data.digestiveNotifications.isNotEmpty) {
-      return await MessagingPlugin.requestNotificationPermission();
+      return await FirebaseMessagingApi().requestNotificationPermission();
     }
     return null;
   }

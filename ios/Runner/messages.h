@@ -59,11 +59,20 @@ NSObject<FlutterMessageCodec> *FLTAppLinkHandlerApiGetCodec(void);
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
 - (void)handleUriUri:(NSString *)uri completion:(void(^)(NSError *_Nullable))completion;
 @end
-/// The codec used by FLTFirestoreApi.
-NSObject<FlutterMessageCodec> *FLTFirestoreApiGetCodec(void);
+/// The codec used by FLTFirebaseMessagingApi.
+NSObject<FlutterMessageCodec> *FLTFirebaseMessagingApiGetCodec(void);
 
-@interface FLTFirestoreApi : NSObject
-- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
-- (void)saveMessagingTokenToken:(NSString *)token completion:(void(^)(NSError *_Nullable))completion;
+@protocol FLTFirebaseMessagingApi
+///
+/// Returns Firebase Cloud Messaging notification token.
+///
+- (void)getTokenWithCompletion:(void(^)(NSString *_Nullable, FlutterError *_Nullable))completion;
+///
+/// Requests notification permission. if granted, `true` will be returned.
+///
+- (void)requestNotificationPermissionWithCompletion:(void(^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
 @end
+
+extern void FLTFirebaseMessagingApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTFirebaseMessagingApi> *_Nullable api);
+
 NS_ASSUME_NONNULL_END
