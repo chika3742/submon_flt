@@ -6,7 +6,7 @@ class AppLinkHandlerFlutterApi implements AppLinkHandlerApi {
   String? pendingUri;
 
   ///
-  /// Called when widget initialized.
+  /// Called when it seems to be [globalContext] initialized.
   ///
   void contextInitialized() {
     if (pendingUri != null) {

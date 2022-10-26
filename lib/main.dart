@@ -43,7 +43,7 @@ import 'package:submon/pages/timetable_edit_page.dart';
 import 'package:submon/pages/timetable_table_view_page.dart';
 import 'package:submon/pages/welcome_page.dart';
 
-import 'api/uri_flutter_api.dart';
+import 'api/app_link_handler_flutter_api.dart';
 
 var scopes = [tasks.TasksApi.tasksScope];
 var googleSignIn = GoogleSignIn(scopes: scopes);
