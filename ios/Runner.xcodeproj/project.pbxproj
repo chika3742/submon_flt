@@ -265,6 +265,7 @@
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				C79080BF283E245B001C7835 /* Embed App Extensions */,
 				59856562ECD001C1B2DD59AB /* [CP] Embed Pods Frameworks */,
+				C7AAADDD290975950084C1BD /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -442,6 +443,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
 			shellScript = "PATH_TO_GOOGLE_PLISTS=\"${PROJECT_DIR}\"\n\ncase \"${CONFIGURATION}\" in\n\"Debug\" )\ncp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info-debug.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" ;;\n\"Profile\" )\ncp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info-debug.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" ;;\n\"Release\" )\ncp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info-release.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" ;;\n\n*)\n;;\nesac\n\n";
+		};
+		C7AAADDD290975950084C1BD /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "$PODS_ROOT/FirebaseCrashlytics/upload-symbols --build-phase --validate -ai 1:646388318367:ios:935605aa77518f17d422aa\n$PODS_ROOT/FirebaseCrashlytics/upload-symbols --build-phase -ai 1:646388318367:ios:935605aa77518f17d422aa\n";
 		};
 		C7B9DC08283F96D9006821B8 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
