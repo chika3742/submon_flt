@@ -1,5 +1,12 @@
 import 'package:pigeon/pigeon.dart';
 
+@ConfigurePigeon(PigeonOptions(
+    dartOut: "lib/messages.dart",
+    objcOptions: ObjcOptions(prefix: "FLT"),
+    objcHeaderOut: "ios/Runner/messages.h",
+    objcSourceOut: "ios/Runner/messages.m",
+    javaOut: "android/app/src/main/java/net/chikach/submon/Messages.java",
+    javaOptions: JavaOptions(package: "net.chikach.submon")))
 class SignInCallback {
   late String uri;
 }
