@@ -13,8 +13,6 @@ import WidgetKit
 @objc class AppDelegate: FlutterAppDelegate {
     
     var viewController: FlutterViewController?
-    var uriEvent: UriEventChannelHandler?
-    var mainMethodCallHandler: MainMethodChannelHandler?
     
     override func application(
         _ application: UIApplication,
@@ -36,11 +34,8 @@ import WidgetKit
         
         viewController = window?.rootViewController as? FlutterViewController
         
-        mainMethodCallHandler = MainMethodChannelHandler(viewController: viewController!)
-        mainMethodCallHandler?.register()
-        MessagingMethodChannelHandler(viewController: viewController!, appDelegate: self).register()
-        
-        uriEvent = UriEventChannelHandler(binaryMessenger: viewController!.binaryMessenger)
+        FLTUtilsApiSetup(viewController!.binaryMessenger, UtilsIOSApi(viewController: viewController!))
+        FLTFirebaseMessagingApiSetup(viewController!.binaryMessenger, FirebaseMessagingIOSApi(appDelegate: self))
         
         initNotificationCategories()
         
@@ -53,11 +48,7 @@ import WidgetKit
     }
     
     override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        if (uriEvent != nil && uriEvent?.eventSink != nil) {
-            uriEvent?.eventSink?(url.absoluteString)
-        } else {
-            mainMethodCallHandler?.pendingUri = url.absoluteString
-        }
+        FLTAppLinkHandlerApi(binaryMessenger: viewController!.binaryMessenger).handleUri(url.absoluteString, completion: {_ in})
         
         return true
     }
@@ -123,10 +114,7 @@ import WidgetKit
 extension AppDelegate : MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: ["token": fcmToken ?? ""])
-        
-        if (fcmToken != nil) {
-            mainMethodCallHandler?.saveMessagingToken(token: fcmToken!)
-        }
+        // save fcm token?
     }
 }
 

@@ -60,12 +60,6 @@ void main() async {
     await dotenv.load();
     googleSignIn.signInSilently();
     MobileAds.instance.initialize();
-    // getTemporaryDirectory().then((value) async {
-    //   var directory = Directory(p.join(value.path, tempImgDirName));
-    //   if (await directory.exists()) {
-    //     directory.delete(recursive: true);
-    //   }
-    // });
     LicenseRegistry.addLicense(() async* {
       yield LicenseEntryWithLineBreaks(["google_fonts"],
           await rootBundle.loadString('assets/google_fonts/Murecho/OFL.txt'));

@@ -25,15 +25,15 @@ NSObject<FlutterMessageCodec> *FLTUtilsApiGetCodec(void);
 /// Opens web page with new activity on Android, with SFSafariViewController on iOS.
 /// On Android, [title] will be the title of activity. On iOS, [title] will be ignored.
 ///
-- (void)openWebPageTitle:(NSString *)title url:(NSString *)url error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)openWebPageWithTitle:(NSString *)title url:(NSString *)url error:(FlutterError *_Nullable *_Nonnull)error;
 ///
 /// Opens Custom Tab for signing in. Returns response URI with token query parameters.
 ///
-- (void)openSignInCustomTabUrl:(NSString *)url completion:(void(^)(FLTSignInCallback *_Nullable, FlutterError *_Nullable))completion;
+- (void)openSignInCustomTabWithUrl:(NSString *)url completion:(void(^)(FLTSignInCallback *_Nullable, FlutterError *_Nullable))completion;
 ///
 /// Updates App Widgets on Android, WidgetKit on iOS.
 ///
-- (void)updateWidgetsWithError:(FlutterError *_Nullable *_Nonnull)error;
+- (void)updateWidgets:(FlutterError *_Nullable *_Nonnull)error;
 ///
 /// Requests iOS/macOS ATT permission. On Android, this method does nothing.
 ///
@@ -43,11 +43,11 @@ NSObject<FlutterMessageCodec> *FLTUtilsApiGetCodec(void);
 ///
 /// Sets wake lock mode.
 ///
-- (void)setWakeLockWakeLock:(NSNumber *)wakeLock error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setWakeLock:(NSNumber *)wakeLock error:(FlutterError *_Nullable *_Nonnull)error;
 ///
 /// Sets fullscreen mode.
 ///
-- (void)setFullscreenFullscreen:(NSNumber *)fullscreen error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setFullscreen:(NSNumber *)fullscreen error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void FLTUtilsApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTUtilsApi> *_Nullable api);
@@ -57,7 +57,7 @@ NSObject<FlutterMessageCodec> *FLTAppLinkHandlerApiGetCodec(void);
 
 @interface FLTAppLinkHandlerApi : NSObject
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
-- (void)handleUriUri:(NSString *)uri completion:(void(^)(NSError *_Nullable))completion;
+- (void)handleUri:(NSString *)uri completion:(void(^)(NSError *_Nullable))completion;
 @end
 /// The codec used by FLTFirebaseMessagingApi.
 NSObject<FlutterMessageCodec> *FLTFirebaseMessagingApiGetCodec(void);

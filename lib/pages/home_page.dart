@@ -224,7 +224,7 @@ class HomePageState extends State<HomePage> {
           SafeArea(
             child: Navigator(
               key: _navigatorKey,
-              initialRoute: "home",
+              initialRoute: currentTabId,
               onGenerateRoute: (settings) {
                 Widget page;
                 switch (settings.name) {

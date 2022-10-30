@@ -17,17 +17,20 @@ abstract class UtilsApi {
   /// Opens web page with new activity on Android, with SFSafariViewController on iOS.
   /// On Android, [title] will be the title of activity. On iOS, [title] will be ignored.
   ///
+  @ObjCSelector("openWebPageWithTitle:url:")
   void openWebPage(String title, String url);
 
   ///
   /// Opens Custom Tab for signing in. Returns response URI with token query parameters.
   ///
   @async
+  @ObjCSelector("openSignInCustomTabWithUrl:")
   SignInCallback openSignInCustomTab(String url);
 
   ///
   /// Updates App Widgets on Android, WidgetKit on iOS.
   ///
+  @ObjCSelector("updateWidgets")
   void updateWidgets();
 
   ///
@@ -41,16 +44,19 @@ abstract class UtilsApi {
   ///
   /// Sets wake lock mode.
   ///
+  @ObjCSelector("setWakeLock:")
   void setWakeLock(bool wakeLock);
 
   ///
   /// Sets fullscreen mode.
   ///
+  @ObjCSelector("setFullscreen:")
   void setFullscreen(bool fullscreen);
 }
 
 @FlutterApi()
 abstract class AppLinkHandlerApi {
+  @ObjCSelector("handleUri:")
   void handleUri(String uri);
 }
 

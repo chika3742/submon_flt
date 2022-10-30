@@ -122,13 +122,13 @@ void FLTUtilsApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTUt
         binaryMessenger:binaryMessenger
         codec:FLTUtilsApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(openWebPageTitle:url:error:)], @"FLTUtilsApi api (%@) doesn't respond to @selector(openWebPageTitle:url:error:)", api);
+      NSCAssert([api respondsToSelector:@selector(openWebPageWithTitle:url:error:)], @"FLTUtilsApi api (%@) doesn't respond to @selector(openWebPageWithTitle:url:error:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSString *arg_title = GetNullableObjectAtIndex(args, 0);
         NSString *arg_url = GetNullableObjectAtIndex(args, 1);
         FlutterError *error;
-        [api openWebPageTitle:arg_title url:arg_url error:&error];
+        [api openWebPageWithTitle:arg_title url:arg_url error:&error];
         callback(wrapResult(nil, error));
       }];
     }
@@ -146,11 +146,11 @@ void FLTUtilsApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTUt
         binaryMessenger:binaryMessenger
         codec:FLTUtilsApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(openSignInCustomTabUrl:completion:)], @"FLTUtilsApi api (%@) doesn't respond to @selector(openSignInCustomTabUrl:completion:)", api);
+      NSCAssert([api respondsToSelector:@selector(openSignInCustomTabWithUrl:completion:)], @"FLTUtilsApi api (%@) doesn't respond to @selector(openSignInCustomTabWithUrl:completion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSString *arg_url = GetNullableObjectAtIndex(args, 0);
-        [api openSignInCustomTabUrl:arg_url completion:^(FLTSignInCallback *_Nullable output, FlutterError *_Nullable error) {
+        [api openSignInCustomTabWithUrl:arg_url completion:^(FLTSignInCallback *_Nullable output, FlutterError *_Nullable error) {
           callback(wrapResult(output, error));
         }];
       }];
@@ -169,10 +169,10 @@ void FLTUtilsApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTUt
         binaryMessenger:binaryMessenger
         codec:FLTUtilsApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(updateWidgetsWithError:)], @"FLTUtilsApi api (%@) doesn't respond to @selector(updateWidgetsWithError:)", api);
+      NSCAssert([api respondsToSelector:@selector(updateWidgets:)], @"FLTUtilsApi api (%@) doesn't respond to @selector(updateWidgets:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
-        [api updateWidgetsWithError:&error];
+        [api updateWidgets:&error];
         callback(wrapResult(nil, error));
       }];
     }
@@ -213,12 +213,12 @@ void FLTUtilsApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTUt
         binaryMessenger:binaryMessenger
         codec:FLTUtilsApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(setWakeLockWakeLock:error:)], @"FLTUtilsApi api (%@) doesn't respond to @selector(setWakeLockWakeLock:error:)", api);
+      NSCAssert([api respondsToSelector:@selector(setWakeLock:error:)], @"FLTUtilsApi api (%@) doesn't respond to @selector(setWakeLock:error:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_wakeLock = GetNullableObjectAtIndex(args, 0);
         FlutterError *error;
-        [api setWakeLockWakeLock:arg_wakeLock error:&error];
+        [api setWakeLock:arg_wakeLock error:&error];
         callback(wrapResult(nil, error));
       }];
     }
@@ -236,12 +236,12 @@ void FLTUtilsApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTUt
         binaryMessenger:binaryMessenger
         codec:FLTUtilsApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(setFullscreenFullscreen:error:)], @"FLTUtilsApi api (%@) doesn't respond to @selector(setFullscreenFullscreen:error:)", api);
+      NSCAssert([api respondsToSelector:@selector(setFullscreen:error:)], @"FLTUtilsApi api (%@) doesn't respond to @selector(setFullscreen:error:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_fullscreen = GetNullableObjectAtIndex(args, 0);
         FlutterError *error;
-        [api setFullscreenFullscreen:arg_fullscreen error:&error];
+        [api setFullscreen:arg_fullscreen error:&error];
         callback(wrapResult(nil, error));
       }];
     }
@@ -269,7 +269,7 @@ NSObject<FlutterMessageCodec> *FLTAppLinkHandlerApiGetCodec() {
   }
   return self;
 }
-- (void)handleUriUri:(NSString *)arg_uri completion:(void(^)(NSError *_Nullable))completion {
+- (void)handleUri:(NSString *)arg_uri completion:(void(^)(NSError *_Nullable))completion {
   FlutterBasicMessageChannel *channel =
     [FlutterBasicMessageChannel
       messageChannelWithName:@"dev.flutter.pigeon.AppLinkHandlerApi.handleUri"
