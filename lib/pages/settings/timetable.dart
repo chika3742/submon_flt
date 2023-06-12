@@ -301,13 +301,13 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
             return SettingsTile(
               title: "$e 時間目",
               subtitle: item != null
-                  ? "${item.start.format(context)} ~ ${item.end.format(context)}"
+                  ? "${item.startTime.format(context)} ~ ${item.endTime.format(context)}"
                   : "未設定",
               onTap: () async {
                 var start = await showTimePicker(
                   context: context,
                   initialTime:
-                      item?.start ?? const TimeOfDay(hour: 0, minute: 0),
+                      item?.startTime ?? const TimeOfDay(hour: 0, minute: 0),
                   helpText: "始業時刻を設定 (1/2)",
                 );
 
@@ -315,7 +315,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
 
                 var end = await showTimePicker(
                   context: context,
-                  initialTime: item?.end ?? start,
+                  initialTime: item?.endTime ?? start,
                   helpText: "終業時刻を設定 (2/2)",
                 );
 
@@ -327,8 +327,8 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
                 }
 
                 if (classTimes.any((element) {
-                  var a = element.start.toMinutes();
-                  var b = element.end.toMinutes();
+                  var a = element.startTime.toMinutes();
+                  var b = element.endTime.toMinutes();
                   var x = start.toMinutes();
                   var y = end.toMinutes();
                   return element.period != e &&

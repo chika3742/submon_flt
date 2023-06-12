@@ -16,18 +16,16 @@ part '../generated/isar_db/isar_submission.g.dart';
 
 @Collection()
 class Submission {
-  @Id()
-  int? id;
+  Id? id;
 
   late String title;
   late String details;
   late DateTime due;
   bool done = false;
   bool important = false;
-  @RepeatConverter()
+  @enumerated
   Repeat repeat = Repeat.none;
-  @ColorConverter()
-  Color color = Colors.white;
+  int color = Colors.white.value;
   String? googleTasksTaskId;
   int? canvasPlannableId;
   bool? repeatSubmissionCreated;
@@ -53,8 +51,8 @@ class Submission {
       "due": due.toUtc().toIso8601String(),
       "done": done,
       "important": important,
-      "repeat": const RepeatConverter().toIsar(repeat),
-      "color": const ColorConverter().toIsar(color),
+      "repeat": repeat.index,
+      "color": color,
       "googleTasksTaskId": googleTasksTaskId,
       "canvasPlannableId": canvasPlannableId,
       "repeatSubmissionCreated": repeatSubmissionCreated,
@@ -62,10 +60,14 @@ class Submission {
   }
 
   Color getColorToDisplay(SharedPrefs? pref) {
-    if (canvasPlannableId != null && color.value == 0xFFFFFFFF) {
-      return pref?.colorSubmissionsAddedFromLms ?? color;
+    if (canvasPlannableId != null && color == 0xFFFFFFFF) {
+      return pref?.colorSubmissionsAddedFromLms ?? Color(color);
     }
-    return color;
+    return Color(color);
+  }
+
+  Color getColor() {
+    return Color(color);
   }
 
   Submission.fromMap(Map<String, dynamic> map)
@@ -75,25 +77,11 @@ class Submission {
         due = DateTime.parse(map["due"]).toLocal(),
         done = map["done"] is bool ? map["done"] : map["done"] == 1,
         important = map["important"],
-        repeat = const RepeatConverter().fromIsar(map["repeat"]),
-        color = const ColorConverter().fromIsar(map["color"]),
+        repeat = Repeat.values[map["repeat"]],
+        color = map["color"],
         googleTasksTaskId = map["googleTasksTaskId"],
         canvasPlannableId = map["canvasPlannableId"],
         repeatSubmissionCreated = map["repeatSubmissionCreated"];
-}
-
-class RepeatConverter extends TypeConverter<Repeat, int> {
-  const RepeatConverter();
-
-  @override
-  Repeat fromIsar(int object) {
-    return Repeat.values[object];
-  }
-
-  @override
-  int toIsar(Repeat object) {
-    return object.index;
-  }
 }
 
 enum Repeat {
@@ -115,20 +103,6 @@ extension RepeatToLocaleString on Repeat {
   }
 }
 
-class ColorConverter extends TypeConverter<Color, int> {
-  const ColorConverter();
-
-  @override
-  Color fromIsar(int object) {
-    return Color(object);
-  }
-
-  @override
-  int toIsar(Color object) {
-    return object.value;
-  }
-}
-
 class SubmissionProvider extends IsarProvider<Submission> {
   @override
   Future<void> use(
@@ -144,7 +118,7 @@ class SubmissionProvider extends IsarProvider<Submission> {
   }
 
   Future<List<Submission>> getUndoneSubmissions() {
-    return collection
+    return this.collection
         .filter()
         .doneEqualTo(false)
         .sortByImportantDesc()
@@ -153,7 +127,7 @@ class SubmissionProvider extends IsarProvider<Submission> {
   }
 
   Future<List<Submission>> getDoneSubmissions() {
-    return collection.filter().doneEqualTo(true).sortByDueDesc().findAll();
+    return this.collection.filter().doneEqualTo(true).sortByDueDesc().findAll();
   }
 
   Future<void> invertDone(Submission data) {
