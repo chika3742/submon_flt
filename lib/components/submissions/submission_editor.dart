@@ -98,7 +98,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
                       ),
                       const SizedBox(width: 16),
                       TappableCard(
-                        color: _submission.color.withOpacity(0.3),
+                        color: _submission.getColor().withOpacity(0.3),
                         onTap: showColorPickerDialog,
                         child: const Icon(Icons.palette),
                       ),
@@ -276,7 +276,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
       context: context,
       builder: (context) {
         return ColorPickerDialog(
-          initialColor: _submission.color,
+          initialColor: _submission.getColor(),
         );
       },
     ).then((color) {

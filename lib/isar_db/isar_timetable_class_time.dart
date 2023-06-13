@@ -7,49 +7,58 @@ part '../generated/isar_db/isar_timetable_class_time.g.dart';
 
 @Collection()
 class TimetableClassTime {
-  @Id()
-  late int period;
-  @TimeOfDayConverter()
-  late TimeOfDay start;
-  @TimeOfDayConverter()
-  late TimeOfDay end;
+  late Id period;
+  late String start;
+  late String end;
 
   TimetableClassTime();
 
-  TimetableClassTime.fromStartEnd(this.start, this.end);
+  TimetableClassTime.fromStartEnd(TimeOfDay start, TimeOfDay end) {
+    startTime = start;
+    endTime = end;
+  }
+
+  @ignore
+  TimeOfDay get startTime {
+    return parseTime(start);
+  }
+  set startTime(TimeOfDay time) {
+    start = "${time.hour}:${time.minute}";
+  }
+
+  @ignore
+  TimeOfDay get endTime {
+    return parseTime(end);
+  }
+  set endTime(TimeOfDay time) {
+    end = "${time.hour}:${time.minute}";
+  }
+
+  TimeOfDay parseTime(String time) {
+    var split = time.split(":");
+    return TimeOfDay(hour: int.parse(split[0]), minute: int.parse(split[1]));
+  }
 
   TimetableClassTime.fromMap(Map<String, dynamic> map)
       : period = map["period"],
-        start = const TimeOfDayConverter().fromIsar(map["start"]),
-        end = const TimeOfDayConverter().fromIsar(map["end"]);
+        start = map["start"],
+        end = map["end"];
 
   Map<String, dynamic> toMap() {
     return {
       "period": period,
-      "start": const TimeOfDayConverter().toIsar(start),
-      "end": const TimeOfDayConverter().toIsar(end),
+      "start": start,
+      "end": end,
     };
   }
 
   TimetableClassTime.from({
     required this.period,
-    required this.start,
-    required this.end,
-  });
-}
-
-class TimeOfDayConverter extends TypeConverter<TimeOfDay, String> {
-  const TimeOfDayConverter();
-
-  @override
-  TimeOfDay fromIsar(String object) {
-    var split = object.split(":");
-    return TimeOfDay(hour: int.parse(split[0]), minute: int.parse(split[1]));
-  }
-
-  @override
-  String toIsar(TimeOfDay object) {
-    return "${object.hour}:${object.minute}";
+    required TimeOfDay start,
+    required TimeOfDay end,
+  }) {
+    startTime = start;
+    endTime = end;
   }
 }
 

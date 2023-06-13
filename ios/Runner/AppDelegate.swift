@@ -45,6 +45,7 @@ import WidgetKit
         initNotificationCategories()
         
         Messaging.messaging().delegate = self
+        UNUserNotificationCenter.current().delegate = self
         application.registerForRemoteNotifications()
         
         GeneratedPluginRegistrant.register(with: self)

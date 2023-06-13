@@ -6,193 +6,175 @@ part of '../../isar_db/isar_memorization_card_group.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
 extension GetMemorizationCardGroupCollection on Isar {
   IsarCollection<MemorizationCardGroup> get memorizationCardGroups =>
-      getCollection();
+      this.collection();
 }
 
 const MemorizationCardGroupSchema = CollectionSchema(
-  name: 'MemorizationCardGroup',
-  schema:
-      '{"name":"MemorizationCardGroup","idName":"id","properties":[{"name":"title","type":"String"}],"indexes":[],"links":[]}',
-  idName: 'id',
-  propertyIds: {'title': 0},
-  listProperties: {},
-  indexIds: {},
-  indexValueTypes: {},
-  linkIds: {},
-  backlinkLinkNames: {},
+  name: r'MemorizationCardGroup',
+  id: -3584954084259191415,
+  properties: {
+    r'title': PropertySchema(
+      id: 0,
+      name: r'title',
+      type: IsarType.string,
+    )
+  },
+  estimateSize: _memorizationCardGroupEstimateSize,
+  serialize: _memorizationCardGroupSerialize,
+  deserialize: _memorizationCardGroupDeserialize,
+  deserializeProp: _memorizationCardGroupDeserializeProp,
+  idName: r'id',
+  indexes: {},
+  links: {},
+  embeddedSchemas: {},
   getId: _memorizationCardGroupGetId,
-  setId: _memorizationCardGroupSetId,
   getLinks: _memorizationCardGroupGetLinks,
-  attachLinks: _memorizationCardGroupAttachLinks,
-  serializeNative: _memorizationCardGroupSerializeNative,
-  deserializeNative: _memorizationCardGroupDeserializeNative,
-  deserializePropNative: _memorizationCardGroupDeserializePropNative,
-  serializeWeb: _memorizationCardGroupSerializeWeb,
-  deserializeWeb: _memorizationCardGroupDeserializeWeb,
-  deserializePropWeb: _memorizationCardGroupDeserializePropWeb,
-  version: 3,
+  attach: _memorizationCardGroupAttach,
+  version: '3.1.0+1',
 );
 
-int? _memorizationCardGroupGetId(MemorizationCardGroup object) {
-  if (object.id == Isar.autoIncrement) {
-    return null;
-  } else {
-    return object.id;
-  }
+int _memorizationCardGroupEstimateSize(
+  MemorizationCardGroup object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  bytesCount += 3 + object.title.length * 3;
+  return bytesCount;
 }
 
-void _memorizationCardGroupSetId(MemorizationCardGroup object, int id) {
-  object.id = id;
+void _memorizationCardGroupSerialize(
+  MemorizationCardGroup object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeString(offsets[0], object.title);
 }
 
-List<IsarLinkBase> _memorizationCardGroupGetLinks(
-    MemorizationCardGroup object) {
-  return [];
-}
-
-void _memorizationCardGroupSerializeNative(
-    IsarCollection<MemorizationCardGroup> collection,
-    IsarRawObject rawObj,
-    MemorizationCardGroup object,
-    int staticSize,
-    List<int> offsets,
-    AdapterAlloc alloc) {
-  var dynamicSize = 0;
-  final value0 = object.title;
-  final _title = IsarBinaryWriter.utf8Encoder.convert(value0);
-  dynamicSize += (_title.length) as int;
-  final size = staticSize + dynamicSize;
-
-  rawObj.buffer = alloc(size);
-  rawObj.buffer_length = size;
-  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-  final writer = IsarBinaryWriter(buffer, staticSize);
-  writer.writeBytes(offsets[0], _title);
-}
-
-MemorizationCardGroup _memorizationCardGroupDeserializeNative(
-    IsarCollection<MemorizationCardGroup> collection,
-    int id,
-    IsarBinaryReader reader,
-    List<int> offsets) {
+MemorizationCardGroup _memorizationCardGroupDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   final object = MemorizationCardGroup();
   object.id = id;
   object.title = reader.readString(offsets[0]);
   return object;
 }
 
-P _memorizationCardGroupDeserializePropNative<P>(
-    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-  switch (propertyIndex) {
-    case -1:
-      return id as P;
+P _memorizationCardGroupDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
     case 0:
       return (reader.readString(offset)) as P;
     default:
-      throw 'Illegal propertyIndex';
+      throw IsarError('Unknown property with id $propertyId');
   }
 }
 
-dynamic _memorizationCardGroupSerializeWeb(
-    IsarCollection<MemorizationCardGroup> collection,
+Id _memorizationCardGroupGetId(MemorizationCardGroup object) {
+  return object.id ?? Isar.autoIncrement;
+}
+
+List<IsarLinkBase<dynamic>> _memorizationCardGroupGetLinks(
     MemorizationCardGroup object) {
-  final jsObj = IsarNative.newJsObject();
-  IsarNative.jsObjectSet(jsObj, 'id', object.id);
-  IsarNative.jsObjectSet(jsObj, 'title', object.title);
-  return jsObj;
+  return [];
 }
 
-MemorizationCardGroup _memorizationCardGroupDeserializeWeb(
-    IsarCollection<MemorizationCardGroup> collection, dynamic jsObj) {
-  final object = MemorizationCardGroup();
-  object.id = IsarNative.jsObjectGet(jsObj, 'id');
-  object.title = IsarNative.jsObjectGet(jsObj, 'title') ?? '';
-  return object;
+void _memorizationCardGroupAttach(
+    IsarCollection<dynamic> col, Id id, MemorizationCardGroup object) {
+  object.id = id;
 }
-
-P _memorizationCardGroupDeserializePropWeb<P>(
-    Object jsObj, String propertyName) {
-  switch (propertyName) {
-    case 'id':
-      return (IsarNative.jsObjectGet(jsObj, 'id')) as P;
-    case 'title':
-      return (IsarNative.jsObjectGet(jsObj, 'title') ?? '') as P;
-    default:
-      throw 'Illegal propertyName';
-  }
-}
-
-void _memorizationCardGroupAttachLinks(
-    IsarCollection col, int id, MemorizationCardGroup object) {}
 
 extension MemorizationCardGroupQueryWhereSort
     on QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QWhere> {
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhere>
       anyId() {
-    return addWhereClauseInternal(const IdWhereClause.any());
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(const IdWhereClause.any());
+    });
   }
 }
 
 extension MemorizationCardGroupQueryWhere on QueryBuilder<MemorizationCardGroup,
     MemorizationCardGroup, QWhereClause> {
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhereClause>
-      idEqualTo(int id) {
-    return addWhereClauseInternal(IdWhereClause.between(
-      lower: id,
-      includeLower: true,
-      upper: id,
-      includeUpper: true,
-    ));
+      idEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(
+        lower: id,
+        upper: id,
+      ));
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhereClause>
-      idNotEqualTo(int id) {
-    if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(
-        IdWhereClause.lessThan(upper: id, includeUpper: false),
-      ).addWhereClauseInternal(
-        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      idNotEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhereClause>
+      idGreaterThan(Id id, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
       );
-    } else {
-      return addWhereClauseInternal(
-        IdWhereClause.greaterThan(lower: id, includeLower: false),
-      ).addWhereClauseInternal(
-        IdWhereClause.lessThan(upper: id, includeUpper: false),
+    });
+  }
+
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhereClause>
+      idLessThan(Id id, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
       );
-    }
-  }
-
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhereClause>
-      idGreaterThan(int id, {bool include = false}) {
-    return addWhereClauseInternal(
-      IdWhereClause.greaterThan(lower: id, includeLower: include),
-    );
-  }
-
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhereClause>
-      idLessThan(int id, {bool include = false}) {
-    return addWhereClauseInternal(
-      IdWhereClause.lessThan(upper: id, includeUpper: include),
-    );
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhereClause>
       idBetween(
-    int lowerId,
-    int upperId, {
+    Id lowerId,
+    Id upperId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(IdWhereClause.between(
-      lower: lowerId,
-      includeLower: includeLower,
-      upper: upperId,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(
+        lower: lowerId,
+        includeLower: includeLower,
+        upper: upperId,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 }
 
@@ -200,62 +182,76 @@ extension MemorizationCardGroupQueryFilter on QueryBuilder<
     MemorizationCardGroup, MemorizationCardGroup, QFilterCondition> {
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
       QAfterFilterCondition> idIsNull() {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.isNull,
-      property: 'id',
-      value: null,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'id',
+      ));
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
-      QAfterFilterCondition> idEqualTo(int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'id',
-      value: value,
-    ));
+      QAfterFilterCondition> idIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+      QAfterFilterCondition> idEqualTo(Id? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
       QAfterFilterCondition> idGreaterThan(
-    int value, {
+    Id? value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
       QAfterFilterCondition> idLessThan(
-    int value, {
+    Id? value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
       QAfterFilterCondition> idBetween(
-    int lower,
-    int upper, {
+    Id? lower,
+    Id? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'id',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
@@ -263,60 +259,65 @@ extension MemorizationCardGroupQueryFilter on QueryBuilder<
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'title',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
       QAfterFilterCondition> titleGreaterThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'title',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
       QAfterFilterCondition> titleLessThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'title',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
       QAfterFilterCondition> titleBetween(
     String lower,
     String upper, {
-    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'title',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'title',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
@@ -324,12 +325,13 @@ extension MemorizationCardGroupQueryFilter on QueryBuilder<
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'title',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
@@ -337,107 +339,136 @@ extension MemorizationCardGroupQueryFilter on QueryBuilder<
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'title',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
           QAfterFilterCondition>
       titleContains(String value, {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'title',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
           QAfterFilterCondition>
       titleMatches(String pattern, {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'title',
-      value: pattern,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'title',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+      QAfterFilterCondition> titleIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'title',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+      QAfterFilterCondition> titleIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'title',
+        value: '',
+      ));
+    });
   }
 }
+
+extension MemorizationCardGroupQueryObject on QueryBuilder<
+    MemorizationCardGroup, MemorizationCardGroup, QFilterCondition> {}
 
 extension MemorizationCardGroupQueryLinks on QueryBuilder<MemorizationCardGroup,
     MemorizationCardGroup, QFilterCondition> {}
 
-extension MemorizationCardGroupQueryWhereSortBy
+extension MemorizationCardGroupQuerySortBy
     on QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QSortBy> {
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
-      sortById() {
-    return addSortByInternal('id', Sort.asc);
-  }
-
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
-      sortByIdDesc() {
-    return addSortByInternal('id', Sort.desc);
-  }
-
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
       sortByTitle() {
-    return addSortByInternal('title', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'title', Sort.asc);
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
       sortByTitleDesc() {
-    return addSortByInternal('title', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'title', Sort.desc);
+    });
   }
 }
 
-extension MemorizationCardGroupQueryWhereSortThenBy
+extension MemorizationCardGroupQuerySortThenBy
     on QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QSortThenBy> {
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
       thenById() {
-    return addSortByInternal('id', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
       thenByIdDesc() {
-    return addSortByInternal('id', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
       thenByTitle() {
-    return addSortByInternal('title', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'title', Sort.asc);
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
       thenByTitleDesc() {
-    return addSortByInternal('title', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'title', Sort.desc);
+    });
   }
 }
 
 extension MemorizationCardGroupQueryWhereDistinct
     on QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QDistinct> {
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QDistinct>
-      distinctById() {
-    return addDistinctByInternal('id');
-  }
-
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QDistinct>
       distinctByTitle({bool caseSensitive = true}) {
-    return addDistinctByInternal('title', caseSensitive: caseSensitive);
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'title', caseSensitive: caseSensitive);
+    });
   }
 }
 
 extension MemorizationCardGroupQueryProperty on QueryBuilder<
     MemorizationCardGroup, MemorizationCardGroup, QQueryProperty> {
-  QueryBuilder<MemorizationCardGroup, int?, QQueryOperations> idProperty() {
-    return addPropertyNameInternal('id');
+  QueryBuilder<MemorizationCardGroup, int, QQueryOperations> idProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'id');
+    });
   }
 
   QueryBuilder<MemorizationCardGroup, String, QQueryOperations>
       titleProperty() {
-    return addPropertyNameInternal('title');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'title');
+    });
   }
 }

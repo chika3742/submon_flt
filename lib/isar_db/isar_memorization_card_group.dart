@@ -4,7 +4,7 @@ part '../generated/isar_db/isar_memorization_card_group.g.dart';
 
 @Collection()
 class MemorizationCardGroup {
-  int? id;
+  Id? id;
   late String title;
 
   MemorizationCardGroup();

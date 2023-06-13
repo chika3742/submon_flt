@@ -60,7 +60,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
       setState(() {
         var currentTime = TimeOfDay.now();
         var currentPeriod = widget.classTimeItems.firstWhereOrNull((element) {
-          return currentTime.isInsideRange(element.start, element.end);
+          return currentTime.isInsideRange(element.startTime, element.endTime);
         });
 
         if (currentPeriod != null) {
@@ -70,15 +70,15 @@ class _TimetableDayListState extends State<TimetableDayList> {
           _markerPos = getWidgetPos(currentContext)!.dy -
               16 +
               getWidgetSize(currentContext)!.height *
-                  ((currentTime.toMinutes() - currentPeriod.start.toMinutes()) /
-                      (currentPeriod.end.toMinutes() -
-                          currentPeriod.start.toMinutes()));
+                  ((currentTime.toMinutes() - currentPeriod.startTime.toMinutes()) /
+                      (currentPeriod.endTime.toMinutes() -
+                          currentPeriod.startTime.toMinutes()));
         } else {
           var interval = widget.classTimeItems.firstWhereOrNull((e) {
-            return e.end.toMinutes() < currentTime.toMinutes() &&
+            return e.endTime.toMinutes() < currentTime.toMinutes() &&
                 widget.classTimeItems.any((element) =>
                 element.period == e.period + 1 &&
-                    currentTime.toMinutes() < element.start.toMinutes());
+                    currentTime.toMinutes() < element.startTime.toMinutes());
           });
           if (interval != null) {
             var currentContext =
@@ -227,12 +227,12 @@ class _TimetableDayListState extends State<TimetableDayList> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(timeItem?.start.format(context) ?? "--:--"),
+                    Text(timeItem?.startTime.format(context) ?? "--:--"),
                     Transform.rotate(
                       angle: pi / 2,
                       child: const Icon(Icons.arrow_right),
                     ),
-                    Text(timeItem?.end.format(context) ?? "--:--"),
+                    Text(timeItem?.endTime.format(context) ?? "--:--"),
                   ],
                 ),
               ),

@@ -84,7 +84,7 @@ class SubmissionListItemBottomSheet extends StatelessWidget {
               "?title=${Uri.encodeComponent(item.title)}"
               "&date=${item.due.toUtc().toIso8601String()}"
               "${item.details != "" ? "&details=${Uri.encodeComponent(item.details)}" : ""}"
-              "&color=${item.color.value}");
+              "&color=${item.color}");
           Share.share(link.shortUrl.toString());
         } catch (error, stackTrace) {
           showSnackBar(globalContext!, "エラーが発生しました。");
