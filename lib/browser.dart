@@ -7,12 +7,12 @@ import 'method_channel/main.dart';
 class Browser {
   static void openTermsOfUse() {
     MainMethodPlugin.openWebPage(
-        "利用規約", "https://www.chikach.net/nonav/submon-terms/");
+        "利用規約", "https://www.chikach.net/submon-terms?hideNav=1");
   }
 
   static void openPrivacyPolicy() {
     MainMethodPlugin.openWebPage(
-        "プライバシーポリシー", "https://www.chikach.net/nonav/submon-privacy-2/");
+        "プライバシーポリシー", "https://www.chikach.net/submon-privacy-2?hideNav=1");
   }
 
   static void openChangelog() {
