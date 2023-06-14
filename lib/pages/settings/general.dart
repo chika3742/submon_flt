@@ -43,7 +43,7 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
               subtitle: _version,
             ),
             SettingsTile(
-              title: "更新履歴・開発進捗",
+              title: "更新履歴",
               onTap: () {
                 Browser.openChangelog();
               },
@@ -94,7 +94,7 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
               onTap: () {
                 showLicensePage(
                     context: context,
-                    applicationLegalese: "©chika 2021",
+                    applicationLegalese: "©chika 2023",
                     applicationVersion: _version);
               },
             ),
