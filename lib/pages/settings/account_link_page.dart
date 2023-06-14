@@ -102,28 +102,8 @@ class _AccountLinkPageState extends State<AccountLinkPage> {
                   "連携の解除",
                   "${provider.name}との連携を解除しますか？",
                   showCancel: true,
-                  onOKPressed: () async {
-                    final user = auth.currentUser;
-                    if (user == null) {
-                      return;
-                    }
-
-                    setState(() {
-                      provider.processing = true;
-                    });
-
-                    try {
-                      await user.unlink(provider.providerId);
-                      setState(() {
-                        provider.linked = false;
-                      });
-                    } catch (e) {
-                      showSimpleDialog(context, "エラー", "連携の解除に失敗しました。");
-                    } finally {
-                      setState(() {
-                        provider.processing = false;
-                      });
-                    }
+                  onOKPressed: () {
+                    _unlink(provider);
                   },
                 );
               }
@@ -134,52 +114,79 @@ class _AccountLinkPageState extends State<AccountLinkPage> {
       return ElevatedButton(
         onPressed: _providers.none((e) => e.processing)
             ? () {
-                final user = auth.currentUser;
-                if (user == null) {
-                  return;
-                }
-
-                setState(() {
-                  provider.processing = true;
-                });
-
-                SignInHandler(SignInMode.upgrade)
-                    .signIn(provider.providerType)
-                    .then((value) {
-                  if (value.errorCode != null) {
-                    throw value.errorCode!;
-                  }
-
-                  setState(() {
-                    provider.linked = true;
-                  });
-                  showSnackBar(context, "連携しました。");
-                }).catchError((e) {
-                  debugPrint(e.toString());
-
-                  if (e is SignInError && e == SignInError.cancelled) {
-                    return;
-                  }
-
-                  if (e is FirebaseAuthException) {
-                    switch (e.code) {
-                      case "credential-already-in-use":
-                        showSnackBar(context,
-                            "この${provider.name}アカウントは既に他のアカウントに連携されています");
-                        return;
-                    }
-                  }
-
-                  showSnackBar(context, "連携に失敗しました。(${e.toString()})");
-                }).whenComplete(() {
-                  setState(() {
-                    provider.processing = false;
-                  });
-                });
+                _link(provider);
               }
             : null,
         child: const Text("連携"),
       );
+    }
+  }
+
+  Future<void> _link(_Provider provider) async {
+    final user = auth.currentUser;
+    if (user == null) {
+      return;
+    }
+
+    setState(() {
+      provider.processing = true;
+    });
+
+    SignInHandler(SignInMode.upgrade)
+        .signIn(provider.providerType)
+        .then((value) {
+      if (value.errorCode != null) {
+        throw value.errorCode!;
+      }
+
+      setState(() {
+        provider.linked = true;
+      });
+      showSnackBar(context, "連携しました。");
+    }).catchError((e) {
+      debugPrint(e.toString());
+
+      if (e is SignInError && e == SignInError.cancelled) {
+        return;
+      }
+
+      if (e is FirebaseAuthException) {
+        switch (e.code) {
+          case "credential-already-in-use":
+            showSnackBar(context, "この${provider.name}アカウントは既に他のアカウントに連携されています");
+            return;
+        }
+      }
+
+      showSnackBar(context, "連携に失敗しました。(${e.toString()})");
+    }).whenComplete(() {
+      setState(() {
+        provider.processing = false;
+      });
+    });
+  }
+
+  Future<void> _unlink(_Provider provider) async {
+    final user = auth.currentUser;
+    if (user == null) {
+      return;
+    }
+
+    setState(() {
+      provider.processing = true;
+    });
+
+    try {
+      await user.unlink(provider.providerId);
+      setState(() {
+        provider.linked = false;
+      });
+    } catch (e) {
+      showSimpleDialog(context, "エラー", "連携の解除に失敗しました。");
+    } finally {
+      setState(() {
+        provider.processing = false;
+      });
     }
   }
 }
