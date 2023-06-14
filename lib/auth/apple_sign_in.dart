@@ -4,15 +4,12 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/services.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:submon/utils/dynamic_links.dart';
+import 'package:submon/apple_web_auth_options.dart';
 
 import '../method_channel/channels.dart';
 import '../method_channel/main.dart';
 
 class AppleSignIn {
-  String clientId = "net.chikach.submon.asi";
-  Uri redirectUri = Uri.parse(getAppleSignInRedirectorUrl());
-
   static String sha256ofString(String input) {
     final bytes = utf8.encode(input);
     final digest = sha256.convert(bytes);
@@ -21,14 +18,16 @@ class AppleSignIn {
 
   Future<AuthorizationCredentialAppleID?> signIn(
       {required String state, required String nonce}) async {
+    final options = AppleWebAuthOptions.currentBuild;
+
     var uri = Uri(
       scheme: "https",
       host: "appleid.apple.com",
       path: "/auth/authorize",
       queryParameters: {
         "response_type": "code id_token",
-        "client_id": clientId,
-        "redirect_uri": redirectUri.toString(),
+        "client_id": options.clientId,
+        "redirect_uri": options.redirectUri.toString(),
         "state": state,
         "nonce": nonce,
         "response_mode": "form_post",
