@@ -94,7 +94,7 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
               onTap: () {
                 showLicensePage(
                     context: context,
-                    applicationLegalese: "©chika 2021",
+                    applicationLegalese: "©chika 2023",
                     applicationVersion: _version);
               },
             ),
