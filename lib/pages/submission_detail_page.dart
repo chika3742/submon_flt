@@ -125,9 +125,13 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: showCreateDigestiveBottomSheet,
-        child: const Icon(Icons.add),
+      floatingActionButton: Padding(
+        padding:
+            EdgeInsets.only(bottom: _bannerAd?.size.height.toDouble() ?? 0.0),
+        child: FloatingActionButton(
+          onPressed: showCreateDigestiveBottomSheet,
+          child: const Icon(Icons.add),
+        ),
       ),
       body: SafeArea(
         child: Column(
