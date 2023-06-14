@@ -25,6 +25,7 @@ import 'package:submon/pages/email_sign_in_page.dart';
 import 'package:submon/pages/focus_timer_page.dart';
 import 'package:submon/pages/home_page.dart';
 import 'package:submon/pages/settings/account_edit_page.dart';
+import 'package:submon/pages/settings/account_link_page.dart';
 import 'package:submon/pages/settings/customize.dart';
 import 'package:submon/pages/settings/functions.dart';
 import 'package:submon/pages/settings/general.dart';
@@ -269,6 +270,11 @@ class _ApplicationState extends State<Application> {
             return generatePageRoute(
                 (context) =>
                     const SettingsPage("時間割表設定", TimetableSettingsPage()),
+                settings);
+          case AccountLinkPage.routeName:
+            return generatePageRoute(
+                (context) =>
+                    const SettingsPage("外部アカウント連携設定", AccountLinkPage()),
                 settings);
           case GoogleTasksSettingsPage.routeName:
             return generatePageRoute(

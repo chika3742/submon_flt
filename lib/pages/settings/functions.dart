@@ -10,6 +10,7 @@ import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/settings/account_edit_page.dart';
+import 'package:submon/pages/settings/account_link_page.dart';
 import 'package:submon/pages/settings/google_tasks.dart';
 import 'package:submon/pages/settings/timetable.dart';
 import 'package:submon/pages/sign_in_page.dart';
@@ -162,6 +163,12 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                 _changePassword();
               },
             ),
+          SettingsTile(
+              title: "外部アカウント連携設定",
+              onTap: () async {
+                await Navigator.pushNamed(context, AccountLinkPage.routeName);
+                setState(() {});
+              }),
           if (auth.currentUser != null)
             SettingsTile(
               title: "ユーザー名の変更",
@@ -313,13 +320,13 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
     ];
     var currentUser = FirebaseAuth.instance.currentUser!;
     return !currentUser.isAnonymous &&
-        providers.contains(currentUser.providerData.first.providerId);
+        providers.contains(currentUser.providerData.firstOrNull?.providerId);
   }
 
   bool passwordChangeable() {
     var currentUser = FirebaseAuth.instance.currentUser!;
     return !currentUser.isAnonymous &&
-        currentUser.providerData.first.providerId ==
+        currentUser.providerData.firstOrNull?.providerId ==
             EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD;
   }
 }
