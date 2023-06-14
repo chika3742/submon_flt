@@ -25,7 +25,6 @@ import 'package:submon/pages/email_sign_in_page.dart';
 import 'package:submon/pages/focus_timer_page.dart';
 import 'package:submon/pages/home_page.dart';
 import 'package:submon/pages/settings/account_edit_page.dart';
-import 'package:submon/pages/settings/canvas_lms_sync.dart';
 import 'package:submon/pages/settings/customize.dart';
 import 'package:submon/pages/settings/functions.dart';
 import 'package:submon/pages/settings/general.dart';
@@ -275,11 +274,6 @@ class _ApplicationState extends State<Application> {
             return generatePageRoute(
                 (context) => const SettingsPage(
                     "Google Tasksと連携", GoogleTasksSettingsPage()),
-                settings);
-          case CanvasLmsSyncSettingsPage.routeName:
-            return generatePageRoute(
-                (context) => const SettingsPage(
-                    "Canvas と連携", CanvasLmsSyncSettingsPage()),
                 settings);
           case AccountEditPage.changeEmailRouteName:
             return generatePageRoute(

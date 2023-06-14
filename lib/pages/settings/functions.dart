@@ -10,7 +10,6 @@ import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/main.dart';
 import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/settings/account_edit_page.dart';
-import 'package:submon/pages/settings/canvas_lms_sync.dart';
 import 'package:submon/pages/settings/google_tasks.dart';
 import 'package:submon/pages/settings/timetable.dart';
 import 'package:submon/pages/sign_in_page.dart';
@@ -211,15 +210,6 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
               Navigator.pushNamed(context, GoogleTasksSettingsPage.routeName);
             },
           ),
-        ]),
-        SettingsCategory(title: "LMS連携", tiles: [
-          SettingsTile(
-            title: "Canvas LMSと連携",
-            subtitle: "大学等の学習管理システムから提出物を取得し、自動的に追加します。",
-            onTap: () async {
-              Navigator.pushNamed(context, CanvasLmsSyncSettingsPage.routeName);
-            },
-          )
         ]),
         SettingsCategory(title: "その他の機能", tiles: [
           if (_enableSE != null)
