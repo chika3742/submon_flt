@@ -6,7 +6,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:submon/auth/twitter_sign_in.dart';
+import 'package:submon/apple_web_auth_options.dart';
 import 'package:submon/main.dart';
 import 'package:submon/models/sign_in_result.dart';
 import 'package:submon/pages/email_sign_in_page.dart';
@@ -104,9 +104,6 @@ class SignInHandler {
       case AuthProvider.google:
         return await _signInWithGoogle();
 
-      case AuthProvider.twitter:
-        return await _signInWithTwitter();
-
       case AuthProvider.apple:
         return await _signInWithApple();
 
@@ -159,21 +156,6 @@ class SignInHandler {
     return SignInResult(credential: await _signInByMode(credential));
   }
 
-  Future<SignInResult> _signInWithTwitter() async {
-    var twSignInResult = await TwitterSignIn().signIn();
-
-    if (twSignInResult.errorCode != null) {
-      return twSignInResult.toSignInResult();
-    }
-
-    final credential = TwitterAuthProvider.credential(
-      accessToken: twSignInResult.accessToken!,
-      secret: twSignInResult.accessTokenSecret!,
-    );
-
-    return SignInResult(credential: await _signInByMode(credential));
-  }
-
   Future<SignInResult> _signInWithApple() async {
     final rawNonce = generateNonce();
     final state = generateNonce();
@@ -189,10 +171,7 @@ class SignInHandler {
           ],
           nonce: nonce,
           state: state,
-          webAuthenticationOptions: WebAuthenticationOptions(
-              clientId: "net.chikach.submon.asi",
-              redirectUri: Uri.parse(
-                  "https://asia-northeast1-submon-mgr.cloudfunctions.net/appleSignInRedirector")),
+          webAuthenticationOptions: AppleWebAuthOptions.currentBuild,
         );
       } on SignInWithAppleAuthorizationException catch (e) {
         if (e.code == AuthorizationErrorCode.canceled) {
@@ -291,7 +270,6 @@ class SignInHandler {
 
 enum AuthProvider {
   google,
-  twitter,
   email,
   anonymous,
   apple,

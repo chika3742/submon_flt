@@ -14,10 +14,6 @@ class SignInResult {
 
 enum SignInError {
   cancelled,
-  socketError,
-  twitterTimeOutOfSync,
-  twitterRequestTokenRequestFailed,
-  twitterAccessTokenRequestFailed,
   appleSignInFailed,
   notificationPermissionDenied,
   userNotFound,

@@ -109,16 +109,12 @@ class _SignInPageState extends State<SignInPage> {
                           _buildAppleSignInButton(),
                           const SizedBox(height: 16),
                           _buildGoogleSignInButton(),
-                          const SizedBox(height: 16),
-                          _buildTwitterSignInButton(),
                         ],
                       )
                     else
                       Column(
                         children: [
                           _buildGoogleSignInButton(),
-                          const SizedBox(height: 16),
-                          _buildTwitterSignInButton(),
                           const SizedBox(height: 16),
                           _buildAppleSignInButton(),
                         ],
@@ -172,30 +168,6 @@ class _SignInPageState extends State<SignInPage> {
         onPressed: !loading && widget.mode != SignInMode.reauthenticate
             ? () {
                 signInWithProvider(AuthProvider.google);
-              }
-            : null,
-      ),
-    );
-  }
-
-  Widget _buildTwitterSignInButton() {
-    return SizedBox(
-      width: 250,
-      height: 50,
-      child: ElevatedButton.icon(
-        icon: SvgPicture.asset(
-          "assets/vector/twitter.svg",
-          color: Colors.white,
-        ),
-        style: ElevatedButton.styleFrom(backgroundColor: const Color(0xff1da1f2)),
-        label: Text("Twitterでサインイン",
-            style: Theme.of(context)
-                .textTheme
-                .labelLarge
-                ?.copyWith(color: Colors.white)),
-        onPressed: !loading && widget.mode != SignInMode.reauthenticate
-            ? () {
-                signInWithProvider(AuthProvider.twitter);
               }
             : null,
       ),
@@ -297,8 +269,6 @@ class _SignInPageState extends State<SignInPage> {
           UserCredential? result;
           if (providerId == GoogleAuthProvider.PROVIDER_ID) {
             result = await signInWithProvider(AuthProvider.google);
-          } else if (providerId == TwitterAuthProvider.PROVIDER_ID) {
-            result = await signInWithProvider(AuthProvider.twitter);
           } else if (providerId == "apple.com") {
             result = await signInWithProvider(AuthProvider.apple);
           }
