@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:googleapis/oauth2/v2.dart' as oauth;
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:submon/browser.dart';
@@ -11,8 +12,7 @@ import 'package:submon/pages/submission_create_page.dart';
 import 'package:submon/utils/ui.dart';
 
 bool get isAdEnabled {
-  return FirebaseAuth.instance.currentUser?.email !=
-      "kazu.chika.shima@gmail.com";
+  return FirebaseAuth.instance.currentUser?.email != dotenv.get("ADMIN_EMAIL");
 }
 
 int getTimetableCellId(int period, int weekday) {
