@@ -104,9 +104,6 @@ class SignInHandler {
       case AuthProvider.google:
         return await _signInWithGoogle();
 
-      case AuthProvider.twitter:
-        return await _signInWithTwitter();
-
       case AuthProvider.apple:
         return await _signInWithApple();
 
@@ -155,21 +152,6 @@ class SignInHandler {
     final googleAuth = await googleUser.authentication;
     final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
-
-    return SignInResult(credential: await _signInByMode(credential));
-  }
-
-  Future<SignInResult> _signInWithTwitter() async {
-    var twSignInResult = await TwitterSignIn().signIn();
-
-    if (twSignInResult.errorCode != null) {
-      return twSignInResult.toSignInResult();
-    }
-
-    final credential = TwitterAuthProvider.credential(
-      accessToken: twSignInResult.accessToken!,
-      secret: twSignInResult.accessTokenSecret!,
-    );
 
     return SignInResult(credential: await _signInByMode(credential));
   }
@@ -288,7 +270,6 @@ class SignInHandler {
 
 enum AuthProvider {
   google,
-  twitter,
   email,
   anonymous,
   apple,
