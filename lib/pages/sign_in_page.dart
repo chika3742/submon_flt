@@ -141,7 +141,7 @@ class _SignInPageState extends State<SignInPage> {
       child: ElevatedButton.icon(
         icon: SvgPicture.asset(
           "assets/vector/apple.svg",
-          color: Colors.white,
+          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
         ),
         style: ElevatedButton.styleFrom(backgroundColor: Colors.blueGrey),
         label: const Text("Appleでサインイン", style: TextStyle(color: Colors.white)),
