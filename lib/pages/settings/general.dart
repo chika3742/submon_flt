@@ -43,7 +43,7 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
               subtitle: _version,
             ),
             SettingsTile(
-              title: "更新履歴・開発進捗",
+              title: "更新履歴",
               onTap: () {
                 Browser.openChangelog();
               },

@@ -17,7 +17,7 @@ class Browser {
 
   static void openChangelog() {
     MainMethodPlugin.openWebPage(
-        "更新履歴・開発進捗", "https://www.chikach.net/submon-changelog/");
+        "更新履歴", "https://github.com/chika3742/Submon2/releases");
   }
 
   static void openHelp() {
