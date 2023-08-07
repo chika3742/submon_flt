@@ -119,14 +119,11 @@ jobs:
         run: |
           zip -r native_debug_symbols.zip ./build/app/intermediates/merged_native_libs/release/out/lib/* -x "*x86/*"
 
-          if [ "${{ inputs.track }}" == "internal" ]; then
-            versionName=$(cat pubspec.yaml | yq -r '.version | split("+") | .[0]')
-            versionNumber=$(cat pubspec.yaml | yq -r '.version | split("+") | .[1]')
-            versionNameOption="--version_name $versionName-b$versionNumber"
-          else
-            versionNameOption=
-          fi
+          versionName=$(cat pubspec.yaml | yq -r '.version | split("+") | .[0]')
+          versionNumber=$(cat pubspec.yaml | yq -r '.version | split("+") | .[1]')
+
           bundle exec fastlane supply \
+            --verbose\
             --aab build/app/outputs/bundle/release/app-release.aab\
             --mapping_paths native_debug_symbols.zip,build/app/outputs/mapping/release/mapping.txt\
             --track internal\
@@ -134,5 +131,5 @@ jobs:
             --skip_upload_changelogs\
             --skip_upload_screenshots\
             --package_name net.chikach.submon\
-            $versionNameOption\
+            --version_name $versionName-b$versionNumber\
             --json_key service_account_key.json
