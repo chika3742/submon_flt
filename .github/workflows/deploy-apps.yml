@@ -9,7 +9,9 @@ on:
 jobs:
   build-ios: # Build and deploy iOS app to App Store
     name: Build iOS
-    runs-on: macos-latest
+    runs-on:
+      - self-hosted
+      - macOS
 
     steps:
       - uses: actions/checkout@v3
