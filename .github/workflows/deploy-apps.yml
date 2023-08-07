@@ -1,0 +1,133 @@
+on:
+  push:
+    tags:
+      - v*.*.*
+  workflow_dispatch:
+
+jobs:
+  build-ios: # Build and deploy iOS app to App Store
+    name: Build iOS
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache pods
+        uses: actions/cache@v3
+        with:
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          path: ./ios/Pods
+          restore-keys: ${{ runner.os }}-pods-
+
+      - &init-flutter-cli
+        name: Init Flutter CLI
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
+
+      - run: flutter pub get
+
+      - name: Import Apple provisioning profiles
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo -n ${{ secrets.PROVISIONING_PROFILE }} | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/Submon_distribution.mobileprovision
+          echo -n ${{ secrets.PROVISIONING_PROFILE_WIDGETKIT }} | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/Submon_WidgetKit_Production.mobileprovision
+
+      - name: Import code-signing certificates
+        uses: Apple-Actions/import-codesign-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.APPLE_CERTIFICATES_P12_BASE64 }}
+          p12-password: ${{ secrets.APPLE_CERTIFICATES_PASSWORD }}
+
+      - name: Import App Store Connect API key
+        run: |
+          mkdir ~/private_keys
+          echo -n "${{ secrets.APP_STORE_PRIVKEY_P8 }}" > ~/private_keys/AuthKey_${{ secrets.APP_STORE_PRIVKEY_ID }}.p8
+
+      - &import-dotenv
+        name: Import .env
+        run: echo -n "${{ secrets.DOTENV }}" > .env
+
+      - name: Import GoogleService-Info.plist
+        run: echo -n "${{ secrets.APPLE_GOOGLE_SERVICE_INFO_RELEASE_PLIST_BASE64 }}" | base64 -d > ios/GoogleService-Info-release.plist
+
+      - name: Build IPA
+        run: flutter build ipa --export-options-plist ios/exportOptions.plist
+
+      - name: Deploy to App Store
+        run: xcrun altool --upload-app --type ios -f "./build/ios/ipa/Submon.ipa"\
+          --apiKey ${{ secrets.APP_STORE_PRIVKEY_ID }}\
+          --apiIssuer ${{ secrets.APP_STORE_CONNECT_API_ISSUER }}
+
+  build-android: # Build and deploy Android app to Google Play
+    name: Build Android
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache Gradle
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: ${{ runner.os }}-gradle-
+
+      - *init-flutter-cli
+
+      - run: flutter pub get
+
+      - name: Setup Ruby # for fastlane (tools for deploying to Google Play)
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1
+          bundler-cache: true
+
+      - name: Install Fastlane
+        run: |
+          bundle install
+          bundle update
+
+      - name: Import keystore
+        run: |
+          echo -n '
+          ${{ secrets.ANDROID_LOCAL_PROPERTIES }}' >> android/local.properties
+          echo -n "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > android/app/release.jks
+
+      - *import-dotenv
+
+      - name: Import google-services.json
+        run: |
+          mkdir -p android/app/src/release
+          echo -n ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON_BASE64 }} | base64 -d > android/app/src/release/google-services.json
+
+      - name: Build App Bundle for Android
+        run: flutter build appbundle
+
+      - name: Import Service Account Key
+        run: echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_BASE64 }}' | base64 -d > service_account_key.json
+
+      - name: Deploy to Google Play
+        shell: bash
+        run: |
+          zip -r native_debug_symbols.zip ./build/app/intermediates/merged_native_libs/release/out/lib/* -x "*x86/*"
+
+          if [ "${{ inputs.track }}" == "internal" ]; then
+            versionName=$(cat pubspec.yaml | yq -r '.version | split("+") | .[0]')
+            versionNumber=$(cat pubspec.yaml | yq -r '.version | split("+") | .[1]')
+            versionNameOption="--version_name $versionName-b$versionNumber"
+          else
+            versionNameOption=
+          fi
+          bundle exec fastlane supply \
+            --aab build/app/outputs/bundle/release/app-release.aab\
+            --mapping_paths native_debug_symbols.zip,build/app/outputs/mapping/release/mapping.txt\
+            --track internal\
+            --skip_upload_metadata\
+            --skip_upload_changelogs\
+            --skip_upload_screenshots\
+            --package_name net.chikach.submon\
+            $versionNameOption\
+            --json_key service_account_key.json
