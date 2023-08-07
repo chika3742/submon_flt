@@ -21,8 +21,7 @@ jobs:
           path: ./ios/Pods
           restore-keys: ${{ runner.os }}-pods-
 
-      - &init-flutter-cli
-        name: Init Flutter CLI
+      - name: Init Flutter CLI
         uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -48,8 +47,7 @@ jobs:
           mkdir ~/private_keys
           echo -n "${{ secrets.APP_STORE_PRIVKEY_P8 }}" > ~/private_keys/AuthKey_${{ secrets.APP_STORE_PRIVKEY_ID }}.p8
 
-      - &import-dotenv
-        name: Import .env
+      - name: Import .env
         run: echo -n "${{ secrets.DOTENV }}" > .env
 
       - name: Import GoogleService-Info.plist
@@ -77,7 +75,12 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: ${{ runner.os }}-gradle-
 
-      - *init-flutter-cli
+      - name: Init Flutter CLI
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
 
       - run: flutter pub get
 
@@ -98,7 +101,8 @@ jobs:
           ${{ secrets.ANDROID_LOCAL_PROPERTIES }}' >> android/local.properties
           echo -n "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > android/app/release.jks
 
-      - *import-dotenv
+      - name: Import .env
+        run: echo -n "${{ secrets.DOTENV }}" > .env
 
       - name: Import google-services.json
         run: |
