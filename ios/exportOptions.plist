@@ -16,9 +16,9 @@
     <key>provisioningProfiles</key>
     <dict>
         <key>net.chikach.submon</key>
-        <string>d9cb637b-33c8-4efa-897d-98868236aeca</string>
+        <string>Submon (distribution)</string>
         <key>net.chikach.submon.WidgetKit</key>
-        <string>b50c7aff-d576-4551-aad4-8a97519696c6</string>
+        <string>Submon WidgetKit (distribution)</string>
     </dict>
     <key>signingCertificate</key>
     <string>Apple Distribution</string>

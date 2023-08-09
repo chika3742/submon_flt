@@ -894,7 +894,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = net.chikach.submon.WidgetKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Submon WidgetKit (Production)";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Submon WidgetKit (Production)";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Submon WidgetKit (distribution)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
