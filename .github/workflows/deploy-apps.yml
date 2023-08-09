@@ -129,3 +129,22 @@ jobs:
             --skip_upload_screenshots\
             --package_name net.chikach.submon\
             --json_key service_account_key.json
+
+  create-release:
+    name: Create release
+    needs:
+      - build-ios
+      - build-android
+    runs-on: ubuntu-latest
+    if: !contains(github.ref, '-')
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          generate_release_notes: true
