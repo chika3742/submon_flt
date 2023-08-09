@@ -136,7 +136,7 @@ jobs:
       - build-ios
       - build-android
     runs-on: ubuntu-latest
-    if: !contains(github.ref, '-')
+    if: "!contains(github.ref, '-')"
     permissions:
       contents: write
 
