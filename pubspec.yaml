@@ -31,14 +31,14 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.4
-  audioplayers: ^4.1.0
+  audioplayers: ^5.0.0
   animations: ^2.0.3
   event_bus: ^2.0.0
   package_info_plus: ^4.0.2
   flutter_svg: ^2.0.6
   shared_preferences: ^2.0.15
   google_sign_in: ^6.1.4
-  sign_in_with_apple: ^4.0.0
+  sign_in_with_apple: ^5.0.0
   crypto: ^3.0.1
   flutter_dotenv: ^5.0.2
   flutter_slidable: ^3.0.0
@@ -53,7 +53,7 @@ dependencies:
   path: ^1.8.1
   device_info_plus: ^9.0.2
   share_plus: ^7.0.2
-  http: ^0.13.4
+  http: ^1.1.0
   intl: ^0.18.0
   isar: ^3.1.0+1
   isar_flutter_libs: ^3.1.0+1
@@ -64,7 +64,7 @@ dependencies:
   extension_google_sign_in_as_googleapis_auth: ^2.0.4
   google_mobile_ads: ^3.0.0
 
-  firebase_core: ^2.13.1
+  firebase_core: 2.14.0 # due to https://github.com/firebase/firebase-ios-sdk/issues/11537 (unreleased)
   firebase_crashlytics: ^3.3.2
   firebase_auth: ^4.6.2
   cloud_firestore: ^4.8.0
