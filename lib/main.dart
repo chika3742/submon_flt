@@ -17,7 +17,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/tasks/v1.dart' as tasks;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/method_channel/main.dart';
+import 'package:submon/event_api/uri_event_api.dart';
 import 'package:submon/models/sign_in_result.dart';
 import 'package:submon/pages/done_submissions_page.dart';
 import 'package:submon/pages/email_registration_page.dart';
@@ -40,7 +40,7 @@ import 'package:submon/pages/timetable_edit_page.dart';
 import 'package:submon/pages/timetable_table_view_page.dart';
 import 'package:submon/pages/welcome_page.dart';
 
-import 'link_handler/link_listeners.dart';
+import 'link_handler/link_handler.dart';
 
 var scopes = [tasks.TasksApi.tasksScope];
 var googleSignIn = GoogleSignIn(scopes: scopes);
@@ -55,12 +55,6 @@ void main() async {
     await dotenv.load();
     googleSignIn.signInSilently();
     MobileAds.instance.initialize();
-    // getTemporaryDirectory().then((value) async {
-    //   var directory = Directory(p.join(value.path, tempImgDirName));
-    //   if (await directory.exists()) {
-    //     directory.delete(recursive: true);
-    //   }
-    // });
     LicenseRegistry.addLicense(() async* {
       yield LicenseEntryWithLineBreaks(["google_fonts"],
           await rootBundle.loadString('assets/google_fonts/Murecho/OFL.txt'));
@@ -87,8 +81,6 @@ class Application extends StatefulWidget {
 class _ApplicationState extends State<Application> {
   var _initialized = false;
   var _initializingErrorOccurred = false;
-
-  final _listeners = LinkListeners();
 
   @override
   void initState() {
@@ -325,7 +317,6 @@ class _ApplicationState extends State<Application> {
   void initFirebase() async {
     try {
       await Firebase.initializeApp();
-      MainMethodPlugin.initHandler();
       if (!screenShotMode) {
         FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
       }
@@ -334,11 +325,13 @@ class _ApplicationState extends State<Application> {
       }
       late StreamSubscription listener;
       listener = FirebaseAuth.instance.authStateChanges().listen((event) {
+        listener.cancel();
+
         setState(() {
           _initialized = true;
         });
-        _listeners.initialize();
-        listener.cancel();
+        UriEventApi().listen();
+        LinkHandler.initDynamicLinksListener();
       });
     } catch (e) {
       setState(() {

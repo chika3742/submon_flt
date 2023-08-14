@@ -13,8 +13,9 @@ import WidgetKit
 @objc class AppDelegate: FlutterAppDelegate {
     
     var viewController: FlutterViewController?
-    var uriEvent: UriEventChannelHandler?
-    var mainMethodCallHandler: MainMethodChannelHandler?
+    
+    var uriEventApi: UriEventApi?
+    var fcmTokenRefreshEventApi: FcmTokenRefreshEventApi?
     
     override func application(
         _ application: UIApplication,
@@ -34,16 +35,23 @@ import WidgetKit
             print(error)
         }
         
-        viewController = window?.rootViewController as? FlutterViewController
-        
-        mainMethodCallHandler = MainMethodChannelHandler(viewController: viewController!)
-        mainMethodCallHandler?.register()
-        MessagingMethodChannelHandler(viewController: viewController!, appDelegate: self).register()
-        
-        uriEvent = UriEventChannelHandler(binaryMessenger: viewController!.binaryMessenger)
-        
         initNotificationCategories()
         
+        viewController = window?.rootViewController as? FlutterViewController
+        let binaryMessenger = viewController!.binaryMessenger
+        
+        // Event Channels
+        uriEventApi = UriEventApi(binaryMessenger: binaryMessenger)
+        uriEventApi!.initHandler()
+        fcmTokenRefreshEventApi = FcmTokenRefreshEventApi(binaryMessenger: binaryMessenger)
+        fcmTokenRefreshEventApi!.initHandler()
+        
+        // Pigeon APIs
+        MessagingApiSetup.setUp(binaryMessenger: binaryMessenger, api: MessagingApiImplementation(appDelegate: self))
+        BrowserApiSetup.setUp(binaryMessenger: binaryMessenger, api: BrowserApiImplementation(viewController: viewController!))
+        GeneralApiSetup.setUp(binaryMessenger: binaryMessenger, api: GeneralApiImplementation())
+        
+        // Firebase Cloud Messaging
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
         application.registerForRemoteNotifications()
@@ -54,12 +62,8 @@ import WidgetKit
     }
     
     override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        if (uriEvent != nil && uriEvent?.eventSink != nil) {
-            uriEvent?.eventSink?(url.absoluteString)
-        } else {
-            mainMethodCallHandler?.pendingUri = url.absoluteString
-        }
-        
+        uriEventApi?.onUri(uri: url.absoluteString)
+
         return true
     }
     
@@ -126,7 +130,7 @@ extension AppDelegate : MessagingDelegate {
         NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: ["token": fcmToken ?? ""])
         
         if (fcmToken != nil) {
-            mainMethodCallHandler?.saveMessagingToken(token: fcmToken!)
+            fcmTokenRefreshEventApi?.onFcmTokenRefresh(token: fcmToken!)
         }
     }
 }

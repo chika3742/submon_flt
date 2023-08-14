@@ -2,12 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:submon/apple_web_auth_options.dart';
-
-import '../method_channel/channels.dart';
-import '../method_channel/main.dart';
+import 'package:submon/src/pigeons.g.dart';
 
 class AppleSignIn {
   static String sha256ofString(String input) {
@@ -35,25 +33,14 @@ class AppleSignIn {
       },
     );
 
-    MainMethodPlugin.openCustomTabs(uri.toString());
+    var resultUri = await BrowserApi().openAuthCustomTab(uri.toString());
+    if (resultUri == null) {
+      return null;
+    }
 
-    var authResult = await waitForUri();
-
-    return authResult;
-  }
-
-  Future<AuthorizationCredentialAppleID?> waitForUri() async {
-    var completer = Completer<AuthorizationCredentialAppleID?>();
-    var subscription = const EventChannel(EventChannels.signInUri)
-        .receiveBroadcastStream()
-        .listen((event) {
-      if (event == null) {
-        completer.complete(null);
-        return;
-      }
-
-      var query = Uri.splitQueryString(event);
-      completer.complete(AuthorizationCredentialAppleID(
+    try {
+      var query = Uri.parse(resultUri).queryParameters;
+      return AuthorizationCredentialAppleID(
         userIdentifier: null,
         givenName: null,
         familyName: null,
@@ -61,13 +48,15 @@ class AppleSignIn {
         email: null,
         identityToken: query["id_token"],
         state: query["state"],
-      ));
-    });
-
-    var result = await completer.future;
-
-    subscription.cancel();
-
-    return result;
+      );
+    } on FormatException catch (e, st) {
+      debugPrint("Failed to parse the sign in result URI: ${e.toString()}");
+      debugPrintStack(stackTrace: st);
+      return null;
+    } catch (e, st) {
+      debugPrint("Failed to sign in: ${e.toString()}");
+      debugPrintStack(stackTrace: st);
+      return null;
+    }
   }
 }

@@ -14,13 +14,15 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		C74832222A867F7F00AC52D3 /* BrowserApiImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C74832212A867F7F00AC52D3 /* BrowserApiImplementation.swift */; };
+		C75C96562A88CAB9009FD728 /* GeneralApiImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75C96552A88CAB9009FD728 /* GeneralApiImplementation.swift */; };
 		C766556C28614B0E00B244CA /* MyAppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C766556B28614B0E00B244CA /* MyAppCheckProviderFactory.swift */; };
 		C766556D28614B0E00B244CA /* MyAppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C766556B28614B0E00B244CA /* MyAppCheckProviderFactory.swift */; };
 		C7908098283E221D001C7835 /* Info-Debug.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7908096283E221D001C7835 /* Info-Debug.plist */; };
 		C7908099283E221D001C7835 /* Info-Release.plist in Resources */ = {isa = PBXBuildFile; fileRef = C7908097283E221D001C7835 /* Info-Release.plist */; };
-		C79080A6283E22B1001C7835 /* MessagingMethodChannelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79080A3283E22B1001C7835 /* MessagingMethodChannelHandler.swift */; };
-		C79080A7283E22B1001C7835 /* UriEventChannelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79080A4283E22B1001C7835 /* UriEventChannelHandler.swift */; };
+		C79080A7283E22B1001C7835 /* UriEventApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79080A4283E22B1001C7835 /* UriEventApi.swift */; };
 		C79080A8283E22B1001C7835 /* MainMethodChannelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79080A5283E22B1001C7835 /* MainMethodChannelHandler.swift */; };
+		C797875E2A85308E0025319A /* Pigeons.g.swift in Sources */ = {isa = PBXBuildFile; fileRef = C797875D2A85308E0025319A /* Pigeons.g.swift */; };
 		C7AAF55C283E71BC00FB3CDE /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C79080B0283E245A001C7835 /* WidgetKit.framework */; };
 		C7AAF55D283E71BC00FB3CDE /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C79080B2283E245A001C7835 /* SwiftUI.framework */; };
 		C7AAF560283E71BC00FB3CDE /* WidgetKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AAF55F283E71BC00FB3CDE /* WidgetKit.swift */; };
@@ -30,7 +32,9 @@
 		C7AAF56F283E71D300FB3CDE /* WidgetKit.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = C7AAF571283E71D300FB3CDE /* WidgetKit.intentdefinition */; };
 		C7AAF573283E738E00FB3CDE /* SubmissionListWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AAF572283E738E00FB3CDE /* SubmissionListWidget.swift */; };
 		C7AAF575283E746D00FB3CDE /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AAF574283E746D00FB3CDE /* DateExtension.swift */; };
+		C7CCF9082A8A39EA002BBF82 /* FcmTokenRefreshEventApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CCF9072A8A39EA002BBF82 /* FcmTokenRefreshEventApi.swift */; };
 		C7DCDE70283F420F0033930A /* Pods_WidgetKitExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEA5D0EFB62DC9F0B07EFF5B /* Pods_WidgetKitExtension.framework */; };
+		C7FA92F82A866CBD000F67B6 /* MessagingApiImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FA92F72A866CBD000F67B6 /* MessagingApiImplementation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,15 +95,17 @@
 		C3809B70CF250E80CE4E09EC /* Pods-WidgetKitExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WidgetKitExtension.release.xcconfig"; path = "Target Support Files/Pods-WidgetKitExtension/Pods-WidgetKitExtension.release.xcconfig"; sourceTree = "<group>"; };
 		C7263CC7285853D000416681 /* RunnerRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerRelease.entitlements; sourceTree = "<group>"; };
 		C73B6CC228AC684B0022A6B3 /* RunnerDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerDebug.entitlements; sourceTree = "<group>"; };
+		C74832212A867F7F00AC52D3 /* BrowserApiImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserApiImplementation.swift; sourceTree = "<group>"; };
+		C75C96552A88CAB9009FD728 /* GeneralApiImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralApiImplementation.swift; sourceTree = "<group>"; };
 		C766556B28614B0E00B244CA /* MyAppCheckProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAppCheckProviderFactory.swift; sourceTree = "<group>"; };
 		C7908096283E221D001C7835 /* Info-Debug.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-Debug.plist"; sourceTree = "<group>"; };
 		C7908097283E221D001C7835 /* Info-Release.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-Release.plist"; sourceTree = "<group>"; };
-		C79080A3283E22B1001C7835 /* MessagingMethodChannelHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagingMethodChannelHandler.swift; sourceTree = "<group>"; };
-		C79080A4283E22B1001C7835 /* UriEventChannelHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UriEventChannelHandler.swift; sourceTree = "<group>"; };
+		C79080A4283E22B1001C7835 /* UriEventApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UriEventApi.swift; sourceTree = "<group>"; };
 		C79080A5283E22B1001C7835 /* MainMethodChannelHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainMethodChannelHandler.swift; sourceTree = "<group>"; };
 		C79080B0283E245A001C7835 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		C79080B2283E245A001C7835 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		C79080FD283E2D0A001C7835 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
+		C797875D2A85308E0025319A /* Pigeons.g.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pigeons.g.swift; sourceTree = "<group>"; };
 		C7AAF55B283E71BC00FB3CDE /* WidgetKitExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WidgetKitExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7AAF55F283E71BC00FB3CDE /* WidgetKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetKit.swift; sourceTree = "<group>"; };
 		C7AAF562283E71BD00FB3CDE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -107,7 +113,9 @@
 		C7AAF570283E71D300FB3CDE /* ja */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; name = ja; path = ja.lproj/WidgetKit.intentdefinition; sourceTree = "<group>"; };
 		C7AAF572283E738E00FB3CDE /* SubmissionListWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmissionListWidget.swift; sourceTree = "<group>"; };
 		C7AAF574283E746D00FB3CDE /* DateExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
+		C7CCF9072A8A39EA002BBF82 /* FcmTokenRefreshEventApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FcmTokenRefreshEventApi.swift; sourceTree = "<group>"; };
 		C7DCDE73283F482E0033930A /* WidgetKitExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WidgetKitExtension.entitlements; sourceTree = "<group>"; };
+		C7FA92F72A866CBD000F67B6 /* MessagingApiImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagingApiImplementation.swift; sourceTree = "<group>"; };
 		C803D8ECAEEDFB88190B70F6 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DEA5D0EFB62DC9F0B07EFF5B /* Pods_WidgetKitExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WidgetKitExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB461FA5A355A8FDC7CF52E5 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
@@ -171,6 +179,9 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				C7AB690C2A89B44A00892894 /* EventApi */,
+				C7FA92F62A866C5E000F67B6 /* PigeonImpl */,
+				C797875D2A85308E0025319A /* Pigeons.g.swift */,
 				C73B6CC228AC684B0022A6B3 /* RunnerDebug.entitlements */,
 				C7263CC7285853D000416681 /* RunnerRelease.entitlements */,
 				C79080FD283E2D0A001C7835 /* Runner.entitlements */,
@@ -193,8 +204,6 @@
 			isa = PBXGroup;
 			children = (
 				C79080A5283E22B1001C7835 /* MainMethodChannelHandler.swift */,
-				C79080A3283E22B1001C7835 /* MessagingMethodChannelHandler.swift */,
-				C79080A4283E22B1001C7835 /* UriEventChannelHandler.swift */,
 			);
 			path = ChannelHandler;
 			sourceTree = "<group>";
@@ -222,6 +231,25 @@
 				C7AAF574283E746D00FB3CDE /* DateExtension.swift */,
 			);
 			path = WidgetKit;
+			sourceTree = "<group>";
+		};
+		C7AB690C2A89B44A00892894 /* EventApi */ = {
+			isa = PBXGroup;
+			children = (
+				C79080A4283E22B1001C7835 /* UriEventApi.swift */,
+				C7CCF9072A8A39EA002BBF82 /* FcmTokenRefreshEventApi.swift */,
+			);
+			name = EventApi;
+			sourceTree = "<group>";
+		};
+		C7FA92F62A866C5E000F67B6 /* PigeonImpl */ = {
+			isa = PBXGroup;
+			children = (
+				C7FA92F72A866CBD000F67B6 /* MessagingApiImplementation.swift */,
+				C74832212A867F7F00AC52D3 /* BrowserApiImplementation.swift */,
+				C75C96552A88CAB9009FD728 /* GeneralApiImplementation.swift */,
+			);
+			name = PigeonImpl;
 			sourceTree = "<group>";
 		};
 		D27B68E36CA6B91E9E80FDD5 /* Pods */ = {
@@ -502,12 +530,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C79080A7283E22B1001C7835 /* UriEventChannelHandler.swift in Sources */,
+				C79080A7283E22B1001C7835 /* UriEventApi.swift in Sources */,
 				C766556C28614B0E00B244CA /* MyAppCheckProviderFactory.swift in Sources */,
+				C74832222A867F7F00AC52D3 /* BrowserApiImplementation.swift in Sources */,
 				C79080A8283E22B1001C7835 /* MainMethodChannelHandler.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
+				C75C96562A88CAB9009FD728 /* GeneralApiImplementation.swift in Sources */,
+				C797875E2A85308E0025319A /* Pigeons.g.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
-				C79080A6283E22B1001C7835 /* MessagingMethodChannelHandler.swift in Sources */,
+				C7CCF9082A8A39EA002BBF82 /* FcmTokenRefreshEventApi.swift in Sources */,
+				C7FA92F82A866CBD000F67B6 /* MessagingApiImplementation.swift in Sources */,
 				C7AAF56E283E71D300FB3CDE /* WidgetKit.intentdefinition in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

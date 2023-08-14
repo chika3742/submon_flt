@@ -10,12 +10,11 @@ import 'package:submon/apple_web_auth_options.dart';
 import 'package:submon/main.dart';
 import 'package:submon/models/sign_in_result.dart';
 import 'package:submon/pages/email_sign_in_page.dart';
+import 'package:submon/src/pigeons.g.dart';
 
 import '../db/firestore_provider.dart';
 import '../db/shared_prefs.dart';
 import '../isar_db/isar_provider.dart';
-import '../method_channel/main.dart';
-import '../method_channel/messaging.dart';
 import '../pages/home_page.dart';
 import '../pages/welcome_page.dart';
 import '../user_config.dart';
@@ -34,7 +33,7 @@ class SignInHandler {
     await FirestoreProvider.removeNotificationToken();
     await FirebaseAuth.instance.signOut();
     await GoogleSignIn().signOut();
-    MainMethodPlugin.updateWidgets();
+    GeneralApi().updateWidgets();
     backToWelcomePage(globalContext!);
   }
 
@@ -193,7 +192,7 @@ class SignInHandler {
     if (state != appleCredential.state) {
       FirebaseCrashlytics.instance
           .recordError(Exception("Apple sign in state mismatch."), null);
-      return SignInResult(errorMessage: "State mismatch.");
+      return SignInResult(errorMessage: "セキュリティ情報が一致しません (state mismatch)");
     }
 
     final credential = OAuthProvider("apple.com").credential(
@@ -227,9 +226,9 @@ class SignInHandler {
             loginMethod: userCred.additionalUserInfo?.providerId ?? "unknown");
 
         // save messaging token
-        var notificationToken = await MessagingPlugin.getToken();
+        var notificationToken = await MessagingApi().getToken();
         await FirestoreProvider.saveNotificationToken(notificationToken);
-        MainMethodPlugin.updateWidgets();
+        GeneralApi().updateWidgets();
 
         var requestPermResult =
             await requestNotificationPermissionIfEnabled(data);
@@ -256,7 +255,7 @@ class SignInHandler {
     if (data.reminderNotificationTime != null ||
         data.timetableNotificationTime != null ||
         data.digestiveNotifications.isNotEmpty) {
-      return await MessagingPlugin.requestNotificationPermission();
+      return (await MessagingApi().requestNotificationPermission())?.value;
     }
     return null;
   }
