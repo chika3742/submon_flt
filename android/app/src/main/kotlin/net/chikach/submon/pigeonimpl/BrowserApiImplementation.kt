@@ -10,7 +10,6 @@ import android.os.Build
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
 import net.chikach.submon.WebPageActivity
-import java.util.UUID
 
 class BrowserApiImplementation(private var activity: Activity) : BrowserApi {
     private var openAuthCustomTabCallback: ((Result<String?>) -> Unit)? = null

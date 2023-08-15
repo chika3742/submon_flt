@@ -1,15 +1,14 @@
 package net.chikach.submon.pigeonimpl
 
 import MessagingApi
+import NotificationPermissionState
 import NotificationPermissionStateWrapper
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.os.Build
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.messaging.FirebaseMessaging
-import net.chikach.submon.mch.MessagingMethodChannelHandler
 
 class MessagingApiImplementation(private val activity: Activity) : MessagingApi {
     companion object {

@@ -19,7 +19,10 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import net.chikach.submon.Utils.getDateDiff
 import net.chikach.submon.Utils.getDateDiffColor
 import net.chikach.submon.Utils.getDateDiffString
