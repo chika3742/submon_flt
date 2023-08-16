@@ -138,10 +138,6 @@ class HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    MessagingApi().getToken().then((token) {
-      FirestoreProvider.saveNotificationToken(token);
-    });
-
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (!screenShotMode && isAdEnabled) {
         AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
