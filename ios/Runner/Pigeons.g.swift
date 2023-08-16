@@ -102,8 +102,8 @@ class MessagingApiCodec: FlutterStandardMessageCodec {
 ///
 /// Generated protocol from Pigeon that represents a handler of messages from Flutter.
 protocol MessagingApi {
-  /// Gets the FCM token for this device. Returns null if failed.
-  func getToken(completion: @escaping (Result<String?, Error>) -> Void)
+  /// Gets the FCM token for this device.
+  func getToken(completion: @escaping (Result<String, Error>) -> Void)
   /// Requests notification permission from the user.
   func requestNotificationPermission(completion: @escaping (Result<NotificationPermissionStateWrapper?, Error>) -> Void)
 }
@@ -114,7 +114,7 @@ class MessagingApiSetup {
   static var codec: FlutterStandardMessageCodec { MessagingApiCodec.shared }
   /// Sets up an instance of `MessagingApi` to handle messages through the `binaryMessenger`.
   static func setUp(binaryMessenger: FlutterBinaryMessenger, api: MessagingApi?) {
-    /// Gets the FCM token for this device. Returns null if failed.
+    /// Gets the FCM token for this device.
     let getTokenChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.submon.MessagingApi.getToken", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getTokenChannel.setMessageHandler { _, reply in

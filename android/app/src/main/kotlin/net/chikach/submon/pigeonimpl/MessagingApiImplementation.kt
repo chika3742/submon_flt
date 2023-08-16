@@ -15,7 +15,7 @@ class MessagingApiImplementation(private val activity: Activity) : MessagingApi 
 
     private var requestNotificationCallback: ((Result<NotificationPermissionStateWrapper?>) -> Unit)? = null
 
-    override fun getToken(callback: (Result<String?>) -> Unit) {
+    override fun getToken(callback: (Result<String>) -> Unit) {
         FirebaseMessaging.getInstance().token.addOnSuccessListener {
             callback(Result.success(it))
         }.addOnFailureListener {

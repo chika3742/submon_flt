@@ -17,10 +17,10 @@ class MessagingApiImplementation : MessagingApi {
     
     let appDelegate: AppDelegate
     
-    func getToken(completion: @escaping (Result<String?, Error>) -> Void) {
+    func getToken(completion: @escaping (Result<String, Error>) -> Void) {
         Messaging.messaging().token(completion: { (token, error) in
             if error != nil {
-                completion(.failure(FlutterError(code: "get-fcm-token-failed", message: "Failed to get FCM token.", details: error)))
+                completion(.failure(FlutterError(code: "get-fcm-token-failed", message: "Failed to get FCM token.", details: error?.localizedDescription)))
             } else if let token = token {
                 completion(.success(token))
             }

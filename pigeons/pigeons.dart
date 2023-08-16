@@ -24,9 +24,9 @@ class NotificationPermissionStateWrapper {
 /// A set of APIs to handle Firebase Cloud Messaging.
 @HostApi()
 abstract class MessagingApi {
-  /// Gets the FCM token for this device. Returns null if failed.
+  /// Gets the FCM token for this device.
   @async
-  String? getToken();
+  String getToken();
 
   /// Requests notification permission from the user.
   @async
