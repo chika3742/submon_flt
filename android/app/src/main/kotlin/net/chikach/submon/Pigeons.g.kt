@@ -109,8 +109,8 @@ private object MessagingApiCodec : StandardMessageCodec() {
  * Generated interface from Pigeon that represents a handler of messages from Flutter.
  */
 interface MessagingApi {
-  /** Gets the FCM token for this device. Returns null if failed. */
-  fun getToken(callback: (Result<String?>) -> Unit)
+  /** Gets the FCM token for this device. */
+  fun getToken(callback: (Result<String>) -> Unit)
   /** Requests notification permission from the user. */
   fun requestNotificationPermission(callback: (Result<NotificationPermissionStateWrapper?>) -> Unit)
 
@@ -127,7 +127,7 @@ interface MessagingApi {
           BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.MessagingApi.getToken", codec)
         if (api != null) {
           channel.setMessageHandler { _, reply ->
-            api.getToken() { result: Result<String?> ->
+            api.getToken() { result: Result<String> ->
               val error = result.exceptionOrNull()
               if (error != null) {
                 reply.reply(wrapError(error))

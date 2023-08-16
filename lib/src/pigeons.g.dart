@@ -72,8 +72,8 @@ class MessagingApi {
 
   static const MessageCodec<Object?> codec = _MessagingApiCodec();
 
-  /// Gets the FCM token for this device. Returns null if failed.
-  Future<String?> getToken() async {
+  /// Gets the FCM token for this device.
+  Future<String> getToken() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.submon.MessagingApi.getToken', codec,
         binaryMessenger: _binaryMessenger);
@@ -89,8 +89,13 @@ class MessagingApi {
         message: replyList[1] as String?,
         details: replyList[2],
       );
+    } else if (replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
     } else {
-      return (replyList[0] as String?);
+      return (replyList[0] as String?)!;
     }
   }
 
