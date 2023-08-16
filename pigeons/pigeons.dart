@@ -24,10 +24,6 @@ class NotificationPermissionStateWrapper {
 /// A set of APIs to handle Firebase Cloud Messaging.
 @HostApi()
 abstract class MessagingApi {
-  /// Returns true if the Google Play Services are available on the device.
-  /// Only available on Android.
-  bool isGoogleApiAvailable();
-
   /// Gets the FCM token for this device. Returns null if failed.
   @async
   String? getToken();

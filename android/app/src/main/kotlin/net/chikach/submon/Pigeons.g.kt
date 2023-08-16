@@ -72,7 +72,6 @@ data class NotificationPermissionStateWrapper(
       return NotificationPermissionStateWrapper(value)
     }
   }
-
   fun toList(): List<Any?> {
     return listOf<Any?>(
       value.raw,
@@ -89,7 +88,6 @@ private object MessagingApiCodec : StandardMessageCodec() {
           NotificationPermissionStateWrapper.fromList(it)
         }
       }
-
       else -> super.readValueOfType(type, buffer)
     }
   }
@@ -100,7 +98,6 @@ private object MessagingApiCodec : StandardMessageCodec() {
         stream.write(128)
         writeValue(stream, value.toList())
       }
-
       else -> super.writeValue(stream, value)
     }
   }
@@ -112,15 +109,8 @@ private object MessagingApiCodec : StandardMessageCodec() {
  * Generated interface from Pigeon that represents a handler of messages from Flutter.
  */
 interface MessagingApi {
-  /**
-   * Returns true if the Google Play Services are available on the device.
-   * Only available on Android.
-   */
-  fun isGoogleApiAvailable(): Boolean
-
   /** Gets the FCM token for this device. Returns null if failed. */
   fun getToken(callback: (Result<String?>) -> Unit)
-
   /** Requests notification permission from the user. */
   fun requestNotificationPermission(callback: (Result<NotificationPermissionStateWrapper?>) -> Unit)
 
@@ -129,30 +119,9 @@ interface MessagingApi {
     val codec: MessageCodec<Any?> by lazy {
       MessagingApiCodec
     }
-
     /** Sets up an instance of `MessagingApi` to handle messages through the `binaryMessenger`. */
     @Suppress("UNCHECKED_CAST")
     fun setUp(binaryMessenger: BinaryMessenger, api: MessagingApi?) {
-      run {
-        val channel = BasicMessageChannel<Any?>(
-          binaryMessenger,
-          "dev.flutter.pigeon.submon.MessagingApi.isGoogleApiAvailable",
-          codec
-        )
-        if (api != null) {
-          channel.setMessageHandler { _, reply ->
-            var wrapped: List<Any?>
-            try {
-              wrapped = listOf<Any?>(api.isGoogleApiAvailable())
-            } catch (exception: Throwable) {
-              wrapped = wrapError(exception)
-            }
-            reply.reply(wrapped)
-          }
-        } else {
-          channel.setMessageHandler(null)
-        }
-      }
       run {
         val channel =
           BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.MessagingApi.getToken", codec)
@@ -197,7 +166,6 @@ interface MessagingApi {
     }
   }
 }
-
 /**
  * Browser-related APIs.
  *
@@ -211,7 +179,6 @@ interface BrowserApi {
    * This method is only available on Android.
    */
   fun openAuthCustomTab(url: String, callback: (Result<String?>) -> Unit)
-
   /**
    * Opens a web page in WebView activity (on Android) or
    * [SFSafariViewController](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller)
@@ -227,7 +194,6 @@ interface BrowserApi {
     val codec: MessageCodec<Any?> by lazy {
       StandardMessageCodec()
     }
-
     /** Sets up an instance of `BrowserApi` to handle messages through the `binaryMessenger`. */
     @Suppress("UNCHECKED_CAST")
     fun setUp(binaryMessenger: BinaryMessenger, api: BrowserApi?) {
@@ -276,7 +242,6 @@ interface BrowserApi {
     }
   }
 }
-
 /**
  * General APIs.
  *
@@ -285,13 +250,10 @@ interface BrowserApi {
 interface GeneralApi {
   /** Updates the widgets on the home screen. */
   fun updateWidgets()
-
   /** Requests the IDFA (Identifier for Advertisers) from the user on iOS. */
   fun requestIDFA(callback: (Result<Boolean>) -> Unit)
-
   /** Sets the wake lock (`isIdleTimerDisabled` on iOS, `` on Android) state. */
   fun setWakeLock(enabled: Boolean)
-
   /**
    * Sets the fullscreen state.
    *
@@ -304,7 +266,6 @@ interface GeneralApi {
     val codec: MessageCodec<Any?> by lazy {
       StandardMessageCodec()
     }
-
     /** Sets up an instance of `GeneralApi` to handle messages through the `binaryMessenger`. */
     @Suppress("UNCHECKED_CAST")
     fun setUp(binaryMessenger: BinaryMessenger, api: GeneralApi?) {

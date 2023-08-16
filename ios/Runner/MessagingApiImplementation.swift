@@ -17,10 +17,6 @@ class MessagingApiImplementation : MessagingApi {
     
     let appDelegate: AppDelegate
     
-    func isGoogleApiAvailable() throws -> Bool {
-        throw FlutterError(code: "unsupported", message: "This method is not supported on this platform.", details: nil)
-    }
-    
     func getToken(completion: @escaping (Result<String?, Error>) -> Void) {
         Messaging.messaging().token(completion: { (token, error) in
             if error != nil {

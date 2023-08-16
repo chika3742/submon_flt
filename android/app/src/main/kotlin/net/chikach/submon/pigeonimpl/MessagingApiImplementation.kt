@@ -6,8 +6,6 @@ import NotificationPermissionStateWrapper
 import android.Manifest
 import android.app.Activity
 import android.os.Build
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.messaging.FirebaseMessaging
 
 class MessagingApiImplementation(private val activity: Activity) : MessagingApi {
@@ -16,10 +14,6 @@ class MessagingApiImplementation(private val activity: Activity) : MessagingApi 
     }
 
     private var requestNotificationCallback: ((Result<NotificationPermissionStateWrapper?>) -> Unit)? = null
-
-    override fun isGoogleApiAvailable(): Boolean {
-        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(activity) == ConnectionResult.SUCCESS
-    }
 
     override fun getToken(callback: (Result<String?>) -> Unit) {
         FirebaseMessaging.getInstance().token.addOnSuccessListener {

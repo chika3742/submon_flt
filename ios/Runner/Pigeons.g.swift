@@ -102,9 +102,6 @@ class MessagingApiCodec: FlutterStandardMessageCodec {
 ///
 /// Generated protocol from Pigeon that represents a handler of messages from Flutter.
 protocol MessagingApi {
-  /// Returns true if the Google Play Services are available on the device.
-  /// Only available on Android.
-  func isGoogleApiAvailable() throws -> Bool
   /// Gets the FCM token for this device. Returns null if failed.
   func getToken(completion: @escaping (Result<String?, Error>) -> Void)
   /// Requests notification permission from the user.
@@ -117,21 +114,6 @@ class MessagingApiSetup {
   static var codec: FlutterStandardMessageCodec { MessagingApiCodec.shared }
   /// Sets up an instance of `MessagingApi` to handle messages through the `binaryMessenger`.
   static func setUp(binaryMessenger: FlutterBinaryMessenger, api: MessagingApi?) {
-    /// Returns true if the Google Play Services are available on the device.
-    /// Only available on Android.
-    let isGoogleApiAvailableChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.submon.MessagingApi.isGoogleApiAvailable", binaryMessenger: binaryMessenger, codec: codec)
-    if let api = api {
-      isGoogleApiAvailableChannel.setMessageHandler { _, reply in
-        do {
-          let result = try api.isGoogleApiAvailable()
-          reply(wrapResult(result))
-        } catch {
-          reply(wrapError(error))
-        }
-      }
-    } else {
-      isGoogleApiAvailableChannel.setMessageHandler(nil)
-    }
     /// Gets the FCM token for this device. Returns null if failed.
     let getTokenChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.submon.MessagingApi.getToken", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {

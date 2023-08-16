@@ -6,10 +6,14 @@ import MessagingApi
 import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Bundle
 import android.os.Handler
+import android.os.PersistableBundle
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationChannelGroupCompat
 import androidx.core.app.NotificationManagerCompat
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import net.chikach.submon.eventapi.FcmTokenRefreshEventApi
@@ -95,6 +99,14 @@ class MainActivity : FlutterActivity() {
                 .setGroup("main")
                 .build()
         )
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+        super.onCreate(savedInstanceState, persistentState)
+
+        if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) != ConnectionResult.SUCCESS) {
+            GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
