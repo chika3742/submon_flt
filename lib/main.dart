@@ -332,7 +332,9 @@ class _ApplicationState extends State<Application> {
     try {
       await Firebase.initializeApp();
       if (!screenShotMode) {
-        FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+        FlutterError.onError = (errorDetails) {
+          FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+        };
       }
       if (kDebugMode) {
         FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
