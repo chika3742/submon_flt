@@ -50,23 +50,37 @@ const screenShotMode = bool.fromEnvironment("SCREENSHOT_MODE");
 BuildContext? get globalContext => Application.globalKey.currentContext;
 
 void main() async {
-  runZonedGuarded<Future<void>>(() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await dotenv.load();
-    googleSignIn.signInSilently();
-    MobileAds.instance.initialize();
-    LicenseRegistry.addLicense(() async* {
-      yield LicenseEntryWithLineBreaks(["google_fonts"],
-          await rootBundle.loadString('assets/google_fonts/Murecho/OFL.txt'));
-      yield LicenseEntryWithLineBreaks(["google_fonts"],
-          await rootBundle.loadString('assets/google_fonts/B612_Mono/OFL.txt'));
-      yield LicenseEntryWithLineBreaks(["google_fonts"],
-          await rootBundle.loadString('assets/google_fonts/Play/OFL.txt'));
-    });
-    runApp(const Application());
-  },
-      (error, stack) =>
-          FirebaseCrashlytics.instance.recordError(error, stack, fatal: true));
+  runZonedGuarded<Future<void>>(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+
+      // load .env
+      await dotenv.load();
+
+      // initialize Google user (for Tasks API)
+      googleSignIn.signInSilently();
+
+      // initialize AdMob
+      MobileAds.instance.initialize();
+
+      // register font licenses
+      LicenseRegistry.addLicense(() async* {
+        yield LicenseEntryWithLineBreaks(["google_fonts"],
+            await rootBundle.loadString('assets/google_fonts/Murecho/OFL.txt'));
+        yield LicenseEntryWithLineBreaks(
+            ["google_fonts"],
+            await rootBundle
+                .loadString('assets/google_fonts/B612_Mono/OFL.txt'));
+        yield LicenseEntryWithLineBreaks(["google_fonts"],
+            await rootBundle.loadString('assets/google_fonts/Play/OFL.txt'));
+      });
+
+      runApp(const Application());
+    },
+    (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    },
+  );
 }
 
 class Application extends StatefulWidget {
@@ -318,7 +332,9 @@ class _ApplicationState extends State<Application> {
     try {
       await Firebase.initializeApp();
       if (!screenShotMode) {
-        FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+        FlutterError.onError = (errorDetails) {
+          FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+        };
       }
       if (kDebugMode) {
         FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
