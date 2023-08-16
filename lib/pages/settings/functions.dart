@@ -8,12 +8,12 @@ import 'package:submon/components/dropdown_time_picker_bottom_sheet.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/main.dart';
-import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/settings/account_edit_page.dart';
 import 'package:submon/pages/settings/account_link_page.dart';
 import 'package:submon/pages/settings/google_tasks.dart';
 import 'package:submon/pages/settings/timetable.dart';
 import 'package:submon/pages/sign_in_page.dart';
+import 'package:submon/src/pigeons.g.dart';
 import 'package:submon/ui_components/settings_ui.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
@@ -90,13 +90,17 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
               leading: const Icon(Icons.schedule),
               trailing: _buildReminderTimeTrailing(),
               onTap: () async {
+                // check permission
                 var requestPermissionResult =
-                    await MessagingPlugin.requestNotificationPermission();
-                if (requestPermissionResult ==
-                    NotificationPermissionState.denied) {
+                    await MessagingApi().requestNotificationPermission();
+                if (requestPermissionResult?.value !=
+                    NotificationPermissionState.granted) {
                   showSnackBar(
                       globalContext!, "通知の表示が許可されていません。本体設定から許可してください。");
                 } else {
+                  if (!mounted) return;
+
+                  // show time picker for reminder time
                   var result = await showRoundedBottomSheet<TimeOfDay>(
                     context: context,
                     title: "リマインダー通知時刻",
@@ -108,7 +112,6 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                   print(result);
 
                   if (result != null) {
-                    // NotificationMethodChannel.registerReminder();
                     setState(() {
                       _loadingReminderTime = true;
                     });

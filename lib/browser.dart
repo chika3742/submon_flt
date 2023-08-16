@@ -1,32 +1,31 @@
 import 'dart:io';
 
+import 'package:submon/src/pigeons.g.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-
-import 'method_channel/main.dart';
 
 class Browser {
   static void openTermsOfUse() {
-    MainMethodPlugin.openWebPage(
-        "利用規約", "https://www.chikach.net/submon-terms?hideNav=1");
+    BrowserApi()
+        .openWebPage("利用規約", "https://www.chikach.net/submon-terms?hideNav=1");
   }
 
   static void openPrivacyPolicy() {
-    MainMethodPlugin.openWebPage(
+    BrowserApi().openWebPage(
         "プライバシーポリシー", "https://www.chikach.net/submon-privacy-2?hideNav=1");
   }
 
   static void openChangelog() {
-    MainMethodPlugin.openWebPage(
-        "更新履歴", "https://github.com/chika3742/Submon2/releases");
+    BrowserApi()
+        .openWebPage("更新履歴", "https://github.com/chika3742/Submon2/releases");
   }
 
   static void openHelp() {
-    MainMethodPlugin.openWebPage("ヘルプ", "https://www.chikach.net/submon-help/");
+    BrowserApi().openWebPage("ヘルプ", "https://www.chikach.net/submon-help/");
   }
 
   static void openAnnouncements() {
-    MainMethodPlugin.openWebPage(
-        "お知らせ", "https://www.chikach.net/category/submon-info/");
+    BrowserApi()
+        .openWebPage("お知らせ", "https://www.chikach.net/category/submon-info/");
   }
 
   static void openStoreListing() {

@@ -1,99 +1,64 @@
 package net.chikach.submon
 
+import BrowserApi
+import GeneralApi
+import MessagingApi
 import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Bundle
+import android.os.Handler
+import android.os.PersistableBundle
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationChannelGroupCompat
 import androidx.core.app.NotificationManagerCompat
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugin.common.EventChannel
-import io.flutter.plugin.common.MethodChannel
-import net.chikach.submon.mch.MainMethodChannelHandler
-import net.chikach.submon.mch.MessagingMethodChannelHandler
-import net.chikach.submon.mch.REQUEST_CODE_CUSTOM_TABS
-import net.chikach.submon.mch.REQUEST_CODE_NOTIFICATION_PERMISSION
-
-val chromiumBrowserPackages = listOf(
-    "com.android.chrome",
-    "com.chrome.beta",
-    "com.chrome.dev",
-    "com.chrome.canary",
-    "com.microsoft.emmx",
-    "com.microsoft.emmx.beta",
-    "com.microsoft.emmx.dev",
-    "com.microsoft.emmx.canary",
-    "com.brave.browser",
-    "com.vivaldi.browser",
-    "com.opera.browser",
-    "com.sec.android.app.sbrowser",
-    "com.sec.android.app.sbrowser.beta",
-)
+import net.chikach.submon.eventapi.FcmTokenRefreshEventApi
+import net.chikach.submon.eventapi.UriEventApi
+import net.chikach.submon.pigeonimpl.BrowserApiImplementation
+import net.chikach.submon.pigeonimpl.GeneralApiImplementation
+import net.chikach.submon.pigeonimpl.MessagingApiImplementation
+import net.chikach.submon.pigeonimpl.MessagingApiImplementation.Companion.REQUEST_CODE_NOTIFICATION_PERMISSION
 
 const val REMINDER_CHANNEL = "reminder"
 const val TIMETABLE_CHANNEL = "timetable"
 const val DO_TIME_CHANNEL = "digestive"
 const val DEFAULT_CHANNEL = "default"
 
-const val METHOD_CHANNEL_MAIN = "net.chikach.submon/main"
-const val METHOD_CHANNEL_MESSAGING = "net.chikach.submon/messaging"
-const val EVENT_CHANNEL_SIGN_IN_URI = "net.chikach.submon/signInUri"
-const val EVENT_CHANNEL_URI = "net.chikach.submon/uri"
-
 const val REQUEST_CODE_TAKE_PICTURE = 1
 
 class MainActivity : FlutterActivity() {
-    private val mainMethodChannelHandler = MainMethodChannelHandler(this)
-    private val messagingMethodChannelHandler = MessagingMethodChannelHandler(this)
-    var twitterSignInUriEventSink: EventChannel.EventSink? = null
-    var uriEventSink: EventChannel.EventSink? = null
+    private val messagingApiImpl = MessagingApiImplementation(this)
+    private val browserApiImpl = BrowserApiImplementation(this)
+
+    var uriEventApi: UriEventApi? = null
+
+    companion object {
+        var fcmTokenRefreshEventApi: FcmTokenRefreshEventApi? = null
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
         Utils.initAppCheck()
 
+        val binaryMessenger = flutterEngine.dartExecutor.binaryMessenger
+
+        uriEventApi = UriEventApi(binaryMessenger)
+        uriEventApi!!.initHandler()
+        fcmTokenRefreshEventApi = FcmTokenRefreshEventApi(binaryMessenger)
+        fcmTokenRefreshEventApi!!.initHandler()
+
         if (intent.data != null) {
-            mainMethodChannelHandler.pendingUri = intent.data
+            uriEventApi!!.onUri(intent.data.toString())
         }
 
-        // main method channel
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_MAIN).apply {
-            setMethodCallHandler(mainMethodChannelHandler)
-        }
-
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL_MESSAGING).apply {
-            setMethodCallHandler(messagingMethodChannelHandler)
-        }
-
-        val twitterSignInUriEventChannel =
-            EventChannel(
-                flutterEngine.dartExecutor.binaryMessenger,
-                EVENT_CHANNEL_SIGN_IN_URI
-            )
-        twitterSignInUriEventChannel.setStreamHandler(object : EventChannel.StreamHandler {
-            override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-                twitterSignInUriEventSink = events
-            }
-
-            override fun onCancel(arguments: Any?) {
-                twitterSignInUriEventSink = null
-            }
-        })
-
-        EventChannel(
-            flutterEngine.dartExecutor.binaryMessenger,
-            EVENT_CHANNEL_URI
-        ).setStreamHandler(object : EventChannel.StreamHandler {
-            override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-                uriEventSink = events
-            }
-
-            override fun onCancel(arguments: Any?) {
-                uriEventSink = null
-            }
-        })
+        GeneralApi.setUp(binaryMessenger, GeneralApiImplementation(this))
+        MessagingApi.setUp(binaryMessenger, messagingApiImpl)
+        BrowserApi.setUp(binaryMessenger, browserApiImpl)
 
         val notificationMgr = NotificationManagerCompat.from(context)
         notificationMgr.createNotificationChannelGroup(
@@ -136,14 +101,27 @@ class MainActivity : FlutterActivity() {
         )
     }
 
+    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+        super.onCreate(savedInstanceState, persistentState)
+
+        if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) != ConnectionResult.SUCCESS) {
+            GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this)
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_CODE_TAKE_PICTURE -> {
-                mainMethodChannelHandler.takePictureCallback(resultCode)
+//                mainMethodChannelHandler.takePictureCallback(resultCode)
             }
-            REQUEST_CODE_CUSTOM_TABS -> {
-                mainMethodChannelHandler.completeCustomTabs(null)
+
+            BrowserApiImplementation.REQUEST_CODE_CUSTOM_TABS -> {
+                // wait for new intent
+                Handler(mainLooper).postDelayed({
+                    // if no new intent is received, complete with null
+                    browserApiImpl.completeAuthCustomTab(null)
+                }, 3000)
             }
         }
     }
@@ -154,17 +132,23 @@ class MainActivity : FlutterActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
         if (requestCode == REQUEST_CODE_NOTIFICATION_PERMISSION) {
-            messagingMethodChannelHandler
-                .completeRequestNotificationPermission(grantResults.all { it == PackageManager.PERMISSION_GRANTED })
+            messagingApiImpl.completeRequestNotificationPermission(
+                grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+            )
         }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (intent.data != null) {
-            mainMethodChannelHandler.completeCustomTabs(intent.data?.query)
-            uriEventSink?.success(intent.data.toString())
+            if (intent.data.toString().startsWith("submon://auth-callback/")) {
+                // auth callback
+                browserApiImpl.completeAuthCustomTab(intent.data)
+            } else {
+                uriEventApi?.onUri(intent.data.toString())
+            }
         }
     }
 

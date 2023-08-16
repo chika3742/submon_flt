@@ -9,11 +9,11 @@ import 'package:submon/isar_db/isar_timetable_class_time.dart';
 import 'package:submon/isar_db/isar_timetable_table.dart';
 import 'package:submon/main.dart';
 import 'package:submon/pages/settings/customize.dart';
+import 'package:submon/src/pigeons.g.dart';
 import 'package:submon/ui_components/settings_ui.dart';
 import 'package:submon/utils/ui.dart';
 
 import '../../db/firestore_provider.dart';
-import '../../method_channel/messaging.dart';
 import '../../user_config.dart';
 import '../../utils/utils.dart';
 
@@ -201,13 +201,17 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
               leading: const Icon(Icons.schedule),
               trailing: _buildReminderNotificationTimeTrailingIcon(),
               onTap: () async {
+                // check permission
                 var requestPermissionResult =
-                    await MessagingPlugin.requestNotificationPermission();
-                if (requestPermissionResult ==
-                    NotificationPermissionState.denied) {
+                    await MessagingApi().requestNotificationPermission();
+                if (requestPermissionResult?.value !=
+                    NotificationPermissionState.granted) {
                   showSnackBar(
                       globalContext!, "通知の表示が許可されていません。本体設定から許可してください。");
                 } else {
+                  if (!mounted) return;
+
+                  // show time picker for timetable notification time
                   var result = await showRoundedBottomSheet<TimeOfDay>(
                     context: context,
                     title: "時間割通知の時刻を設定",

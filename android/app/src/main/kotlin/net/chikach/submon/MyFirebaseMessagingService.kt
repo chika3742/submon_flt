@@ -4,10 +4,6 @@ import android.app.PendingIntent
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import java.util.*
@@ -98,12 +94,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        val user = FirebaseAuth.getInstance().currentUser
-        if (user != null) {
-            val db = FirebaseFirestore.getInstance()
-            val doc = db.document("users/${user.uid}")
-
-            doc.set(mapOf("notificationTokens" to FieldValue.arrayUnion(token)), SetOptions.merge())
-        }
+        MainActivity.fcmTokenRefreshEventApi?.onFcmTokenRefresh(token)
     }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:animations/animations.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -13,14 +14,13 @@ import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
 import 'package:submon/isar_db/isar_provider.dart';
 import 'package:submon/main.dart';
-import 'package:submon/method_channel/main.dart';
-import 'package:submon/method_channel/messaging.dart';
 import 'package:submon/pages/home_tabs/tab_digestive_list.dart';
 import 'package:submon/pages/home_tabs/tab_others.dart';
 import 'package:submon/pages/home_tabs/tab_submissions.dart';
 import 'package:submon/pages/settings/timetable.dart';
 import 'package:submon/pages/submission_create_page.dart';
 import 'package:submon/pages/timetable_table_view_page.dart';
+import 'package:submon/src/pigeons.g.dart';
 import 'package:submon/ui_components/hidable_progress_indicator.dart';
 import 'package:submon/utils/firestore.dart';
 import 'package:submon/utils/ui.dart';
@@ -138,25 +138,22 @@ class HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    MessagingPlugin.getToken().then((token) {
-      FirestoreProvider.saveNotificationToken(token);
-    });
-
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (!screenShotMode && isAdEnabled) {
         AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
                 MediaQuery.of(context).size.width.truncate())
-            .then((adSize) {
-          MainMethodPlugin.requestIDFA().then((granted) {
-            setState(() {
-              bannerAd = BannerAd(
-                adUnitId: AdUnits.homeBottomBanner!,
-                size: adSize!,
-                request: const AdRequest(),
-                listener: const BannerAdListener(),
-              );
-              bannerAd!.load();
-            });
+            .then((adSize) async {
+          if (Platform.isIOS) {
+            await GeneralApi().requestIDFA();
+          }
+          setState(() {
+            bannerAd = BannerAd(
+              adUnitId: AdUnits.homeBottomBanner!,
+              size: adSize!,
+              request: const AdRequest(),
+              listener: const BannerAdListener(),
+            );
+            bannerAd!.load();
           });
         });
       }
