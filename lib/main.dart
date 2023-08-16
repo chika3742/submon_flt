@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:animations/animations.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -50,23 +51,28 @@ const screenShotMode = bool.fromEnvironment("SCREENSHOT_MODE");
 BuildContext? get globalContext => Application.globalKey.currentContext;
 
 void main() async {
-  runZonedGuarded<Future<void>>(() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await dotenv.load();
-    googleSignIn.signInSilently();
-    MobileAds.instance.initialize();
-    LicenseRegistry.addLicense(() async* {
-      yield LicenseEntryWithLineBreaks(["google_fonts"],
-          await rootBundle.loadString('assets/google_fonts/Murecho/OFL.txt'));
-      yield LicenseEntryWithLineBreaks(["google_fonts"],
-          await rootBundle.loadString('assets/google_fonts/B612_Mono/OFL.txt'));
-      yield LicenseEntryWithLineBreaks(["google_fonts"],
-          await rootBundle.loadString('assets/google_fonts/Play/OFL.txt'));
-    });
-    runApp(const Application());
-  },
-      (error, stack) =>
-          FirebaseCrashlytics.instance.recordError(error, stack, fatal: true));
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // load .env
+  await dotenv.load();
+
+  // initialize Google user (for Tasks API)
+  googleSignIn.signInSilently();
+
+  // initialize admob
+  MobileAds.instance.initialize();
+
+  // register font licenses
+  LicenseRegistry.addLicense(() async* {
+    yield LicenseEntryWithLineBreaks(["google_fonts"],
+        await rootBundle.loadString('assets/google_fonts/Murecho/OFL.txt'));
+    yield LicenseEntryWithLineBreaks(["google_fonts"],
+        await rootBundle.loadString('assets/google_fonts/B612_Mono/OFL.txt'));
+    yield LicenseEntryWithLineBreaks(["google_fonts"],
+        await rootBundle.loadString('assets/google_fonts/Play/OFL.txt'));
+  });
+
+  runApp(const Application());
 }
 
 class Application extends StatefulWidget {
@@ -318,7 +324,7 @@ class _ApplicationState extends State<Application> {
     try {
       await Firebase.initializeApp();
       if (!screenShotMode) {
-        FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+        _initErrorListeners();
       }
       if (kDebugMode) {
         FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
@@ -338,5 +344,23 @@ class _ApplicationState extends State<Application> {
         _initializingErrorOccurred = true;
       });
     }
+  }
+
+  void _initErrorListeners() {
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+
+    // handle async errors
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+
+    // handle errors thrown from outside the Flutter framework
+    Isolate.current.addErrorListener(RawReceivePort((pair) async {
+      final List<dynamic> errorAndStacktrace = pair;
+      await FirebaseCrashlytics.instance.recordError(
+          errorAndStacktrace.first, errorAndStacktrace.last,
+          fatal: true);
+    }).sendPort);
   }
 }
