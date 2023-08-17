@@ -37,7 +37,7 @@ private fun wrapError(exception: Throwable): List<Any?> {
  * @property message The error message.
  * @property details The error details. Must be a datatype supported by the api codec.
  */
-class FlutterError(
+class FlutterError (
   val code: String,
   override val message: String? = null,
   val details: Any? = null
@@ -61,7 +61,7 @@ enum class NotificationPermissionState(val raw: Int) {
  *
  * Generated class from Pigeon that represents data sent in messages.
  */
-data class NotificationPermissionStateWrapper(
+data class NotificationPermissionStateWrapper (
   val value: NotificationPermissionState
 
 ) {
@@ -91,8 +91,7 @@ private object MessagingApiCodec : StandardMessageCodec() {
       else -> super.readValueOfType(type, buffer)
     }
   }
-
-  override fun writeValue(stream: ByteArrayOutputStream, value: Any?) {
+  override fun writeValue(stream: ByteArrayOutputStream, value: Any?)   {
     when (value) {
       is NotificationPermissionStateWrapper -> {
         stream.write(128)
@@ -123,8 +122,7 @@ interface MessagingApi {
     @Suppress("UNCHECKED_CAST")
     fun setUp(binaryMessenger: BinaryMessenger, api: MessagingApi?) {
       run {
-        val channel =
-          BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.MessagingApi.getToken", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.MessagingApi.getToken", codec)
         if (api != null) {
           channel.setMessageHandler { _, reply ->
             api.getToken() { result: Result<String> ->
@@ -142,11 +140,7 @@ interface MessagingApi {
         }
       }
       run {
-        val channel = BasicMessageChannel<Any?>(
-          binaryMessenger,
-          "dev.flutter.pigeon.submon.MessagingApi.requestNotificationPermission",
-          codec
-        )
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.MessagingApi.requestNotificationPermission", codec)
         if (api != null) {
           channel.setMessageHandler { _, reply ->
             api.requestNotificationPermission() { result: Result<NotificationPermissionStateWrapper?> ->
@@ -198,8 +192,7 @@ interface BrowserApi {
     @Suppress("UNCHECKED_CAST")
     fun setUp(binaryMessenger: BinaryMessenger, api: BrowserApi?) {
       run {
-        val channel =
-          BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.BrowserApi.openAuthCustomTab", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.BrowserApi.openAuthCustomTab", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -219,8 +212,7 @@ interface BrowserApi {
         }
       }
       run {
-        val channel =
-          BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.BrowserApi.openWebPage", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.BrowserApi.openWebPage", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -270,8 +262,7 @@ interface GeneralApi {
     @Suppress("UNCHECKED_CAST")
     fun setUp(binaryMessenger: BinaryMessenger, api: GeneralApi?) {
       run {
-        val channel =
-          BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.GeneralApi.updateWidgets", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.GeneralApi.updateWidgets", codec)
         if (api != null) {
           channel.setMessageHandler { _, reply ->
             var wrapped: List<Any?>
@@ -288,8 +279,7 @@ interface GeneralApi {
         }
       }
       run {
-        val channel =
-          BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.GeneralApi.requestIDFA", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.GeneralApi.requestIDFA", codec)
         if (api != null) {
           channel.setMessageHandler { _, reply ->
             api.requestIDFA() { result: Result<Boolean> ->
@@ -307,8 +297,7 @@ interface GeneralApi {
         }
       }
       run {
-        val channel =
-          BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.GeneralApi.setWakeLock", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.GeneralApi.setWakeLock", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -327,8 +316,7 @@ interface GeneralApi {
         }
       }
       run {
-        val channel =
-          BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.GeneralApi.setFullscreen", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.GeneralApi.setFullscreen", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -336,6 +324,82 @@ interface GeneralApi {
             var wrapped: List<Any?>
             try {
               api.setFullscreen(isFullscreenArg)
+              wrapped = listOf<Any?>(null)
+            } catch (exception: Throwable) {
+              wrapped = wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+    }
+  }
+}
+/**
+ * Updates the DND (Do Not Disturb) state.
+ *
+ * Generated interface from Pigeon that represents a handler of messages from Flutter.
+ */
+interface DndApi {
+  /** Returns whether the DND permission has been granted. */
+  fun isAccessGranted(): Boolean
+  /** Transits to the DND permission settings page. */
+  fun goToPolicySettings()
+  /** Sets the DND state. */
+  fun setDndEnabled(enabled: Boolean)
+
+  companion object {
+    /** The codec used by DndApi. */
+    val codec: MessageCodec<Any?> by lazy {
+      StandardMessageCodec()
+    }
+    /** Sets up an instance of `DndApi` to handle messages through the `binaryMessenger`. */
+    @Suppress("UNCHECKED_CAST")
+    fun setUp(binaryMessenger: BinaryMessenger, api: DndApi?) {
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.DndApi.isAccessGranted", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            var wrapped: List<Any?>
+            try {
+              wrapped = listOf<Any?>(api.isAccessGranted())
+            } catch (exception: Throwable) {
+              wrapped = wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.DndApi.goToPolicySettings", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            var wrapped: List<Any?>
+            try {
+              api.goToPolicySettings()
+              wrapped = listOf<Any?>(null)
+            } catch (exception: Throwable) {
+              wrapped = wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.submon.DndApi.setDndEnabled", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val enabledArg = args[0] as Boolean
+            var wrapped: List<Any?>
+            try {
+              api.setDndEnabled(enabledArg)
               wrapped = listOf<Any?>(null)
             } catch (exception: Throwable) {
               wrapped = wrapError(exception)

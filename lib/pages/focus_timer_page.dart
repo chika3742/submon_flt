@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dnd/flutter_dnd.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:submon/components/digestive_detail_card.dart';
 import 'package:submon/isar_db/isar_digestive.dart';
@@ -110,9 +109,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
     if (!kIsWeb && Platform.isAndroid) {
       GeneralApi().setFullscreen(false);
     }
-    if (Platform.isAndroid) {
-      FlutterDnd.setInterruptionFilter(FlutterDnd.INTERRUPTION_FILTER_ALL);
-    }
+    _disableDnd();
     ad?.dispose();
   }
 
@@ -273,7 +270,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                     OutlinedButton(
                                       child: const Text('許可設定へ'),
                                       onPressed: () {
-                                        FlutterDnd.gotoPolicySettings();
+                                        DndApi().goToPolicySettings();
                                       },
                                     )
                                   ],
@@ -390,13 +387,13 @@ class _FocusTimerPageState extends State<FocusTimerPage>
 
   void _enableDnd() {
     if (_isEnableDnd && _dndAccessGranted == true) {
-      FlutterDnd.setInterruptionFilter(FlutterDnd.INTERRUPTION_FILTER_NONE);
+      DndApi().setDndEnabled(true);
     }
   }
 
   void _disableDnd() {
     if (_isEnableDnd && _dndAccessGranted == true) {
-      FlutterDnd.setInterruptionFilter(FlutterDnd.INTERRUPTION_FILTER_ALL);
+      DndApi().setDndEnabled(false);
     }
   }
 
@@ -484,7 +481,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
 
   void _checkDndAccessGranted() {
     if (Platform.isAndroid) {
-      FlutterDnd.isNotificationPolicyAccessGranted.then((value) {
+      DndApi().isAccessGranted().then((value) {
         setState(() {
           _dndAccessGranted = value;
         });

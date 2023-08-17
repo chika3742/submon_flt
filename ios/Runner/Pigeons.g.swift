@@ -303,3 +303,66 @@ class GeneralApiSetup {
     }
   }
 }
+/// Updates the DND (Do Not Disturb) state.
+///
+/// Generated protocol from Pigeon that represents a handler of messages from Flutter.
+protocol DndApi {
+  /// Returns whether the DND permission has been granted.
+  func isAccessGranted() throws -> Bool
+  /// Transits to the DND permission settings page.
+  func goToPolicySettings() throws
+  /// Sets the DND state.
+  func setDndEnabled(enabled: Bool) throws
+}
+
+/// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
+class DndApiSetup {
+  /// The codec used by DndApi.
+  /// Sets up an instance of `DndApi` to handle messages through the `binaryMessenger`.
+  static func setUp(binaryMessenger: FlutterBinaryMessenger, api: DndApi?) {
+    /// Returns whether the DND permission has been granted.
+    let isAccessGrantedChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.submon.DndApi.isAccessGranted", binaryMessenger: binaryMessenger)
+    if let api = api {
+      isAccessGrantedChannel.setMessageHandler { _, reply in
+        do {
+          let result = try api.isAccessGranted()
+          reply(wrapResult(result))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      isAccessGrantedChannel.setMessageHandler(nil)
+    }
+    /// Transits to the DND permission settings page.
+    let goToPolicySettingsChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.submon.DndApi.goToPolicySettings", binaryMessenger: binaryMessenger)
+    if let api = api {
+      goToPolicySettingsChannel.setMessageHandler { _, reply in
+        do {
+          try api.goToPolicySettings()
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      goToPolicySettingsChannel.setMessageHandler(nil)
+    }
+    /// Sets the DND state.
+    let setDndEnabledChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.submon.DndApi.setDndEnabled", binaryMessenger: binaryMessenger)
+    if let api = api {
+      setDndEnabledChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let enabledArg = args[0] as! Bool
+        do {
+          try api.setDndEnabled(enabled: enabledArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      setDndEnabledChannel.setMessageHandler(nil)
+    }
+  }
+}
