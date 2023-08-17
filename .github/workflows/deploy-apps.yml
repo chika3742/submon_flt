@@ -2,6 +2,8 @@ name: Build and Deploy Apps
 
 on:
   push:
+    branches:
+      - main
     tags:
       - v*.*.*
   workflow_dispatch:
@@ -151,7 +153,7 @@ jobs:
       - build-ios
       - build-android
     runs-on: ubuntu-latest
-    if: "!contains(github.ref, '-')"
+    if: "github.ref_name != '' && !contains(github.ref_name, '-')"
     permissions:
       contents: write
 
