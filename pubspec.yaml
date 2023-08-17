@@ -45,9 +45,6 @@ dependencies:
   url_launcher: ^6.1.2
   flutter_linkify: ^6.0.0
   path_provider: ^2.0.10
-  flutter_exif_rotation: ^0.5.1
-  flutter_dnd: ^0.1.4+1
-  permission_handler: ^10.0.0
   collection: ^1.16.0
   vector_math: ^2.1.2
   path: ^1.8.1
