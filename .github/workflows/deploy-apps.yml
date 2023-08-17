@@ -7,8 +7,21 @@ on:
   workflow_dispatch:
 
 jobs:
+  get-build-num:
+    runs-on: ubuntu-latest
+    env:
+      BUILD_NUM_OFFSET: 115
+    outputs:
+      build-num: ${{ steps.build-num.outputs.build-num }}
+
+    steps:
+      - id: build-num
+        run: echo build-num=$(($GITHUB_RUN_NUMBER + $BUILD_NUM_OFFSET)) >> $GITHUB_OUTPUT
+
   build-ios: # Build and deploy iOS app to App Store
     name: Build iOS
+    needs:
+      - get-build-num
     runs-on: macos-latest
 
     steps:
@@ -53,7 +66,7 @@ jobs:
         run: echo -n "${{ secrets.APPLE_GOOGLE_SERVICE_INFO_RELEASE_PLIST_BASE64 }}" | base64 -d > ios/GoogleService-Info-release.plist
 
       - name: Build IPA
-        run: flutter build ipa --export-options-plist ios/exportOptions.plist
+        run: flutter build ipa --build-number ${{ needs.get-build-num.outputs.build-num }} --export-options-plist ios/exportOptions.plist
 
       - name: Deploy to App Store
         run: |
@@ -63,6 +76,8 @@ jobs:
 
   build-android: # Build and deploy Android app to Google Play
     name: Build Android
+    needs:
+      - get-build-num
     runs-on: ubuntu-latest
 
     steps:
@@ -108,7 +123,7 @@ jobs:
           echo -n ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON_BASE64 }} | base64 -d > android/app/src/release/google-services.json
 
       - name: Build App Bundle for Android
-        run: flutter build appbundle
+        run: flutter build appbundle --build-number ${{ needs.get-build-num.outputs.build-num }}
 
       - name: Import Service Account Key
         run: echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_BASE64 }}' | base64 -d > service_account_key.json
