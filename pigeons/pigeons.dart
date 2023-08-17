@@ -70,3 +70,16 @@ abstract class GeneralApi {
   /// This method is only available on Android.
   void setFullscreen(bool isFullscreen);
 }
+
+/// Updates the DND (Do Not Disturb) state.
+@HostApi()
+abstract class DndApi {
+  /// Returns whether the DND permission has been granted.
+  bool isAccessGranted();
+
+  /// Transits to the DND permission settings page.
+  void goToPolicySettings();
+
+  /// Sets the DND state.
+  void setDndEnabled(bool enabled);
+}

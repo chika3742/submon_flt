@@ -1,6 +1,7 @@
 package net.chikach.submon
 
 import BrowserApi
+import DndApi
 import GeneralApi
 import MessagingApi
 import android.app.NotificationManager
@@ -19,6 +20,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import net.chikach.submon.eventapi.FcmTokenRefreshEventApi
 import net.chikach.submon.eventapi.UriEventApi
 import net.chikach.submon.pigeonimpl.BrowserApiImplementation
+import net.chikach.submon.pigeonimpl.DndApiImplementation
 import net.chikach.submon.pigeonimpl.GeneralApiImplementation
 import net.chikach.submon.pigeonimpl.MessagingApiImplementation
 import net.chikach.submon.pigeonimpl.MessagingApiImplementation.Companion.REQUEST_CODE_NOTIFICATION_PERMISSION
@@ -59,6 +61,7 @@ class MainActivity : FlutterActivity() {
         GeneralApi.setUp(binaryMessenger, GeneralApiImplementation(this))
         MessagingApi.setUp(binaryMessenger, messagingApiImpl)
         BrowserApi.setUp(binaryMessenger, browserApiImpl)
+        DndApi.setUp(binaryMessenger, DndApiImplementation(this))
 
         val notificationMgr = NotificationManagerCompat.from(context)
         notificationMgr.createNotificationChannelGroup(
