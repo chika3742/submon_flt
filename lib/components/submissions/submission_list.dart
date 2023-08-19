@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/components/submissions/submission_list_item.dart';
 import 'package:submon/db/shared_prefs.dart';
@@ -29,7 +28,6 @@ class SubmissionListState extends State<SubmissionList> {
   StreamSubscription? _stream1;
   StreamSubscription? _stream2;
 
-  final _player = AudioPlayer();
   SharedPrefs? _prefs;
 
   final _scrollController = ScrollController();
@@ -92,7 +90,6 @@ class SubmissionListState extends State<SubmissionList> {
     super.dispose();
     _stream1?.cancel();
     _stream2?.cancel();
-    _player.dispose();
   }
 
   @override
@@ -159,10 +156,6 @@ class SubmissionListState extends State<SubmissionList> {
         await provider.invertDone(item);
       });
     });
-
-    if (!widget.done && _prefs?.isSEEnabled == true) {
-      _player.play(AssetSource("audio/decision28.mp3"), mode: PlayerMode.lowLatency, volume: 0.05);
-    }
 
     showSnackBar(context, !widget.done ? "完了にしました" : "完了を外しました",
         action: SnackBarAction(
