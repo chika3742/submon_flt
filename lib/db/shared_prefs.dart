@@ -22,11 +22,6 @@ class SharedPrefs {
   set isAnalyticsEnabled(bool value) =>
       pref!.setBool("isAnalyticsEnabled", value);
 
-  // isSeEnabled
-  bool get isSEEnabled => pref!.getBool("isSeEnabled") ?? true;
-
-  set isSEEnabled(bool value) => pref!.setBool("isSeEnabled", value);
-
   // isDeviceCameraUIShouldBeUsed
   bool get isDeviceCameraUIShouldBeUsed {
     if (Platform.isAndroid) {

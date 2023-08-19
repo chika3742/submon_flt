@@ -18,8 +18,6 @@ import 'package:submon/ui_components/settings_ui.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
-import '../../user_config.dart';
-
 class FunctionsSettingsPage extends StatefulWidget {
   const FunctionsSettingsPage({Key? key}) : super(key: key);
 
@@ -31,7 +29,6 @@ class FunctionsSettingsPage extends StatefulWidget {
 
 class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
   bool _pwEnabled = true;
-  bool? _enableSE;
   TimeOfDay? _reminderTime;
   bool _loadingReminderTime = true;
   Timer? _signInStateCheckTimer;
@@ -44,7 +41,6 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
     super.initState();
     SharedPrefs.use((prefs) {
       setState(() {
-        _enableSE = prefs.isSEEnabled;
         _deviceCameraUIShouldBeUsed =
             Platform.isAndroid ? prefs.isDeviceCameraUIShouldBeUsed : null;
       });
@@ -222,22 +218,6 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
           ),
         ]),
         SettingsCategory(title: "その他の機能", tiles: [
-          if (_enableSE != null)
-            SwitchSettingsTile(
-              title: "SEを有効にする",
-              subtitle: "一部操作時にサウンドを再生します",
-              value: _enableSE!,
-              onChanged: (value) {
-                SharedPrefs.use((prefs) {
-                  prefs.isSEEnabled = value;
-                });
-                FirestoreProvider.updateUserConfig(
-                    UserConfig.pathIsSEEnabled, value);
-                setState(() {
-                  _enableSE = value;
-                });
-              },
-            ),
           SettingsTile(
             title: "時間割表設定",
             onTap: () {

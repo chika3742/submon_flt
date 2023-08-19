@@ -306,7 +306,6 @@ class FirestoreProvider {
     if (oldVersion == 5) {
       var sp = SharedPrefs(await SharedPreferences.getInstance());
       await userDoc!.update({
-        UserConfig.pathIsSEEnabled: sp.isSEEnabled,
         UserConfig.pathTimetableShowSaturday: sp.timetableShowSaturday,
         UserConfig.pathTimetablePeriodCountToDisplay: sp.timetablePeriodCountToDisplay,
       });
@@ -419,9 +418,6 @@ class FirestoreProvider {
       }
       if (timetableConfig?.periodCountToDisplay != null) {
         prefs.timetablePeriodCountToDisplay = timetableConfig!.periodCountToDisplay!;
-      }
-      if (checkTimestampResult.configData?.isSEEnabled != null) {
-        prefs.isSEEnabled = checkTimestampResult.configData!.isSEEnabled!;
       }
     });
 
