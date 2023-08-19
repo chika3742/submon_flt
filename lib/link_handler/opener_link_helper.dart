@@ -82,18 +82,25 @@ class OpenerLinkHelper {
           "詳細: $detail",
       showCancel: true,
       onOKPressed: () async {
-        await SubmissionProvider().use((provider) async {
-          provider.writeTransaction(() async {
-            var id = await provider.put(Submission.from(
+        int id = 0;
+
+        SubmissionProvider().use((provider) {
+          return provider.writeTransaction(() {
+            return provider
+                .put(Submission.from(
               title: title,
               due: DateTime.parse(date).toLocal(),
               details: detail,
               color: int.parse(color),
-            ));
-            eventBus.fire(SubmissionInserted(id));
+            ))
+                .then((id_) {
+              id = id_;
+            });
           });
+        }).then((value) {
+          eventBus.fire(SubmissionInserted(id));
+          showSnackBar(globalContext!, "作成しました。");
         });
-        showSnackBar(globalContext!, "作成しました。");
       },
     );
   }
