@@ -202,7 +202,7 @@ void showSelectSheet(
               height: 5,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
-                color: Theme.of(context).textTheme.bodyText1!.color,
+                color: Theme.of(context).textTheme.bodyLarge!.color,
               ),
             ),
             const SizedBox(height: 16),
@@ -221,12 +221,12 @@ void showSelectSheet(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  child: Text(actions[0].title),
                   onPressed: actions[0].onPressed,
+                  child: Text(actions[0].title),
                 ),
                 OutlinedButton(
-                  child: Text(actions[1].title),
                   onPressed: actions[1].onPressed,
+                  child: Text(actions[1].title),
                 ),
               ],
             ),
@@ -274,7 +274,7 @@ Future<T?> showRoundedBottomSheet<T>({
               width: 40,
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                  color: Theme.of(context).textTheme.bodyText1!.color,
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
                   borderRadius: BorderRadius.circular(8)),
             ),
             if (title != null)
@@ -326,7 +326,7 @@ Future<T?> showRoundedDraggableBottomSheet<T>({
                   width: 40,
                   margin: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                      color: Theme.of(context).textTheme.bodyText1!.color,
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
                       borderRadius: BorderRadius.circular(8)),
                 ),
                 Text(title!,

@@ -19,11 +19,11 @@ class TappableCard extends StatelessWidget {
       elevation: 4,
       child: InkWell(
         borderRadius: BorderRadius.circular(_cardBorderRadius),
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: child,
         ),
-        onTap: onTap,
       ),
     );
   }

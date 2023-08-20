@@ -124,7 +124,7 @@ class DigestiveDetailCardState extends State<DigestiveDetailCard> {
                                 color: digestive.done
                                     ? Theme.of(context)
                                         .textTheme
-                                        .bodyText1
+                                        .bodyLarge
                                         ?.color
                                         ?.withOpacity(0.7)
                                     : null)),
