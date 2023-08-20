@@ -244,11 +244,13 @@ class _ApplicationState extends State<Application> {
           case SignInPage.routeName:
             var args = settings.arguments as SignInPageArguments;
             return generatePageRoute<bool>(
-                (context) => SignInPage(
-                      initialCred: args.initialCred,
-                      mode: args.mode,
-                    ),
-                settings);
+              (context) => SignInPage(
+                initialCred: args.initialCred,
+                mode: args.mode,
+                continuePath: args.continuePath,
+              ),
+              settings,
+            );
           case EmailSignInPage.routeName:
             var args = settings.arguments as EmailSignInPageArguments;
             return generatePageRoute<SignInResult>(
@@ -289,21 +291,20 @@ class _ApplicationState extends State<Application> {
                 settings);
           case AccountEditPage.changeEmailRouteName:
             return generatePageRoute(
-                (context) => const AccountEditPage(EditingType.changeEmail),
+                (context) => AccountEditPage(EditingType.changeEmail,
+                    args: settings.arguments as AccountEditPageArguments?),
                 settings);
           case AccountEditPage.changePasswordRouteName:
             return generatePageRoute(
-                (context) => const AccountEditPage(EditingType.changePassword),
+                (context) => AccountEditPage(EditingType.changePassword),
                 settings);
           case AccountEditPage.changeDisplayNameRouteName:
             return generatePageRoute(
-                (context) =>
-                    const AccountEditPage(EditingType.changeDisplayName),
+                (context) => AccountEditPage(EditingType.changeDisplayName),
                 settings);
           case AccountEditPage.deleteRouteName:
             return generatePageRoute(
-                (context) => const AccountEditPage(EditingType.delete),
-                settings);
+                (context) => AccountEditPage(EditingType.delete), settings);
           default:
             return null;
         }
