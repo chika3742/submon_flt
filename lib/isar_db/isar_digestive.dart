@@ -77,16 +77,6 @@ class DigestiveProvider extends IsarProvider<Digestive> {
   }
 
   @override
-  Future<int> put(Digestive data) {
-    if (data.done) {
-      FirestoreProvider.removeDigestiveNotification(data.id);
-    } else if (data.startAt.isAfter(DateTime.now())) {
-      FirestoreProvider.addDigestiveNotification(data.id);
-    }
-    return super.put(data);
-  }
-
-  @override
   Future<void> deleteFirestore(int id) async {
     await FirestoreProvider.digestive.delete(id.toString());
     await FirestoreProvider.removeDigestiveNotification(id);
@@ -96,7 +86,12 @@ class DigestiveProvider extends IsarProvider<Digestive> {
   Future<void> setFirestore(Digestive data, id) async {
     await FirestoreProvider.digestive
         .set(id.toString(), data.toMap(), SetOptions(merge: true));
-    await FirestoreProvider.addDigestiveNotification(id);
+
+    if (data.done) {
+      await FirestoreProvider.removeDigestiveNotification(data.id);
+    } else if (data.startAt.isAfter(DateTime.now())) {
+      await FirestoreProvider.addDigestiveNotification(data.id);
+    }
   }
 
   @override
