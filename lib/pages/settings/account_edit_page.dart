@@ -6,7 +6,6 @@ import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
 import '../../main.dart';
-import '../../utils/dynamic_links.dart';
 
 class AccountEditPage extends StatefulWidget {
   AccountEditPage(this.type, {Key? key, AccountEditPageArguments? args})
@@ -131,8 +130,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
           "メールアドレスを変更します。\n\n"
-          "新しいメールアドレスを入力して「送信」をタップすると、新しいメールアドレスに確認URLが送信されます。このURLをタップすることで、メールアドレスの変更が完了します。\n"
-          "「送信」をタップするだけでは変更は完了しませんのでご注意ください。\n\n"
+          "変更後、元のメールアドレスに通知メールを送信します。このメール内のリンクを利用して、メールアドレスを元に戻すことも可能です。\n\n"
           "※メールは「submon.app」ドメインから送信されます。迷惑メールに振り分けられていないか確認してください。",
           style: Theme.of(context).textTheme.bodyLarge),
       const SizedBox(height: 16),
@@ -163,11 +161,11 @@ class _AccountEditPageState extends State<AccountEditPage> {
     });
 
     try {
-      await FirebaseAuth.instance.currentUser!.verifyBeforeUpdateEmail(
-          _form1Controller.text,
-          actionCodeSettings(getAppDomain("", withScheme: true)));
+      await FirebaseAuth.instance.currentUser!.updateEmail(
+        _form1Controller.text,
+      );
 
-      showSnackBar(context, "送信しました。ご確認ください。");
+      showSnackBar(context, "メールアドレスを変更しました。");
       Navigator.pop(context);
     } on FirebaseAuthException catch (e, stack) {
       switch (e.code) {
