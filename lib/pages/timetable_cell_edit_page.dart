@@ -56,7 +56,6 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
                     await provider.deleteFromCurrentTable(
                         getTimetableCellId(widget.period, widget.weekDay));
                   });
-                  ;
                 });
                 Navigator.pop(context, FieldValue.unselect);
                 eventBus.fire(TimetableListChanged());

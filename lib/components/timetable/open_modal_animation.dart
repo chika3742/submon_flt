@@ -27,11 +27,11 @@ class OpenModalAnimatedContainer extends StatelessWidget {
     return _Hideable(
       key: hideableKey,
       child: GestureDetector(
+        onTap: tappable ? openContainer : null,
         child: Builder(
           key: _closedBuilderKey,
           builder: (context) => closedBuilder!(context),
         ),
-        onTap: tappable ? openContainer : null,
       ),
     );
   }

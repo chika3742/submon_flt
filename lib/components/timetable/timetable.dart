@@ -317,7 +317,7 @@ class _NoteViewState extends State<_NoteView> {
                           style: const TextStyle(fontSize: 18)),
                       Text(
                           "${getWeekdayString(widget.weekday)}曜日 ${widget.index}時間目",
-                          style: Theme.of(context).textTheme.caption),
+                          style: Theme.of(context).textTheme.bodySmall),
                     ],
                   ),
                 ],
