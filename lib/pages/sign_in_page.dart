@@ -16,12 +16,18 @@ import 'package:submon/utils/utils.dart';
 import '../utils/dynamic_links.dart';
 
 class SignInPage extends StatefulWidget {
-  const SignInPage({Key? key, required this.initialCred, required this.mode}) : super(key: key);
+  const SignInPage(
+      {Key? key,
+      required this.initialCred,
+      required this.mode,
+      this.continuePath})
+      : super(key: key);
 
   static const routeName = "/sign-in";
 
   final UserCredential? initialCred;
   final SignInMode mode;
+  final String? continuePath;
 
   @override
   State<SignInPage> createState() => _SignInPageState();
@@ -30,8 +36,9 @@ class SignInPage extends StatefulWidget {
 class SignInPageArguments {
   final UserCredential? initialCred;
   final SignInMode mode;
+  final String? continuePath;
 
-  const SignInPageArguments(this.mode, [this.initialCred]);
+  const SignInPageArguments(this.mode, {this.initialCred, this.continuePath});
 }
 
 class _SignInPageState extends State<SignInPage> {
@@ -241,15 +248,15 @@ class _SignInPageState extends State<SignInPage> {
           showSimpleDialog(
             globalContext!,
             "追加認証",
-            "セキュリティのため、再度ログインする必要があります。送信されたメールにあるURLをタップし、ログインしてください。\n\n"
-                "その後、再度メールアドレス変更をお試しください。",
+            "セキュリティのため、再度ログインする必要があります。送信されたメールにあるURLをタップし、ログインしてください。",
             onOKPressed: () async {
               showLoadingModal(context);
               try {
                 await auth.sendSignInLinkToEmail(
                     email: currentUser.email!,
-                    actionCodeSettings:
-                        actionCodeSettings(getAppDomain("", withScheme: true)));
+                    actionCodeSettings: actionCodeSettings(getAppDomain(
+                        widget.continuePath ?? "",
+                        withScheme: true)));
                 if (mounted) showSnackBar(context, "送信しました");
               } catch (e, stack) {
                 showSnackBar(context, "エラーが発生しました");

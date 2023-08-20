@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:submon/pages/settings/account_edit_page.dart';
 
 import '../auth/sign_in_handler.dart';
 import '../db/shared_prefs.dart';
@@ -30,16 +31,26 @@ class AuthLinkHelper {
 
     if (codeInfo != null &&
         codeInfo.operation == ActionCodeInfoOperation.emailSignIn) {
-      if (FirebaseAuth.instance.currentUser == null) {
+      var continueUri = Uri.parse(url.queryParameters["continueUrl"]!);
+
+      var isReauth = continueUri.path != "/sign-in-from-email";
+      if (FirebaseAuth.instance.currentUser == null || isReauth) {
         final pref = SharedPrefs(await SharedPreferences.getInstance());
         final email = pref.emailForUrlLogin;
         if (email != null) {
-          final handler = SignInHandler(SignInMode.normal);
+          final handler = SignInHandler(
+              isReauth ? SignInMode.reauthenticate : SignInMode.normal);
           showLoadingModal(globalContext!);
           try {
             final result = await handler.signInWithLink(
                 email: email, emailLink: url.toString());
             await handler.handleSignInResult(result);
+
+            if (isReauth) {
+              Navigator.popAndPushNamed(globalContext!, continueUri.path,
+                  arguments: AccountEditPageArguments(
+                      continueUri.queryParameters["new_email"]));
+            }
           } catch (e, stack) {
             showSnackBar(globalContext!, "エラーが発生しました。");
             FirebaseCrashlytics.instance.recordError(e, stack);

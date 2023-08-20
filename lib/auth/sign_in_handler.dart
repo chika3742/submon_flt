@@ -204,6 +204,10 @@ class SignInHandler {
   }
 
   Future<SignInError?> completeSignIn(UserCredential userCred) async {
+    if (mode == SignInMode.reauthenticate) {
+      return null;
+    }
+
     try {
       SharedPrefs.use((prefs) {
         prefs.firestoreLastChanged = null;

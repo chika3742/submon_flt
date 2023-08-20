@@ -6,20 +6,29 @@ import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
 import '../../main.dart';
-import '../../utils/dynamic_links.dart';
 
 class AccountEditPage extends StatefulWidget {
-  const AccountEditPage(this.type, {Key? key}) : super(key: key);
+  AccountEditPage(this.type, {Key? key, AccountEditPageArguments? args})
+      : initialEmail = args?.initialEmail,
+        super(key: key);
 
   static const changeEmailRouteName = "/account/changeEmail";
   static const changePasswordRouteName = "/account/changePassword";
   static const changeDisplayNameRouteName = "/account/changeDisplayName";
   static const deleteRouteName = "/account/delete";
 
+  final String? initialEmail;
+
   final EditingType type;
 
   @override
   State<AccountEditPage> createState() => _AccountEditPageState();
+}
+
+class AccountEditPageArguments {
+  final String? initialEmail;
+
+  AccountEditPageArguments(this.initialEmail);
 }
 
 class _AccountEditPageState extends State<AccountEditPage> {
@@ -33,6 +42,12 @@ class _AccountEditPageState extends State<AccountEditPage> {
     if (widget.type == EditingType.changeDisplayName) {
       _form1Controller.text =
           FirebaseAuth.instance.currentUser!.displayName ?? "";
+    }
+    if (widget.type == EditingType.changeEmail && widget.initialEmail != null) {
+      _form1Controller.text = widget.initialEmail!;
+      Future(() {
+        changeEmail();
+      });
     }
   }
 
@@ -115,8 +130,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
           "メールアドレスを変更します。\n\n"
-          "新しいメールアドレスを入力して「送信」をタップすると、新しいメールアドレスに確認URLが送信されます。このURLをタップすることで、メールアドレスの変更が完了します。\n"
-          "「送信」をタップするだけでは変更は完了しませんのでご注意ください。\n\n"
+          "変更後、元のメールアドレスに通知メールを送信します。このメール内のリンクを利用して、メールアドレスを元に戻すことも可能です。\n\n"
           "※メールは「submon.app」ドメインから送信されます。迷惑メールに振り分けられていないか確認してください。",
           style: Theme.of(context).textTheme.bodyLarge),
       const SizedBox(height: 16),
@@ -147,10 +161,11 @@ class _AccountEditPageState extends State<AccountEditPage> {
     });
 
     try {
-      await FirebaseAuth.instance.currentUser!.verifyBeforeUpdateEmail(
-          _form1Controller.text, actionCodeSettings(getAppDomain("")));
+      await FirebaseAuth.instance.currentUser!.updateEmail(
+        _form1Controller.text,
+      );
 
-      showSnackBar(context, "送信しました。ご確認ください。");
+      showSnackBar(context, "メールアドレスを変更しました。");
       Navigator.pop(context);
     } on FirebaseAuthException catch (e, stack) {
       switch (e.code) {
@@ -161,8 +176,13 @@ class _AccountEditPageState extends State<AccountEditPage> {
           _form1Error = "このメールアドレスは既に使用されています";
           break;
         case "requires-recent-login":
+          showSnackBar(context, "この操作をするには、再ログインが必要です。");
           var result = await Navigator.pushNamed(context, SignInPage.routeName,
-              arguments: const SignInPageArguments(SignInMode.reauthenticate));
+              arguments: SignInPageArguments(
+                SignInMode.reauthenticate,
+                continuePath: AccountEditPage.changeEmailRouteName +
+                    "?new_email=${Uri.encodeComponent(_form1Controller.text)}",
+              ));
           if (result == true) await changeEmail();
           break;
         default:
@@ -252,12 +272,13 @@ class _AccountEditPageState extends State<AccountEditPage> {
   // Delete
   Widget buildDelete() {
     return const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("アカウントを削除します。\n\n"
-              "アカウントを削除すると、サーバー上のデータがすべて削除され、二度と復元できません。\n\n"
-              "よろしければ、「削除」をタップしてください。"),
-        ]);
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("アカウントを削除します。\n\n"
+            "アカウントを削除すると、サーバー上のデータがすべて削除され、二度と復元できません。\n\n"
+            "よろしければ、「削除」をタップしてください。"),
+      ],
+    );
   }
 
   Future<void> deleteAccount() async {
@@ -288,7 +309,10 @@ class _AccountEditPageState extends State<AccountEditPage> {
       if (e.code == "requires-recent-login") {
         showSnackBar(context, "セキュリティのため再ログインが必要です。");
         var result = await Navigator.pushNamed(context, SignInPage.routeName,
-            arguments: const SignInPageArguments(SignInMode.reauthenticate));
+            arguments: const SignInPageArguments(
+              SignInMode.reauthenticate,
+              continuePath: AccountEditPage.deleteRouteName,
+            ));
         if (result == true) {
           await executeAccountDeletion();
         }
