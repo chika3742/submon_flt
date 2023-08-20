@@ -11,7 +11,6 @@ import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/main.dart';
 import 'package:submon/pages/sign_in_page.dart';
 import 'package:submon/utils/ui.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import 'home_page.dart';
@@ -129,9 +128,9 @@ class _WelcomePageState extends State<WelcomePage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Row(
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: const [
+                    children: [
                       OutlinedButton(
                         onPressed: Browser.openTermsOfUse,
                         child: Text('利用規約'),
@@ -212,7 +211,7 @@ class _WelcomePageState extends State<WelcomePage> {
                               fontSize: 14,
                               color: Theme.of(context)
                                   .textTheme
-                                  .bodyText1!
+                                  .bodyLarge!
                                   .color!
                                   .withOpacity(0.7)),
                         ),

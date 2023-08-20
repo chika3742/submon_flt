@@ -126,7 +126,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
     return Scaffold(
       appBar: AppBar(
         title: const Text('集中タイマー'),
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: Theme.of(context).colorScheme.background,
       ),
       body: WillPopScope(
         onWillPop: () async {
@@ -266,7 +266,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                         '「通知をミュート」設定へのアクセス権限を許可する必要があります。「Submon」を選択し、「許可」をタップしてください。',
                                         style: Theme.of(context)
                                             .textTheme
-                                            .caption),
+                                            .bodySmall),
                                     OutlinedButton(
                                       child: const Text('許可設定へ'),
                                       onPressed: () {
@@ -287,8 +287,6 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                               width: 300,
                               height: 50,
                               child: OutlinedButton(
-                                child:
-                                    const Text('もっといけそう (+ $addMinutes min)'),
                                 onPressed: _remainingTime.inMinutes < 10 &&
                                         !_takingBreak
                                     ? () {
@@ -307,17 +305,18 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                             context, "$addMinutes分追加しました");
                                       }
                                     : null,
+                                child:
+                                    const Text('もっといけそう (+ $addMinutes min)'),
                               ),
                             ),
                             if (_remainingTime.inMinutes >= 10)
                               Text('残り10分以下になると追加できます',
-                                  style: Theme.of(context).textTheme.caption),
+                                  style: Theme.of(context).textTheme.bodySmall),
                             const SizedBox(height: 8),
                             SizedBox(
                               width: 300,
                               height: 50,
                               child: OutlinedButton(
-                                child: const Text('休憩 ($breakMinutes min)'),
                                 onPressed: !_takingBreak &&
                                         _takingBreakAvailable() &&
                                         !_timerFinished
@@ -331,12 +330,13 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                         });
                                       }
                                     : null,
+                                child: const Text('休憩 ($breakMinutes min)'),
                               ),
                             ),
                             if (!_takingBreak && !_takingBreakAvailable())
                               Text(
                                   '最後に休憩してから$breakCoolingMinutes分以上経過する必要があります',
-                                  style: Theme.of(context).textTheme.caption),
+                                  style: Theme.of(context).textTheme.bodySmall),
                             const SizedBox(height: 8),
                             SizedBox(
                               width: 300,

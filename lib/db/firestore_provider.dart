@@ -97,7 +97,7 @@ class FirestoreProvider {
 
   static Future<void> removeNotificationToken() async {
     var token = await MessagingApi().getToken();
-    if (userDoc != null && token != null) {
+    if (userDoc != null) {
       await userDoc!.set({
         "notificationTokens": FieldValue.arrayRemove([token])
       }, SetOptions(merge: true));

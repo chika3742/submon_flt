@@ -251,9 +251,9 @@ class _AccountEditPageState extends State<AccountEditPage> {
 
   // Delete
   Widget buildDelete() {
-    return Column(
+    return const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           Text("アカウントを削除します。\n\n"
               "アカウントを削除すると、サーバー上のデータがすべて削除され、二度と復元できません。\n\n"
               "よろしければ、「削除」をタップしてください。"),

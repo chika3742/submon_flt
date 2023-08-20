@@ -199,7 +199,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
                                   ? null
                                   : Theme.of(context)
                                       .textTheme
-                                      .bodyText1!
+                                      .bodyLarge!
                                       .color!
                                       .withOpacity(0.7),
                             ),

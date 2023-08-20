@@ -63,7 +63,7 @@ class _SignInPageState extends State<SignInPage> {
                         style: TextStyle(
                             color: Theme.of(context)
                                 .primaryTextTheme
-                                .bodyText1!
+                                .bodyLarge!
                                 .color)),
                     Row(
                       children: [
