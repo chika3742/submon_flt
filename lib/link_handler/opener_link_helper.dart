@@ -81,7 +81,7 @@ class OpenerLinkHelper {
           "期限: ${DateTime.parse(date).toLocal().toString()}\n"
           "詳細: $detail",
       showCancel: true,
-      onOKPressed: () async {
+      onOKPressed: () {
         int id = 0;
 
         SubmissionProvider().use((provider) {
