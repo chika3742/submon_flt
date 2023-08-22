@@ -11,7 +11,6 @@ import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/main.dart';
 import 'package:submon/pages/sign_in_page.dart';
 import 'package:submon/utils/ui.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 import 'home_page.dart';
 
@@ -152,34 +151,6 @@ class _WelcomePageState extends State<WelcomePage> {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                  const SizedBox(height: 32),
-                  SizedBox(
-                    height: 70,
-                    width: 240,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        showSimpleDialog(
-                            context,
-                            "アカウント移行の流れについて",
-                            "アカウントのデータを旧「提出物マネージャー」から移行できます。アカウント移行専用ページを用意しましたので、アカウントは新規に作成し、データのみ旧版から移行する形になります。\n\n"
-                                "「次へ」をタップすると移行用サイトに移動します。詳細はこのサイトをご覧ください。",
-                            okText: "次へ",
-                            showCancel: true, onOKPressed: () async {
-                          launchUrlString("https://submon.chikach.net/migrate",
-                              mode: LaunchMode.externalApplication);
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange.shade900),
-                      child: const Text('旧「提出物マネージャー」\nからアカウント移行',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            height: 1.4,
-                          ),
-                          textAlign: TextAlign.center),
-                    ),
-                  ),
                   const SizedBox(height: 32),
                   Row(
                     mainAxisSize: MainAxisSize.min,
