@@ -30,7 +30,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  cupertino_icons: ^1.0.4
+  cupertino_icons: ^1.0.6
   audioplayers: ^5.0.0
   animations: ^2.0.3
   event_bus: ^2.0.0
