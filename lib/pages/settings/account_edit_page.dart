@@ -180,8 +180,8 @@ class _AccountEditPageState extends State<AccountEditPage> {
           var result = await Navigator.pushNamed(context, SignInPage.routeName,
               arguments: SignInPageArguments(
                 SignInMode.reauthenticate,
-                continuePath: AccountEditPage.changeEmailRouteName +
-                    "?new_email=${Uri.encodeComponent(_form1Controller.text)}",
+                continuePath:
+                    "${AccountEditPage.changeEmailRouteName}?new_email=${Uri.encodeComponent(_form1Controller.text)}",
               ));
           if (result == true) await changeEmail();
           break;
