@@ -36,7 +36,7 @@ dependencies:
   event_bus: ^2.0.0
   package_info_plus: ^4.0.2
   flutter_svg: ^2.0.6
-  shared_preferences: ^2.2.1
+  shared_preferences: ^2.2.2
   google_sign_in: ^6.1.5
   sign_in_with_apple: ^5.0.0
   crypto: ^3.0.1
