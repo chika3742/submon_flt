@@ -35,7 +35,7 @@ dependencies:
   animations: ^2.0.8
   event_bus: ^2.0.0
   package_info_plus: ^4.0.2
-  flutter_svg: ^2.0.6
+  flutter_svg: ^2.0.9
   shared_preferences: ^2.2.1
   google_sign_in: ^6.1.5
   sign_in_with_apple: ^5.0.0
