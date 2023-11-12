@@ -61,7 +61,7 @@ dependencies:
   extension_google_sign_in_as_googleapis_auth: ^2.0.11
   google_mobile_ads: ^3.0.0
 
-  firebase_core: 2.14.0 # due to https://github.com/firebase/firebase-ios-sdk/issues/11537 (unreleased)
+  firebase_core: 2.22.0 # due to https://github.com/firebase/firebase-ios-sdk/issues/11537 (unreleased)
   firebase_crashlytics: ^3.3.2
   firebase_auth: ^4.6.2
   cloud_firestore: ^4.8.0
