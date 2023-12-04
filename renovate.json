@@ -2,5 +2,50 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:base"
+  ],
+  "dependencyDashboard": false,
+  "timezone": "Asia/Tokyo",
+  "prHourlyLimit": 5,
+  "packageRules": [
+    {
+      "matchFileNames": [
+        "ios/*"
+      ],
+      "labels": [
+        "deps:ios"
+      ]
+    },
+    {
+      "matchFileNames": [
+        "android/*"
+      ],
+      "labels": [
+        "deps:android"
+      ]
+    },
+    {
+      "matchFileNames": [
+        ".github/workflows/*"
+      ],
+      "labels": [
+        "deps:github-actions"
+      ]
+    },
+    {
+      "matchFileNames": [
+        "pubspec.yaml"
+      ],
+      "labels": [
+        "deps:pub"
+      ]
+    },
+    {
+      "matchFileNames": [
+        "Gemfile"
+      ],
+      "labels": [
+        "deps:fastlane"
+      ]
+    }
   ]
 }
