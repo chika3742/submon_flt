@@ -13,7 +13,8 @@
       ],
       "labels": [
         "deps:ios"
-      ]
+      ],
+      "semanticCommitScope": "ios"
     },
     {
       "matchFileNames": [
@@ -21,15 +22,17 @@
       ],
       "labels": [
         "deps:android"
-      ]
+      ],
+      "semanticCommitScope": "android"
     },
     {
       "matchFileNames": [
         ".github/workflows/*"
       ],
       "labels": [
-        "deps:github-actions"
-      ]
+        "deps:workflows"
+      ],
+      "semanticCommitScope": "workflows"
     },
     {
       "matchFileNames": [
@@ -37,7 +40,8 @@
       ],
       "labels": [
         "deps:pub"
-      ]
+      ],
+      "semanticCommitScope": "pub"
     },
     {
       "matchFileNames": [
@@ -45,7 +49,8 @@
       ],
       "labels": [
         "deps:fastlane"
-      ]
+      ],
+      "semanticCommitScope": "fastlane"
     }
   ]
 }
