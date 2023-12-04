@@ -1,0 +1,56 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base"
+  ],
+  "dependencyDashboard": false,
+  "timezone": "Asia/Tokyo",
+  "prHourlyLimit": 5,
+  "packageRules": [
+    {
+      "matchFileNames": [
+        "ios/*"
+      ],
+      "labels": [
+        "deps:ios"
+      ],
+      "semanticCommitScope": "ios"
+    },
+    {
+      "matchFileNames": [
+        "android/*"
+      ],
+      "labels": [
+        "deps:android"
+      ],
+      "semanticCommitScope": "android"
+    },
+    {
+      "matchFileNames": [
+        ".github/workflows/*"
+      ],
+      "labels": [
+        "deps:workflows"
+      ],
+      "semanticCommitScope": "workflows"
+    },
+    {
+      "matchFileNames": [
+        "pubspec.yaml"
+      ],
+      "labels": [
+        "deps:pub"
+      ],
+      "semanticCommitScope": "pub"
+    },
+    {
+      "matchFileNames": [
+        "Gemfile"
+      ],
+      "labels": [
+        "deps:fastlane"
+      ],
+      "semanticCommitScope": "fastlane"
+    }
+  ]
+}
