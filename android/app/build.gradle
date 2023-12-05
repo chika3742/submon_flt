@@ -116,7 +116,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-messaging-ktx'
     implementation 'com.google.firebase:firebase-appcheck-playintegrity'
-    implementation 'com.google.firebase:firebase-appcheck-debug:17.0.1'
+    implementation 'com.google.firebase:firebase-appcheck-debug'
 
 //    def roomVersion = "2.4.2"
 //    implementation "androidx.room:room-runtime:$roomVersion"
