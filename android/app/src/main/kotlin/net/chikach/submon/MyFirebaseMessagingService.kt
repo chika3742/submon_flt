@@ -1,7 +1,11 @@
 package net.chikach.submon
 
+import android.Manifest
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.util.Log
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -70,6 +74,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             }
             .build()
 
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.d("MyFirebaseMessagingService", "No permission to post notification")
+            return
+        }
         notificationManager.notify(notificationId, notification)
     }
 
