@@ -20,12 +20,12 @@ class Browser {
   }
 
   static void openHelp() {
-    BrowserApi().openWebPage("ヘルプ", "https://www.chikach.net/submon-help/");
+    BrowserApi().openWebPage("ヘルプ", "https://www.chikach.net/submon-help");
   }
 
   static void openAnnouncements() {
     BrowserApi()
-        .openWebPage("お知らせ", "https://www.chikach.net/category/submon-info/");
+        .openWebPage("お知らせ", "https://www.chikach.net/category/submon-info");
   }
 
   static void openStoreListing() {
