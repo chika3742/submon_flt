@@ -272,7 +272,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
   }
 
   void showColorPickerDialog() {
-    showDialog(
+    showDialog<Color?>(
       context: context,
       builder: (context) {
         return ColorPickerDialog(
@@ -282,7 +282,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
     ).then((color) {
       if (color != null) {
         setState(() {
-          _submission.color = color;
+          _submission.color = color.value;
         });
       }
     });
