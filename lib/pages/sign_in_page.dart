@@ -68,9 +68,7 @@ class _SignInPageState extends State<SignInPage> {
                   children: [
                     Text("続行するには、以下の利用規約・プライバシーポリシーに同意する必要があります。",
                         style: TextStyle(
-                            color: Theme.of(context)
-                                .primaryTextTheme
-                                .bodyLarge!
+                            color: Theme.of(context).textTheme.bodyLarge!
                                 .color)),
                     Row(
                       children: [
