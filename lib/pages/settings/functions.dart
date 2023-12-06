@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/auth/sign_in_handler.dart';
 import 'package:submon/components/dropdown_time_picker_bottom_sheet.dart';
 import 'package:submon/db/firestore_provider.dart';
-import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/main.dart';
 import 'package:submon/pages/settings/account_edit_page.dart';
 import 'package:submon/pages/settings/account_link_page.dart';
@@ -32,19 +30,12 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
   TimeOfDay? _reminderTime;
   bool _loadingReminderTime = true;
   Timer? _signInStateCheckTimer;
-  bool? _deviceCameraUIShouldBeUsed;
 
   StreamSubscription? _accountListener;
 
   @override
   void initState() {
     super.initState();
-    SharedPrefs.use((prefs) {
-      setState(() {
-        _deviceCameraUIShouldBeUsed =
-            Platform.isAndroid ? prefs.isDeviceCameraUIShouldBeUsed : null;
-      });
-    });
 
     FirestoreProvider.config.then((value) {
       setState(() {
@@ -217,28 +208,17 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
             },
           ),
         ]),
-        SettingsCategory(title: "その他の機能", tiles: [
-          SettingsTile(
-            title: "時間割表設定",
-            onTap: () {
-              Navigator.pushNamed(context, TimetableSettingsPage.routeName);
-            },
-          ),
-          if (_deviceCameraUIShouldBeUsed != null)
-            CheckBoxSettingsTile(
-              title: "端末側の撮影UIを使用",
-              subtitle: "暗記カードのカメラ入力時、端末側の撮影画面を使用して撮影します。",
-              value: _deviceCameraUIShouldBeUsed!,
-              onChanged: (value) {
-                SharedPrefs.use((prefs) {
-                  prefs.isDeviceCameraUIShouldBeUsed = value!;
-                });
-                setState(() {
-                  _deviceCameraUIShouldBeUsed = value!;
-                });
+        SettingsCategory(
+          title: "その他の機能",
+          tiles: [
+            SettingsTile(
+              title: "時間割表設定",
+              onTap: () {
+                Navigator.pushNamed(context, TimetableSettingsPage.routeName);
               },
             ),
-        ])
+          ],
+        ),
       ],
     );
   }

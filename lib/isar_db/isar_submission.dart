@@ -60,9 +60,6 @@ class Submission {
   }
 
   Color getColorToDisplay(SharedPrefs? pref) {
-    if (canvasPlannableId != null && color == 0xFFFFFFFF) {
-      return pref?.colorSubmissionsAddedFromLms ?? Color(color);
-    }
     return Color(color);
   }
 

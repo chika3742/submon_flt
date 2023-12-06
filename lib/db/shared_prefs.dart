@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,17 +19,6 @@ class SharedPrefs {
 
   set isAnalyticsEnabled(bool value) =>
       pref!.setBool("isAnalyticsEnabled", value);
-
-  // isDeviceCameraUIShouldBeUsed
-  bool get isDeviceCameraUIShouldBeUsed {
-    if (Platform.isAndroid) {
-      return pref!.getBool("isDeviceCameraUIShouldBeUsed") ?? false;
-    }
-    return false;
-  }
-
-  set isDeviceCameraUIShouldBeUsed(bool value) =>
-      pref!.setBool("isDeviceCameraUIShouldBeUsed", value);
 
   /// 時間割が1回以上挿入されたことを示すフラグ。バナー表示用。
   bool get isTimetableInsertedOnce =>
@@ -164,11 +151,6 @@ class SharedPrefs {
   void incrementSubmissionCreationCount() {
     pref!.setInt("submissionCreationCount", submissionCreationCount + 1);
   }
-
-  // firestoreLastChanged
-  Color get colorSubmissionsAddedFromLms => Color(pref!.getInt("colorSubmissionsAddedFromLms") ?? 0xFFFFFFFF);
-
-  set colorSubmissionsAddedFromLms(Color value) => pref!.setInt("colorSubmissionsAddedFromLms", value.value);
 
   // firestoreLastChanged
   DateTime get firestoreLastChanged => DateTime.fromMicrosecondsSinceEpoch(
