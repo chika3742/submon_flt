@@ -281,8 +281,9 @@ class HomePageState extends State<HomePage> {
       case "home":
         return OpenContainer<int>(
           useRootNavigator: true,
-          closedElevation: 8,
-          closedShape: const CircleBorder(),
+          closedElevation: 6,
+          closedShape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(16))),
           closedColor: Theme.of(context).canvasColor,
           closedBuilder: (context, callback) => FloatingActionButton(
             child: const Icon(Icons.add),
