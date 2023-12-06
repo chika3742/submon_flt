@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:submon/utils/ui.dart';
 
 class FormattedDateRemaining extends StatelessWidget {
-  const FormattedDateRemaining(this.diff, {Key? key, this.weekView = false, this.numberSize = 36}) : super(key: key);
+  const FormattedDateRemaining(this.diff,
+      {super.key, this.weekView = false, this.numberSize = 36});
 
   final bool weekView;
   final Duration diff;

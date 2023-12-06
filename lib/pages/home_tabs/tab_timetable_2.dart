@@ -11,7 +11,7 @@ import '../../isar_db/isar_timetable_class_time.dart';
 import '../../isar_db/isar_timetable_table.dart';
 
 class TabTimetable2 extends StatefulWidget {
-  const TabTimetable2({Key? key}) : super(key: key);
+  const TabTimetable2({super.key});
 
   @override
   State<TabTimetable2> createState() => _TabTimetable2State();
@@ -123,7 +123,7 @@ class _TabTimetable2State extends State<TabTimetable2> {
                     value: e.id,
                     child: Text(e.title),
                   );
-                }).toList()
+                })
               ],
               onChanged: (e) {
                 setState(() {

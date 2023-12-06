@@ -13,7 +13,7 @@ import 'package:submon/utils/utils.dart';
 import '../../sample_data.dart';
 
 class SubmissionList extends StatefulWidget {
-  const SubmissionList({Key? key, this.done = false}) : super(key: key);
+  const SubmissionList({super.key, this.done = false});
 
   final bool done;
 

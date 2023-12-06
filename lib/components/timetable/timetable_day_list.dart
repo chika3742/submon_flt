@@ -16,12 +16,12 @@ import '../../sample_data.dart';
 
 class TimetableDayList extends StatefulWidget {
   const TimetableDayList({
-    Key? key,
+    super.key,
     required this.weekday,
     required this.prefs,
     required this.items,
     required this.classTimeItems,
-  }) : super(key: key);
+  });
 
   final int weekday;
   final List<Timetable> items;

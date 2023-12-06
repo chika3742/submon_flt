@@ -7,12 +7,10 @@ import '../events.dart';
 import '../isar_db/isar_timetable.dart';
 
 class TimetableCellEditPage extends StatefulWidget {
-  const TimetableCellEditPage(
-      {Key? key,
+  const TimetableCellEditPage({super.key,
       required this.initialData,
       required this.weekDay,
-      required this.period})
-      : super(key: key);
+      required this.period});
 
   final Timetable? initialData;
   final int weekDay;

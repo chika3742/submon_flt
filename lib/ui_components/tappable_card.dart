@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:submon/utils/ui.dart';
 
 class TappableCard extends StatelessWidget {
-  const TappableCard({Key? key, this.child, this.onTap, this.color})
-      : super(key: key);
+  const TappableCard({super.key, this.child, this.onTap, this.color});
 
   final _cardBorderRadius = 8.0;
   final Widget? child;

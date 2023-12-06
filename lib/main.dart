@@ -84,7 +84,7 @@ void main() async {
 }
 
 class Application extends StatefulWidget {
-  const Application({Key? key}) : super(key: key);
+  const Application({super.key});
 
   static var globalKey = GlobalKey<NavigatorState>();
 

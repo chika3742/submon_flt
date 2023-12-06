@@ -4,7 +4,7 @@ import 'package:submon/pages/home_tabs/tab_timetable.dart';
 import 'package:submon/pages/timetable_edit_page.dart';
 
 class TimetableTableViewPage extends StatefulWidget {
-  const TimetableTableViewPage({Key? key}) : super(key: key);
+  const TimetableTableViewPage({super.key});
 
   static const routeName = "/timetable/table-view";
 

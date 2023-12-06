@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 class SimpleListTile extends StatelessWidget {
   const SimpleListTile(
-      {Key? key, required this.title, this.onTap, this.leadingIcon})
-      : super(key: key);
+      {super.key, required this.title, this.onTap, this.leadingIcon});
 
   final String? title;
   final Widget? leadingIcon;
@@ -21,7 +20,7 @@ class SimpleListTile extends StatelessWidget {
 }
 
 class CategoryListTile extends StatelessWidget {
-  const CategoryListTile(this.title, {Key? key}) : super(key: key);
+  const CategoryListTile(this.title, {super.key});
 
   final String title;
 

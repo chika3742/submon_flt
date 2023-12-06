@@ -14,11 +14,11 @@ import 'digestive_edit_bottom_sheet.dart';
 
 class DigestiveDetailCard extends StatefulWidget {
   const DigestiveDetailCard({
-    Key? key,
+    super.key,
     required this.digestive,
     required this.parentList,
     this.onChanged,
-  }) : super(key: key);
+  });
 
   final Digestive digestive;
   final List<Digestive> parentList;

@@ -11,9 +11,9 @@ import '../utils/utils.dart';
 
 class EmailSignInPage extends StatefulWidget {
   const EmailSignInPage({
-    Key? key,
+    super.key,
     required this.reAuth,
-  }) : super(key: key);
+  });
 
   static const routeName = "/sign-in/email";
 

@@ -19,7 +19,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import '../../browser.dart';
 
 class TabOthers extends StatefulWidget {
-  const TabOthers({Key? key}) : super(key: key);
+  const TabOthers({super.key});
 
   @override
   _TabOthersState createState() => _TabOthersState();

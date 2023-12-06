@@ -16,12 +16,10 @@ import 'package:submon/utils/utils.dart';
 import '../utils/dynamic_links.dart';
 
 class SignInPage extends StatefulWidget {
-  const SignInPage(
-      {Key? key,
+  const SignInPage({super.key,
       required this.initialCred,
       required this.mode,
-      this.continuePath})
-      : super(key: key);
+      this.continuePath});
 
   static const routeName = "/sign-in";
 

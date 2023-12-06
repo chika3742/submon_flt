@@ -17,7 +17,7 @@ import '../sample_data.dart';
 import '../utils/ad_unit_ids.dart';
 
 class SubmissionDetailPage extends StatefulWidget {
-  const SubmissionDetailPage(this.submissionId, {Key? key}) : super(key: key);
+  const SubmissionDetailPage(this.submissionId, {super.key});
 
   static const routeName = "/submission/detail";
 
@@ -223,8 +223,7 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
                                 onChanged: () {
                                   setState(() {});
                                 },
-                              ))
-                          .toList(),
+                              )),
                       if (_digestiveList.isEmpty)
                         const Center(
                           child: Padding(

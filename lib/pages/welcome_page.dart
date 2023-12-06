@@ -15,7 +15,7 @@ import 'package:submon/utils/ui.dart';
 import 'home_page.dart';
 
 class WelcomePage extends StatefulWidget {
-  const WelcomePage({Key? key}) : super(key: key);
+  const WelcomePage({super.key});
 
   static const routeName = "welcome";
 

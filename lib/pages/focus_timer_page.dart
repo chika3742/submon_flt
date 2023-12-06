@@ -21,7 +21,7 @@ const breakCoolingMinutes = 10;
 /// Whether focus timer is finished will be returned.
 ///
 class FocusTimerPage extends StatefulWidget {
-  const FocusTimerPage({Key? key, required this.digestive}): super(key: key);
+  const FocusTimerPage({super.key, required this.digestive});
 
   static const routeName = "/focus-timer";
 

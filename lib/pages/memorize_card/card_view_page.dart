@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CardViewPage extends StatefulWidget {
-  CardViewPage({Key? key, required dynamic arguments})
-      : folderId = arguments["folderId"],
-        super(key: key);
+  CardViewPage({super.key, required dynamic arguments})
+      : folderId = arguments["folderId"];
 
   final int folderId;
 

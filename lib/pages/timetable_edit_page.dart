@@ -6,7 +6,7 @@ import 'package:submon/events.dart';
 import 'package:submon/isar_db/isar_timetable.dart' as db;
 
 class TimetableEditPage extends StatefulWidget {
-  const TimetableEditPage({Key? key}) : super(key: key);
+  const TimetableEditPage({super.key});
 
   static const routeName = "/timetable/edit";
 

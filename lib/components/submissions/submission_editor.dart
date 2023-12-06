@@ -12,8 +12,8 @@ import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
 class SubmissionEditor extends StatefulWidget {
-  const SubmissionEditor({Key? key, this.submissionId, this.initialTitle, this.initialDeadline})
-      : super(key: key);
+  const SubmissionEditor(
+      {super.key, this.submissionId, this.initialTitle, this.initialDeadline});
 
   final int? submissionId;
   final String? initialTitle;

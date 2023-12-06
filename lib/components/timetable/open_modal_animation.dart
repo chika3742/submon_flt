@@ -3,14 +3,14 @@ import 'package:flutter/scheduler.dart';
 
 class OpenModalAnimatedContainer extends StatelessWidget {
   OpenModalAnimatedContainer({
-    Key? key,
+    super.key,
     required this.context,
     required this.width,
     required this.height,
     this.tappable = true,
     required this.closedBuilder,
     required this.openBuilder,
-  }) : super(key: key);
+  });
 
   final hideableKey = GlobalKey<_HideableState>();
   final _closedBuilderKey = GlobalKey();
@@ -51,7 +51,7 @@ class OpenModalAnimatedContainer extends StatelessWidget {
 }
 
 class _Hideable extends StatefulWidget {
-  const _Hideable({Key? key, this.child}) : super(key: key);
+  const _Hideable({super.key, this.child});
 
   final Widget? child;
 

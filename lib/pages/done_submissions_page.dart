@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:submon/components/submissions/submission_list.dart';
 
 class DoneSubmissionsPage extends StatefulWidget {
-  const DoneSubmissionsPage({Key? key}) : super(key: key);
+  const DoneSubmissionsPage({super.key});
 
   static const routeName = "/done-submissions";
 

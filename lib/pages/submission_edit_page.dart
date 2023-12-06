@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:submon/components/submissions/submission_editor.dart';
 
 class SubmissionEditPage extends StatelessWidget {
-  const SubmissionEditPage(this.submissionId, {Key? key}) : super(key: key);
+  const SubmissionEditPage(this.submissionId, {super.key});
 
   static const routeName = "/submission/edit";
 

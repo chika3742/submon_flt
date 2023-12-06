@@ -14,7 +14,7 @@ import '../../sample_data.dart';
 import '../../utils/ui.dart';
 
 class TabDigestiveList extends StatefulWidget {
-  const TabDigestiveList({Key? key}) : super(key: key);
+  const TabDigestiveList({super.key});
 
   @override
   State<TabDigestiveList> createState() => _TabDigestiveListState();

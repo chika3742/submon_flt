@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MemorizeCardCreatePage extends StatefulWidget {
-  const MemorizeCardCreatePage({Key? key}) : super(key: key);
+  const MemorizeCardCreatePage({super.key});
 
   @override
   State<MemorizeCardCreatePage> createState() => _MemorizeCardCreatePageState();

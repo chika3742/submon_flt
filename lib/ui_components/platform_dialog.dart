@@ -32,11 +32,11 @@ class PlatformAlertDialog extends StatelessWidget {
   final List<Widget> actions;
 
   const PlatformAlertDialog({
-    Key? key,
+    super.key,
     this.title,
     this.content,
     this.actions = const [],
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +66,10 @@ class PlatformTextButton extends StatelessWidget {
   final void Function()? onPressed;
 
   const PlatformTextButton({
-    Key? key,
+    super.key,
     required this.child,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

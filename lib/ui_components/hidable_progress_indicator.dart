@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 class HidableLinearProgressIndicator extends StatelessWidget {
-  const HidableLinearProgressIndicator({Key? key, required this.show})
-      : super(key: key);
+  const HidableLinearProgressIndicator({super.key, required this.show});
 
   final bool show;
 

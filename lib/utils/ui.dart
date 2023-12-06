@@ -346,8 +346,7 @@ Future<T?> showRoundedDraggableBottomSheet<T>({
 
 class TextFormFieldBottomSheet extends StatefulWidget {
   const TextFormFieldBottomSheet(
-      {Key? key, required this.formLabel, this.initialText, this.onDone})
-      : super(key: key);
+      {super.key, required this.formLabel, this.initialText, this.onDone});
 
   final String formLabel;
   final String? initialText;

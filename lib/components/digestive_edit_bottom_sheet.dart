@@ -4,8 +4,7 @@ import 'package:submon/isar_db/isar_digestive.dart';
 
 class DigestiveEditBottomSheet extends StatefulWidget {
   const DigestiveEditBottomSheet(
-      {Key? key, this.initialData, required this.submissionId})
-      : super(key: key);
+      {super.key, this.initialData, required this.submissionId});
 
   final Digestive? initialData;
   final int? submissionId;

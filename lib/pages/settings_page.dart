@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage(this.title, this.body, {Key? key}) : super(key: key);
+  const SettingsPage(this.title, this.body, {super.key});
 
   final Widget? body;
   final String title;
@@ -17,7 +17,7 @@ class SettingsPage extends StatelessWidget {
 }
 
 class CategoryListTile extends StatelessWidget {
-  const CategoryListTile(this.title, {Key? key}) : super(key: key);
+  const CategoryListTile(this.title, {super.key});
 
   final String title;
 

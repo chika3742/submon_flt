@@ -17,7 +17,7 @@ import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
 class FunctionsSettingsPage extends StatefulWidget {
-  const FunctionsSettingsPage({Key? key}) : super(key: key);
+  const FunctionsSettingsPage({super.key});
 
   static const routeName = "/settings/functions";
 

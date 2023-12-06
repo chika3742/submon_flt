@@ -18,7 +18,7 @@ import '../../user_config.dart';
 import '../../utils/utils.dart';
 
 class TimetableSettingsPage extends StatefulWidget {
-  const TimetableSettingsPage({Key? key}) : super(key: key);
+  const TimetableSettingsPage({super.key});
 
   static const routeName = "/settings/functions/timetable";
 

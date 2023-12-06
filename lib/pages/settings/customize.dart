@@ -7,7 +7,7 @@ import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
 class CustomizeSettingsPage extends StatefulWidget {
-  const CustomizeSettingsPage({Key? key}) : super(key: key);
+  const CustomizeSettingsPage({super.key});
 
   static const routeName = "/settings/customize";
 
@@ -129,8 +129,7 @@ class _CustomizeSettingsPageState extends State<CustomizeSettingsPage> {
 
 class RadioBottomSheet extends StatefulWidget {
   const RadioBottomSheet(
-      {Key? key, required this.items, this.initialValue, this.onSelected})
-      : super(key: key);
+      {super.key, required this.items, this.initialValue, this.onSelected});
 
   final List<RadioBottomSheetItem> items;
   final dynamic initialValue;
@@ -165,8 +164,7 @@ class _RadioBottomSheetState extends State<RadioBottomSheet> {
                       selected = value;
                     });
                   },
-                ))
-            .toList(),
+                )),
         Padding(
           padding: const EdgeInsets.only(right: 16.0),
           child: IconButton(

@@ -8,9 +8,8 @@ import 'package:submon/utils/utils.dart';
 import '../../main.dart';
 
 class AccountEditPage extends StatefulWidget {
-  AccountEditPage(this.type, {Key? key, AccountEditPageArguments? args})
-      : initialEmail = args?.initialEmail,
-        super(key: key);
+  AccountEditPage(this.type, {super.key, AccountEditPageArguments? args})
+      : initialEmail = args?.initialEmail;
 
   static const changeEmailRouteName = "/account/changeEmail";
   static const changePasswordRouteName = "/account/changePassword";

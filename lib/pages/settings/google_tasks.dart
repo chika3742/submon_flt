@@ -4,7 +4,7 @@ import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
 class GoogleTasksSettingsPage extends StatefulWidget {
-  const GoogleTasksSettingsPage({Key? key}) : super(key: key);
+  const GoogleTasksSettingsPage({super.key});
 
   static const routeName = "/settings/functions/google-tasks";
 

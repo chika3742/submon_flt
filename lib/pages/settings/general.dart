@@ -6,7 +6,7 @@ import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/ui_components/settings_ui.dart';
 
 class GeneralSettingsPage extends StatefulWidget {
-  const GeneralSettingsPage({Key? key}) : super(key: key);
+  const GeneralSettingsPage({super.key});
 
   static const routeName = "/settings/general";
 

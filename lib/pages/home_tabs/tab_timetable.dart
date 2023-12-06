@@ -10,7 +10,7 @@ import 'package:submon/main.dart';
 import 'package:submon/utils/ui.dart';
 
 class TabTimetable extends StatefulWidget {
-  const TabTimetable({Key? key}) : super(key: key);
+  const TabTimetable({super.key});
 
   @override
   State<StatefulWidget> createState() => TabTimetableState();

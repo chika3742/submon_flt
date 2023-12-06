@@ -12,9 +12,9 @@ import '../../utils/utils.dart';
 
 class Timetable extends StatefulWidget {
   const Timetable({
-    Key? key,
+    super.key,
     this.edit = false,
-  }) : super(key: key);
+  });
 
   final bool edit;
 
@@ -270,13 +270,10 @@ class TimetableState extends State<Timetable> {
 }
 
 class _NoteView extends StatefulWidget {
-  const _NoteView(
-      {Key? key,
-      required this.cell,
+  const _NoteView({required this.cell,
       required this.weekday,
       required this.index,
-      required this.createSubmission})
-      : super(key: key);
+      required this.createSubmission});
 
   final db.Timetable cell;
   final int weekday;

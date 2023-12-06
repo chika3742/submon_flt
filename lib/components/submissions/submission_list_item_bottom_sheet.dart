@@ -13,12 +13,10 @@ import '../../utils/utils.dart';
 import '../digestive_edit_bottom_sheet.dart';
 
 class SubmissionListItemBottomSheet extends StatelessWidget {
-  const SubmissionListItemBottomSheet(
-      {Key? key,
+  const SubmissionListItemBottomSheet({super.key,
       required this.item,
       required this.onDone,
-      required this.onDelete})
-      : super(key: key);
+      required this.onDelete});
 
   final Submission item;
   final Function(bool animated)? onDone;

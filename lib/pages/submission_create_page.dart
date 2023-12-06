@@ -3,8 +3,7 @@ import 'package:submon/components/submissions/submission_editor.dart';
 
 class CreateSubmissionPage extends StatelessWidget {
   const CreateSubmissionPage(
-      {Key? key, this.initialTitle, this.initialDeadline})
-      : super(key: key);
+      {super.key, this.initialTitle, this.initialDeadline});
 
   static const routeName = "/submission/create";
 

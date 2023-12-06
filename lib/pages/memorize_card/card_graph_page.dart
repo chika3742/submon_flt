@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CardGraphPage extends StatefulWidget {
-  const CardGraphPage({Key? key}) : super(key: key);
+  const CardGraphPage({super.key});
 
   @override
   State<CardGraphPage> createState() => _CardGraphPageState();

@@ -31,7 +31,7 @@ import '../utils/ad_unit_ids.dart';
 import 'home_tabs/tab_timetable_2.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   static const routeName = "/";
 

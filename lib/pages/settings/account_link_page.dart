@@ -78,8 +78,7 @@ class _AccountLinkPageState extends State<AccountLinkPage> {
                 ),
                 title: Text(e.name),
                 trailing: _buildLinkButton(e),
-              ))
-          .toList(),
+              )),
       if (!_hasEmailProvider)
         const ListTile(
           subtitle: Text("全てのアカウントとの連携を解除するとお試しアカウントになり、"

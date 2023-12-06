@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:submon/utils/utils.dart';
 
 class DropdownTimePickerBottomSheet extends StatefulWidget {
-  const DropdownTimePickerBottomSheet({Key? key, this.initialTime}) : super(key: key);
+  const DropdownTimePickerBottomSheet({super.key, this.initialTime});
 
   ///
   /// The [TimeOfDay] initially selected. if `null`, set to 0:00.

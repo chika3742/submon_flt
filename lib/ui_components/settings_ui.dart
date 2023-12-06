@@ -3,8 +3,7 @@ import 'package:submon/ui_components/list_tile.dart';
 
 class SettingsListView extends StatelessWidget {
   const SettingsListView(
-      {Key? key, required this.categories, this.shrinkWrap = false})
-      : super(key: key);
+      {super.key, required this.categories, this.shrinkWrap = false});
 
   final List<SettingsCategory> categories;
   final bool shrinkWrap;

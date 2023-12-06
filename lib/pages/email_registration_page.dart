@@ -6,8 +6,7 @@ import '../utils/ui.dart';
 import '../utils/utils.dart';
 
 class EmailRegistrationPage extends StatefulWidget {
-  const EmailRegistrationPage({Key? key, required this.email})
-      : super(key: key);
+  const EmailRegistrationPage({super.key, required this.email});
 
   static const routeName = "/sign-in/email/register";
 

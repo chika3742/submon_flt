@@ -15,8 +15,7 @@ import 'package:submon/utils/ui.dart';
 
 class SubmissionListItem extends StatefulWidget {
   const SubmissionListItem(this.item,
-      {Key? key, this.onDone, this.onDelete, this.prefs})
-      : super(key: key);
+      {super.key, this.onDone, this.onDelete, this.prefs});
   final Submission item;
   final void Function(bool animated)? onDone;
   final void Function(bool animated)? onDelete;
