@@ -149,11 +149,9 @@ void showLoadingModal(BuildContext context) {
   showModal(
       context: context,
       builder: (context) {
-        return WillPopScope(
-          child: const Center(child: CircularProgressIndicator()),
-          onWillPop: () async {
-            return false;
-          },
+        return const PopScope(
+          canPop: false,
+          child: Center(child: CircularProgressIndicator()),
         );
       });
 }

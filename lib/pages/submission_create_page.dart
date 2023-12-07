@@ -16,17 +16,21 @@ class CreateSubmissionPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('新規作成'),
         ),
-        body: WillPopScope(
-          child: SubmissionEditor(
-              initialTitle: initialTitle, initialDeadline: initialDeadline),
-          onWillPop: () async {
+        body: PopScope(
+          canPop: false,
+          onPopInvoked: (_) async {
             var focusScopeNode = FocusScope.of(context);
             if (focusScopeNode.focusedChild?.hasFocus == true) {
               focusScopeNode.unfocus();
               await Future.delayed(const Duration(milliseconds: 130));
             }
-            return true;
+
+            if (context.mounted) {
+              Navigator.pop(context);
+            }
           },
+          child: SubmissionEditor(
+              initialTitle: initialTitle, initialDeadline: initialDeadline),
         ));
   }
 }

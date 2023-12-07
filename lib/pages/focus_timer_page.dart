@@ -128,16 +128,14 @@ class _FocusTimerPageState extends State<FocusTimerPage>
         title: const Text('集中タイマー'),
         backgroundColor: Theme.of(context).colorScheme.background,
       ),
-      body: WillPopScope(
-        onWillPop: () async {
-          if (_started) {
-            await showSimpleDialog(context, "確認", "タイマーをキャンセルしますか？",
-                showCancel: true, onOKPressed: () {
+      body: PopScope(
+        canPop: !_started,
+        onPopInvoked: (didPop) {
+          if (!didPop) {
+            showSimpleDialog(context, "確認", "タイマーをキャンセルしますか？", showCancel: true, onOKPressed: () {
               Navigator.pop(context, false);
             });
-            return false;
           }
-          return true;
         },
         child: Stack(
           children: [

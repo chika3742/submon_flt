@@ -14,16 +14,20 @@ class SubmissionEditPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('編集'),
         ),
-        body: WillPopScope(
-          child: SubmissionEditor(submissionId: submissionId),
-          onWillPop: () async {
+        body: PopScope(
+          canPop: false,
+          onPopInvoked: (didPop) async {
             var focusScopeNode = FocusScope.of(context);
             if (focusScopeNode.focusedChild?.hasFocus == true) {
               focusScopeNode.unfocus();
               await Future.delayed(const Duration(milliseconds: 130));
             }
-            return true;
+
+            if (context.mounted) {
+              Navigator.pop(context, didPop);
+            }
           },
+          child: SubmissionEditor(submissionId: submissionId),
         ));
   }
 }
