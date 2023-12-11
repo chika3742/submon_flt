@@ -72,7 +72,7 @@ class SubmissionListItemState extends State<SubmissionListItem> {
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(16))),
         margin: const EdgeInsets.all(8),
-        child: OpenContainer(
+        child: OpenContainer<SubmissionDetailPagePopAction>(
           useRootNavigator: true,
           routeSettings: const RouteSettings(name: "/submission/detail"),
           closedColor: Theme.of(context).cardColor,
@@ -102,7 +102,7 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                                         bottomRight: Radius.circular(16)),
                                     border: Border.all(
                                         color: Theme.of(context).brightness ==
-                                            Brightness.light
+                                                Brightness.light
                                             ? Colors.black.withOpacity(0.6)
                                             : Colors.white.withOpacity(0.6),
                                         width: 3)),
@@ -218,17 +218,19 @@ class SubmissionListItemState extends State<SubmissionListItem> {
               ),
             );
           },
-          onClosed: (result) {
+          onClosed: (result) async {
             if (!screenShotMode) {
+              if (result == SubmissionDetailPagePopAction.delete) {
+                await Future.delayed(const Duration(milliseconds: 300));
+                widget.onDelete?.call(true);
+                return;
+              }
+
               SubmissionProvider().use((provider) async {
                 await provider.get(_item.id!).then((obj) {
                   if (obj != null) {
                     setState(() {
                       _item = obj;
-                    });
-                  } else {
-                    Timer(const Duration(milliseconds: 300), () {
-                      widget.onDelete?.call(true);
                     });
                   }
                 });
@@ -244,19 +246,13 @@ class SubmissionListItemState extends State<SubmissionListItem> {
 
   Color getDueTextColor() {
     if (widget.item.due.isBefore(DateTime.now())) {
-      if (Theme
-          .of(context)
-          .brightness == Brightness.light) {
+      if (Theme.of(context).brightness == Brightness.light) {
         return Colors.redAccent;
       } else {
         return Colors.redAccent.shade200;
       }
     } else {
-      return Theme
-          .of(context)
-          .textTheme
-          .headlineMedium!
-          .color!;
+      return Theme.of(context).textTheme.headlineMedium!.color!;
     }
   }
 
@@ -270,5 +266,4 @@ class SubmissionListItemState extends State<SubmissionListItem> {
       });
     });
   }
-
 }

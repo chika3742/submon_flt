@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:submon/components/submissions/submission_list_item.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/events.dart';
-import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_submission.dart';
 import 'package:submon/main.dart';
 import 'package:submon/utils/ui.dart';
@@ -184,17 +183,11 @@ class SubmissionListState extends State<SubmissionList> {
   void delete(int index, bool animated) async {
     var submission = items![index];
 
+    Future<void> Function() restore = () async {};
+
     SubmissionProvider().use((provider) async {
       SubmissionProvider.deleteFromGoogleTasks(submission.googleTasksTaskId);
-      if (await provider.get(submission.id!) != null) {
-        await provider.deleteItem(submission.id!);
-      }
-    });
-
-    late List<Digestive> digestivesToRestore;
-    await DigestiveProvider().use((provider) async {
-      digestivesToRestore =
-          await provider.getDigestivesBySubmissionId(submission.id!);
+      restore = await provider.deleteItem(submission.id!);
     });
 
     try {
@@ -212,19 +205,7 @@ class SubmissionListState extends State<SubmissionList> {
             label: "元に戻す",
             textColor: Colors.pinkAccent,
             onPressed: () async {
-              await SubmissionProvider().use((provider) async {
-                await provider.writeTransaction(() async {
-                  await provider.put(submission);
-                });
-              });
-
-              DigestiveProvider().use((provider) async {
-                provider.writeTransaction(() async {
-                  for (var digestive in digestivesToRestore) {
-                    await provider.put(digestive);
-                  }
-                });
-              });
+              await restore();
 
               setState(() {
                 var actualIndex =
