@@ -20,11 +20,6 @@ class Timetable {
 
   Timetable();
 
-  void set({required int cellId, required String subject}) {
-    this.cellId = cellId;
-    this.subject = subject;
-  }
-
   Timetable.from({this.id, required this.cellId, required this.subject, required this.room, required this.teacher});
 
   Timetable.fromMap(Map<String, dynamic> map)

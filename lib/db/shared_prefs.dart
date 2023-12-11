@@ -124,12 +124,6 @@ class SharedPrefs {
 
   // string list
 
-  // timetableHistory
-  List<String> get timetableHistory =>
-      pref!.getStringList("timetableHistory") ?? [];
-
-  set timetableHistory(List<String> value) =>
-      pref!.setStringList("timetableHistory", value);
 
   // int
 

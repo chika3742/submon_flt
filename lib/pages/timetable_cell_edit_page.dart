@@ -142,10 +142,8 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
       _subjectError = null;
     });
 
-    var data = widget.initialData ?? Timetable()
-      ..set(
-          cellId: getTimetableCellId(widget.period, widget.weekDay),
-          subject: "");
+    var data = widget.initialData ?? Timetable();
+    data.cellId = getTimetableCellId(widget.period, widget.weekDay);
     data.subject = _subjectController.text;
     data.room = _roomController.text;
     data.teacher = _teacherController.text;
@@ -156,7 +154,8 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
       });
     });
 
-    Navigator.pop(context, _subjectController.text);
+    if (!context.mounted) return;
+    Navigator.pop(context, data);
 
     eventBus.fire(TimetableListChanged());
   }

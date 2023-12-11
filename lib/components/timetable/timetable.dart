@@ -234,20 +234,7 @@ class TimetableState extends State<Timetable> {
         await provider.delete(getWholeIndex(weekday, index));
       });
     } else if (result != null) {
-      table[getWholeIndex(weekday, index)] = db.Timetable()
-        ..set(cellId: getWholeIndex(weekday, index), subject: result);
-
-      SharedPrefs.use((prefs) {
-        var history = prefs.timetableHistory;
-        if (history.contains(result)) {
-          history.remove(result);
-        }
-        history.insert(0, result);
-        if (history.length > 10) {
-          history = history.getRange(0, 10).toList();
-        }
-        prefs.timetableHistory = history;
-      });
+      table[getWholeIndex(weekday, index)] = result;
 
       db.TimetableProvider().use((provider) async {
         provider.writeTransaction(() async {

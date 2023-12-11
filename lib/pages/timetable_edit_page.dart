@@ -16,12 +16,12 @@ class TimetableEditPage extends StatefulWidget {
 
 class _TimetableEditPageState extends State<TimetableEditPage> {
   final _tableKey = GlobalKey<TimetableState>();
-  StreamSubscription? subscription;
+  StreamSubscription? _listener;
 
   @override
   void initState() {
     super.initState();
-    subscription = eventBus.on<UndoRedoUpdatedEvent>().listen((event) {
+    _listener = eventBus.on<UndoRedoUpdatedEvent>().listen((event) {
       setState(() {});
     });
   }
@@ -29,7 +29,7 @@ class _TimetableEditPageState extends State<TimetableEditPage> {
   @override
   void dispose() {
     super.dispose();
-    subscription?.cancel();
+    _listener?.cancel();
   }
 
   @override
