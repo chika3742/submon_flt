@@ -180,7 +180,7 @@ class _ApplicationState extends State<Application> {
         FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance)
       ],
       theme: ThemeData(
-        primarySwatch: Colors.lightGreen,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
             unselectedItemColor: Colors.black45,
             selectedItemColor: Colors.black),
@@ -188,8 +188,8 @@ class _ApplicationState extends State<Application> {
         textTheme: textTheme,
       ),
       darkTheme: ThemeData(
-        primarySwatch: Colors.lightGreen,
-        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.lightGreen, brightness: Brightness.dark),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
             unselectedItemColor: Colors.grey, selectedItemColor: Colors.white),
         pageTransitionsTheme: pageTransitionsTheme,
