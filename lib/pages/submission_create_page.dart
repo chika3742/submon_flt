@@ -12,21 +12,21 @@ class CreateSubmissionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final focusScopeNode = FocusScope.of(context);
+
     return Scaffold(
         appBar: AppBar(
           title: const Text('新規作成'),
         ),
         body: PopScope(
-          canPop: false,
-          onPopInvoked: (_) async {
-            var focusScopeNode = FocusScope.of(context);
-            if (focusScopeNode.focusedChild?.hasFocus == true) {
+          canPop: focusScopeNode.focusedChild?.hasFocus != true,
+          onPopInvoked: (didPop) async {
+            if (!didPop) {
               focusScopeNode.unfocus();
               await Future.delayed(const Duration(milliseconds: 130));
-            }
-
-            if (context.mounted) {
-              Navigator.pop(context);
+              if (context.mounted) {
+                Navigator.of(context, rootNavigator: true).pop();
+              }
             }
           },
           child: SubmissionEditor(
