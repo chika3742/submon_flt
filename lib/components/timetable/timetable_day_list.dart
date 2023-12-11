@@ -208,7 +208,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
     return OpenContainer<dynamic>(
       key: GlobalObjectKey(getWidgetId(index)),
       useRootNavigator: true,
-      closedColor: Theme.of(context).cardColor,
+      closedColor: Theme.of(context).colorScheme.onInverseSurface,
       closedShape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(4))),
       closedElevation: 4,
