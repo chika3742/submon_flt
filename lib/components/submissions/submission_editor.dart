@@ -119,6 +119,10 @@ class SubmissionEditorState extends State<SubmissionEditor> {
                         onTap: () {
                           setState(() {
                             _addTime = !_addTime;
+                            if (!_addTime) {
+                              _submission.due = _submission.due
+                                  .copyWith(hour: 23, minute: 59, second: 59);
+                            }
                           });
                         },
                       ),
