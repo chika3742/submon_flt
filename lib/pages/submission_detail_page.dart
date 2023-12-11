@@ -28,6 +28,8 @@ class SubmissionDetailPage extends StatefulWidget {
   _SubmissionDetailPageState createState() => _SubmissionDetailPageState();
 }
 
+enum SubmissionDetailPagePopAction { delete }
+
 class SubmissionDetailPageArguments {
   final int submissionId;
 
@@ -87,12 +89,8 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () async {
-              await SubmissionProvider().use((provider) async {
-                await provider.deleteItem(item!.id!);
-              });
-              if (!mounted) return;
-              Navigator.pop(context);
+            onPressed: () {
+              Navigator.pop(context, SubmissionDetailPagePopAction.delete);
             },
           ),
           IconButton(

@@ -14,6 +14,8 @@ import '../db/shared_prefs.dart';
 
 part '../generated/isar_db/isar_submission.g.dart';
 
+typedef Restorable = Future<void> Function();
+
 @Collection()
 class Submission {
   Id? id;
@@ -138,16 +140,36 @@ class SubmissionProvider extends IsarProvider<Submission> {
   }
 
   ///
-  /// [writeTransaction] でラップしないこと。
+  /// Do not wrap with [writeTransaction].
+  /// Invoking return function will restore deleted item.
   ///
-  Future<void> deleteItem(int id) async {
+  Future<Restorable> deleteItem(int id) async {
+    final submission = await get(id);
+    if (submission == null) {
+      return () async {};
+    }
+
     await writeTransaction(() async {
       // ignore: deprecated_member_use_from_same_package
       await delete(id);
     });
+    List<Digestive> digestivesToRestore = [];
     await DigestiveProvider().use((provider) async {
-      await provider.deleteBySubmissionId(id);
+      digestivesToRestore = await provider.deleteBySubmissionId(id);
     });
+
+    return () async {
+      await writeTransaction(() async {
+        await put(submission);
+      });
+      await DigestiveProvider().use((provider) async {
+        for (final digestive in digestivesToRestore) {
+          await provider.writeTransaction(() async {
+            await provider.put(digestive);
+          });
+        }
+      });
+    };
   }
 
   static void deleteFromGoogleTasks(String? taskId) {

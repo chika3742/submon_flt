@@ -51,13 +51,15 @@ class DigestiveProvider extends IsarProvider<Digestive> {
   ///
   /// このメソッドは[writeTransaction]でラップしないこと。
   ///
-  Future<void> deleteBySubmissionId(int submissionId) async {
+  Future<List<Digestive>> deleteBySubmissionId(int submissionId) async {
     var items =
         await this.collection.filter().submissionIdEqualTo(submissionId).findAll();
 
     await writeTransaction(() {
       return this.collection.deleteAll(items.map((e) => e.id!).toList());
     });
+
+    return items;
   }
 
   Future<List<Digestive>> getUndoneDigestives() {
