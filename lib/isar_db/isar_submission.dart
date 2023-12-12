@@ -10,8 +10,6 @@ import 'package:submon/isar_db/isar_provider.dart';
 import 'package:submon/main.dart';
 import 'package:submon/src/pigeons.g.dart';
 
-import '../db/shared_prefs.dart';
-
 part '../generated/isar_db/isar_submission.g.dart';
 
 typedef Restorable = Future<void> Function();
@@ -59,10 +57,6 @@ class Submission {
       "canvasPlannableId": canvasPlannableId,
       "repeatSubmissionCreated": repeatSubmissionCreated,
     };
-  }
-
-  Color getColorToDisplay(SharedPrefs? pref) {
-    return Color(color);
   }
 
   Color getColor() {
