@@ -168,7 +168,7 @@ class TimetableState extends State<Timetable> {
             });
           }
         },
-        closedColor: Theme.of(context).cardColor,
+        closedColor: Theme.of(context).colorScheme.onInverseSurface,
         openColor: Theme.of(context).colorScheme.background,
         closedShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(6),
@@ -206,7 +206,9 @@ class TimetableState extends State<Timetable> {
     var weekday = DateTime.now().weekday;
     var orange = weekday == youbi + 1 && !widget.edit;
     return Material(
-      color: orange ? Colors.orange : Theme.of(context).cardColor,
+      color: orange
+          ? Colors.orange
+          : Theme.of(context).colorScheme.onInverseSurface,
       borderRadius: BorderRadius.circular(6),
       elevation: 4,
       child: Container(
