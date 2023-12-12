@@ -86,7 +86,9 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
               : null;
           return DigestiveWithSubmission.fromObject(e, submission);
         }).toList());
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
       });
     });
   }
