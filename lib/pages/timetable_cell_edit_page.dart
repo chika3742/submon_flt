@@ -142,12 +142,13 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
       _subjectError = null;
     });
 
-    var data = widget.initialData ?? Timetable();
-    data.cellId = getTimetableCellId(widget.period, widget.weekDay);
-    data.subject = _subjectController.text;
-    data.room = _roomController.text;
-    data.teacher = _teacherController.text;
-    data.note = _noteController.text;
+    var data = Timetable()
+      ..id = widget.initialData?.id
+      ..cellId = getTimetableCellId(widget.period, widget.weekDay)
+      ..subject = _subjectController.text
+      ..room = _roomController.text
+      ..teacher = _teacherController.text
+      ..note = _noteController.text;
     await TimetableProvider().use((provider) async {
       await provider.writeTransaction(() async {
         await provider.putToCurrentTable(data);
