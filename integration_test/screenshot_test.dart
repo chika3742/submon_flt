@@ -21,7 +21,7 @@ void main() {
     await tester.pump();
 
     // wait for initialize
-    await tester.pump(const Duration(seconds: 3));
+    await tester.pump(const Duration(seconds: 5));
     // take screenshot of home screen
     await takeScreenshot(binding, 1);
     print("ss1 took");
