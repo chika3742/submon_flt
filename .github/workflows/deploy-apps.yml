@@ -3,7 +3,7 @@ name: Build and Deploy Apps
 on:
   push:
     tags:
-      - v*.*.*
+      - v*.*.*-*.*
   workflow_dispatch:
 
 jobs:
@@ -149,22 +149,3 @@ jobs:
             --skip_upload_screenshots\
             --package_name net.chikach.submon\
             --json_key service_account_key.json
-
-  create-release:
-    name: Create release
-    needs:
-      - build-ios
-      - build-android
-    runs-on: ubuntu-latest
-    if: "github.ref_name != '' && !contains(github.ref_name, '-')"
-    permissions:
-      contents: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Create release
-        uses: softprops/action-gh-release@v1
-        with:
-          draft: true
-          generate_release_notes: true
