@@ -6,6 +6,9 @@
   "dependencyDashboard": false,
   "timezone": "Asia/Tokyo",
   "prHourlyLimit": 5,
+  "ignoreDeps": [
+    "dev.flutter.flutter-plugin-loader"
+  ],
   "packageRules": [
     {
       "matchFileNames": [
