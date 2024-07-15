@@ -68,7 +68,7 @@ dependencies:
   firebase_analytics: ^10.4.2
   firebase_dynamic_links: ^5.3.2
   firebase_performance: ^0.9.2+2
-  cloud_functions: ^4.3.2
+  cloud_functions: ^5.0.0
 
 dev_dependencies:
   flutter_test:
