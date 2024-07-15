@@ -667,10 +667,10 @@ packages:
     dependency: "direct main"
     description:
       name: googleapis
-      sha256: "8a8c311723162af077ca73f94b823b97ff68770d966e29614d20baca9fdb490a"
+      sha256: "864f222aed3f2ff00b816c675edf00a39e2aaf373d728d8abec30b37bee1a81c"
       url: "https://pub.dev"
     source: hosted
-    version: "12.0.0"
+    version: "13.2.0"
   googleapis_auth:
     dependency: "direct main"
     description:
@@ -1482,5 +1482,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.3.0 <4.0.0"
+  dart: ">=3.4.0 <4.0.0"
   flutter: ">=3.19.0"
