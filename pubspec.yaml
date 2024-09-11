@@ -37,7 +37,7 @@ dependencies:
   package_info_plus: ^8.0.0
   flutter_svg: ^2.0.6
   shared_preferences: ^2.2.1
-  google_sign_in: ^6.1.5
+  google_sign_in: ^6.2.1
   sign_in_with_apple: ^6.1.1
   crypto: ^3.0.1
   flutter_dotenv: ^5.0.2
@@ -61,14 +61,14 @@ dependencies:
   extension_google_sign_in_as_googleapis_auth: ^2.0.11
   google_mobile_ads: ^5.0.0
 
-  firebase_core: 2.24.0 # due to https://github.com/firebase/firebase-ios-sdk/issues/11537 (unreleased)
-  firebase_crashlytics: ^3.3.2
-  firebase_auth: ^4.6.2
-  cloud_firestore: ^4.8.0
-  firebase_analytics: ^10.4.2
-  firebase_dynamic_links: ^5.3.2
-  firebase_performance: ^0.9.2+2
-  cloud_functions: ^4.3.2
+  firebase_core: ^3.4.1
+  firebase_crashlytics: ^4.1.1
+  firebase_auth: ^5.2.1
+  cloud_firestore: ^5.4.1
+  firebase_analytics: ^11.3.1
+  firebase_dynamic_links: ^6.0.6
+  firebase_performance: ^0.10.0+6
+  cloud_functions: ^5.1.1
 
 dev_dependencies:
   flutter_test:
