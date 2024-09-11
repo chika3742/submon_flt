@@ -27,35 +27,35 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 
 flutter_ios_podfile_setup
 
-def google_utilities
-  pod 'GoogleUtilities/AppDelegateSwizzler'
-  pod 'GoogleUtilities/Environment'
-  pod 'GoogleUtilities/ISASwizzler'
-  pod 'GoogleUtilities/Logger'
-  pod 'GoogleUtilities/MethodSwizzler'
-  pod 'GoogleUtilities/NSData+zlib'
-  pod 'GoogleUtilities/Network'
-  pod 'GoogleUtilities/Reachability'
-  pod 'GoogleUtilities/UserDefaults'
-end
+# def google_utilities
+#   pod 'GoogleUtilities/AppDelegateSwizzler'
+#   pod 'GoogleUtilities/Environment'
+#   pod 'GoogleUtilities/ISASwizzler'
+#   pod 'GoogleUtilities/Logger'
+#   pod 'GoogleUtilities/MethodSwizzler'
+#   pod 'GoogleUtilities/NSData+zlib'
+#   pod 'GoogleUtilities/Network'
+#   pod 'GoogleUtilities/Reachability'
+#   pod 'GoogleUtilities/UserDefaults'
+# end
 
 use_frameworks!
 use_modular_headers!
 
 target 'Runner' do
-  google_utilities
+#  google_utilities
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-  pod 'Firebase/Messaging'
-  pod 'Firebase/AppCheck'
+  pod 'FirebaseMessaging'
+  pod 'FirebaseAppCheck'
 end
 
 target 'WidgetKitExtension' do
-  google_utilities
+#  google_utilities
   pod 'FirebaseCore'
   pod 'FirebaseAuth'
   pod 'FirebaseFirestore'
   pod 'FirebaseAnalytics'
-  pod 'Firebase/AppCheck'
+  pod 'FirebaseAppCheck'
 end
 
 post_install do |installer|
