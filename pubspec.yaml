@@ -25,10 +25,13 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  animations: ^2.0.11
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+
+  go_router: ^14.4.1
 
 # TODO: Remove the following dependencies after reconstruction of the app
 #  audioplayers: ^5.2.1
@@ -80,6 +83,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  go_router_builder: ^2.7.1
+  build_runner: ^2.4.13
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
