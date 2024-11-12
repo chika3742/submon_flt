@@ -27,30 +27,14 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 
 flutter_ios_podfile_setup
 
-# def google_utilities
-#   pod 'GoogleUtilities/AppDelegateSwizzler'
-#   pod 'GoogleUtilities/Environment'
-#   pod 'GoogleUtilities/ISASwizzler'
-#   pod 'GoogleUtilities/Logger'
-#   pod 'GoogleUtilities/MethodSwizzler'
-#   pod 'GoogleUtilities/NSData+zlib'
-#   pod 'GoogleUtilities/Network'
-#   pod 'GoogleUtilities/Reachability'
-#   pod 'GoogleUtilities/UserDefaults'
-# end
-
 use_frameworks!
 use_modular_headers!
 
 target 'Runner' do
-#  google_utilities
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-  pod 'FirebaseMessaging'
-  pod 'FirebaseAppCheck'
 end
 
 target 'WidgetKitExtension' do
-#  google_utilities
   pod 'FirebaseCore'
   pod 'FirebaseAuth'
   pod 'FirebaseFirestore'
@@ -59,9 +43,6 @@ target 'WidgetKitExtension' do
 end
 
 post_install do |installer|
-  installer.pods_project.build_configurations.each do |config|
-    config.build_settings["ONLY_ACTIVE_ARCH"] = "NO"
-  end
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
   end
