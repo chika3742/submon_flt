@@ -32,6 +32,9 @@ dependencies:
     sdk: flutter
 
   go_router: ^14.4.1
+  material_symbols_icons: ^4.2791.1
+  slang: ^4.1.0
+  slang_flutter: ^4.1.0
 
 # TODO: Remove the following dependencies after reconstruction of the app
 #  audioplayers: ^5.2.1
