@@ -1,15 +1,22 @@
 import "package:animations/animations.dart";
 import "package:flutter/material.dart";
 import "package:flutter_localizations/flutter_localizations.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
-import 'i18n/strings.g.dart';
+import "i18n/strings.g.dart";
 
 import "routes.dart";
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   LocaleSettings.useDeviceLocale();
-  runApp(TranslationProvider(child: const MyApp()));
+  runApp(
+    TranslationProvider(
+      child: ProviderScope(
+        child: const MyApp(),
+      ),
+    ),
+  );
 }
 
 final _router = GoRouter(
@@ -52,4 +59,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
