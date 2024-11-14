@@ -38,6 +38,12 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 
 	// Translations
 	late final TranslationsPagesJa pages = TranslationsPagesJa.internal(_root);
+	Map<String, String> get durationUnits => {
+		'hours': '時間',
+		'days': '日',
+		'weeks': '週間',
+		'months': '月',
+	};
 }
 
 // Path: pages
@@ -62,6 +68,10 @@ extension on Translations {
 			case 'pages.digestives': return 'Digestive';
 			case 'pages.timetable': return '時間割';
 			case 'pages.more': return 'その他';
+			case 'durationUnits.hours': return '時間';
+			case 'durationUnits.days': return '日';
+			case 'durationUnits.weeks': return '週間';
+			case 'durationUnits.months': return '月';
 			default: return null;
 		}
 	}

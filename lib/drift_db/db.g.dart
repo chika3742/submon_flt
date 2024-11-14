@@ -30,6 +30,16 @@ class $SubmissionsTable extends Submissions
   late final GeneratedColumn<DateTime> due = GeneratedColumn<DateTime>(
       'due', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _dueDateOnlyMeta =
+      const VerificationMeta('dueDateOnly');
+  @override
+  late final GeneratedColumn<bool> dueDateOnly = GeneratedColumn<bool>(
+      'due_date_only', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("due_date_only" IN (0, 1))'),
+      defaultValue: Constant(true));
   static const VerificationMeta _doneMeta = const VerificationMeta('done');
   @override
   late final GeneratedColumn<bool> done = GeneratedColumn<bool>(
@@ -86,6 +96,7 @@ class $SubmissionsTable extends Submissions
         title,
         details,
         due,
+        dueDateOnly,
         done,
         important,
         repeat,
@@ -125,6 +136,12 @@ class $SubmissionsTable extends Submissions
           _dueMeta, due.isAcceptableOrUnknown(data['due']!, _dueMeta));
     } else if (isInserting) {
       context.missing(_dueMeta);
+    }
+    if (data.containsKey('due_date_only')) {
+      context.handle(
+          _dueDateOnlyMeta,
+          dueDateOnly.isAcceptableOrUnknown(
+              data['due_date_only']!, _dueDateOnlyMeta));
     }
     if (data.containsKey('done')) {
       context.handle(
@@ -166,6 +183,8 @@ class $SubmissionsTable extends Submissions
           .read(DriftSqlType.string, data['${effectivePrefix}details'])!,
       due: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}due'])!,
+      dueDateOnly: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}due_date_only'])!,
       done: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}done'])!,
       important: attachedDatabase.typeMapping
@@ -199,6 +218,7 @@ class Submission extends DataClass implements Insertable<Submission> {
   final String title;
   final String details;
   final DateTime due;
+  final bool dueDateOnly;
   final bool done;
   final bool important;
   final RepeatType repeat;
@@ -210,6 +230,7 @@ class Submission extends DataClass implements Insertable<Submission> {
       required this.title,
       required this.details,
       required this.due,
+      required this.dueDateOnly,
       required this.done,
       required this.important,
       required this.repeat,
@@ -223,6 +244,7 @@ class Submission extends DataClass implements Insertable<Submission> {
     map['title'] = Variable<String>(title);
     map['details'] = Variable<String>(details);
     map['due'] = Variable<DateTime>(due);
+    map['due_date_only'] = Variable<bool>(dueDateOnly);
     map['done'] = Variable<bool>(done);
     map['important'] = Variable<bool>(important);
     {
@@ -249,6 +271,7 @@ class Submission extends DataClass implements Insertable<Submission> {
       title: Value(title),
       details: Value(details),
       due: Value(due),
+      dueDateOnly: Value(dueDateOnly),
       done: Value(done),
       important: Value(important),
       repeat: Value(repeat),
@@ -270,6 +293,7 @@ class Submission extends DataClass implements Insertable<Submission> {
       title: serializer.fromJson<String>(json['title']),
       details: serializer.fromJson<String>(json['details']),
       due: serializer.fromJson<DateTime>(json['due']),
+      dueDateOnly: serializer.fromJson<bool>(json['dueDateOnly']),
       done: serializer.fromJson<bool>(json['done']),
       important: serializer.fromJson<bool>(json['important']),
       repeat: $SubmissionsTable.$converterrepeat
@@ -289,6 +313,7 @@ class Submission extends DataClass implements Insertable<Submission> {
       'title': serializer.toJson<String>(title),
       'details': serializer.toJson<String>(details),
       'due': serializer.toJson<DateTime>(due),
+      'dueDateOnly': serializer.toJson<bool>(dueDateOnly),
       'done': serializer.toJson<bool>(done),
       'important': serializer.toJson<bool>(important),
       'repeat': serializer
@@ -305,6 +330,7 @@ class Submission extends DataClass implements Insertable<Submission> {
           String? title,
           String? details,
           DateTime? due,
+          bool? dueDateOnly,
           bool? done,
           bool? important,
           RepeatType? repeat,
@@ -316,6 +342,7 @@ class Submission extends DataClass implements Insertable<Submission> {
         title: title ?? this.title,
         details: details ?? this.details,
         due: due ?? this.due,
+        dueDateOnly: dueDateOnly ?? this.dueDateOnly,
         done: done ?? this.done,
         important: important ?? this.important,
         repeat: repeat ?? this.repeat,
@@ -333,6 +360,8 @@ class Submission extends DataClass implements Insertable<Submission> {
       title: data.title.present ? data.title.value : this.title,
       details: data.details.present ? data.details.value : this.details,
       due: data.due.present ? data.due.value : this.due,
+      dueDateOnly:
+          data.dueDateOnly.present ? data.dueDateOnly.value : this.dueDateOnly,
       done: data.done.present ? data.done.value : this.done,
       important: data.important.present ? data.important.value : this.important,
       repeat: data.repeat.present ? data.repeat.value : this.repeat,
@@ -353,6 +382,7 @@ class Submission extends DataClass implements Insertable<Submission> {
           ..write('title: $title, ')
           ..write('details: $details, ')
           ..write('due: $due, ')
+          ..write('dueDateOnly: $dueDateOnly, ')
           ..write('done: $done, ')
           ..write('important: $important, ')
           ..write('repeat: $repeat, ')
@@ -364,8 +394,8 @@ class Submission extends DataClass implements Insertable<Submission> {
   }
 
   @override
-  int get hashCode => Object.hash(id, title, details, due, done, important,
-      repeat, color, googleTasksTaskId, repeatSubmissionCreated);
+  int get hashCode => Object.hash(id, title, details, due, dueDateOnly, done,
+      important, repeat, color, googleTasksTaskId, repeatSubmissionCreated);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -374,6 +404,7 @@ class Submission extends DataClass implements Insertable<Submission> {
           other.title == this.title &&
           other.details == this.details &&
           other.due == this.due &&
+          other.dueDateOnly == this.dueDateOnly &&
           other.done == this.done &&
           other.important == this.important &&
           other.repeat == this.repeat &&
@@ -387,6 +418,7 @@ class SubmissionsCompanion extends UpdateCompanion<Submission> {
   final Value<String> title;
   final Value<String> details;
   final Value<DateTime> due;
+  final Value<bool> dueDateOnly;
   final Value<bool> done;
   final Value<bool> important;
   final Value<RepeatType> repeat;
@@ -399,6 +431,7 @@ class SubmissionsCompanion extends UpdateCompanion<Submission> {
     this.title = const Value.absent(),
     this.details = const Value.absent(),
     this.due = const Value.absent(),
+    this.dueDateOnly = const Value.absent(),
     this.done = const Value.absent(),
     this.important = const Value.absent(),
     this.repeat = const Value.absent(),
@@ -412,6 +445,7 @@ class SubmissionsCompanion extends UpdateCompanion<Submission> {
     required String title,
     required String details,
     required DateTime due,
+    this.dueDateOnly = const Value.absent(),
     this.done = const Value.absent(),
     this.important = const Value.absent(),
     this.repeat = const Value.absent(),
@@ -428,6 +462,7 @@ class SubmissionsCompanion extends UpdateCompanion<Submission> {
     Expression<String>? title,
     Expression<String>? details,
     Expression<DateTime>? due,
+    Expression<bool>? dueDateOnly,
     Expression<bool>? done,
     Expression<bool>? important,
     Expression<int>? repeat,
@@ -441,6 +476,7 @@ class SubmissionsCompanion extends UpdateCompanion<Submission> {
       if (title != null) 'title': title,
       if (details != null) 'details': details,
       if (due != null) 'due': due,
+      if (dueDateOnly != null) 'due_date_only': dueDateOnly,
       if (done != null) 'done': done,
       if (important != null) 'important': important,
       if (repeat != null) 'repeat': repeat,
@@ -457,6 +493,7 @@ class SubmissionsCompanion extends UpdateCompanion<Submission> {
       Value<String>? title,
       Value<String>? details,
       Value<DateTime>? due,
+      Value<bool>? dueDateOnly,
       Value<bool>? done,
       Value<bool>? important,
       Value<RepeatType>? repeat,
@@ -469,6 +506,7 @@ class SubmissionsCompanion extends UpdateCompanion<Submission> {
       title: title ?? this.title,
       details: details ?? this.details,
       due: due ?? this.due,
+      dueDateOnly: dueDateOnly ?? this.dueDateOnly,
       done: done ?? this.done,
       important: important ?? this.important,
       repeat: repeat ?? this.repeat,
@@ -494,6 +532,9 @@ class SubmissionsCompanion extends UpdateCompanion<Submission> {
     }
     if (due.present) {
       map['due'] = Variable<DateTime>(due.value);
+    }
+    if (dueDateOnly.present) {
+      map['due_date_only'] = Variable<bool>(dueDateOnly.value);
     }
     if (done.present) {
       map['done'] = Variable<bool>(done.value);
@@ -529,6 +570,7 @@ class SubmissionsCompanion extends UpdateCompanion<Submission> {
           ..write('title: $title, ')
           ..write('details: $details, ')
           ..write('due: $due, ')
+          ..write('dueDateOnly: $dueDateOnly, ')
           ..write('done: $done, ')
           ..write('important: $important, ')
           ..write('repeat: $repeat, ')
@@ -911,6 +953,7 @@ typedef $$SubmissionsTableCreateCompanionBuilder = SubmissionsCompanion
   required String title,
   required String details,
   required DateTime due,
+  Value<bool> dueDateOnly,
   Value<bool> done,
   Value<bool> important,
   Value<RepeatType> repeat,
@@ -925,6 +968,7 @@ typedef $$SubmissionsTableUpdateCompanionBuilder = SubmissionsCompanion
   Value<String> title,
   Value<String> details,
   Value<DateTime> due,
+  Value<bool> dueDateOnly,
   Value<bool> done,
   Value<bool> important,
   Value<RepeatType> repeat,
@@ -974,6 +1018,9 @@ class $$SubmissionsTableFilterComposer
 
   ColumnFilters<DateTime> get due => $composableBuilder(
       column: $table.due, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get dueDateOnly => $composableBuilder(
+      column: $table.dueDateOnly, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<bool> get done => $composableBuilder(
       column: $table.done, builder: (column) => ColumnFilters(column));
@@ -1042,6 +1089,9 @@ class $$SubmissionsTableOrderingComposer
   ColumnOrderings<DateTime> get due => $composableBuilder(
       column: $table.due, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<bool> get dueDateOnly => $composableBuilder(
+      column: $table.dueDateOnly, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<bool> get done => $composableBuilder(
       column: $table.done, builder: (column) => ColumnOrderings(column));
 
@@ -1083,6 +1133,9 @@ class $$SubmissionsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get due =>
       $composableBuilder(column: $table.due, builder: (column) => column);
+
+  GeneratedColumn<bool> get dueDateOnly => $composableBuilder(
+      column: $table.dueDateOnly, builder: (column) => column);
 
   GeneratedColumn<bool> get done =>
       $composableBuilder(column: $table.done, builder: (column) => column);
@@ -1151,6 +1204,7 @@ class $$SubmissionsTableTableManager extends RootTableManager<
             Value<String> title = const Value.absent(),
             Value<String> details = const Value.absent(),
             Value<DateTime> due = const Value.absent(),
+            Value<bool> dueDateOnly = const Value.absent(),
             Value<bool> done = const Value.absent(),
             Value<bool> important = const Value.absent(),
             Value<RepeatType> repeat = const Value.absent(),
@@ -1164,6 +1218,7 @@ class $$SubmissionsTableTableManager extends RootTableManager<
             title: title,
             details: details,
             due: due,
+            dueDateOnly: dueDateOnly,
             done: done,
             important: important,
             repeat: repeat,
@@ -1177,6 +1232,7 @@ class $$SubmissionsTableTableManager extends RootTableManager<
             required String title,
             required String details,
             required DateTime due,
+            Value<bool> dueDateOnly = const Value.absent(),
             Value<bool> done = const Value.absent(),
             Value<bool> important = const Value.absent(),
             Value<RepeatType> repeat = const Value.absent(),
@@ -1190,6 +1246,7 @@ class $$SubmissionsTableTableManager extends RootTableManager<
             title: title,
             details: details,
             due: due,
+            dueDateOnly: dueDateOnly,
             done: done,
             important: important,
             repeat: repeat,

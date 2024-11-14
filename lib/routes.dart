@@ -8,7 +8,7 @@ import "package:go_router/go_router.dart";
 import "pages/digestives.dart";
 import "pages/home.dart";
 import "pages/more.dart";
-import "pages/submissions.dart";
+import "pages/submissions/submissions.dart";
 import "pages/timetable.dart";
 
 part "routes.g.dart";

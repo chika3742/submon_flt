@@ -3,3 +3,9 @@ pages:
   digestives: Digestive
   timetable: 時間割
   more: その他
+
+durationUnits(map):
+  hours: 時間
+  days: 日
+  weeks: 週間
+  months: 月
