@@ -1145,86 +1145,18 @@ PODS:
     - abseil/meta/type_traits
     - abseil/xcprivacy
   - abseil/xcprivacy (1.20240116.2)
-  - AppAuth (1.7.5):
-    - AppAuth/Core (= 1.7.5)
-    - AppAuth/ExternalUserAgent (= 1.7.5)
-  - AppAuth/Core (1.7.5)
-  - AppAuth/ExternalUserAgent (1.7.5):
-    - AppAuth/Core
-  - AppCheckCore (11.0.0):
+  - AppCheckCore (11.2.0):
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - PromisesObjC (~> 2.4)
-  - audioplayers_darwin (0.0.1):
-    - Flutter
   - BoringSSL-GRPC (0.0.36):
     - BoringSSL-GRPC/Implementation (= 0.0.36)
     - BoringSSL-GRPC/Interface (= 0.0.36)
   - BoringSSL-GRPC/Implementation (0.0.36):
     - BoringSSL-GRPC/Interface (= 0.0.36)
   - BoringSSL-GRPC/Interface (0.0.36)
-  - cloud_firestore (5.4.1):
-    - Firebase/Firestore (= 11.0.0)
-    - firebase_core
-    - Flutter
-  - cloud_functions (5.1.1):
-    - Firebase/Functions (= 11.0.0)
-    - firebase_core
-    - Flutter
-  - device_info_plus (0.0.1):
-    - Flutter
-  - Firebase/Analytics (11.0.0):
-    - Firebase/Core
-  - Firebase/Auth (11.0.0):
-    - Firebase/CoreOnly
-    - FirebaseAuth (~> 11.0.0)
-  - Firebase/Core (11.0.0):
-    - Firebase/CoreOnly
-    - FirebaseAnalytics (~> 11.0.0)
-  - Firebase/CoreOnly (11.0.0):
-    - FirebaseCore (= 11.0.0)
-  - Firebase/Crashlytics (11.0.0):
-    - Firebase/CoreOnly
-    - FirebaseCrashlytics (~> 11.0.0)
-  - Firebase/DynamicLinks (11.0.0):
-    - Firebase/CoreOnly
-    - FirebaseDynamicLinks (~> 11.0.0)
-  - Firebase/Firestore (11.0.0):
-    - Firebase/CoreOnly
-    - FirebaseFirestore (~> 11.0.0)
-  - Firebase/Functions (11.0.0):
-    - Firebase/CoreOnly
-    - FirebaseFunctions (~> 11.0.0)
-  - Firebase/Performance (11.0.0):
-    - Firebase/CoreOnly
-    - FirebasePerformance (~> 11.0.0)
-  - firebase_analytics (11.3.1):
-    - Firebase/Analytics (= 11.0.0)
-    - firebase_core
-    - Flutter
-  - firebase_auth (5.2.1):
-    - Firebase/Auth (= 11.0.0)
-    - firebase_core
-    - Flutter
-  - firebase_core (3.4.1):
-    - Firebase/CoreOnly (= 11.0.0)
-    - Flutter
-  - firebase_crashlytics (4.1.1):
-    - Firebase/Crashlytics (= 11.0.0)
-    - firebase_core
-    - Flutter
-  - firebase_dynamic_links (6.0.6):
-    - Firebase/DynamicLinks (= 11.0.0)
-    - firebase_core
-    - Flutter
-  - firebase_performance (0.10.0-6):
-    - Firebase/Performance (= 11.0.0)
-    - firebase_core
-    - Flutter
-  - FirebaseABTesting (11.2.0):
-    - FirebaseCore (~> 11.0)
-  - FirebaseAnalytics (11.0.0):
-    - FirebaseAnalytics/AdIdSupport (= 11.0.0)
+  - FirebaseAnalytics (11.4.0):
+    - FirebaseAnalytics/AdIdSupport (= 11.4.0)
     - FirebaseCore (~> 11.0)
     - FirebaseInstallations (~> 11.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
@@ -1232,57 +1164,46 @@ PODS:
     - GoogleUtilities/Network (~> 8.0)
     - "GoogleUtilities/NSData+zlib (~> 8.0)"
     - nanopb (~> 3.30910.0)
-  - FirebaseAnalytics/AdIdSupport (11.0.0):
+  - FirebaseAnalytics/AdIdSupport (11.4.0):
     - FirebaseCore (~> 11.0)
     - FirebaseInstallations (~> 11.0)
-    - GoogleAppMeasurement (= 11.0.0)
+    - GoogleAppMeasurement (= 11.4.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
     - GoogleUtilities/MethodSwizzler (~> 8.0)
     - GoogleUtilities/Network (~> 8.0)
     - "GoogleUtilities/NSData+zlib (~> 8.0)"
     - nanopb (~> 3.30910.0)
-  - FirebaseAppCheck (11.2.0):
+  - FirebaseAppCheck (11.4.0):
     - AppCheckCore (~> 11.0)
     - FirebaseAppCheckInterop (~> 11.0)
     - FirebaseCore (~> 11.0)
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
-  - FirebaseAppCheckInterop (11.2.0)
-  - FirebaseAuth (11.0.0):
+  - FirebaseAppCheckInterop (11.4.0)
+  - FirebaseAuth (11.4.0):
     - FirebaseAppCheckInterop (~> 11.0)
     - FirebaseAuthInterop (~> 11.0)
-    - FirebaseCore (~> 11.0)
-    - FirebaseCoreExtension (~> 11.0)
+    - FirebaseCore (~> 11.4)
+    - FirebaseCoreExtension (~> 11.4)
     - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
     - GoogleUtilities/Environment (~> 8.0)
-    - GTMSessionFetcher/Core (~> 3.4)
+    - GTMSessionFetcher/Core (< 5.0, >= 3.4)
     - RecaptchaInterop (~> 100.0)
-  - FirebaseAuthInterop (11.2.0)
-  - FirebaseCore (11.0.0):
-    - FirebaseCoreInternal (~> 11.0)
+  - FirebaseAuthInterop (11.4.0)
+  - FirebaseCore (11.4.2):
+    - FirebaseCoreInternal (< 12.0, >= 11.4.2)
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/Logger (~> 8.0)
-  - FirebaseCoreExtension (11.2.0):
+  - FirebaseCoreExtension (11.4.1):
     - FirebaseCore (~> 11.0)
-  - FirebaseCoreInternal (11.2.0):
+  - FirebaseCoreInternal (11.4.2):
     - "GoogleUtilities/NSData+zlib (~> 8.0)"
-  - FirebaseCrashlytics (11.0.0):
-    - FirebaseCore (~> 11.0)
-    - FirebaseInstallations (~> 11.0)
-    - FirebaseRemoteConfigInterop (~> 11.0)
-    - FirebaseSessions (~> 11.0)
-    - GoogleDataTransport (~> 10.0)
-    - GoogleUtilities/Environment (~> 8.0)
-    - nanopb (~> 3.30910.0)
-    - PromisesObjC (~> 2.4)
-  - FirebaseDynamicLinks (11.0.0):
-    - FirebaseCore (~> 11.0)
-  - FirebaseFirestore (11.0.0):
-    - FirebaseCore (~> 11.0)
-    - FirebaseCoreExtension (~> 11.0)
-    - FirebaseFirestoreInternal (= 11.0.0)
+  - FirebaseFirestore (11.4.0):
+    - FirebaseCore (~> 11.4)
+    - FirebaseCoreExtension (~> 11.4)
+    - FirebaseFirestoreInternal (= 11.4.0)
     - FirebaseSharedSwift (~> 11.0)
-  - FirebaseFirestoreInternal (11.0.0):
+  - FirebaseFirestoreInternal (11.4.0):
     - abseil/algorithm (~> 1.20240116.1)
     - abseil/base (~> 1.20240116.1)
     - abseil/container/flat_hash_map (~> 1.20240116.1)
@@ -1297,99 +1218,33 @@ PODS:
     - gRPC-Core (~> 1.65.0)
     - leveldb-library (~> 1.22)
     - nanopb (~> 3.30910.0)
-  - FirebaseFunctions (11.0.0):
-    - FirebaseAppCheckInterop (~> 11.0)
-    - FirebaseAuthInterop (~> 11.0)
-    - FirebaseCore (~> 11.0)
-    - FirebaseCoreExtension (~> 11.0)
-    - FirebaseMessagingInterop (~> 11.0)
-    - FirebaseSharedSwift (~> 11.0)
-    - GTMSessionFetcher/Core (~> 3.4)
-  - FirebaseInstallations (11.2.0):
+  - FirebaseInstallations (11.4.0):
     - FirebaseCore (~> 11.0)
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - PromisesObjC (~> 2.4)
-  - FirebaseMessaging (11.2.0):
-    - FirebaseCore (~> 11.0)
-    - FirebaseInstallations (~> 11.0)
-    - GoogleDataTransport (~> 10.0)
-    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
-    - GoogleUtilities/Environment (~> 8.0)
-    - GoogleUtilities/Reachability (~> 8.0)
-    - GoogleUtilities/UserDefaults (~> 8.0)
-    - nanopb (~> 3.30910.0)
-  - FirebaseMessagingInterop (11.2.0)
-  - FirebasePerformance (11.0.0):
-    - FirebaseCore (~> 11.0)
-    - FirebaseInstallations (~> 11.0)
-    - FirebaseRemoteConfig (~> 11.0)
-    - FirebaseSessions (~> 11.0)
-    - GoogleDataTransport (~> 10.0)
-    - GoogleUtilities/Environment (~> 8.0)
-    - GoogleUtilities/MethodSwizzler (~> 8.0)
-    - GoogleUtilities/UserDefaults (~> 8.0)
-    - nanopb (~> 3.30910.0)
-  - FirebaseRemoteConfig (11.2.0):
-    - FirebaseABTesting (~> 11.0)
-    - FirebaseCore (~> 11.0)
-    - FirebaseInstallations (~> 11.0)
-    - FirebaseRemoteConfigInterop (~> 11.0)
-    - FirebaseSharedSwift (~> 11.0)
-    - GoogleUtilities/Environment (~> 8.0)
-    - "GoogleUtilities/NSData+zlib (~> 8.0)"
-  - FirebaseRemoteConfigInterop (11.2.0)
-  - FirebaseSessions (11.2.0):
-    - FirebaseCore (~> 11.0)
-    - FirebaseCoreExtension (~> 11.0)
-    - FirebaseInstallations (~> 11.0)
-    - GoogleDataTransport (~> 10.0)
-    - GoogleUtilities/Environment (~> 8.0)
-    - GoogleUtilities/UserDefaults (~> 8.0)
-    - nanopb (~> 3.30910.0)
-    - PromisesSwift (~> 2.1)
-  - FirebaseSharedSwift (11.2.0)
+  - FirebaseSharedSwift (11.4.0)
   - Flutter (1.0.0)
-  - Google-Mobile-Ads-SDK (11.2.0):
-    - GoogleUserMessagingPlatform (>= 1.1)
-  - google_mobile_ads (5.1.0):
-    - Flutter
-    - Google-Mobile-Ads-SDK (~> 11.2.0)
-    - webview_flutter_wkwebview
-  - google_sign_in_ios (0.0.1):
-    - AppAuth (>= 1.7.4)
-    - Flutter
-    - FlutterMacOS
-    - GoogleSignIn (~> 7.1)
-    - GTMSessionFetcher (>= 3.4.0)
-  - GoogleAppMeasurement (11.0.0):
-    - GoogleAppMeasurement/AdIdSupport (= 11.0.0)
+  - GoogleAppMeasurement (11.4.0):
+    - GoogleAppMeasurement/AdIdSupport (= 11.4.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
     - GoogleUtilities/MethodSwizzler (~> 8.0)
     - GoogleUtilities/Network (~> 8.0)
     - "GoogleUtilities/NSData+zlib (~> 8.0)"
     - nanopb (~> 3.30910.0)
-  - GoogleAppMeasurement/AdIdSupport (11.0.0):
-    - GoogleAppMeasurement/WithoutAdIdSupport (= 11.0.0)
+  - GoogleAppMeasurement/AdIdSupport (11.4.0):
+    - GoogleAppMeasurement/WithoutAdIdSupport (= 11.4.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
     - GoogleUtilities/MethodSwizzler (~> 8.0)
     - GoogleUtilities/Network (~> 8.0)
     - "GoogleUtilities/NSData+zlib (~> 8.0)"
     - nanopb (~> 3.30910.0)
-  - GoogleAppMeasurement/WithoutAdIdSupport (11.0.0):
+  - GoogleAppMeasurement/WithoutAdIdSupport (11.4.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
     - GoogleUtilities/MethodSwizzler (~> 8.0)
     - GoogleUtilities/Network (~> 8.0)
     - "GoogleUtilities/NSData+zlib (~> 8.0)"
     - nanopb (~> 3.30910.0)
-  - GoogleDataTransport (10.1.0):
-    - nanopb (~> 3.30910.0)
-    - PromisesObjC (~> 2.4)
-  - GoogleSignIn (7.1.0):
-    - AppAuth (< 2.0, >= 1.7.3)
-    - GTMAppAuth (< 5.0, >= 4.1.1)
-    - GTMSessionFetcher/Core (~> 3.3)
-  - GoogleUserMessagingPlatform (2.6.0)
   - GoogleUtilities/AppDelegateSwizzler (8.0.2):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -1507,83 +1362,55 @@ PODS:
     - gRPC-Core/Privacy (= 1.65.5)
   - gRPC-Core/Interface (1.65.5)
   - gRPC-Core/Privacy (1.65.5)
-  - GTMAppAuth (4.1.1):
-    - AppAuth/Core (~> 1.7)
-    - GTMSessionFetcher/Core (< 4.0, >= 3.3)
-  - GTMSessionFetcher (3.5.0):
-    - GTMSessionFetcher/Full (= 3.5.0)
-  - GTMSessionFetcher/Core (3.5.0)
-  - GTMSessionFetcher/Full (3.5.0):
-    - GTMSessionFetcher/Core
+  - GTMSessionFetcher/Core (4.1.0)
   - integration_test (0.0.1):
     - Flutter
-  - isar_flutter_libs (1.0.0):
-    - Flutter
-  - leveldb-library (1.22.5)
+  - leveldb-library (1.22.6)
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
-  - package_info_plus (0.4.5):
-    - Flutter
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
   - PromisesObjC (2.4.0)
-  - PromisesSwift (2.4.0):
-    - PromisesObjC (= 2.4.0)
   - RecaptchaInterop (100.0.0)
-  - share_plus (0.0.1):
+  - sqlite3 (3.47.0):
+    - sqlite3/common (= 3.47.0)
+  - sqlite3/common (3.47.0)
+  - sqlite3/dbstatvtab (3.47.0):
+    - sqlite3/common
+  - sqlite3/fts5 (3.47.0):
+    - sqlite3/common
+  - sqlite3/perf-threadsafe (3.47.0):
+    - sqlite3/common
+  - sqlite3/rtree (3.47.0):
+    - sqlite3/common
+  - sqlite3_flutter_libs (0.0.1):
     - Flutter
-  - shared_preferences_foundation (0.0.1):
-    - Flutter
-    - FlutterMacOS
-  - sign_in_with_apple (0.0.1):
-    - Flutter
-  - url_launcher_ios (0.0.1):
-    - Flutter
-  - webview_flutter_wkwebview (0.0.1):
-    - Flutter
+    - sqlite3 (~> 3.47.0)
+    - sqlite3/dbstatvtab
+    - sqlite3/fts5
+    - sqlite3/perf-threadsafe
+    - sqlite3/rtree
 
 DEPENDENCIES:
-  - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/ios`)
-  - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
-  - cloud_functions (from `.symlinks/plugins/cloud_functions/ios`)
-  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
-  - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
-  - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
-  - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
-  - firebase_crashlytics (from `.symlinks/plugins/firebase_crashlytics/ios`)
-  - firebase_dynamic_links (from `.symlinks/plugins/firebase_dynamic_links/ios`)
-  - firebase_performance (from `.symlinks/plugins/firebase_performance/ios`)
   - FirebaseAnalytics
   - FirebaseAppCheck
   - FirebaseAuth
   - FirebaseCore
   - FirebaseFirestore
-  - FirebaseMessaging
   - Flutter (from `Flutter`)
-  - google_mobile_ads (from `.symlinks/plugins/google_mobile_ads/ios`)
-  - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/darwin`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
-  - isar_flutter_libs (from `.symlinks/plugins/isar_flutter_libs/ios`)
-  - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
-  - share_plus (from `.symlinks/plugins/share_plus/ios`)
-  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
-  - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
-  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
-  - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
+  - sqlite3_flutter_libs (from `.symlinks/plugins/sqlite3_flutter_libs/ios`)
 
 SPEC REPOS:
   trunk:
     - abseil
-    - AppAuth
     - AppCheckCore
     - BoringSSL-GRPC
-    - Firebase
-    - FirebaseABTesting
     - FirebaseAnalytics
     - FirebaseAppCheck
     - FirebaseAppCheckInterop
@@ -1592,147 +1419,62 @@ SPEC REPOS:
     - FirebaseCore
     - FirebaseCoreExtension
     - FirebaseCoreInternal
-    - FirebaseCrashlytics
-    - FirebaseDynamicLinks
     - FirebaseFirestore
     - FirebaseFirestoreInternal
-    - FirebaseFunctions
     - FirebaseInstallations
-    - FirebaseMessaging
-    - FirebaseMessagingInterop
-    - FirebasePerformance
-    - FirebaseRemoteConfig
-    - FirebaseRemoteConfigInterop
-    - FirebaseSessions
     - FirebaseSharedSwift
-    - Google-Mobile-Ads-SDK
     - GoogleAppMeasurement
-    - GoogleDataTransport
-    - GoogleSignIn
-    - GoogleUserMessagingPlatform
     - GoogleUtilities
     - "gRPC-C++"
     - gRPC-Core
-    - GTMAppAuth
     - GTMSessionFetcher
     - leveldb-library
     - nanopb
     - PromisesObjC
-    - PromisesSwift
     - RecaptchaInterop
+    - sqlite3
 
 EXTERNAL SOURCES:
-  audioplayers_darwin:
-    :path: ".symlinks/plugins/audioplayers_darwin/ios"
-  cloud_firestore:
-    :path: ".symlinks/plugins/cloud_firestore/ios"
-  cloud_functions:
-    :path: ".symlinks/plugins/cloud_functions/ios"
-  device_info_plus:
-    :path: ".symlinks/plugins/device_info_plus/ios"
-  firebase_analytics:
-    :path: ".symlinks/plugins/firebase_analytics/ios"
-  firebase_auth:
-    :path: ".symlinks/plugins/firebase_auth/ios"
-  firebase_core:
-    :path: ".symlinks/plugins/firebase_core/ios"
-  firebase_crashlytics:
-    :path: ".symlinks/plugins/firebase_crashlytics/ios"
-  firebase_dynamic_links:
-    :path: ".symlinks/plugins/firebase_dynamic_links/ios"
-  firebase_performance:
-    :path: ".symlinks/plugins/firebase_performance/ios"
   Flutter:
     :path: Flutter
-  google_mobile_ads:
-    :path: ".symlinks/plugins/google_mobile_ads/ios"
-  google_sign_in_ios:
-    :path: ".symlinks/plugins/google_sign_in_ios/darwin"
   integration_test:
     :path: ".symlinks/plugins/integration_test/ios"
-  isar_flutter_libs:
-    :path: ".symlinks/plugins/isar_flutter_libs/ios"
-  package_info_plus:
-    :path: ".symlinks/plugins/package_info_plus/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
-  share_plus:
-    :path: ".symlinks/plugins/share_plus/ios"
-  shared_preferences_foundation:
-    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
-  sign_in_with_apple:
-    :path: ".symlinks/plugins/sign_in_with_apple/ios"
-  url_launcher_ios:
-    :path: ".symlinks/plugins/url_launcher_ios/ios"
-  webview_flutter_wkwebview:
-    :path: ".symlinks/plugins/webview_flutter_wkwebview/ios"
+  sqlite3_flutter_libs:
+    :path: ".symlinks/plugins/sqlite3_flutter_libs/ios"
 
 SPEC CHECKSUMS:
   abseil: d121da9ef7e2ff4cab7666e76c5a3e0915ae08c3
-  AppAuth: 501c04eda8a8d11f179dbe8637b7a91bb7e5d2fa
-  AppCheckCore: e25aaaac234b333320b0bebb8fc21ed3576819ba
-  audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
+  AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
   BoringSSL-GRPC: ca6a8e5d04812fce8ffd6437810c2d46f925eaeb
-  cloud_firestore: 6e3caf23a764c0ca66606ce8034d3f395f4d8c64
-  cloud_functions: 8503b9219ebace7211e7289a59e2b9b0c53461c2
-  device_info_plus: c6fb39579d0f423935b0c9ce7ee2f44b71b9fce6
-  Firebase: 9f574c08c2396885b5e7e100ed4293d956218af9
-  firebase_analytics: b8ce6c2c4b245d3c3bb3a147965d09da0f455959
-  firebase_auth: 78dab5e2826921865b33799c66ce7868542beed0
-  firebase_core: ba84e940cf5cbbc601095f86556560937419195c
-  firebase_crashlytics: 4111f8198b78c99471c955af488cecd8224967e6
-  firebase_dynamic_links: 066ded12368bf1f55925c5621f2397d879a02edf
-  firebase_performance: 8b7b9ca5adf3a9b3afa12b4eb96b9cabefc2c248
-  FirebaseABTesting: 2104d957ce33888a3d6f3bde298cdee376dde8f1
-  FirebaseAnalytics: 27eb78b97880ea4a004839b9bac0b58880f5a92a
-  FirebaseAppCheck: a6a1c1ca169d795212b9e70b5cfb880083a28e7c
-  FirebaseAppCheckInterop: ea21450529cf0ebd132788dd8916a0269abc684f
-  FirebaseAuth: d5cf28be74d7e82257f6a3f717509eff70d3cf4a
-  FirebaseAuthInterop: 47c09558af5d1b31f16fb352387c72d4804f4a24
-  FirebaseCore: 3cf438f431f18c12cdf2aaf64434648b63f7e383
-  FirebaseCoreExtension: cda74ddfb001224bd8fd1d6e74698b4ed07803de
-  FirebaseCoreInternal: 0c569513412da9f3b31bd0b340013bbee8f295c5
-  FirebaseCrashlytics: 745d8f0221fe49c62865391d1bf56f5a12eeec0b
-  FirebaseDynamicLinks: fe442c573e116434d7e0f7937d4f9e2b5e49b557
-  FirebaseFirestore: a1758850668dbb503537b7780a2a1fdc5e37c6ce
-  FirebaseFirestoreInternal: 9fcc0ccb987ab73163f2249444e4bfd9eac63748
-  FirebaseFunctions: 49653511d8c966ad16c5c02acc2bfd642ef1cec1
-  FirebaseInstallations: 771177d89d6c451dc6e50085ec82e2fc77ed0a4a
-  FirebaseMessaging: c9ec7b90c399c7a6100297e9d16f8a27fc7f7152
-  FirebaseMessagingInterop: 2bf06fae2d15b77b8e4ca872241f90e2c6285ef3
-  FirebasePerformance: efdc02bacb1b4710588c9f867011605c081cdf79
-  FirebaseRemoteConfig: fca0b2d017fc1de52b28a4e5bcf2007c1a840457
-  FirebaseRemoteConfigInterop: 477b26fdeb8fb5fbaf22fa9db5343b42289dc7db
-  FirebaseSessions: adcec8b72d0066a385e3affcd1bcb1ebb3908ce6
-  FirebaseSharedSwift: 7a0d78d155ede78407f0fdc89fbc914014c7c540
+  FirebaseAnalytics: 3feef9ae8733c567866342a1000691baaa7cad49
+  FirebaseAppCheck: 933cbda29279ed316b82360bca77602ac1af1ff2
+  FirebaseAppCheckInterop: 1b9643ae2f1ee214488caa2f8e32b7bc2f0f3735
+  FirebaseAuth: c359af98bd703cbf4293eec107a40de08ede6ce6
+  FirebaseAuthInterop: 9ac948965ac13ec9d8a080f39490ddb2bda30520
+  FirebaseCore: 6b32c57269bd999aab34354c3923d92a6e5f3f84
+  FirebaseCoreExtension: f1bc67a4702931a7caa097d8e4ac0a1b0d16720e
+  FirebaseCoreInternal: 35731192cab10797b88411be84940d2beb33a238
+  FirebaseFirestore: 2ccdf893fd7e175aa8ec58faa06338b346d27db8
+  FirebaseFirestoreInternal: 004452c4669d5df8869c9f8f7a24ee0009852d5b
+  FirebaseInstallations: 6ef4a1c7eb2a61ee1f74727d7f6ce2e72acf1414
+  FirebaseSharedSwift: 505dae2d05969dbf6d43749a642bb1bf230f0252
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  Google-Mobile-Ads-SDK: 5a6d005a6cb5b5e8f4c7b69ca05cdea79c181139
-  google_mobile_ads: 9379c80fdfa9988fb0e105a407890ff8deb3cf86
-  google_sign_in_ios: 07375bfbf2620bc93a602c0e27160d6afc6ead38
-  GoogleAppMeasurement: 6e49ffac7d3f2c3ded9cc663f912a13b67bbd0de
-  GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
-  GoogleSignIn: d4281ab6cf21542b1cfaff85c191f230b399d2db
-  GoogleUserMessagingPlatform: 0c3a08353e53ce8c2feab7addd0b652cde522450
+  GoogleAppMeasurement: 987769c4ca6b968f2479fbcc9fe3ce34af454b8e
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   "gRPC-C++": 2fa52b3141e7789a28a737f251e0c45b4cb20a87
   gRPC-Core: a27c294d6149e1c39a7d173527119cfbc3375ce4
-  GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
-  GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
-  integration_test: ce0a3ffa1de96d1a89ca0ac26fca7ea18a749ef4
-  isar_flutter_libs: b69f437aeab9c521821c3f376198c4371fa21073
-  leveldb-library: e8eadf9008a61f9e1dde3978c086d2b6d9b9dc28
+  GTMSessionFetcher: 923b710231ad3d6f3f0495ac1ced35421e07d9a6
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
+  leveldb-library: cc8b8f8e013647a295ad3f8cd2ddf49a6f19be19
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
-  package_info_plus: 58f0028419748fad15bf008b270aaa8e54380b1c
-  path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
-  PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
-  share_plus: c3fef564749587fc939ef86ffb283ceac0baf9f5
-  shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
-  sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
-  url_launcher_ios: bf5ce03e0e2088bad9cc378ea97fa0ed5b49673b
-  webview_flutter_wkwebview: 2a23822e9039b7b1bc52e5add778e5d89ad488d1
+  sqlite3: 0aa20658a9b238a3b1ff7175eb7bdd863b0ab4fd
+  sqlite3_flutter_libs: b55ef23cfafea5318ae5081e0bf3fbbce8417c94
 
-PODFILE CHECKSUM: c3ad84a7c6a70fec5f6ba30893ca6bee5f012e57
+PODFILE CHECKSUM: 1c4912e3dd61a3728484e2f5378968a074e85af9
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

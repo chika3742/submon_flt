@@ -2,35 +2,20 @@ import UIKit
 import Flutter
 import AuthenticationServices
 import SafariServices
-import Firebase
-import FirebaseMessaging
-import FirebaseAuth
-import FirebaseAppCheck
 import WidgetKit
 
 @available(iOS 13.0, *)
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
     
     var viewController: FlutterViewController?
-    
-    var uriEventApi: UriEventApi?
-    var fcmTokenRefreshEventApi: FcmTokenRefreshEventApi?
     
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        #if RELEASE
-        AppCheck.setAppCheckProviderFactory(MyAppCheckProviderFactory())
-        #else
-        AppCheck.setAppCheckProviderFactory(AppCheckDebugProviderFactory())
-        #endif
-        
-        FirebaseApp.configure()
-        
         do {
-            try Auth.auth().useUserAccessGroup("B66Z929S96.net.chikach.submon")
+//            try Auth.auth().useUserAccessGroup("B66Z929S96.net.chikach.submon")
         } catch let error as NSError {
             print(error)
         }
@@ -40,19 +25,7 @@ import WidgetKit
         viewController = window?.rootViewController as? FlutterViewController
         let binaryMessenger = viewController!.binaryMessenger
         
-        // Event Channels
-        uriEventApi = UriEventApi(binaryMessenger: binaryMessenger)
-        uriEventApi!.initHandler()
-        fcmTokenRefreshEventApi = FcmTokenRefreshEventApi(binaryMessenger: binaryMessenger)
-        fcmTokenRefreshEventApi!.initHandler()
-        
-        // Pigeon APIs
-        MessagingApiSetup.setUp(binaryMessenger: binaryMessenger, api: MessagingApiImplementation(appDelegate: self))
-        BrowserApiSetup.setUp(binaryMessenger: binaryMessenger, api: BrowserApiImplementation(viewController: viewController!))
-        GeneralApiSetup.setUp(binaryMessenger: binaryMessenger, api: GeneralApiImplementation())
-        
         // Firebase Cloud Messaging
-        Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
         application.registerForRemoteNotifications()
         
@@ -62,7 +35,7 @@ import WidgetKit
     }
     
     override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        uriEventApi?.onUri(uri: url.absoluteString)
+//        uriEventApi?.onUri(uri: url.absoluteString)
 
         return true
     }
@@ -122,16 +95,6 @@ import WidgetKit
                 notificationCenter.delegate = self
             }
         })
-    }
-}
-
-extension AppDelegate : MessagingDelegate {
-    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: ["token": fcmToken ?? ""])
-        
-        if (fcmToken != nil) {
-            fcmTokenRefreshEventApi?.onFcmTokenRefresh(token: fcmToken!)
-        }
     }
 }
 
