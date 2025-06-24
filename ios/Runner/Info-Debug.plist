@@ -283,5 +283,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>GIDClientID</key>
+	<string>com.googleusercontent.apps.598516206214-aickeak60lg27ps4lpb8pu1b189smk61</string>
 </dict>
 </plist>
