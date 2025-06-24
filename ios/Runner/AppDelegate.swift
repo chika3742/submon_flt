@@ -9,7 +9,7 @@ import FirebaseAppCheck
 import WidgetKit
 
 @available(iOS 13.0, *)
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
     
     var viewController: FlutterViewController?
