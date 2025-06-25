@@ -6,7 +6,7 @@ import 'package:submon/models/sign_in_result.dart';
 import 'package:submon/pages/email_registration_page.dart';
 import 'package:submon/utils/ui.dart';
 
-import '../utils/dynamic_links.dart';
+import '../utils/app_links.dart';
 import '../utils/utils.dart';
 
 class EmailSignInPage extends StatefulWidget {

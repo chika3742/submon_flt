@@ -13,7 +13,7 @@ import 'package:submon/ui_components/hidable_progress_indicator.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
-import '../utils/dynamic_links.dart';
+import '../utils/app_links.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key,
@@ -250,9 +250,11 @@ class _SignInPageState extends State<SignInPage> {
               try {
                 await auth.sendSignInLinkToEmail(
                     email: currentUser.email!,
-                    actionCodeSettings: actionCodeSettings(getAppDomain(
-                        widget.continuePath ?? "",
-                        withScheme: true)));
+                    actionCodeSettings: actionCodeSettings(Uri(
+                      scheme: "https",
+                      host: appDomain,
+                      path: widget.continuePath,
+                    ).toString()));
                 if (mounted) showSnackBar(context, "送信しました");
               } catch (e, stack) {
                 showSnackBar(context, "エラーが発生しました");

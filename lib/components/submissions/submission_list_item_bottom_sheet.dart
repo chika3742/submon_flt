@@ -7,7 +7,7 @@ import 'package:submon/main.dart';
 
 import '../../isar_db/isar_digestive.dart';
 import '../../pages/submission_edit_page.dart';
-import '../../utils/dynamic_links.dart';
+import '../../utils/app_links.dart';
 import '../../utils/ui.dart';
 import '../../utils/utils.dart';
 import '../digestive_edit_bottom_sheet.dart';
@@ -78,12 +78,13 @@ class SubmissionListItemBottomSheet extends StatelessWidget {
         showLoadingModal(globalContext!);
 
         try {
-          var link = await buildShortDynamicLink("/submission-sharing"
-              "?title=${Uri.encodeComponent(item.title)}"
-              "&date=${item.due.toUtc().toIso8601String()}"
-              "${item.details != "" ? "&details=${Uri.encodeComponent(item.details)}" : ""}"
-              "&color=${item.color}");
-          Share.share(link.shortUrl.toString());
+          var link = await createSubmissionShareLink({
+            "title": item.title,
+            "due": item.due.toUtc().toIso8601String(),
+            if (item.details.isNotEmpty) "details": item.details,
+          });
+          await Share.share(link, subject: item.title);
+          showSnackBar(globalContext!, "共有リンクの有効期間は7日間です。");
         } catch (error, stackTrace) {
           showSnackBar(globalContext!, "エラーが発生しました。");
           recordErrorToCrashlytics(error, stackTrace);

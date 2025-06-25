@@ -67,6 +67,15 @@ import WidgetKit
         return true
     }
     
+    override func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([any UIUserActivityRestoring]?) -> Void) -> Bool {
+        guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+              let incomingUrl = userActivity.webpageURL else {
+            return false
+        }
+        uriEventApi?.onUri(uri: incomingUrl.absoluteString)
+        return true
+    }
+    
     override func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.badge, .sound, .alert])
     }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:animations/animations.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -15,6 +16,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/tasks/v1.dart' as tasks;
+import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/event_api/uri_event_api.dart';
@@ -74,6 +76,8 @@ void main() async {
         yield LicenseEntryWithLineBreaks(["google_fonts"],
             await rootBundle.loadString('assets/google_fonts/Play/OFL.txt'));
       });
+
+      Intl.defaultLocale = PlatformDispatcher.instance.locale.toString();
 
       runApp(const Application());
     },

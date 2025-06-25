@@ -1,8 +1,8 @@
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
-import 'package:submon/link_handler/opener_link_helper.dart';
+import 'package:submon/link_handler/open_link_handler.dart';
 
-import '../utils/dynamic_links.dart';
+import '../utils/app_links.dart';
 import 'auth_link_helper.dart';
 
 class LinkHandler {
@@ -28,11 +28,13 @@ class LinkHandler {
 
   static void handleLink(Uri url) {
     try {
-      if (url.host == getAppDomain("") || url.scheme == "submon") {
+      if (url.host == appDomain || url.scheme == "submon") {
         if (url.path == "/__/auth/action") {
           AuthLinkHelper.handle(url);
+        } else if (url.path == "/__/auth/links") {
+          AuthLinkHelper.handle(Uri.parse(url.queryParameters["link"]!));
         } else {
-          OpenerLinkHelper.handle(url);
+          OpenLinkHandler.handle(url);
         }
       }
     } on RangeError catch (e, stack) {

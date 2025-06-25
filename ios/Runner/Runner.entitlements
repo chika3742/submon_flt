@@ -11,6 +11,7 @@
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>applinks:dev.open.submon.app</string>
+		<string>applinks:dev.submon.app</string>
 	</array>
 	<key>com.apple.security.application-groups</key>
 	<array>
