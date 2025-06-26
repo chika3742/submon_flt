@@ -251,7 +251,7 @@ class _ApplicationState extends State<Application> {
               (context) => SignInPage(
                 initialCred: args.initialCred,
                 mode: args.mode,
-                continuePath: args.continuePath,
+                continueUri: args.continueUri,
               ),
               settings,
             );

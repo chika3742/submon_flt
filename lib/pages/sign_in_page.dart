@@ -19,13 +19,13 @@ class SignInPage extends StatefulWidget {
   const SignInPage({super.key,
       required this.initialCred,
       required this.mode,
-      this.continuePath});
+      this.continueUri});
 
   static const routeName = "/sign-in";
 
   final UserCredential? initialCred;
   final SignInMode mode;
-  final String? continuePath;
+  final Uri? continueUri;
 
   @override
   State<SignInPage> createState() => _SignInPageState();
@@ -34,9 +34,9 @@ class SignInPage extends StatefulWidget {
 class SignInPageArguments {
   final UserCredential? initialCred;
   final SignInMode mode;
-  final String? continuePath;
+  final Uri? continueUri;
 
-  const SignInPageArguments(this.mode, {this.initialCred, this.continuePath});
+  const SignInPageArguments(this.mode, {this.initialCred, this.continueUri});
 }
 
 class _SignInPageState extends State<SignInPage> {
@@ -250,11 +250,7 @@ class _SignInPageState extends State<SignInPage> {
               try {
                 await auth.sendSignInLinkToEmail(
                     email: currentUser.email!,
-                    actionCodeSettings: actionCodeSettings(Uri(
-                      scheme: "https",
-                      host: appDomain,
-                      path: widget.continuePath,
-                    ).toString()));
+                    actionCodeSettings: actionCodeSettings(widget.continueUri.toString()));
                 if (mounted) showSnackBar(context, "送信しました");
               } catch (e, stack) {
                 showSnackBar(context, "エラーが発生しました");

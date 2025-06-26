@@ -3,6 +3,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submon/pages/settings/account_edit_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../auth/sign_in_handler.dart';
 import '../db/shared_prefs.dart';
@@ -10,8 +11,8 @@ import '../main.dart';
 import '../utils/ui.dart';
 import '../utils/utils.dart';
 
-class AuthLinkHelper {
-  AuthLinkHelper._();
+class AuthLinkHandler {
+  AuthLinkHandler._();
 
   static void handle(Uri url) {
     switch (url.queryParameters["mode"]) {
@@ -27,10 +28,7 @@ class AuthLinkHelper {
   }
 
   static Future<void> _handleSignIn(Uri url) async {
-    var codeInfo = await _checkAuthActionCode(url);
-
-    if (codeInfo != null &&
-        codeInfo.operation == ActionCodeInfoOperation.emailSignIn) {
+    if (FirebaseAuth.instance.isSignInWithEmailLink(url.toString())) {
       var continueUri = Uri.parse(url.queryParameters["continueUrl"]!);
 
       var isReauth = continueUri.path != "/sign-in-from-email";
@@ -51,13 +49,21 @@ class AuthLinkHelper {
                   arguments: AccountEditPageArguments(
                       continueUri.queryParameters["new_email"]));
             }
+          } on FirebaseAuthException catch (e, stack) {
+            if (e.code == "invalid-action-code") {
+              showSnackBar(globalContext!, "URLの有効期限が切れたか、コードが正しくありません。");
+            } else {
+              showSnackBar(globalContext!, "エラーが発生しました。(${e.code})");
+              FirebaseCrashlytics.instance.recordError(e, stack);
+            }
+            Navigator.of(globalContext!, rootNavigator: true).pop();
           } catch (e, stack) {
             showSnackBar(globalContext!, "エラーが発生しました。");
             FirebaseCrashlytics.instance.recordError(e, stack);
             Navigator.of(globalContext!, rootNavigator: true).pop();
           }
         } else {
-          showSnackBar(globalContext!, "エラーが発生しました。");
+          showSnackBar(globalContext!, "ログインするデバイスと同じものでリンクを開いてください。");
         }
       } else {
         showSnackBar(globalContext!, "既にログインされています。ログアウトしてからお試しください。");
@@ -68,13 +74,10 @@ class AuthLinkHelper {
   static Future<void> _handleVerifyAndChangeEmail(Uri url) async {
     var codeInfo = await _checkAuthActionCode(url);
 
-    if (codeInfo != null &&
-        codeInfo.operation == ActionCodeInfoOperation.verifyAndChangeEmail) {
-      var auth = FirebaseAuth.instance;
-      await auth.applyActionCode(url.queryParameters["oobCode"]!);
-      await auth.signOut();
-      showSnackBar(globalContext!, "メールアドレスの変更が完了しました。再度ログインが必要となります。");
+    if (codeInfo != null) {
+      await FirebaseAuth.instance.signOut();
       backToWelcomePage(globalContext!);
+      launchUrl(url, mode: LaunchMode.externalApplication);
     }
   }
 

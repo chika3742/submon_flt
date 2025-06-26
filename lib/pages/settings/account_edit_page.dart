@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/auth/sign_in_handler.dart';
 import 'package:submon/pages/sign_in_page.dart';
+import 'package:submon/utils/app_links.dart';
 import 'package:submon/utils/ui.dart';
 import 'package:submon/utils/utils.dart';
 
@@ -60,7 +61,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
         body: Stack(
           children: [
             if (_loading) const LinearProgressIndicator(),
-            Padding(
+            SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: buildContent(),
             ),
@@ -127,11 +128,21 @@ class _AccountEditPageState extends State<AccountEditPage> {
   // Change email
   Widget buildChangeEmail() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(
-          "メールアドレスを変更します。\n\n"
-          "変更後、元のメールアドレスに通知メールを送信します。このメール内のリンクを利用して、メールアドレスを元に戻すことも可能です。\n\n"
-          "※メールは「submon.app」ドメインから送信されます。迷惑メールに振り分けられていないか確認してください。",
-          style: Theme.of(context).textTheme.bodyLarge),
+      Text.rich(TextSpan(
+        children: const [
+          TextSpan(text: "メールアドレスを変更します。\n\n"),
+          TextSpan(
+              text: "「送信」をタップすると、変更先のメールアドレスに確認メールが"
+                  "届きます。そのメール内にあるリンクをタップすることで変更が完了します。"),
+          TextSpan(
+              text: "「送信」のタップのみでは変更は完了しませんのでご注意ください。\n\n",
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.redAccent)),
+          TextSpan(
+              text: "※メールは「submon.app」ドメインから送信されます。迷惑メールに振り分けられていないか確認してください。")
+        ],
+        style: Theme.of(context).textTheme.bodyLarge,
+      )),
       const SizedBox(height: 16),
       TextFormField(
         controller: _form1Controller,
@@ -142,6 +153,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
           border: const OutlineInputBorder(),
         ),
       ),
+      const SizedBox(height: 80),
     ]);
   }
 
@@ -160,11 +172,15 @@ class _AccountEditPageState extends State<AccountEditPage> {
     });
 
     try {
-      await FirebaseAuth.instance.currentUser!.updateEmail(
+      await FirebaseAuth.instance.currentUser!.verifyBeforeUpdateEmail(
         _form1Controller.text,
+        actionCodeSettings(Uri(
+          scheme: "https",
+          host: appDomain,
+        ).toString()),
       );
 
-      showSnackBar(context, "メールアドレスを変更しました。");
+      showSnackBar(context, "入力されたメールアドレスに確認メールを送信しました。ご確認ください。");
       Navigator.pop(context);
     } on FirebaseAuthException catch (e, stack) {
       switch (e.code) {
@@ -179,10 +195,17 @@ class _AccountEditPageState extends State<AccountEditPage> {
           var result = await Navigator.pushNamed(context, SignInPage.routeName,
               arguments: SignInPageArguments(
                 SignInMode.reauthenticate,
-                continuePath:
-                    "${AccountEditPage.changeEmailRouteName}?new_email=${Uri.encodeComponent(_form1Controller.text)}",
+                continueUri: Uri(
+                  scheme: "https",
+                  host: appDomain,
+                  path: AccountEditPage.changeEmailRouteName,
+                  queryParameters: {
+                    "new_email": _form1Controller.text,
+                  },
+                ),
               ));
           if (result == true) await changeEmail();
+          else Navigator.pop(context);
           break;
         default:
           handleAuthError(e, stack, context);
@@ -308,9 +331,13 @@ class _AccountEditPageState extends State<AccountEditPage> {
       if (e.code == "requires-recent-login") {
         showSnackBar(context, "セキュリティのため再ログインが必要です。");
         var result = await Navigator.pushNamed(context, SignInPage.routeName,
-            arguments: const SignInPageArguments(
+            arguments: SignInPageArguments(
               SignInMode.reauthenticate,
-              continuePath: AccountEditPage.deleteRouteName,
+              continueUri: Uri(
+                scheme: "https",
+                host: appDomain,
+                path: AccountEditPage.deleteRouteName,
+              ),
             ));
         if (result == true) {
           await executeAccountDeletion();

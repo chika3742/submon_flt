@@ -149,9 +149,11 @@ void showLoadingModal(BuildContext context) {
   showModal(
       context: context,
       builder: (context) {
-        return const PopScope(
+        return PopScope(
           canPop: false,
-          child: Center(child: CircularProgressIndicator()),
+          child: Center(child: CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.inversePrimary,
+          )),
         );
       });
 }

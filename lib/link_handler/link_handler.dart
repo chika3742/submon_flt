@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:submon/link_handler/open_link_handler.dart';
 
 import '../utils/app_links.dart';
-import 'auth_link_helper.dart';
+import 'auth_link_handler.dart';
 
 class LinkHandler {
   LinkHandler._();
@@ -30,9 +30,9 @@ class LinkHandler {
     try {
       if (url.host == appDomain || url.scheme == "submon") {
         if (url.path == "/__/auth/action") {
-          AuthLinkHelper.handle(url);
+          AuthLinkHandler.handle(url);
         } else if (url.path == "/__/auth/links") {
-          AuthLinkHelper.handle(Uri.parse(url.queryParameters["link"]!));
+          AuthLinkHandler.handle(Uri.parse(url.queryParameters["link"]!));
         } else {
           OpenLinkHandler.handle(url);
         }
