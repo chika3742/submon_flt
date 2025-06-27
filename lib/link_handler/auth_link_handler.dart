@@ -29,44 +29,47 @@ class AuthLinkHandler {
 
   static Future<void> _handleSignIn(Uri url) async {
     if (FirebaseAuth.instance.isSignInWithEmailLink(url.toString())) {
-      var continueUri = Uri.parse(url.queryParameters["continueUrl"]!);
+      print("Handling sign-in with email link: ${url.toString()}");
+      var c = url.queryParameters["continueUrl"];
+      var continueUri = c != null ? Uri.parse(c) : url;
 
-      var isReauth = continueUri.path != "/sign-in-from-email";
-      if (FirebaseAuth.instance.currentUser == null || isReauth) {
-        final pref = SharedPrefs(await SharedPreferences.getInstance());
-        final email = pref.emailForUrlLogin;
-        if (email != null) {
-          final handler = SignInHandler(
-              isReauth ? SignInMode.reauthenticate : SignInMode.normal);
-          showLoadingModal(globalContext!);
-          try {
-            final result = await handler.signInWithLink(
-                email: email, emailLink: url.toString());
-            await handler.handleSignInResult(result);
+      var mode = continueUri.queryParameters["internalMode"];
+      if (mode == SignInMode.normal.name
+          && FirebaseAuth.instance.currentUser == null) {
+        showSnackBar(globalContext!, "既にログインされています。ログアウトしてからお試しください。");
+        return;
+      }
 
-            if (isReauth) {
-              Navigator.popAndPushNamed(globalContext!, continueUri.path,
-                  arguments: AccountEditPageArguments(
-                      continueUri.queryParameters["new_email"]));
-            }
-          } on FirebaseAuthException catch (e, stack) {
-            if (e.code == "invalid-action-code") {
-              showSnackBar(globalContext!, "URLの有効期限が切れたか、コードが正しくありません。");
-            } else {
-              showSnackBar(globalContext!, "エラーが発生しました。(${e.code})");
-              FirebaseCrashlytics.instance.recordError(e, stack);
-            }
-            Navigator.of(globalContext!, rootNavigator: true).pop();
-          } catch (e, stack) {
-            showSnackBar(globalContext!, "エラーが発生しました。");
-            FirebaseCrashlytics.instance.recordError(e, stack);
-            Navigator.of(globalContext!, rootNavigator: true).pop();
+      final pref = SharedPrefs(await SharedPreferences.getInstance());
+      final email = pref.emailForUrlLogin;
+      if (email != null) {
+        final handler = SignInHandler(SignInMode.values.firstWhere((e) => e.name == mode));
+        showLoadingModal(globalContext!);
+        try {
+          final result = await handler.signInWithLink(
+              email: email, emailLink: url.toString());
+          await handler.handleSignInResult(result);
+
+          if (mode == SignInMode.reauthenticate.name) {
+            Navigator.popAndPushNamed(globalContext!, continueUri.path,
+                arguments: AccountEditPageArguments(
+                    continueUri.queryParameters["new_email"]));
           }
-        } else {
-          showSnackBar(globalContext!, "ログインするデバイスと同じものでリンクを開いてください。");
+        } on FirebaseAuthException catch (e, stack) {
+          if (e.code == "invalid-action-code") {
+            showSnackBar(globalContext!, "URLの有効期限が切れたか、コードが正しくありません。");
+          } else {
+            showSnackBar(globalContext!, "エラーが発生しました。(${e.code})");
+            FirebaseCrashlytics.instance.recordError(e, stack);
+          }
+          Navigator.of(globalContext!, rootNavigator: true).pop();
+        } catch (e, stack) {
+          showSnackBar(globalContext!, "エラーが発生しました。");
+          FirebaseCrashlytics.instance.recordError(e, stack);
+          Navigator.of(globalContext!, rootNavigator: true).pop();
         }
       } else {
-        showSnackBar(globalContext!, "既にログインされています。ログアウトしてからお試しください。");
+        showSnackBar(globalContext!, "ログインするデバイスと同じものでリンクを開いてください。");
       }
     }
   }

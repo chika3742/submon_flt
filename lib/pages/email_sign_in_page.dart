@@ -6,27 +6,28 @@ import 'package:submon/models/sign_in_result.dart';
 import 'package:submon/pages/email_registration_page.dart';
 import 'package:submon/utils/ui.dart';
 
+import '../auth/sign_in_handler.dart';
 import '../utils/app_links.dart';
 import '../utils/utils.dart';
 
 class EmailSignInPage extends StatefulWidget {
   const EmailSignInPage({
     super.key,
-    required this.reAuth,
+    required this.mode,
   });
 
   static const routeName = "/sign-in/email";
 
-  final bool reAuth;
+  final SignInMode mode;
 
   @override
   State<StatefulWidget> createState() => EmailSignInPageState();
 }
 
 class EmailSignInPageArguments {
-  final bool reAuth;
+  final SignInMode mode;
 
-  const EmailSignInPageArguments({this.reAuth = false});
+  const EmailSignInPageArguments(this.mode);
 }
 
 class EmailSignInPageState extends State<EmailSignInPage>
@@ -50,7 +51,7 @@ class EmailSignInPageState extends State<EmailSignInPage>
   void initState() {
     super.initState();
     pwAnimController = AnimationController(vsync: this);
-    if (widget.reAuth) {
+    if (widget.mode == SignInMode.reauthenticate) {
       message = "本人確認のため、再度ログインをお願いします。";
       emailController.text = FirebaseAuth.instance.currentUser!.email!;
       enableEmailForm = false;
@@ -146,7 +147,7 @@ class EmailSignInPageState extends State<EmailSignInPage>
                 child: Row(
                   children: [
                     Visibility(
-                      visible: widget.reAuth,
+                      visible: widget.mode == SignInMode.reauthenticate,
                       child: SizedBox(
                         width: 80,
                         child: OutlinedButton(
@@ -278,7 +279,7 @@ class EmailSignInPageState extends State<EmailSignInPage>
         // パスワードを用いたログイン処理
         UserCredential result;
 
-        if (widget.reAuth) {
+        if (widget.mode == SignInMode.reauthenticate) {
           result = await auth.currentUser!.reauthenticateWithCredential(
               EmailAuthProvider.credential(
                   email: emailController.text, password: pwController.text));
@@ -310,7 +311,7 @@ class EmailSignInPageState extends State<EmailSignInPage>
         default:
           setState(() {
             processing = false;
-            enableEmailForm = false;
+            enableEmailForm = true;
             enablePWForm = false;
           });
           handleAuthError(e, stack, context);
@@ -335,7 +336,9 @@ class EmailSignInPageState extends State<EmailSignInPage>
         .sendSignInLinkToEmail(
       email: emailController.text,
       actionCodeSettings:
-          actionCodeSettings("https://submon.app/sign-in-from-email"),
+          actionCodeSettings(
+              "https://$appDomain/auth-action?internalMode=${widget.mode.name}"
+          ),
     )
         .whenComplete(() {
       Navigator.pop(Application.globalKey.currentContext!);

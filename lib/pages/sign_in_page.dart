@@ -123,12 +123,6 @@ class _SignInPageState extends State<SignInPage> {
                         ],
                       ),
                     const SizedBox(height: 24),
-                    if (Platform.isIOS)
-                      Text(
-                          "「Googleでログイン」もしくは「Twitterでログイン」をタップすると、「あなたに関する情報を共有することを許可」"
-                          "するか聞かれる場合があります。\nここでいう「あなたに関する情報」はログインに必要な情報のことです。"
-                          "ログインする場合は「続ける」をタップしてください。",
-                          style: Theme.of(context).textTheme.bodyLarge),
                   ],
                 ),
               ),
@@ -237,7 +231,7 @@ class _SignInPageState extends State<SignInPage> {
 
         if (methods.first == EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {
           var result = await Navigator.pushNamed(globalContext!, EmailSignInPage.routeName,
-              arguments: const EmailSignInPageArguments(reAuth: true));
+              arguments: const EmailSignInPageArguments(SignInMode.reauthenticate));
           Navigator.pop(globalContext!, result != null);
         } else if (methods.first ==
             EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD) {

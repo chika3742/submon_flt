@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/auth/sign_in_handler.dart';
@@ -100,14 +101,16 @@ class _WelcomePageState extends State<WelcomePage> {
                               await FirebaseAuth.instance.signInAnonymously();
                               await FirestoreProvider.initializeUser();
 
-                              showSnackBar(globalContext!, "お試しモードでスタートしました！");
-                            } catch (e) {
-                              showSnackBar(context, "エラーが発生しました");
-                            }
+                              Navigator.pop(globalContext!);
+                              Navigator.pushReplacementNamed(
+                                  globalContext!, HomePage.routeName);
 
-                            Navigator.pop(globalContext!);
-                            Navigator.pushReplacementNamed(
-                                globalContext!, HomePage.routeName);
+                              showSnackBar(globalContext!, "お試しモードでスタートしました！");
+                            } catch (e, stack) {
+                              Navigator.pop(globalContext!);
+                              showSnackBar(context, "エラーが発生しました");
+                              FirebaseCrashlytics.instance.recordError(e, stack);
+                            }
                           },
                         );
                       },

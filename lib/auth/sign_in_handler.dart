@@ -61,10 +61,11 @@ class SignInHandler {
           return;
       }
     } else {
-      showSnackBar(globalContext!, "ログインしました。");
+      showSnackBar(globalContext!, mode != SignInMode.upgrade ? "ログインしました。" : "アカウントをアップグレードしました。");
+      Navigator.pop(globalContext!);
     }
 
-    if (mode != SignInMode.reauthenticate) {
+    if (mode == SignInMode.normal) {
       if (Navigator.canPop(globalContext!)) {
         Navigator.popUntil(
             globalContext!, ModalRoute.withName(WelcomePage.routeName));
@@ -89,8 +90,12 @@ class SignInHandler {
 
   Future<SignInResult> signInWithLink(
       {required String email, required String emailLink}) async {
-    var result =
-        await _auth.signInWithEmailLink(email: email, emailLink: emailLink);
+
+    final credential = EmailAuthProvider.credentialWithLink(email: email, emailLink: emailLink);
+    final result = await _signInByMode(credential);
+    if (result == null) {
+      return SignInResult(errorCode: SignInError.cancelled);
+    }
 
     var completionResult = await completeSignIn(result);
 
@@ -110,8 +115,7 @@ class SignInHandler {
         assert(context != null);
         var result = await Navigator.pushNamed<SignInResult>(
             context!, EmailSignInPage.routeName,
-            arguments: EmailSignInPageArguments(
-                reAuth: mode == SignInMode.reauthenticate));
+            arguments: EmailSignInPageArguments(mode));
         if (result == null) {
           return SignInResult(errorCode: SignInError.cancelled);
         }

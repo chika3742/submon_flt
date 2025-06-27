@@ -258,7 +258,7 @@ class _ApplicationState extends State<Application> {
           case EmailSignInPage.routeName:
             var args = settings.arguments as EmailSignInPageArguments;
             return generatePageRoute<SignInResult>(
-                (context) => EmailSignInPage(reAuth: args.reAuth), settings);
+                (context) => EmailSignInPage(mode: args.mode), settings);
           case EmailRegistrationPage.routeName:
             var args = settings.arguments as EmailRegistrationPageArguments;
             return generatePageRoute<UserCredential>(
