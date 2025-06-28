@@ -250,7 +250,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
   // Change display name
   Widget buildChangeDisplayName() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Text("ユーザー名を変更します。"),
+      const Text("ユーザー名を変更します。この名称は、アカウントの編集を行った際に運営から届く各種メールに記載されます。"),
       const SizedBox(height: 16),
       TextFormField(
         controller: _form1Controller,
