@@ -34,13 +34,8 @@ jobs:
           path: ./ios/Pods
           restore-keys: ${{ runner.os }}-pods-
 
-      - name: Init Flutter CLI
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - run: flutter pub get
+      - name: Install Flutter
+        uses: chika3742/setup-fvm@v3
 
       - name: Import Apple provisioning profiles
         run: |
@@ -101,14 +96,8 @@ jobs:
           ruby-version: 3.1
           bundler-cache: true
 
-      - name: Init Flutter CLI
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
-
-      - run: flutter pub get
+      - name: Install Flutter
+        uses: chika3742/setup-fvm@v3
 
       - name: Install Fastlane
         run: bundle install
