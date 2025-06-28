@@ -61,7 +61,7 @@ jobs:
         run: echo -n "${{ secrets.APPLE_GOOGLE_SERVICE_INFO_RELEASE_PLIST_BASE64 }}" | base64 -d > ios/GoogleService-Info-release.plist
 
       - name: Build IPA
-        run: flutter build ipa --build-number ${{ needs.get-build-num.outputs.build-num }} --export-options-plist ios/exportOptions.plist
+        run: fvm flutter build ipa --build-number ${{ needs.get-build-num.outputs.build-num }} --export-options-plist ios/exportOptions.plist
 
       - name: Deploy to App Store
         run: |
@@ -117,7 +117,7 @@ jobs:
           echo -n ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON_BASE64 }} | base64 -d > android/app/src/release/google-services.json
 
       - name: Build App Bundle for Android
-        run: flutter build appbundle --build-number ${{ needs.get-build-num.outputs.build-num }}
+        run: fvm flutter build appbundle --build-number ${{ needs.get-build-num.outputs.build-num }}
 
       - name: Import Service Account Key
         run: echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_BASE64 }}' | base64 -d > service_account_key.json
