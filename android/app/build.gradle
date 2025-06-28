@@ -26,6 +26,8 @@ if (flutterVersionName == null) {
 }
 
 android {
+    ndkVersion "26.3.11579264"
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
@@ -53,8 +55,8 @@ android {
     defaultConfig {
         applicationId "net.chikach.submon"
         minSdkVersion 24
-        compileSdk 34
-        targetSdkVersion 34
+        compileSdk 35
+        targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -100,13 +102,13 @@ flutter {
 
 dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation "androidx.activity:activity-ktx:1.8.1"
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation "androidx.browser:browser:1.7.0"
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation "androidx.activity:activity-ktx:1.10.1"
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+    implementation "androidx.browser:browser:1.8.0"
     implementation 'androidx.preference:preference-ktx:1.2.1'
 
-    implementation platform('com.google.firebase:firebase-bom:33.2.0')
+    implementation platform('com.google.firebase:firebase-bom:33.16.0')
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-messaging'
