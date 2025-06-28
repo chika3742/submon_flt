@@ -199,12 +199,28 @@ class SignInHandler {
       return SignInResult(errorMessage: "セキュリティ情報が一致しません (state mismatch)");
     }
 
+    if (mode == SignInMode.upgrade
+        && (appleCredential.email?.endsWith("@privaterelay.appleid.com") ?? false)) {
+      final result = await showSimpleDialog(
+        globalContext!,
+        "この匿名化アドレスをメールアドレスと紐づけることに同意しますか？",
+        "このプライベートリレー（非公開）アドレスは、すでに登録されているメールアドレスと紐づけられます。",
+        okText: "同意する",
+        cancelText: "同意しない",
+        showCancel: true,
+      );
+      if (result != true) {
+        return SignInResult(errorCode: SignInError.cancelled);
+      }
+    }
+
     final credential = OAuthProvider("apple.com").credential(
         accessToken: appleCredential.authorizationCode,
         idToken: appleCredential.identityToken,
         rawNonce: rawNonce);
+    final userCredential = await _signInByMode(credential);
 
-    return SignInResult(credential: await _signInByMode(credential));
+    return SignInResult(credential: userCredential);
   }
 
   Future<SignInError?> completeSignIn(UserCredential userCred) async {
