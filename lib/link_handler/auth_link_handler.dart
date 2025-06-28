@@ -35,7 +35,7 @@ class AuthLinkHandler {
 
       var mode = continueUri.queryParameters["internalMode"];
       if (mode == SignInMode.normal.name
-          && FirebaseAuth.instance.currentUser == null) {
+          && FirebaseAuth.instance.currentUser != null) {
         showSnackBar(globalContext!, "既にログインされています。ログアウトしてからお試しください。");
         return;
       }
@@ -58,6 +58,8 @@ class AuthLinkHandler {
         } on FirebaseAuthException catch (e, stack) {
           if (e.code == "invalid-action-code") {
             showSnackBar(globalContext!, "URLの有効期限が切れたか、コードが正しくありません。");
+          } else if (e.code == "email-already-in-use") {
+            showSnackBar(globalContext!, "このメールアドレスは既に使用されています。");
           } else {
             showSnackBar(globalContext!, "エラーが発生しました。(${e.code})");
             FirebaseCrashlytics.instance.recordError(e, stack);
