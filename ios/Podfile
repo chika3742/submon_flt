@@ -45,12 +45,14 @@ use_modular_headers!
 target 'Runner' do
 #  google_utilities
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+  pod 'GTMSessionFetcher'
   pod 'FirebaseMessaging'
   pod 'FirebaseAppCheck'
 end
 
 target 'WidgetKitExtension' do
 #  google_utilities
+  pod 'GTMSessionFetcher'
   pod 'FirebaseCore'
   pod 'FirebaseAuth'
   pod 'FirebaseFirestore'
