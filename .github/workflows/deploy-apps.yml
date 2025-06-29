@@ -114,10 +114,13 @@ jobs:
       - name: Import .env
         run: echo -n "${{ secrets.DOTENV }}" > .env
 
-      - name: Import google-services.json
-        run: |
-          mkdir -p android/app/src/release
-          echo -n ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON_BASE64 }} | base64 -d > android/app/src/release/google-services.json
+      - name: 'Authenticate to Google Cloud'
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WI_PROVIDER }}
+          service_account: ${{ vars.WI_SERVICE_ACCOUNT }}
+          audience: ${{ vars.WI_AUDIENCE }}
 
       - name: Build App Bundle for Android
         run: fvm flutter build appbundle --build-number ${{ needs.get-build-num.outputs.build-num }}
@@ -140,4 +143,4 @@ jobs:
             --skip_upload_changelogs\
             --skip_upload_screenshots\
             --package_name net.chikach.submon\
-            --json_key service_account_key.json
+            --json_key ${{ steps.auth.outputs.credentials_file_path }}
