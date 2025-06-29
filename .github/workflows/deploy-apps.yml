@@ -127,7 +127,7 @@ jobs:
 
       - name: Create native debug symbols
         working-directory: ./build/app/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib
-        run: zip -r ../../../../../../../native_debug_symbols.zip ./* -x "*x86/*"
+        run: zip -r ../../../../../../../../native_debug_symbols.zip ./* -x "*x86/*"
 
       - name: Deploy to Google Play
         run: |
