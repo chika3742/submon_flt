@@ -28,7 +28,7 @@ class LinkHandler {
 
   static void handleLink(Uri url) {
     try {
-      if (url.host == appDomain || url.host == openAppDomain || url.scheme == "submon") {
+      if (url.host == appDomain || url.scheme == "submon") {
         if (url.path == "/__/auth/action") {
           AuthLinkHandler.handle(url);
         } else if (url.path == "/__/auth/links") {
@@ -36,6 +36,8 @@ class LinkHandler {
         } else {
           OpenLinkHandler.handle(url);
         }
+      } else if (url.host == openAppDomain) {
+        handleLink(Uri.parse(url.queryParameters["link"]!));
       }
     } on RangeError catch (e, stack) {
       debugPrint("Malformed URL or the URL should not be handled here");
