@@ -126,7 +126,7 @@ jobs:
         run: echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_BASE64 }}' | base64 -d > service_account_key.json
 
       - name: Create native debug symbols
-        working-directory: ./build/app/intermediates/merged_native_libs/release/out/lib
+        working-directory: ./build/app/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib
         run: zip -r ../../../../../../../native_debug_symbols.zip ./* -x "*x86/*"
 
       - name: Deploy to Google Play
