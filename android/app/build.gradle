@@ -35,11 +35,11 @@ android {
 
     signingConfigs {
         release {
-            if (localProperties.hasProperty("submon.keyStorePath")) {
-                storeFile file(localProperties.getProperty("submon.keyStorePath"))
-                storePassword localProperties.getProperty("submon.keyStorePassword")
-                keyAlias localProperties.getProperty("submon.keyAlias")
-                keyPassword localProperties.getProperty("submon.keyPassword")
+            if (localProperties["submon.keyStorePath"] != null) {
+                storeFile file(localProperties["submon.keyStorePath"])
+                storePassword localProperties["submon.keyStorePassword"]
+                keyAlias localProperties["submon.keyAlias"]
+                keyPassword localProperties["submon.keyPassword"]
             }
         }
     }
