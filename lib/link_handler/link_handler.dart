@@ -28,7 +28,7 @@ class LinkHandler {
 
   static void handleLink(Uri url) {
     try {
-      if (url.host == appDomain || url.scheme == "submon") {
+      if (url.host == appDomain || url.host == openAppDomain || url.scheme == "submon") {
         if (url.path == "/__/auth/action") {
           AuthLinkHandler.handle(url);
         } else if (url.path == "/__/auth/links") {

@@ -22,6 +22,11 @@ String get appDomain {
   return kReleaseMode ? "submon.app" : "dev.submon.app";
 }
 
+// TODO: Remove this in future version
+String get openAppDomain {
+  return kReleaseMode ? "open.submon.app" : "dev.open.submon.app";
+}
+
 /// Creates a submission share link with the given data.
 ///
 /// Returns the document ID of the created link.
