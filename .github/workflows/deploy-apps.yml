@@ -117,6 +117,14 @@ jobs:
       - name: Import .env
         run: echo -n "${{ secrets.DOTENV }}" > .env
 
+      - name: Import google-services.json
+        run: |
+          mkdir -p android/app/src/release
+          echo -n ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON_BASE64 }} | base64 -d > android/app/src/release/google-services.json
+
+      - name: Build App Bundle for Android
+        run: fvm flutter build appbundle --build-number ${{ needs.get-build-num.outputs.build-num }}
+
       - name: 'Authenticate to Google Cloud'
         id: auth
         uses: google-github-actions/auth@v2
@@ -124,12 +132,6 @@ jobs:
           workload_identity_provider: ${{ vars.WI_PROVIDER }}
           service_account: ${{ vars.WI_SERVICE_ACCOUNT }}
           audience: ${{ vars.WI_AUDIENCE }}
-
-      - name: Build App Bundle for Android
-        run: fvm flutter build appbundle --build-number ${{ needs.get-build-num.outputs.build-num }}
-
-      - name: Import Service Account Key
-        run: echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_BASE64 }}' | base64 -d > service_account_key.json
 
       - name: Create native debug symbols
         working-directory: ./build/app/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib
