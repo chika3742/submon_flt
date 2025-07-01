@@ -78,12 +78,22 @@ class SubmissionListItemBottomSheet extends StatelessWidget {
         showLoadingModal(globalContext!);
 
         try {
-          var link = await createSubmissionShareLink({
-            "title": item.title,
-            "due": item.due.toUtc().toIso8601String(),
-            if (item.details.isNotEmpty) "details": item.details,
+          Submission? s_;
+          await SubmissionProvider().use((provider) async {
+            s_ = await provider.get(item.id!);
           });
-          await Share.share(link, subject: item.title);
+          if (s_ == null) {
+            showSnackBar(globalContext!, "提出物が見つかりません。");
+            return;
+          }
+          final submission = s_ ?? (throw Exception("This should not happen"));
+
+          var link = await createSubmissionShareLink({
+            "title": submission.title,
+            "due": submission.due.toUtc().toIso8601String(),
+            if (submission.details.isNotEmpty) "details": submission.details,
+          });
+          await Share.share(link, subject: submission.title);
           showSnackBar(globalContext!, "共有リンクの有効期間は7日間です。");
         } catch (error, stackTrace) {
           showSnackBar(globalContext!, "エラーが発生しました。");
