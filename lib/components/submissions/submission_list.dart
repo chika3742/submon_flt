@@ -60,20 +60,22 @@ class SubmissionListState extends State<SubmissionList> {
     });
 
     _stream2 = eventBus.on<SubmissionInserted>().listen((event) {
-      SubmissionProvider().use((provider) async {
-        var data = await provider.get(event.id);
+      Future.delayed(const Duration(milliseconds: 50), () {
+        SubmissionProvider().use((provider) async {
+          var data = await provider.get(event.id);
 
-        if (data != null) {
-          setState(() {
-            items!.add(data);
-          });
-          _listKey.currentState?.insertItem(items!.length - 1);
-          await Future.delayed(const Duration(milliseconds: 300));
-          _scrollController.animateTo(
-              _scrollController.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOutQuint);
-        }
+          if (data != null) {
+            setState(() {
+              items!.add(data);
+            });
+            _listKey.currentState?.insertItem(items!.length - 1);
+            await Future.delayed(const Duration(milliseconds: 300));
+            _scrollController.animateTo(
+                _scrollController.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutQuint);
+          }
+        });
       });
     });
 
