@@ -164,7 +164,7 @@ struct SubmissionListWidgetEntryView : View {
     func buildItemView(items: [SubmissionData]) -> some View {
         return HStack(alignment: .bottom) {
             VStack(alignment: .leading) {
-                Text("提出物リスト").font(.headline)
+                Text("Submonの提出物").font(.headline)
                 Spacer()
                 HStack(alignment: .bottom) {
                     VStack(alignment: .leading) {
@@ -196,6 +196,7 @@ struct SubmissionListWidgetEntryView : View {
                                                 }
                                                 return .green
                                             }())
+                                            .fontWeight(.bold)
                                     }
                                     Text(item.title)
                                         .font(.subheadline)
@@ -207,9 +208,9 @@ struct SubmissionListWidgetEntryView : View {
                     Spacer()
                     if (family != .systemSmall) {
                         Link(destination: URL(string: "submon:///create-submission")!) {
-                        Image("add-add_symbol")
-                            .frame(width: 50, height: 50, alignment: .center)
-                            .tint(.white)
+                        Image(systemName: "plus")
+                            .frame(width: 48, height: 48, alignment: .center)
+                            .foregroundStyle(.white)
                             .background(.green)
                             .clipShape(Circle())
                         }
@@ -217,7 +218,7 @@ struct SubmissionListWidgetEntryView : View {
                 }
                 
             }
-        }.padding()
+        }
     }
 }
 
@@ -227,7 +228,14 @@ struct SubmissionListWidget: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            SubmissionListWidgetEntryView(entry: entry)
+            if #available(iOS 17.0, *) {
+                SubmissionListWidgetEntryView(entry: entry)
+                    .containerBackground(for: .widget) {
+                        Color.clear
+                    }
+            } else {
+                SubmissionListWidgetEntryView(entry: entry)
+            }
         }
         .configurationDisplayName("提出物リスト")
         .description("提出物の確認・新規作成を素早く行えます。")
@@ -235,7 +243,7 @@ struct SubmissionListWidget: Widget {
     }
 }
 
-@available(iOS 15.0, *)
+@available(iOS 17.0, *)
 struct SubmissionListWidget_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -258,11 +266,11 @@ struct SubmissionData: Decodable {
         do {
             let json = try JSONSerialization.data(withJSONObject: dic)
             let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .formatted({
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-                return formatter
-            }())
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+            formatter.calendar = Calendar(identifier: .iso8601)
+            formatter.timeZone = TimeZone(identifier: "UTC")
+            decoder.dateDecodingStrategy = .formatted(formatter)
             let decoded = try decoder.decode(Self.self, from: json)
             return decoded
         } catch let e {
