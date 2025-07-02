@@ -351,8 +351,10 @@ class _ApplicationState extends State<Application> {
         setState(() {
           _initialized = true;
         });
-        UriEventApi().listen();
-        LinkHandler.initDynamicLinksListener();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          UriEventApi().listen();
+          LinkHandler.initDynamicLinksListener();
+        });
       });
     } catch (e) {
       setState(() {
