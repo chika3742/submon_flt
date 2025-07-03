@@ -1,12 +1,9 @@
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/link_handler/open_link_handler.dart';
 
 import '../utils/app_links.dart';
 import 'auth_link_handler.dart';
-
-// ignore_for_file: deprecated_member_use
 
 class LinkHandler {
   LinkHandler._();
@@ -40,17 +37,7 @@ class LinkHandler {
           OpenLinkHandler.handle(url);
         }
       } else if (url.host == openAppDomain) {
-        if (url.queryParameters.containsKey("link")) {
-          handleLink(Uri.parse(url.queryParameters["link"]!));
-        } else {
-          FirebaseDynamicLinks.instance.getDynamicLink(url).then((value) {
-            if (value != null) {
-              handleLink(value.link);
-            }
-          }).catchError((e, stack) {
-            FirebaseCrashlytics.instance.recordError(e, stack);
-          });
-        }
+        handleLink(Uri.parse(url.queryParameters["link"]!));
       }
     } on RangeError catch (e, stack) {
       debugPrint("Malformed URL or the URL should not be handled here");
