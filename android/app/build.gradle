@@ -55,8 +55,8 @@ android {
     defaultConfig {
         applicationId "net.chikach.submon"
         minSdkVersion 24
-        compileSdk 35
-        targetSdkVersion 35
+        compileSdk 36
+        targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
