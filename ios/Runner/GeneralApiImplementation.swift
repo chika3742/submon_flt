@@ -24,6 +24,6 @@ class GeneralApiImplementation : GeneralApi {
   }
   
   func setFullscreen(isFullscreen: Bool) throws {
-    throw FlutterError(code: "unsupported", message: "Method \"setFullscreen\" is not supported on this platform.", details: nil)
+    throw PigeonError(code: "unsupported", message: "Method \"setFullscreen\" is not supported on this platform.", details: nil)
   }
 }

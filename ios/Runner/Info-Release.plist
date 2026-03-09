@@ -65,16 +65,45 @@
 	</array>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-3855326482023688~8960053111</string>
+	<key>GIDClientID</key>
+	<string>com.googleusercontent.apps.646388318367-4hqah0nfusdu32booavhe94bkfc0p33f</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>https</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSCameraUsageDescription</key>
-	<string>カメラで暗記カードを作成するために利用します。</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>表示する広告を適切に選択するために使用します。</string>
+	<key>UIApplicationShortcutItems</key>
+	<array>
+		<dict>
+			<key>UIApplicationShortcutItemIconType</key>
+			<string>UIApplicationShortcutIconTypeAdd</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>提出物を作成</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>CreateSubmissionAction</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>list.bullet.rectangle.portrait</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Digestive</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>DigestiveTabAction</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>tablecells</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>時間割表</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>TimetableTabAction</string>
+		</dict>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
@@ -99,36 +128,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
-	<key>UIApplicationShortcutItems</key>
-	<array>
-		<dict>
-			<key>UIApplicationShortcutItemType</key>
-			<string>CreateSubmissionAction</string>
-			<key>UIApplicationShortcutItemTitle</key>
-			<string>提出物を作成</string>
-			<key>UIApplicationShortcutItemIconType</key>
-			<string>UIApplicationShortcutIconTypeAdd</string>
-		</dict>
-		<dict>
-			<key>UIApplicationShortcutItemType</key>
-			<string>DigestiveTabAction</string>
-			<key>UIApplicationShortcutItemTitle</key>
-			<string>Digestive</string>
-			<key>UIApplicationShortcutItemIconSymbolName</key>
-			<string>list.bullet.rectangle.portrait</string>
-		</dict>
-		<dict>
-			<key>UIApplicationShortcutItemType</key>
-			<string>TimetableTabAction</string>
-			<key>UIApplicationShortcutItemTitle</key>
-			<string>時間割表</string>
-			<key>UIApplicationShortcutItemIconSymbolName</key>
-			<string>tablecells</string>
-		</dict>
-	</array>
-	<key>GIDClientID</key>
-	<string>com.googleusercontent.apps.646388318367-4hqah0nfusdu32booavhe94bkfc0p33f</string>
 </dict>
 </plist>

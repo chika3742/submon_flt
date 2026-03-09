@@ -8,8 +8,6 @@
 import Flutter
 import FirebaseMessaging
 
-extension FlutterError: Error {}
-
 class MessagingApiImplementation : MessagingApi {
     internal init(appDelegate: AppDelegate) {
         self.appDelegate = appDelegate
@@ -20,7 +18,7 @@ class MessagingApiImplementation : MessagingApi {
     func getToken(completion: @escaping (Result<String, Error>) -> Void) {
         Messaging.messaging().token(completion: { (token, error) in
             if error != nil {
-                completion(.failure(FlutterError(code: "get-fcm-token-failed", message: "Failed to get FCM token.", details: error?.localizedDescription)))
+                completion(.failure(PigeonError(code: "get-fcm-token-failed", message: "Failed to get FCM token.", details: error?.localizedDescription)))
             } else if let token = token {
                 completion(.success(token))
             }

@@ -40,7 +40,7 @@ const TimetableClassTimeSchema = CollectionSchema(
   getId: _timetableClassTimeGetId,
   getLinks: _timetableClassTimeGetLinks,
   attach: _timetableClassTimeAttach,
-  version: '3.1.0+1',
+  version: '3.3.0',
 );
 
 int _timetableClassTimeEstimateSize(

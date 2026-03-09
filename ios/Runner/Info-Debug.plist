@@ -79,8 +79,6 @@
 	<array>
 		<string>_dartobservatory._tcp.</string>
 	</array>
-	<key>NSCameraUsageDescription</key>
-	<string>カメラで暗記カードを作成するために利用します。</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>表示する広告を適切に選択するために使用します。</string>
 	<key>SKAdNetworkItems</key>

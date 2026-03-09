@@ -3,7 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:googleapis/tasks/v1.dart' as tasks;
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/isar_db/isar_digestive.dart';
 import 'package:submon/isar_db/isar_provider.dart';

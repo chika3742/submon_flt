@@ -52,8 +52,8 @@ dependencies:
   share_plus: ^7.0.2
   http: ^1.1.0
   intl: ^0.20.0
-  isar: ^3.1.0+1
-  isar_flutter_libs: ^3.1.0+1
+  isar_community: ^3.3.0
+  isar_community_flutter_libs: any
   great_list_view: ^0.2.3
 
   googleapis: ^13.0.0
@@ -84,8 +84,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^3.0.0
-  isar_generator: ^3.1.0+1
-  pigeon: ^10.1.6
+  isar_community_generator: any
+  pigeon: ^22.7.3
   build_runner: any
 
 # For information on the generic Dart part of this file, see the
@@ -98,6 +98,8 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  config:
+    enable-swift-package-manager: false
 
   assets:
     - assets/img/

@@ -16,7 +16,7 @@ class BrowserApiImplementation : BrowserApi {
     let viewController: FlutterViewController
     
     func openAuthCustomTab(url: String, completion: @escaping (Result<String?, Error>) -> Void) {
-        completion(.failure(FlutterError(code: "unsupported", message: "Method \"openAuthCustomTab\" is not supported on this platform.", details: nil)))
+        completion(.failure(PigeonError(code: "unsupported", message: "Method \"openAuthCustomTab\" is not supported on this platform.", details: nil)))
     }
     
     func openWebPage(title: String, url: String) throws {

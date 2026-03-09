@@ -35,7 +35,7 @@ const MemorizationCardGroupSchema = CollectionSchema(
   getId: _memorizationCardGroupGetId,
   getLinks: _memorizationCardGroupGetLinks,
   attach: _memorizationCardGroupAttach,
-  version: '3.1.0+1',
+  version: '3.3.0',
 );
 
 int _memorizationCardGroupEstimateSize(
