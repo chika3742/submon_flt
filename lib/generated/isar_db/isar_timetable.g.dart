@@ -59,7 +59,7 @@ const TimetableSchema = CollectionSchema(
   getId: _timetableGetId,
   getLinks: _timetableGetLinks,
   attach: _timetableAttach,
-  version: '3.1.0+1',
+  version: '3.3.0',
 );
 
 int _timetableEstimateSize(

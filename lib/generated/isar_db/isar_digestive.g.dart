@@ -54,7 +54,7 @@ const DigestiveSchema = CollectionSchema(
   getId: _digestiveGetId,
   getLinks: _digestiveGetLinks,
   attach: _digestiveAttach,
-  version: '3.1.0+1',
+  version: '3.3.0',
 );
 
 int _digestiveEstimateSize(

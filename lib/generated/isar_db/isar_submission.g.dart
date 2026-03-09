@@ -80,7 +80,7 @@ const SubmissionSchema = CollectionSchema(
   getId: _submissionGetId,
   getLinks: _submissionGetLinks,
   attach: _submissionAttach,
-  version: '3.1.0+1',
+  version: '3.3.0',
 );
 
 int _submissionEstimateSize(

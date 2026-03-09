@@ -1,4 +1,4 @@
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 
 part '../generated/isar_db/isar_memorization_card_group.g.dart';
 
