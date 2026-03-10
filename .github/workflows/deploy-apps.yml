@@ -6,149 +6,58 @@ on:
       - v*
   workflow_dispatch:
 
-env:
-  XCODE_VERSION: "26.0.1"
-
 jobs:
-  get-build-num:
+  build-attr:
     runs-on: ubuntu-latest
     env:
       BUILD_NUM_OFFSET: 115
     outputs:
-      build-num: ${{ steps.build-num.outputs.build-num }}
+      build_num: ${{ steps.build-attr.outputs.build_num }}
+      build_name: ${{ steps.build-attr.outputs.build_name }}
 
     steps:
-      - id: build-num
-        run: echo build-num=$(($GITHUB_RUN_NUMBER + $BUILD_NUM_OFFSET)) >> $GITHUB_OUTPUT
-
-  build-ios: # Build and deploy iOS app to App Store
-    name: Build iOS
-    needs:
-      - get-build-num
-    runs-on: macos-15
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Cache pods
-        uses: actions/cache@v4
-        with:
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-          path: ./ios/Pods
-          restore-keys: ${{ runner.os }}-pods-
-
-      - name: Use Xcode ${{ env.XCODE_VERSION }}
-        run: sudo xcode-select -s /Applications/Xcode_${{ env.XCODE_VERSION }}.app
-
-      - name: Install Flutter
-        uses: chika3742/setup-fvm@v3
-
-      - name: Import Apple provisioning profiles
+      - id: build-attr
         run: |
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo -n ${{ secrets.PROVISIONING_PROFILE }} | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/Submon_distribution.mobileprovision
-          echo -n ${{ secrets.PROVISIONING_PROFILE_WIDGETKIT }} | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/Submon_WidgetKit_Production.mobileprovision
+          echo "build_num=$(($GITHUB_RUN_NUMBER + $BUILD_NUM_OFFSET))" >> $GITHUB_OUTPUT
+          echo "build_name=`echo "$GITHUB_REF_NAME" | perl -nle "print $& while m/(?<=v)\d+\.\d+\.\d+/g"`" >> $GITHUB_OUTPUT
 
-      - name: Import code-signing certificates
-        uses: Apple-Actions/import-codesign-certs@v3
-        with:
-          p12-file-base64: ${{ secrets.APPLE_CERTIFICATES_P12_BASE64 }}
-          p12-password: ${{ secrets.APPLE_CERTIFICATES_PASSWORD }}
+  deploy-app-store:
+    name: Deploy to App Store
+    needs: build-attr
+    uses: chika3742/flutter-app-deploy/.github/workflows/ios.yml@main
+    with:
+      build-name: ${{ needs.build-attr.outputs.build_name }}
+      build-number: ${{ needs.build-attr.outputs.build_num }}
+    secrets:
+      provisioning_profile_1_base64: ${{ secrets.PROVISIONING_PROFILE }}
+      provisioning_profile_2_base64: ${{ secrets.PROVISIONING_PROFILE_WIDGETKIT }}
+      codesign_cert_base64: ${{ secrets.APPLE_CERTIFICATES_P12_BASE64 }}
+      codesign_cert_pw: ${{ secrets.APPLE_CERTIFICATES_PASSWORD }}
+      google_service_info_plist_base64: ${{ secrets.APPLE_GOOGLE_SERVICE_INFO_RELEASE_PLIST_BASE64 }}
+      asc_key_id: ${{ secrets.APP_STORE_PRIVKEY_ID }}
+      asc_issuer_id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER }}
+      asc_key_base64: ${{ secrets.APP_STORE_PRIVKEY_P8_BASE64 }}
+      dotenv_base64: ${{ secrets.DOTENV_BASE64 }}
 
-      - name: Import App Store Connect API key
-        run: |
-          mkdir ~/private_keys
-          echo -n "${{ secrets.APP_STORE_PRIVKEY_P8 }}" > ~/private_keys/AuthKey_${{ secrets.APP_STORE_PRIVKEY_ID }}.p8
-
-      - name: Import .env
-        run: echo -n "${{ secrets.DOTENV }}" > .env
-
-      - name: Import GoogleService-Info.plist
-        run: echo -n "${{ secrets.APPLE_GOOGLE_SERVICE_INFO_RELEASE_PLIST_BASE64 }}" | base64 -d > ios/GoogleService-Info-release.plist
-
-      - name: Build IPA
-        run: fvm flutter build ipa --build-number ${{ needs.get-build-num.outputs.build-num }} --export-options-plist ios/exportOptions.plist
-
-      - name: Deploy to App Store
-        run: |
-          xcrun altool --upload-app --type ios -f "./build/ios/ipa/Submon.ipa"\
-            --apiKey ${{ secrets.APP_STORE_PRIVKEY_ID }}\
-            --apiIssuer ${{ secrets.APP_STORE_CONNECT_API_ISSUER }}
-
-  build-android: # Build and deploy Android app to Google Play
-    name: Build Android
-    needs:
-      - get-build-num
-    runs-on: ubuntu-latest
+  deploy-play-store:
+    name: Deploy to Play Store
+    needs: build-attr
+    uses: chika3742/flutter-app-deploy/.github/workflows/android.yml@main
     permissions:
-      id-token: write
       contents: read
+      id-token: write
+    with:
+      build-name: ${{ needs.build-attr.outputs.build_name }}
+      build-number: ${{ needs.build-attr.outputs.build_num }}
+      wif-audience: ${{ vars.WI_AUDIENCE }}
+    secrets:
+      keystore_base64: ${{ secrets.ANDROID_KEYSTORE }}
+      key_properties_base64: ${{ secrets.ANDROID_KEY_PROPERTIES_BASE64 }}
+      google_services_json_base64: ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON_BASE64 }}
+      wif_provider: ${{ secrets.WI_PROVIDER }}
+      wif_service_account: ${{ secrets.WI_SERVICE_ACCOUNT }}
+      dotenv_base64: ${{ secrets.DOTENV_BASE64 }}
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Cache Gradle
-        uses: actions/cache@v4
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
-          restore-keys: ${{ runner.os }}-gradle-
-
-      - uses: actions/setup-java@v4 # for android build
-        with:
-          distribution: zulu
-          java-version: '17'
-
-      - name: Setup Ruby # for fastlane (tools for deploying to Google Play)
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 4
-          bundler-cache: true
-
-      - name: Install Flutter
-        uses: chika3742/setup-fvm@v3
-
-      - name: Install Fastlane
-        run: bundle install
-
-      - name: Import keystore
-        run: |
-          echo -n '
-          ${{ secrets.ANDROID_LOCAL_PROPERTIES }}' >> android/local.properties
-          echo -n "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > android/app/release.jks
-
-      - name: Import .env
-        run: echo -n "${{ secrets.DOTENV }}" > .env
-
-      - name: Import google-services.json
-        run: |
-          mkdir -p android/app/src/release
-          echo -n ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON_BASE64 }} | base64 -d > android/app/src/release/google-services.json
-
-      - name: Build App Bundle for Android
-        run: fvm flutter build appbundle --build-number ${{ needs.get-build-num.outputs.build-num }}
-
-      - name: 'Authenticate to Google Cloud'
-        id: auth
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: ${{ vars.WI_PROVIDER }}
-          service_account: ${{ vars.WI_SERVICE_ACCOUNT }}
-          audience: ${{ vars.WI_AUDIENCE }}
-
-      - name: Create native debug symbols
-        working-directory: ./build/app/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib
-        run: zip -r ../../../../../../../../native_debug_symbols.zip ./* -x "*x86/*"
-
-      - name: Deploy to Google Play
-        run: |
-          bundle exec fastlane supply \
-            --verbose\
-            --aab build/app/outputs/bundle/release/app-release.aab\
-            --mapping_paths native_debug_symbols.zip,build/app/outputs/mapping/release/mapping.txt\
-            --track internal\
-            --skip_upload_metadata\
-            --skip_upload_changelogs\
-            --skip_upload_screenshots\
-            --package_name net.chikach.submon\
-            --json_key ${{ steps.auth.outputs.credentials_file_path }}
+concurrency:
+  group: deploy
+  cancel-in-progress: true
