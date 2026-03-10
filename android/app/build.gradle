@@ -35,11 +35,16 @@ android {
 
     signingConfigs {
         release {
-            if (localProperties["submon.keyStorePath"] != null) {
-                storeFile file(localProperties["submon.keyStorePath"])
-                storePassword localProperties["submon.keyStorePassword"]
-                keyAlias localProperties["submon.keyAlias"]
-                keyPassword localProperties["submon.keyPassword"]
+            def keyPropertiesFile = rootProject.file('key.properties')
+            if (keyPropertiesFile.exists()) {
+                def keyProperties = new Properties()
+                keyPropertiesFile.withReader('UTF-8') { reader ->
+                    keyProperties.load(reader)
+                }
+                storeFile file(keyProperties["submon.keyStorePath"])
+                storePassword keyProperties["submon.keyStorePassword"]
+                keyAlias keyProperties["submon.keyAlias"]
+                keyPassword keyProperties["submon.keyPassword"]
             }
         }
     }
