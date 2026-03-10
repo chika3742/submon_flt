@@ -25,4 +25,6 @@ jobs:
 
       - name: Test
         if: ${{ !cancelled() && contains(fromJSON('["success", "failure"]'), steps.lint.outcome) }}
-        run: fvm flutter test
+        run: |
+          touch .env
+          fvm flutter test
