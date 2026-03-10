@@ -57,7 +57,7 @@ void main() async {
       WidgetsFlutterBinding.ensureInitialized();
 
       // load .env
-      await dotenv.load(isOptional: true);
+      await dotenv.load();
 
       // initialize Google user (for Tasks API)
       googleSignIn.signInSilently();
