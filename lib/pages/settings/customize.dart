@@ -150,33 +150,35 @@ class _RadioBottomSheetState extends State<RadioBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        ...widget.items
-            .map((e) => RadioListTile<dynamic>(
-                  value: e.value,
-                  groupValue: selected,
-                  title: Text(e.title),
-                  onChanged: (value) {
-                    setState(() {
-                      selected = value;
-                    });
-                  },
-                )),
-        Padding(
-          padding: const EdgeInsets.only(right: 16.0),
-          child: IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: () {
-              Navigator.pop(context);
-              widget.onSelected?.call(selected);
-            },
+    return RadioGroup<dynamic>(
+      groupValue: selected,
+      onChanged: (value) {
+        setState(() {
+          selected = value;
+        });
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          ...widget.items
+              .map((e) => RadioListTile<dynamic>(
+                    value: e.value,
+                    title: Text(e.title),
+                  )),
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: IconButton(
+              icon: const Icon(Icons.check),
+              onPressed: () {
+                Navigator.pop(context);
+                widget.onSelected?.call(selected);
+              },
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
-      ],
+          const SizedBox(height: 16),
+        ],
+      ),
     );
   }
 }

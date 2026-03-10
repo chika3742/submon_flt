@@ -53,7 +53,7 @@ class DigestiveDetailCardState extends State<DigestiveDetailCard> {
       child: Card(
         color: digestive.startAt.isBefore(DateTime.now()) &&
                 digestive.done == false
-            ? Colors.red.withOpacity(0.5).blendedToCardColor(context)
+            ? Colors.red.withValues(alpha: 0.5).blendedToCardColor(context)
             : null,
         child: IntrinsicHeight(
           child: Stack(
@@ -126,7 +126,7 @@ class DigestiveDetailCardState extends State<DigestiveDetailCard> {
                                         .textTheme
                                         .bodyLarge
                                         ?.color
-                                        ?.withOpacity(0.7)
+                                        ?.withValues(alpha: 0.7)
                                     : null)),
                       ],
                     ),
@@ -193,7 +193,7 @@ class DigestiveDetailCardState extends State<DigestiveDetailCard> {
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.all(Radius.circular(4)),
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withValues(alpha: 0.3),
                     ),
                     child: const Icon(
                       Icons.check,

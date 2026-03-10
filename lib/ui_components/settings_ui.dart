@@ -126,7 +126,9 @@ class RadioSettingsTile extends AbstractSettingsTile {
     this.title,
     this.subtitle,
     required this.value,
+    // TODO: remove
     required this.groupValue,
+    // TODO: remove
     required this.onChanged,
   });
 

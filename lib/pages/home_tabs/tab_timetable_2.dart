@@ -108,7 +108,7 @@ class _TabTimetable2State extends State<TabTimetable2> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: DropdownButtonFormField<int>(
-              value: prefs!.intCurrentTimetableId,
+              initialValue: prefs!.intCurrentTimetableId,
               decoration: const InputDecoration(
                 label: Text("時間割選択"),
                 border: OutlineInputBorder(),

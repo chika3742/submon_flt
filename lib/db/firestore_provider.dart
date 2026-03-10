@@ -176,7 +176,7 @@ class FirestoreProvider {
     await userDoc?.set({
       "lms": {
         "canvas": {
-          "submissionColor": color.value,
+          "submissionColor": color.toARGB32(),
         },
       },
     }, SetOptions(merge: true));

@@ -20,7 +20,7 @@ class CreateSubmissionPage extends StatelessWidget {
         ),
         body: PopScope(
           canPop: focusScopeNode.focusedChild?.hasFocus != true,
-          onPopInvoked: (didPop) async {
+          onPopInvokedWithResult: (didPop, result) async {
             if (!didPop) {
               focusScopeNode.unfocus();
               await Future.delayed(const Duration(milliseconds: 130));

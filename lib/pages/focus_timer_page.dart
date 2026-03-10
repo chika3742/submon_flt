@@ -126,11 +126,11 @@ class _FocusTimerPageState extends State<FocusTimerPage>
     return Scaffold(
       appBar: AppBar(
         title: const Text('集中タイマー'),
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
       ),
       body: PopScope(
         canPop: !_started,
-        onPopInvoked: (didPop) {
+        onPopInvokedWithResult: (didPop, result) {
           if (!didPop) {
             showSimpleDialog(context, "確認", "タイマーをキャンセルしますか？", showCancel: true, onOKPressed: () {
               Navigator.pop(context, false);
@@ -342,7 +342,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                               child: ElevatedButton(
                                 style: ButtonStyle(
                                   backgroundColor: _takingBreak
-                                      ? MaterialStateProperty.all(
+                                      ? WidgetStateProperty.all(
                                           Colors.blue.shade200)
                                       : null,
                                 ),

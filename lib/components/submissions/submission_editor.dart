@@ -98,7 +98,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
                       ),
                       const SizedBox(width: 16),
                       TappableCard(
-                        color: _submission.getColor().withOpacity(0.3),
+                        color: _submission.getColor().withValues(alpha: 0.3),
                         onTap: showColorPickerDialog,
                         child: const Icon(Icons.palette),
                       ),
@@ -148,7 +148,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
                   ),
                   const SizedBox(height: 24),
                   DropdownButtonFormField<Repeat>(
-                    value: _submission.repeat,
+                    initialValue: _submission.repeat,
                     items: const [
                       DropdownMenuItem(
                         value: Repeat.none,
@@ -205,7 +205,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
                                       .textTheme
                                       .bodyLarge!
                                       .color!
-                                      .withOpacity(0.7),
+                                      .withValues(alpha: 0.7),
                             ),
                           ),
                         ),
@@ -286,7 +286,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
     ).then((color) {
       if (color != null) {
         setState(() {
-          _submission.color = color.value;
+          _submission.color = color.toARGB32();
         });
       }
     });

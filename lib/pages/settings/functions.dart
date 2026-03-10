@@ -248,11 +248,10 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
     var auth = FirebaseAuth.instance;
     showLoadingModal(context);
     try {
-      var provider =
-          await auth.fetchSignInMethodsForEmail(auth.currentUser!.email!);
-      if (provider.isEmpty) throw FirebaseAuthException(code: "user-not-found");
+      final providerData = auth.currentUser!.providerData;
+      if (providerData.isEmpty) throw FirebaseAuthException(code: "user-not-found");
       Navigator.pop(globalContext!);
-      if (provider.first == EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {
+      if (providerData.first.providerId == EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {
         await Navigator.pushNamed(
             globalContext!, AccountEditPage.changePasswordRouteName);
         setState(() {});

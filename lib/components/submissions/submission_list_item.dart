@@ -75,14 +75,14 @@ class SubmissionListItemState extends State<SubmissionListItem> {
         child: OpenContainer<SubmissionDetailPagePopAction>(
           useRootNavigator: true,
           routeSettings: const RouteSettings(name: "/submission/detail"),
-          closedColor: Theme.of(context).colorScheme.background,
-          openColor: Theme.of(context).colorScheme.background,
+          closedColor: Theme.of(context).colorScheme.surface,
+          openColor: Theme.of(context).colorScheme.surface,
           closedShape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(8))),
           closedBuilder: (context, callback) {
             var overdue = widget.item.due.isBefore(DateTime.now());
             return Material(
-              color: _item.getColor().withOpacity(0.2),
+              color: _item.getColor().withValues(alpha: 0.2),
               child: InkWell(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,8 +104,8 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                                     border: Border.all(
                                         color: Theme.of(context).brightness ==
                                                 Brightness.light
-                                            ? Colors.black.withOpacity(0.6)
-                                            : Colors.white.withOpacity(0.6),
+                                            ? Colors.black.withValues(alpha: 0.6)
+                                            : Colors.white.withValues(alpha: 0.6),
                                         width: 3)),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(

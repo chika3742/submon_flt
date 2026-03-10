@@ -169,7 +169,7 @@ class TimetableState extends State<Timetable> {
           }
         },
         closedColor: Theme.of(context).colorScheme.onInverseSurface,
-        openColor: Theme.of(context).colorScheme.background,
+        openColor: Theme.of(context).colorScheme.surface,
         closedShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(6),
         ),

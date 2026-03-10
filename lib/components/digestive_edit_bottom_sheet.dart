@@ -46,40 +46,40 @@ class _DigestiveEditBottomSheetState extends State<DigestiveEditBottomSheet> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Radio<DigestiveSelection>(
-                      value: DigestiveSelection.minutesAfter,
-                      groupValue: _selection,
-                      onChanged: onRadioSelected,
-                    ),
-                    GestureDetector(
-                      child: const Text("n分後指定"),
-                      onTap: () {
-                        onRadioSelected(DigestiveSelection.minutesAfter);
-                      },
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Radio<DigestiveSelection>(
-                      value: DigestiveSelection.dateTime,
-                      groupValue: _selection,
-                      onChanged: onRadioSelected,
-                    ),
-                    GestureDetector(
-                      child: const Text("日時指定"),
-                      onTap: () {
-                        onRadioSelected(DigestiveSelection.dateTime);
-                      },
-                    ),
-                  ],
-                ),
-              ],
+            RadioGroup<DigestiveSelection>(
+              groupValue: _selection,
+              onChanged: onRadioSelected,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Radio<DigestiveSelection>(
+                        value: DigestiveSelection.minutesAfter,
+                      ),
+                      GestureDetector(
+                        child: const Text("n分後指定"),
+                        onTap: () {
+                          onRadioSelected(DigestiveSelection.minutesAfter);
+                        },
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Radio<DigestiveSelection>(
+                        value: DigestiveSelection.dateTime,
+                      ),
+                      GestureDetector(
+                        child: const Text("日時指定"),
+                        onTap: () {
+                          onRadioSelected(DigestiveSelection.dateTime);
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
             if (_selection == DigestiveSelection.dateTime)
               Column(

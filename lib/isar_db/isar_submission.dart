@@ -25,7 +25,7 @@ class Submission {
   bool important = false;
   @enumerated
   Repeat repeat = Repeat.none;
-  int color = Colors.white.value;
+  int color = Colors.white.toARGB32();
   String? googleTasksTaskId;
   int? canvasPlannableId;
   bool? repeatSubmissionCreated;

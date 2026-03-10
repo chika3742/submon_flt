@@ -37,7 +37,7 @@ class _DropdownTimePickerBottomSheetState extends State<DropdownTimePickerBottom
                     value: e,
                             child: Text("$e 時"),
                           )).toList(),
-                  value: _selectedTime.hour,
+                  initialValue: _selectedTime.hour,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: "時",
@@ -56,7 +56,7 @@ class _DropdownTimePickerBottomSheetState extends State<DropdownTimePickerBottom
                     value: e,
                             child: Text("$e 分"),
                           )).toList(),
-                  value: _selectedTime.minute,
+                  initialValue: _selectedTime.minute,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: "分",

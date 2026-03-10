@@ -238,7 +238,7 @@ class _OpenModalAnimationRoute<T> extends ModalRoute<T> {
   }
 
   @override
-  Color? get barrierColor => Colors.black54.withOpacity(0.5);
+  Color? get barrierColor => Colors.black54.withValues(alpha: 0.5);
 
   @override
   bool get barrierDismissible => true;

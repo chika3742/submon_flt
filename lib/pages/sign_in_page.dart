@@ -225,6 +225,7 @@ class _SignInPageState extends State<SignInPage> {
       if (providerId == EmailAuthProvider.PROVIDER_ID) {
         showLoadingModal(context);
 
+        // TODO: remove fetching sign in method
         var methods = await auth.fetchSignInMethodsForEmail(currentUser.email!);
 
         Navigator.pop(globalContext!); // Close Loading modal
