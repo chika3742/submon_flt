@@ -41,7 +41,7 @@ android {
                 keyPropertiesFile.withReader('UTF-8') { reader ->
                     keyProperties.load(reader)
                 }
-                storeFile file(keyProperties["submon.keyStorePath"])
+                storeFile rootProject.file(keyProperties["submon.keyStorePath"])
                 storePassword keyProperties["submon.keyStorePassword"]
                 keyAlias keyProperties["submon.keyAlias"]
                 keyPassword keyProperties["submon.keyPassword"]
