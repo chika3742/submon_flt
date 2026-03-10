@@ -1,0 +1,28 @@
+name: Test & Lint
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  test:
+    name: Test & Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Init Flutter SDK
+        uses: chika3742/setup-fvm@v3
+
+      - name: Lint
+        id: lint
+        run: fvm flutter analyze
+
+      - name: Test
+        if: ${{ !cancelled() && contains(fromJSON('["success", "failure"]'), steps.lint.outcome) }}
+        run: fvm flutter test
