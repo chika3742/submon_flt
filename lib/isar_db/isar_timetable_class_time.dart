@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:isar_community/isar.dart';
-import 'package:submon/db/firestore_provider.dart';
-import 'package:submon/isar_db/isar_provider.dart';
+import "package:flutter/material.dart";
+import "package:isar_community/isar.dart";
+import "../db/firestore_provider.dart";
+import "isar_provider.dart";
 
-part '../generated/isar_db/isar_timetable_class_time.g.dart';
+part "../generated/isar_db/isar_timetable_class_time.g.dart";
 
 @Collection()
 class TimetableClassTime {
@@ -35,7 +35,7 @@ class TimetableClassTime {
   }
 
   TimeOfDay parseTime(String time) {
-    var split = time.split(":");
+    final split = time.split(":");
     return TimeOfDay(hour: int.parse(split[0]), minute: int.parse(split[1]));
   }
 

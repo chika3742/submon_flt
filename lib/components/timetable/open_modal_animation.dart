@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+import "package:flutter/material.dart";
+import "package:flutter/scheduler.dart";
 
 class OpenModalAnimatedContainer extends StatelessWidget {
   OpenModalAnimatedContainer({
@@ -38,7 +38,7 @@ class OpenModalAnimatedContainer extends StatelessWidget {
 
   void openContainer() {
     assert(context != null);
-    var navigator = Navigator.of(context!, rootNavigator: true);
+    final navigator = Navigator.of(context!, rootNavigator: true);
     navigator.push(_OpenModalAnimationRoute(
         width: width,
         height: height,

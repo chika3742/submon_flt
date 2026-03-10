@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
 class CardViewPage extends StatefulWidget {
   CardViewPage({super.key, required dynamic arguments})
@@ -15,7 +15,7 @@ class _CardViewPageState extends State<CardViewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('カードビュー'),
+        title: const Text("カードビュー"),
       ),
       body: Container(),
     );

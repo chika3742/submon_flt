@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
 class TextRecognizedCandidatePainter extends CustomPainter {
   TextRecognizedCandidatePainter(
@@ -15,14 +15,14 @@ class TextRecognizedCandidatePainter extends CustomPainter {
       ..strokeWidth = 2.0;
 
     if (elements != null) {
-      var path1 = Path();
-      var path2 = Path();
+      final path1 = Path();
+      final path2 = Path();
 
-      var unselectedElements =
+      final unselectedElements =
           elements!.where((element) => !selectedElements.contains(element));
 
       for (var element in unselectedElements) {
-        var vertices = element.vertices!
+        final vertices = element.vertices!
             .map((e) => e.scale(size.width / imageSize.width,
                 (size.width * (16 / 9)) / imageSize.height))
             .toList();
@@ -35,7 +35,7 @@ class TextRecognizedCandidatePainter extends CustomPainter {
 
       for (var element in selectedElements) {
         if (element.vertices == null) continue;
-        var vertices = element.vertices!
+        final vertices = element.vertices!
             .map((e) => e.scale(size.width / imageSize.width,
                 (size.width * (16 / 9)) / imageSize.height))
             .toList();
@@ -66,8 +66,8 @@ class TextElement {
   TextElement(this.text, {this.vertices});
 
   static TextElement fromMap(Map<String, dynamic> map) {
-    var vertices = (map["vertices"] as List).map((v) {
-      var map = Map.from(v);
+    final vertices = (map["vertices"] as List).map((v) {
+      final map = Map.from(v);
       return Offset((map["x"] as int).toDouble(), (map["y"] as int).toDouble());
     }).toList();
     return TextElement(map["text"], vertices: vertices);

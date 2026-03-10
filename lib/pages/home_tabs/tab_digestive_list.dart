@@ -1,17 +1,17 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:submon/components/digestive_detail_card.dart';
-import 'package:submon/events.dart';
-import 'package:submon/isar_db/isar_digestive.dart';
-import 'package:submon/isar_db/isar_submission.dart';
-import 'package:submon/main.dart';
-import 'package:submon/pages/submission_detail_page.dart';
+import "package:flutter/material.dart";
+import "package:intl/intl.dart";
 
-import '../../components/digestive_edit_bottom_sheet.dart';
-import '../../sample_data.dart';
-import '../../utils/ui.dart';
+import "../../components/digestive_detail_card.dart";
+import "../../components/digestive_edit_bottom_sheet.dart";
+import "../../events.dart";
+import "../../isar_db/isar_digestive.dart";
+import "../../isar_db/isar_submission.dart";
+import "../../main.dart";
+import "../../sample_data.dart";
+import "../../utils/ui.dart";
+import "../submission_detail_page.dart";
 
 class TabDigestiveList extends StatefulWidget {
   const TabDigestiveList({super.key});
@@ -51,7 +51,7 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
     }
 
     listener = eventBus.on<DigestiveAddButtonPressed>().listen((event) async {
-      var result = await showRoundedBottomSheet<Digestive>(
+      final result = await showRoundedBottomSheet<Digestive>(
           context: context,
           useRootNavigator: true,
           title: "Digestive単体作成 (提出物なし)",
@@ -62,7 +62,7 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
       if (result != null) {
         DigestiveProvider().use((provider) async {
           provider.writeTransaction(() async {
-            var id = await provider.put(result);
+            final id = await provider.put(result);
             setState(() {
               _digestiveList.add(
                   DigestiveWithSubmission.fromObject(result..id = id, null));
@@ -79,9 +79,9 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
   void fetchDigestives() {
     DigestiveProvider().use((provider) async {
       SubmissionProvider().use((sProvider) async {
-        var digestiveList = await provider.getUndoneDigestives();
+        final digestiveList = await provider.getUndoneDigestives();
         _digestiveList = await Future.wait(digestiveList.map((e) async {
-          var submission = e.submissionId != null
+          final submission = e.submissionId != null
               ? await sProvider.get(e.submissionId!)
               : null;
           return DigestiveWithSubmission.fromObject(e, submission);
@@ -101,11 +101,11 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
 
   @override
   Widget build(BuildContext context) {
-    var widgets = <Widget>[];
+    final widgets = <Widget>[];
     int? prevSubmissionId;
 
     for (var i in _digestiveList.asMap().keys) {
-      var e = _digestiveList[i];
+      final e = _digestiveList[i];
       if (e.submissionId != prevSubmissionId) {
         widgets.add(i != 0
             ? const Divider(
@@ -116,8 +116,8 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
             : const SizedBox(
                 height: 8,
               ));
-        var diff = e.submission?.due.difference(DateTime.now());
-        var remainingString =
+        final diff = e.submission?.due.difference(DateTime.now());
+        final remainingString =
             diff != null ? getRemainingString(diff, false) : null;
         if (e.submission != null) {
           widgets.add(Material(
@@ -186,7 +186,7 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
           ),
         ),
         if (_digestiveList.isEmpty)
-          const Center(child: Text('Digestiveがありません')),
+          const Center(child: Text("Digestiveがありません")),
       ],
     );
   }

@@ -1,6 +1,6 @@
-import 'package:isar_community/isar.dart';
+import "package:isar_community/isar.dart";
 
-part '../generated/isar_db/isar_memorization_card_group.g.dart';
+part "../generated/isar_db/isar_memorization_card_group.g.dart";
 
 @Collection()
 class MemorizationCardGroup {

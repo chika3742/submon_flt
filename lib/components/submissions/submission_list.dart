@@ -1,15 +1,15 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/material.dart';
-import 'package:submon/components/submissions/submission_list_item.dart';
-import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/events.dart';
-import 'package:submon/isar_db/isar_submission.dart';
-import 'package:submon/main.dart';
-import 'package:submon/utils/ui.dart';
-import 'package:submon/utils/utils.dart';
+import "package:flutter/material.dart";
 
-import '../../sample_data.dart';
+import "../../db/shared_prefs.dart";
+import "../../events.dart";
+import "../../isar_db/isar_submission.dart";
+import "../../main.dart";
+import "../../sample_data.dart";
+import "../../utils/ui.dart";
+import "../../utils/utils.dart";
+import "submission_list_item.dart";
 
 class SubmissionList extends StatefulWidget {
   const SubmissionList({super.key, this.done = false});
@@ -62,7 +62,7 @@ class SubmissionListState extends State<SubmissionList> {
     _stream2 = eventBus.on<SubmissionInserted>().listen((event) {
       Future.delayed(const Duration(milliseconds: 50), () {
         SubmissionProvider().use((provider) async {
-          var data = await provider.get(event.id);
+          final data = await provider.get(event.id);
 
           if (data != null) {
             setState(() {
@@ -144,7 +144,7 @@ class SubmissionListState extends State<SubmissionList> {
   }
 
   void checkDone(int index, bool animated) {
-    var item = items![index];
+    final item = items![index];
     setState(() {
       _listKey.currentState?.removeItem(index,
           (context, animation) => _buildRemovedSubmissionItem(animation, item),
@@ -170,7 +170,7 @@ class SubmissionListState extends State<SubmissionList> {
             });
             try {
               setState(() {
-                var actualIndex =
+                final actualIndex =
                     items!.length <= index ? items!.length : index;
                 items!.insert(actualIndex, item);
                 _listKey.currentState?.insertItem(actualIndex);
@@ -182,8 +182,8 @@ class SubmissionListState extends State<SubmissionList> {
         ));
   }
 
-  void delete(int index, bool animated) async {
-    var submission = items![index];
+  Future<void> delete(int index, bool animated) async {
+    final submission = items![index];
 
     Future<void> Function() restore = () async {};
 
@@ -210,7 +210,7 @@ class SubmissionListState extends State<SubmissionList> {
               await restore();
 
               setState(() {
-                var actualIndex =
+                final actualIndex =
                     items!.length <= index ? items!.length : index;
                 items!.insert(actualIndex, submission);
                 _listKey.currentState?.insertItem(actualIndex);

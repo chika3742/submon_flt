@@ -1,10 +1,10 @@
-import 'package:collection/collection.dart';
-import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:submon/auth/sign_in_handler.dart';
-import 'package:submon/models/sign_in_result.dart';
-import 'package:submon/utils/ui.dart';
+import "package:collection/collection.dart";
+import "package:firebase_auth/firebase_auth.dart" hide AuthProvider;
+import "package:flutter/material.dart";
+import "package:flutter_svg/flutter_svg.dart";
+import "../../auth/sign_in_handler.dart";
+import "../../models/sign_in_result.dart";
+import "../../utils/ui.dart";
 
 class AccountLinkPage extends StatefulWidget {
   const AccountLinkPage({super.key});

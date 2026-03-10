@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:submon/events.dart';
-import 'package:submon/pages/home_tabs/tab_timetable.dart';
-import 'package:submon/pages/timetable_edit_page.dart';
+import "package:flutter/material.dart";
+import "../events.dart";
+import "home_tabs/tab_timetable.dart";
+import "timetable_edit_page.dart";
 
 class TimetableTableViewPage extends StatefulWidget {
   const TimetableTableViewPage({super.key});
@@ -17,7 +17,7 @@ class _TimetableTableViewPageState extends State<TimetableTableViewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('テーブルビュー時間割表'),
+        title: const Text("テーブルビュー時間割表"),
         actions: [
           IconButton(
             splashRadius: 24,

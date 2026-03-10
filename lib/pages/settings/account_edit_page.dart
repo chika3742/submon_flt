@@ -1,12 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:submon/auth/sign_in_handler.dart';
-import 'package:submon/pages/sign_in_page.dart';
-import 'package:submon/utils/app_links.dart';
-import 'package:submon/utils/ui.dart';
-import 'package:submon/utils/utils.dart';
+import "package:firebase_auth/firebase_auth.dart";
+import "package:flutter/material.dart";
 
-import '../../main.dart';
+import "../../auth/sign_in_handler.dart";
+import "../../main.dart";
+import "../../utils/app_links.dart";
+import "../../utils/ui.dart";
+import "../../utils/utils.dart";
+import "../sign_in_page.dart";
 
 class AccountEditPage extends StatefulWidget {
   AccountEditPage(this.type, {super.key, AccountEditPageArguments? args})
@@ -53,7 +53,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    var delete = widget.type == EditingType.delete;
+    final delete = widget.type == EditingType.delete;
     return Scaffold(
         appBar: AppBar(
           title: Text(getTitle()),
@@ -192,7 +192,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
           break;
         case "requires-recent-login":
           showSnackBar(context, "この操作をするには、再ログインが必要です。");
-          var result = await Navigator.pushNamed(context, SignInPage.routeName,
+          final result = await Navigator.pushNamed(context, SignInPage.routeName,
               arguments: SignInPageArguments(
                 SignInMode.reauthenticate,
                 continueUri: Uri(
@@ -204,8 +204,11 @@ class _AccountEditPageState extends State<AccountEditPage> {
                   },
                 ),
               ));
-          if (result == true) await changeEmail();
-          else Navigator.pop(context);
+          if (result == true) {
+            await changeEmail();
+          } else {
+            Navigator.pop(context);
+          }
           break;
         default:
           handleAuthError(e, stack, context);
@@ -330,7 +333,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
     } on FirebaseAuthException catch (e, stack) {
       if (e.code == "requires-recent-login") {
         showSnackBar(context, "セキュリティのため再ログインが必要です。");
-        var result = await Navigator.pushNamed(context, SignInPage.routeName,
+        final result = await Navigator.pushNamed(context, SignInPage.routeName,
             arguments: SignInPageArguments(
               SignInMode.reauthenticate,
               continueUri: Uri(

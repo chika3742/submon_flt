@@ -1,10 +1,10 @@
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:flutter/material.dart';
-import 'package:submon/link_handler/open_link_handler.dart';
+import "package:firebase_crashlytics/firebase_crashlytics.dart";
+import "package:firebase_dynamic_links/firebase_dynamic_links.dart";
+import "package:flutter/material.dart";
 
-import '../utils/app_links.dart';
-import 'auth_link_handler.dart';
+import "../utils/app_links.dart";
+import "auth_link_handler.dart";
+import "open_link_handler.dart";
 
 // ignore_for_file: deprecated_member_use
 

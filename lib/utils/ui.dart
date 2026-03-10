@@ -1,17 +1,17 @@
-import 'dart:io';
+import "dart:io";
 
-import 'package:animations/animations.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:submon/ui_components/platform_dialog.dart';
+import "package:animations/animations.dart";
+import "package:flutter/cupertino.dart";
+import "package:flutter/foundation.dart";
+import "package:flutter/material.dart";
+import "package:flutter_slidable/flutter_slidable.dart";
 
-import '../pages/home_page.dart';
-import '../pages/welcome_page.dart';
+import "../pages/home_page.dart";
+import "../pages/welcome_page.dart";
+import "../ui_components/platform_dialog.dart";
 
 String getWeekdayString(int weekday) {
-  var weekdays = ["月", "火", "水", "木", "金", "土", "日"];
+  final weekdays = ["月", "火", "水", "木", "金", "土", "日"];
   return weekdays[weekday];
 }
 
@@ -38,7 +38,7 @@ String getUnsetOrString(String? string, bool loading) {
 }
 
 Color getRemainingDateColor(BuildContext context, int remainingHours) {
-  var dark = Theme.of(context).brightness == Brightness.dark;
+  final dark = Theme.of(context).brightness == Brightness.dark;
   if (remainingHours < 0) {
     return dark ? Colors.redAccent.shade200 : Colors.redAccent;
   } else if (0 <= remainingHours && remainingHours <= 2 * 24) {
@@ -114,7 +114,7 @@ Future<T?> showSimpleDialog<T>(
       context: context,
       barrierDismissible: allowCancel,
       builder: (context) {
-        var actions = [
+        final actions = [
           if (showCancel)
             PlatformTextButton(
               child: Text(cancelText,
@@ -163,7 +163,7 @@ void showSelectSheet(
     String? title,
     String? message,
     required List<SelectSheetAction> actions}) {
-  var platform = Theme.of(context).platform;
+  final platform = Theme.of(context).platform;
   if (platform == TargetPlatform.iOS || platform == TargetPlatform.macOS) {
     showCupertinoModalPopup<void>(
         context: context,
@@ -239,7 +239,7 @@ void showSelectSheet(
 }
 
 void backToWelcomePage(BuildContext context) {
-  var navigatorState = Navigator.of(context, rootNavigator: true);
+  final navigatorState = Navigator.of(context, rootNavigator: true);
   navigatorState.popUntil(ModalRoute.withName(HomePage.routeName));
   navigatorState.pushReplacementNamed(WelcomePage.routeName);
 }
@@ -353,11 +353,11 @@ class TextFormFieldBottomSheet extends StatefulWidget {
   final void Function(String text)? onDone;
 
   @override
-  _TextFormFieldBottomSheetState createState() =>
-      _TextFormFieldBottomSheetState();
+  TextFormFieldBottomSheetState createState() =>
+      TextFormFieldBottomSheetState();
 }
 
-class _TextFormFieldBottomSheetState extends State<TextFormFieldBottomSheet> {
+class TextFormFieldBottomSheetState extends State<TextFormFieldBottomSheet> {
   final _controller = TextEditingController();
   String? _fieldError;
 

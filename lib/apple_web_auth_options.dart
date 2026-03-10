@@ -1,5 +1,5 @@
-import 'package:flutter/foundation.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import "package:flutter/foundation.dart";
+import "package:sign_in_with_apple/sign_in_with_apple.dart";
 
 class AppleWebAuthOptions {
   static const clientId = "net.chikach.submon.asi";

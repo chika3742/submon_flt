@@ -1,7 +1,7 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/services.dart';
-import 'package:submon/db/firestore_provider.dart';
+import "package:flutter/services.dart";
+import "../db/firestore_provider.dart";
 
 class FcmTokenRefreshEventApi {
   static const _eventName = "net.chikach.submon.event/fcm_token_refresh";

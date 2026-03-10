@@ -1,9 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:submon/main.dart';
+import "package:firebase_auth/firebase_auth.dart";
+import "package:flutter/material.dart";
+import "../main.dart";
 
-import '../utils/ui.dart';
-import '../utils/utils.dart';
+import "../utils/ui.dart";
+import "../utils/utils.dart";
 
 class EmailRegistrationPage extends StatefulWidget {
   const EmailRegistrationPage({super.key, required this.email});
@@ -82,7 +82,7 @@ class _EmailRegistrationPageState extends State<EmailRegistrationPage> {
     );
   }
 
-  void register() async {
+  Future<void> register() async {
     setState(() {
       if (_pwController.text.isEmpty) {
         _pwError = "入力してください";
@@ -107,7 +107,7 @@ class _EmailRegistrationPageState extends State<EmailRegistrationPage> {
       _loading = true;
     });
     try {
-      var result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: widget.email, password: _pwController.text);
 
       showSnackBar(globalContext!, "アカウントを作成しました");

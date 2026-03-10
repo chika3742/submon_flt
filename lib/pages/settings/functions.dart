@@ -1,20 +1,21 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:submon/auth/sign_in_handler.dart';
-import 'package:submon/components/dropdown_time_picker_bottom_sheet.dart';
-import 'package:submon/db/firestore_provider.dart';
-import 'package:submon/main.dart';
-import 'package:submon/pages/settings/account_edit_page.dart';
-import 'package:submon/pages/settings/account_link_page.dart';
-import 'package:submon/pages/settings/google_tasks.dart';
-import 'package:submon/pages/settings/timetable.dart';
-import 'package:submon/pages/sign_in_page.dart';
-import 'package:submon/src/pigeons.g.dart';
-import 'package:submon/ui_components/settings_ui.dart';
-import 'package:submon/utils/ui.dart';
-import 'package:submon/utils/utils.dart';
+import "package:firebase_auth/firebase_auth.dart";
+import "package:flutter/material.dart";
+
+import "../../auth/sign_in_handler.dart";
+import "../../components/dropdown_time_picker_bottom_sheet.dart";
+import "../../db/firestore_provider.dart";
+import "../../main.dart";
+import "../../src/pigeons.g.dart";
+import "../../ui_components/settings_ui.dart";
+import "../../utils/ui.dart";
+import "../../utils/utils.dart";
+import "../sign_in_page.dart";
+import "account_edit_page.dart";
+import "account_link_page.dart";
+import "google_tasks.dart";
+import "timetable.dart";
 
 class FunctionsSettingsPage extends StatefulWidget {
   const FunctionsSettingsPage({super.key});
@@ -59,8 +60,8 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    var auth = FirebaseAuth.instance;
-    var displayName = auth.currentUser?.displayName;
+    final auth = FirebaseAuth.instance;
+    final displayName = auth.currentUser?.displayName;
 
     return SettingsListView(
       categories: [
@@ -78,7 +79,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
               trailing: _buildReminderTimeTrailing(),
               onTap: () async {
                 // check permission
-                var requestPermissionResult =
+                final requestPermissionResult =
                     await MessagingApi().requestNotificationPermission();
                 if (requestPermissionResult?.value !=
                     NotificationPermissionState.granted) {
@@ -88,7 +89,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                   if (!mounted) return;
 
                   // show time picker for reminder time
-                  var result = await showRoundedBottomSheet<TimeOfDay>(
+                  final result = await showRoundedBottomSheet<TimeOfDay>(
                     context: context,
                     title: "リマインダー通知時刻",
                     child: DropdownTimePickerBottomSheet(
@@ -176,7 +177,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
               title: "アカウントをアップグレード",
               subtitle: "お試しアカウントを通常アカウントにアップグレードできます。",
               onTap: () async {
-                var result = await Navigator.pushNamed(
+                final result = await Navigator.pushNamed(
                     context, SignInPage.routeName,
                     arguments: const SignInPageArguments(SignInMode.upgrade));
                 if (result == true) {
@@ -244,8 +245,8 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
     return null;
   }
 
-  void _changePassword() async {
-    var auth = FirebaseAuth.instance;
+  Future<void> _changePassword() async {
+    final auth = FirebaseAuth.instance;
     showLoadingModal(context);
     try {
       final providerData = auth.currentUser!.providerData;
@@ -276,17 +277,17 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
   }
 
   bool emailChangeable() {
-    var providers = [
+    final providers = [
       EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD,
       EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD
     ];
-    var currentUser = FirebaseAuth.instance.currentUser!;
+    final currentUser = FirebaseAuth.instance.currentUser!;
     return !currentUser.isAnonymous &&
         providers.contains(currentUser.providerData.firstOrNull?.providerId);
   }
 
   bool passwordChangeable() {
-    var currentUser = FirebaseAuth.instance.currentUser!;
+    final currentUser = FirebaseAuth.instance.currentUser!;
     return !currentUser.isAnonymous &&
         currentUser.providerData.firstOrNull?.providerId ==
             EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD;

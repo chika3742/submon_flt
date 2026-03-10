@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:isar_community/isar.dart';
-import 'package:submon/db/firestore_provider.dart';
-import 'package:submon/isar_db/isar_provider.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:isar_community/isar.dart";
+import "../db/firestore_provider.dart";
+import "isar_provider.dart";
 
-part '../generated/isar_db/isar_digestive.g.dart';
+part "../generated/isar_db/isar_digestive.g.dart";
 
 @Collection()
 class Digestive {
@@ -52,7 +52,7 @@ class DigestiveProvider extends IsarProvider<Digestive> {
   /// このメソッドは[writeTransaction]でラップしないこと。
   ///
   Future<List<Digestive>> deleteBySubmissionId(int submissionId) async {
-    var items =
+    final items =
         await this.collection.filter().submissionIdEqualTo(submissionId).findAll();
 
     await writeTransaction(() {
@@ -103,5 +103,3 @@ class DigestiveProvider extends IsarProvider<Digestive> {
     await callback(this);
   }
 }
-
-

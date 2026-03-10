@@ -1,5 +1,5 @@
-import 'package:animations/animations.dart';
-import 'package:flutter/widgets.dart';
+import "package:animations/animations.dart";
+import "package:flutter/widgets.dart";
 
 class FadeThroughPageRoute extends PageRoute {
   FadeThroughPageRoute(this.page, {this.arguments});

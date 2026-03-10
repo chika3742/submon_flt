@@ -1,11 +1,11 @@
-import 'dart:async';
-import 'dart:convert';
+import "dart:async";
+import "dart:convert";
 
-import 'package:crypto/crypto.dart';
-import 'package:flutter/material.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:submon/apple_web_auth_options.dart';
-import 'package:submon/src/pigeons.g.dart';
+import "package:crypto/crypto.dart";
+import "package:flutter/material.dart";
+import "package:sign_in_with_apple/sign_in_with_apple.dart";
+import "../apple_web_auth_options.dart";
+import "../src/pigeons.g.dart";
 
 class AppleSignIn {
   static String sha256ofString(String input) {
@@ -18,7 +18,7 @@ class AppleSignIn {
       {required String state, required String nonce}) async {
     final options = AppleWebAuthOptions.currentBuild;
 
-    var uri = Uri(
+    final uri = Uri(
       scheme: "https",
       host: "appleid.apple.com",
       path: "/auth/authorize",
@@ -33,13 +33,13 @@ class AppleSignIn {
       },
     );
 
-    var resultUri = await BrowserApi().openAuthCustomTab(uri.toString());
+    final resultUri = await BrowserApi().openAuthCustomTab(uri.toString());
     if (resultUri == null) {
       return null;
     }
 
     try {
-      var query = Uri.parse(resultUri).queryParameters;
+      final query = Uri.parse(resultUri).queryParameters;
       return AuthorizationCredentialAppleID(
         userIdentifier: null,
         givenName: null,

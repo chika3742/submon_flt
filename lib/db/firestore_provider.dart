@@ -1,21 +1,21 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/isar_db/isar_digestive.dart';
-import 'package:submon/isar_db/isar_provider.dart';
-import 'package:submon/isar_db/isar_submission.dart';
-import 'package:submon/isar_db/isar_timetable.dart';
-import 'package:submon/isar_db/isar_timetable_class_time.dart';
-import 'package:submon/isar_db/isar_timetable_table.dart';
-import 'package:submon/main.dart';
-import 'package:submon/src/pigeons.g.dart';
-import 'package:submon/utils/batch_operation.dart';
-import 'package:submon/utils/firestore.dart';
-import 'package:submon/utils/ui.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:cloud_functions/cloud_functions.dart";
+import "package:flutter/material.dart";
+import "package:shared_preferences/shared_preferences.dart";
 
-import '../user_config.dart';
+import "../isar_db/isar_digestive.dart";
+import "../isar_db/isar_provider.dart";
+import "../isar_db/isar_submission.dart";
+import "../isar_db/isar_timetable.dart";
+import "../isar_db/isar_timetable_class_time.dart";
+import "../isar_db/isar_timetable_table.dart";
+import "../main.dart";
+import "../src/pigeons.g.dart";
+import "../user_config.dart";
+import "../utils/batch_operation.dart";
+import "../utils/firestore.dart";
+import "../utils/ui.dart";
+import "shared_prefs.dart";
 
 class FirestoreProvider {
   FirestoreProvider(this.collectionId);
@@ -72,7 +72,7 @@ class FirestoreProvider {
       toFirestore: (userConfig, options) => userConfig.toFirestore(),
     ).get()).data();
     if (data != null && data.lastChanged != null) {
-      var prefs = SharedPrefs(await SharedPreferences.getInstance());
+      final prefs = SharedPrefs(await SharedPreferences.getInstance());
       return CheckTimestampResult(
         changed: data.lastChanged!
             .toDate()
@@ -96,7 +96,7 @@ class FirestoreProvider {
   }
 
   static Future<void> removeNotificationToken() async {
-    var token = await MessagingApi().getToken();
+    final token = await MessagingApi().getToken();
     if (userDoc != null) {
       await userDoc!.set({
         "notificationTokens": FieldValue.arrayRemove([token])
@@ -207,9 +207,9 @@ class FirestoreProvider {
 
   static Future<bool> checkMigration() async {
     if (userDoc == null) return false;
-    var snapshot = await userDoc!.get();
+    final snapshot = await userDoc!.get();
 
-    var serverSchemaVersion = (snapshot.data() as dynamic)?["schemaVersion"];
+    final serverSchemaVersion = (snapshot.data() as dynamic)?["schemaVersion"];
 
     if (serverSchemaVersion == null) {
       await userDoc!
@@ -238,7 +238,7 @@ class FirestoreProvider {
 
   static Future<void> _migrate(int oldVersion, Map<String, dynamic> userConfig) async {
     if (oldVersion == 4) {
-      var operations = <BatchOperation>[];
+      final operations = <BatchOperation>[];
 
       if (userConfig["timetableNotificationId"] == null) {
         operations.add(BatchOperation.set(doc: userDoc!, data: {
@@ -246,9 +246,9 @@ class FirestoreProvider {
         }, setOptions: SetOptions(merge: true)));
       }
 
-      var submissions = await submission.get();
+      final submissions = await submission.get();
       for (var item in submissions.docs) {
-        var data = item.data();
+        final data = item.data();
         data["details"] = data["detail"];
         data["due"] = data["date"];
         data["done"] = data["done"] == 1;
@@ -261,7 +261,7 @@ class FirestoreProvider {
         ));
       }
 
-      var digestives = await digestive.get();
+      final digestives = await digestive.get();
       for (var item in digestives.docs) {
         operations.add(BatchOperation.set(
           doc: item.reference,
@@ -272,9 +272,9 @@ class FirestoreProvider {
         ));
       }
 
-      var mainTimetable = await timetable.getDoc("main");
+      final mainTimetable = await timetable.getDoc("main");
       if (mainTimetable.exists) {
-        var data = mainTimetable.data()!;
+        final data = mainTimetable.data()!;
         if (data["cells"] != null) {
           data["cells"] = (data["cells"] as Map<String, dynamic>)
               .map((key, value) => MapEntry(key, value..["tableId"] = -1));
@@ -288,9 +288,9 @@ class FirestoreProvider {
         ));
       }
 
-      var timetableClassTimes = await timetableClassTime.get();
+      final timetableClassTimes = await timetableClassTime.get();
       for (var item in timetableClassTimes.docs) {
-        var data = item.data();
+        final data = item.data();
         data["period"] = data["id"];
         data.remove("id");
 
@@ -304,7 +304,7 @@ class FirestoreProvider {
       oldVersion++;
     }
     if (oldVersion == 5) {
-      var sp = SharedPrefs(await SharedPreferences.getInstance());
+      final sp = SharedPrefs(await SharedPreferences.getInstance());
       await userDoc!.update({
         UserConfig.pathTimetableShowSaturday: sp.timetableShowSaturday,
         UserConfig.pathTimetablePeriodCountToDisplay: sp.timetablePeriodCountToDisplay,
@@ -328,7 +328,7 @@ class FirestoreProvider {
   static Future<bool> fetchData({bool force = false}) async {
     var shouldUpdateLocalData = await FirestoreProvider.checkMigration();
 
-    var checkTimestampResult = await FirestoreProvider.checkTimestamp();
+    final checkTimestampResult = await FirestoreProvider.checkTimestamp();
     if (shouldUpdateLocalData == false) {
       shouldUpdateLocalData = !force ? checkTimestampResult.changed : true;
     }
@@ -359,7 +359,7 @@ class FirestoreProvider {
         });
       });
 
-      var timetableTables = timetableSnapshot.docs
+      final timetableTables = timetableSnapshot.docs
           .where((e) => e.id != "-1")
           .map((e) => TimetableTable.fromMap({
                 "id": int.parse(e.id),
@@ -376,7 +376,7 @@ class FirestoreProvider {
       await TimetableProvider().use((provider) async {
         await provider.writeTransaction(() async {
           for (var e in timetableSnapshot.docs) {
-            var list = ((e.data()["cells"] as Map<String, dynamic>?) ?? {})
+            final list = ((e.data()["cells"] as Map<String, dynamic>?) ?? {})
                 .values
                 .map((e) => Timetable.fromMap(e))
                 .toList();
@@ -412,7 +412,7 @@ class FirestoreProvider {
     }
 
     SharedPrefs.use((prefs) {
-      var timetableConfig = checkTimestampResult.configData?.timetable;
+      final timetableConfig = checkTimestampResult.configData?.timetable;
       if (timetableConfig?.showSaturday != null) {
         prefs.timetableShowSaturday = timetableConfig!.showSaturday!;
       }

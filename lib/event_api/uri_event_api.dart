@@ -1,7 +1,7 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/services.dart';
-import 'package:submon/link_handler/link_handler.dart';
+import "package:flutter/services.dart";
+import "../link_handler/link_handler.dart";
 
 class UriEventApi {
   static const _eventName = "net.chikach.submon.event/uri";

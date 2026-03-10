@@ -1,10 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:submon/db/firestore_provider.dart';
-import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/ui_components/settings_ui.dart';
-import 'package:submon/utils/ui.dart';
-import 'package:submon/utils/utils.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:flutter/material.dart";
+import "../../db/firestore_provider.dart";
+import "../../db/shared_prefs.dart";
+import "../../ui_components/settings_ui.dart";
+import "../../utils/ui.dart";
+import "../../utils/utils.dart";
 
 class CustomizeSettingsPage extends StatefulWidget {
   const CustomizeSettingsPage({super.key});

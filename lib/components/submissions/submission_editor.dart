@@ -1,15 +1,16 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:submon/components/color_picker_dialog.dart';
-import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/events.dart';
-import 'package:submon/isar_db/isar_submission.dart';
-import 'package:submon/main.dart';
-import 'package:submon/ui_components/tappable_card.dart';
-import 'package:submon/utils/google_tasks.dart';
-import 'package:submon/utils/ui.dart';
-import 'package:submon/utils/utils.dart';
+import "package:firebase_analytics/firebase_analytics.dart";
+import "package:flutter/material.dart";
+import "package:intl/intl.dart";
+
+import "../../db/shared_prefs.dart";
+import "../../events.dart";
+import "../../isar_db/isar_submission.dart";
+import "../../main.dart";
+import "../../ui_components/tappable_card.dart";
+import "../../utils/google_tasks.dart";
+import "../../utils/ui.dart";
+import "../../utils/utils.dart";
+import "../color_picker_dialog.dart";
 
 class SubmissionEditor extends StatefulWidget {
   const SubmissionEditor(
@@ -239,8 +240,8 @@ class SubmissionEditorState extends State<SubmissionEditor> {
     );
   }
 
-  void showDateTimePickerDialog() async {
-    var dateResult = await showDialog(
+  Future<void> showDateTimePickerDialog() async {
+    final dateResult = await showDialog(
       context: context,
       builder: (context) {
         return DatePickerDialog(
@@ -252,7 +253,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
     );
     if (dateResult != null) {
       if (_addTime) {
-        var timeResult = await showDialog(
+        final timeResult = await showDialog(
           context: context,
           builder: (context) {
             return TimePickerDialog(
@@ -292,7 +293,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
     });
   }
 
-  void save() async {
+  Future<void> save() async {
     if (_titleController.text.isEmpty) {
       setState(() {
         _titleError = "入力してください";
@@ -320,7 +321,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
     // If created new
     if (widget.submissionId == null) {
       SharedPrefs.use((prefs) {
-        var context = Application.globalKey.currentContext!;
+        final context = Application.globalKey.currentContext!;
 
         // submission tips banner
         if (!prefs.isSubmissionTipsDisplayed) {
@@ -400,7 +401,7 @@ class SubmissionEditorState extends State<SubmissionEditor> {
 
 
   Future<void> addToGoogleTasks(Submission data) async {
-    var result = await GoogleTasksHelper.addTask(data);
+    final result = await GoogleTasksHelper.addTask(data);
 
     switch (result) {
       case GoogleApiError.failedToAuthenticate:

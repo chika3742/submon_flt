@@ -1,21 +1,21 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:submon/components/dropdown_time_picker_bottom_sheet.dart';
-import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/isar_db/isar_timetable.dart';
-import 'package:submon/isar_db/isar_timetable_class_time.dart';
-import 'package:submon/isar_db/isar_timetable_table.dart';
-import 'package:submon/main.dart';
-import 'package:submon/pages/settings/customize.dart';
-import 'package:submon/src/pigeons.g.dart';
-import 'package:submon/ui_components/settings_ui.dart';
-import 'package:submon/utils/ui.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:collection/collection.dart";
+import "package:flutter/material.dart";
+import "package:shared_preferences/shared_preferences.dart";
 
-import '../../db/firestore_provider.dart';
-import '../../user_config.dart';
-import '../../utils/utils.dart';
+import "../../components/dropdown_time_picker_bottom_sheet.dart";
+import "../../db/firestore_provider.dart";
+import "../../db/shared_prefs.dart";
+import "../../isar_db/isar_timetable.dart";
+import "../../isar_db/isar_timetable_class_time.dart";
+import "../../isar_db/isar_timetable_table.dart";
+import "../../main.dart";
+import "../../src/pigeons.g.dart";
+import "../../ui_components/settings_ui.dart";
+import "../../user_config.dart";
+import "../../utils/ui.dart";
+import "../../utils/utils.dart";
+import "customize.dart";
 
 class TimetableSettingsPage extends StatefulWidget {
   const TimetableSettingsPage({super.key});
@@ -202,7 +202,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
               trailing: _buildReminderNotificationTimeTrailingIcon(),
               onTap: () async {
                 // check permission
-                var requestPermissionResult =
+                final requestPermissionResult =
                     await MessagingApi().requestNotificationPermission();
                 if (requestPermissionResult?.value !=
                     NotificationPermissionState.granted) {
@@ -212,7 +212,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
                   if (!mounted) return;
 
                   // show time picker for timetable notification time
-                  var result = await showRoundedBottomSheet<TimeOfDay>(
+                  final result = await showRoundedBottomSheet<TimeOfDay>(
                     context: context,
                     title: "時間割通知の時刻を設定",
                     child: DropdownTimePickerBottomSheet(
@@ -300,7 +300,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
         SettingsCategory(
           title: "各時限の始業・終業時刻",
           tiles: [1, 2, 3, 4, 5, 6, 7, 8].map((e) {
-            var item =
+            final item =
                 classTimes.firstWhereOrNull((element) => element.period == e);
             return SettingsTile(
               title: "$e 時間目",
@@ -308,7 +308,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
                   ? "${item.startTime.format(context)} ~ ${item.endTime.format(context)}"
                   : "未設定",
               onTap: () async {
-                var start = await showTimePicker(
+                final start = await showTimePicker(
                   context: context,
                   initialTime:
                       item?.startTime ?? const TimeOfDay(hour: 0, minute: 0),
@@ -317,7 +317,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
 
                 if (start == null) return;
 
-                var end = await showTimePicker(
+                final end = await showTimePicker(
                   context: context,
                   initialTime: item?.endTime ?? start,
                   helpText: "終業時刻を設定 (2/2)",
@@ -331,10 +331,10 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
                 }
 
                 if (classTimes.any((element) {
-                  var a = element.startTime.toMinutes();
-                  var b = element.endTime.toMinutes();
-                  var x = start.toMinutes();
-                  var y = end.toMinutes();
+                  final a = element.startTime.toMinutes();
+                  final b = element.endTime.toMinutes();
+                  final x = start.toMinutes();
+                  final y = end.toMinutes();
                   return element.period != e &&
                       ((x <= b && a <= y) ||
                           ((element.period < e && x < b) ||
@@ -345,7 +345,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
                 }
 
                 await TimetableClassTimeProvider().use((provider) async {
-                  var obj = TimetableClassTime.from(
+                  final obj = TimetableClassTime.from(
                       period: e, start: start, end: end);
                   await provider.writeTransaction(() async {
                     await provider.put(obj);
@@ -398,20 +398,20 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
     );
   }
 
-  void copyTimetable(TimetableTable table) async {
+  Future<void> copyTimetable(TimetableTable table) async {
     await TimetableTableProvider().use((provider) async {
       late TimetableTable newTable;
       await provider.writeTransaction(() async {
         newTable = TimetableTable.from(
           title: "${table.title} - コピー",
         );
-        var id = await provider.put(newTable);
+        final id = await provider.put(newTable);
         newTable.id = id;
       });
 
       await TimetableProvider().use((provider) async {
         provider.currentTableId = newTable.id!;
-        var cells = await provider.getTableByTableId(table.id!);
+        final cells = await provider.getTableByTableId(table.id!);
         provider.writeTransaction(() async {
           for (var cell in cells) {
             await provider.put(
@@ -429,7 +429,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
     showSnackBar(globalContext!, "コピーしました");
   }
 
-  void changeTimetableName(TimetableTable table) async {
+  Future<void> changeTimetableName(TimetableTable table) async {
     await showRoundedBottomSheet(
       context: context,
       title: "時間割表名の編集",
@@ -456,7 +456,7 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
     getTables();
   }
 
-  void deleteTimetable(TimetableTable table) async {
+  Future<void> deleteTimetable(TimetableTable table) async {
     showSimpleDialog(
         context, "確認", "${table.title}\n\n時間割表を削除しますか？\n※一度削除すると元に戻せません",
         showCancel: true, onOKPressed: () {
@@ -464,8 +464,8 @@ class _TimetableSettingsPageState extends State<TimetableSettingsPage> {
         await provider.writeTransaction(() async {
           await provider.delete(table.id!);
         });
-        var pref = await SharedPreferences.getInstance();
-        var sp = SharedPrefs(pref);
+        final pref = await SharedPreferences.getInstance();
+        final sp = SharedPrefs(pref);
         if (sp.intCurrentTimetableId == table.id) {
           sp.intCurrentTimetableId = -1;
         }

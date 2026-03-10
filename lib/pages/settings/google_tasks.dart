@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:submon/main.dart';
-import 'package:submon/utils/ui.dart';
-import 'package:submon/utils/utils.dart';
+import "package:flutter/material.dart";
+import "../../main.dart";
+import "../../utils/ui.dart";
+import "../../utils/utils.dart";
 
 class GoogleTasksSettingsPage extends StatefulWidget {
   const GoogleTasksSettingsPage({super.key});
@@ -77,7 +77,7 @@ class _GoogleTasksSettingsPageState extends State<GoogleTasksSettingsPage> {
                           if (googleSignIn.currentUser != null) {
                             result = await googleSignIn.requestScopes(scopes);
                           } else {
-                            var r = await googleSignIn.signIn();
+                            final r = await googleSignIn.signIn();
                             if (r == null) return;
                             result = await googleSignIn.requestScopes(scopes);
                           }

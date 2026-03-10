@@ -1,14 +1,14 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:submon/components/timetable/timetable_day_list.dart';
-import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/events.dart';
+import "package:flutter/material.dart";
+import "package:shared_preferences/shared_preferences.dart";
+import "../../components/timetable/timetable_day_list.dart";
+import "../../db/shared_prefs.dart";
+import "../../events.dart";
 
-import '../../isar_db/isar_timetable.dart';
-import '../../isar_db/isar_timetable_class_time.dart';
-import '../../isar_db/isar_timetable_table.dart';
+import "../../isar_db/isar_timetable.dart";
+import "../../isar_db/isar_timetable_class_time.dart";
+import "../../isar_db/isar_timetable_table.dart";
 
 class TabTimetable2 extends StatefulWidget {
   const TabTimetable2({super.key});
@@ -42,7 +42,7 @@ class _TabTimetable2State extends State<TabTimetable2> {
     super.dispose();
   }
 
-  void initSharedPrefs() async {
+  Future<void> initSharedPrefs() async {
     prefs ??= SharedPrefs(await SharedPreferences.getInstance());
 
     initPagePos();
@@ -61,7 +61,7 @@ class _TabTimetable2State extends State<TabTimetable2> {
     initTable();
   }
 
-  void initTable() async {
+  Future<void> initTable() async {
     await TimetableProvider().use((provider) async {
       _items = await provider.getCurrentTable();
     });
@@ -72,7 +72,7 @@ class _TabTimetable2State extends State<TabTimetable2> {
       _tables = await provider.getAll();
     });
 
-    var sharedPrefs = SharedPrefs(await SharedPreferences.getInstance());
+    final sharedPrefs = SharedPrefs(await SharedPreferences.getInstance());
     if (!_tables!.any((element) => element.id == sharedPrefs.intCurrentTimetableId)) {
       sharedPrefs.intCurrentTimetableId = -1;
     }
@@ -92,7 +92,7 @@ class _TabTimetable2State extends State<TabTimetable2> {
             itemCount: prefs!.timetableShowSaturday ? 6 : 5,
             controller: _controller,
             itemBuilder: (context, index) {
-              var items = _items!
+              final items = _items!
                   .where((element) => element.cellId % 6 == index)
                   .toList();
               return TimetableDayList(

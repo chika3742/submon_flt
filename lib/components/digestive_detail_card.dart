@@ -1,15 +1,15 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:submon/events.dart';
-import 'package:submon/isar_db/isar_digestive.dart';
-import 'package:submon/main.dart';
-import 'package:submon/pages/focus_timer_page.dart';
-import 'package:submon/pages/home_tabs/tab_digestive_list.dart';
-import 'package:submon/utils/ui.dart';
+import "package:flutter/material.dart";
+import "package:intl/intl.dart";
+import "../events.dart";
+import "../isar_db/isar_digestive.dart";
+import "../main.dart";
+import "../pages/focus_timer_page.dart";
+import "../pages/home_tabs/tab_digestive_list.dart";
+import "../utils/ui.dart";
 
-import 'digestive_edit_bottom_sheet.dart';
+import "digestive_edit_bottom_sheet.dart";
 
 
 class DigestiveDetailCard extends StatefulWidget {
@@ -47,7 +47,7 @@ class DigestiveDetailCardState extends State<DigestiveDetailCard> {
 
   @override
   Widget build(BuildContext context) {
-    var digestive = widget.digestive;
+    final digestive = widget.digestive;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
       child: Card(
@@ -215,7 +215,7 @@ class DigestiveDetailCardState extends State<DigestiveDetailCard> {
     listener?.cancel();
   }
 
-  static void done(Digestive digestive, bool done) async {
+  static Future<void> done(Digestive digestive, bool done) async {
     await DigestiveProvider().use((provider) async {
       provider.writeTransaction(() async {
         await provider.put(digestive..done = done);
@@ -237,8 +237,8 @@ class DigestiveDetailCardState extends State<DigestiveDetailCard> {
         ));
   }
 
-  void edit() async {
-    var data = await showRoundedBottomSheet<Digestive>(
+  Future<void> edit() async {
+    final data = await showRoundedBottomSheet<Digestive>(
       context: context,
       useRootNavigator: true,
       title: "編集",
@@ -254,7 +254,7 @@ class DigestiveDetailCardState extends State<DigestiveDetailCard> {
         });
       });
 
-      var index = widget.parentList
+      final index = widget.parentList
           .indexWhere((element) => element.id == widget.digestive.id);
       if (widget.parentList is List<DigestiveWithSubmission>) {
         widget.parentList[index] = DigestiveWithSubmission.fromObject(data,
@@ -268,14 +268,14 @@ class DigestiveDetailCardState extends State<DigestiveDetailCard> {
     }
   }
 
-  void delete() async {
+  Future<void> delete() async {
     await DigestiveProvider().use((provider) async {
       provider.writeTransaction(() async {
         await provider.delete(widget.digestive.id!);
       });
     });
     var removedIndex = widget.parentList.indexOf(widget.digestive);
-    var removed = widget.parentList.removeAt(removedIndex);
+    final removed = widget.parentList.removeAt(removedIndex);
     widget.onChanged?.call();
 
     showSnackBar(Application.globalKey.currentContext!, "削除しました",
@@ -297,7 +297,7 @@ class DigestiveDetailCardState extends State<DigestiveDetailCard> {
         ));
   }
 
-  void openTimerPage([bool force = false]) async {
+  Future<void> openTimerPage([bool force = false]) async {
     if (widget.digestive.done && !force) {
       showSnackBar(context, "このDigestiveは既に完了しています。", action: SnackBarAction(label: "それでも続ける", onPressed: () {
         openTimerPage(true);

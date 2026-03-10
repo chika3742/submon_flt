@@ -1,13 +1,13 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/material.dart';
-import 'package:submon/components/timetable/timetable.dart';
-import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/events.dart';
-import 'package:submon/isar_db/isar_timetable.dart' as db;
-import 'package:submon/isar_db/isar_timetable_table.dart';
-import 'package:submon/main.dart';
-import 'package:submon/utils/ui.dart';
+import "package:flutter/material.dart";
+import "../../components/timetable/timetable.dart";
+import "../../db/shared_prefs.dart";
+import "../../events.dart";
+import "../../isar_db/isar_timetable.dart" as db;
+import "../../isar_db/isar_timetable_table.dart";
+import "../../main.dart";
+import "../../utils/ui.dart";
 
 class TabTimetable extends StatefulWidget {
   const TabTimetable({super.key});
@@ -37,7 +37,7 @@ class TabTimetableState extends State<TabTimetable> {
       });
 
       if (prefs.isTimetableInsertedOnce && !prefs.isTimetableTipsDisplayed) {
-        var context = Application.globalKey.currentContext!;
+        final context = Application.globalKey.currentContext!;
         showMaterialBanner(
           context,
           content: const Text("科目を長押しで、その科目の提出物を作成できます。"),
@@ -93,7 +93,7 @@ class TabTimetableState extends State<TabTimetable> {
                     items: [
                       const DropdownMenuItem(
                         value: -1,
-                        child: Text('メイン'),
+                        child: Text("メイン"),
                       ),
                       ...tables.map((e) => DropdownMenuItem(
                             value: e.id,

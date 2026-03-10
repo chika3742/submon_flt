@@ -1,4 +1,4 @@
-import 'package:submon/models/sign_in_result.dart';
+import "sign_in_result.dart";
 
 class TwitterSignInResult {
   TwitterSignInResult(

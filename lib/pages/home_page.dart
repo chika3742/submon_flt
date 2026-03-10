@@ -1,34 +1,34 @@
-import 'dart:async';
-import 'dart:io';
+import "dart:async";
+import "dart:io";
 
-import 'package:animations/animations.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:submon/browser.dart';
-import 'package:submon/db/firestore_provider.dart';
-import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/events.dart';
-import 'package:submon/isar_db/isar_provider.dart';
-import 'package:submon/main.dart';
-import 'package:submon/pages/home_tabs/tab_digestive_list.dart';
-import 'package:submon/pages/home_tabs/tab_others.dart';
-import 'package:submon/pages/home_tabs/tab_submissions.dart';
-import 'package:submon/pages/settings/timetable.dart';
-import 'package:submon/pages/submission_create_page.dart';
-import 'package:submon/pages/timetable_table_view_page.dart';
-import 'package:submon/src/pigeons.g.dart';
-import 'package:submon/ui_components/hidable_progress_indicator.dart';
-import 'package:submon/utils/firestore.dart';
-import 'package:submon/utils/ui.dart';
-import 'package:submon/utils/utils.dart';
+import "package:animations/animations.dart";
+import "package:firebase_analytics/firebase_analytics.dart";
+import "package:firebase_auth/firebase_auth.dart";
+import "package:firebase_crashlytics/firebase_crashlytics.dart";
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:google_mobile_ads/google_mobile_ads.dart";
 
-import '../fade_through_page_route.dart';
-import '../utils/ad_unit_ids.dart';
-import 'home_tabs/tab_timetable_2.dart';
+import "../browser.dart";
+import "../db/firestore_provider.dart";
+import "../db/shared_prefs.dart";
+import "../events.dart";
+import "../fade_through_page_route.dart";
+import "../isar_db/isar_provider.dart";
+import "../main.dart";
+import "../src/pigeons.g.dart";
+import "../ui_components/hidable_progress_indicator.dart";
+import "../utils/ad_unit_ids.dart";
+import "../utils/firestore.dart";
+import "../utils/ui.dart";
+import "../utils/utils.dart";
+import "home_tabs/tab_digestive_list.dart";
+import "home_tabs/tab_others.dart";
+import "home_tabs/tab_submissions.dart";
+import "home_tabs/tab_timetable_2.dart";
+import "settings/timetable.dart";
+import "submission_create_page.dart";
+import "timetable_table_view_page.dart";
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -168,7 +168,7 @@ class HomePageState extends State<HomePage> {
     switchBottomNavListener = eventBus.on<SwitchBottomNav>().listen((event) {
       Timer.periodic(const Duration(milliseconds: 25), (timer) {
         if (_navigatorKey.currentState != null && IsarProvider.opening == false) {
-          var index = _bottomNavItems.indexWhere((e) => e.path == event.path);
+          final index = _bottomNavItems.indexWhere((e) => e.path == event.path);
           if (index != -1) {
             onBottomNavTap(index);
           } else {
@@ -339,14 +339,14 @@ class HomePageState extends State<HomePage> {
         .logScreenView(screenName: "/tab/${_bottomNavItems[index].path}");
   }
 
-  void fetchData() async {
+  Future<void> fetchData() async {
     if (userDoc == null) return;
     setState(() {
       _loading = true;
     });
 
     try {
-      var result = await FirestoreProvider.fetchData();
+      final result = await FirestoreProvider.fetchData();
 
       if (result) {
         _navigatorKey.currentState

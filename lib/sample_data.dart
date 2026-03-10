@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:submon/utils/date_time_utils.dart';
+import "package:flutter/material.dart";
 
-import 'isar_db/isar_digestive.dart';
-import 'isar_db/isar_submission.dart';
-import 'isar_db/isar_timetable.dart';
+import "isar_db/isar_digestive.dart";
+import "isar_db/isar_submission.dart";
+import "isar_db/isar_timetable.dart";
+import "utils/date_time_utils.dart";
 
 class SampleData {
   SampleData._();

@@ -1,17 +1,18 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:animations/animations.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:submon/components/submissions/formatted_date_remaining.dart';
-import 'package:submon/components/submissions/submission_list_item_bottom_sheet.dart';
-import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/firebase/analytics.dart';
-import 'package:submon/isar_db/isar_submission.dart';
-import 'package:submon/main.dart';
-import 'package:submon/pages/submission_detail_page.dart';
-import 'package:submon/utils/ui.dart';
+import "package:animations/animations.dart";
+import "package:firebase_analytics/firebase_analytics.dart";
+import "package:flutter/material.dart";
+import "package:intl/intl.dart";
+
+import "../../db/shared_prefs.dart";
+import "../../firebase/analytics.dart";
+import "../../isar_db/isar_submission.dart";
+import "../../main.dart";
+import "../../pages/submission_detail_page.dart";
+import "../../utils/ui.dart";
+import "formatted_date_remaining.dart";
+import "submission_list_item_bottom_sheet.dart";
 
 class SubmissionListItem extends StatefulWidget {
   const SubmissionListItem(this.item,
@@ -80,7 +81,7 @@ class SubmissionListItemState extends State<SubmissionListItem> {
           closedShape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(8))),
           closedBuilder: (context, callback) {
-            var overdue = widget.item.due.isBefore(DateTime.now());
+            final overdue = widget.item.due.isBefore(DateTime.now());
             return Material(
               color: _item.getColor().withValues(alpha: 0.2),
               child: InkWell(

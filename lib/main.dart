@@ -1,48 +1,48 @@
-import 'dart:async';
-import 'dart:io';
-import 'dart:ui';
+import "dart:async";
+import "dart:io";
+import "dart:ui";
 
-import 'package:animations/animations.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:googleapis/tasks/v1.dart' as tasks;
-import 'package:intl/intl.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/event_api/uri_event_api.dart';
-import 'package:submon/models/sign_in_result.dart';
-import 'package:submon/pages/done_submissions_page.dart';
-import 'package:submon/pages/email_registration_page.dart';
-import 'package:submon/pages/email_sign_in_page.dart';
-import 'package:submon/pages/focus_timer_page.dart';
-import 'package:submon/pages/home_page.dart';
-import 'package:submon/pages/settings/account_edit_page.dart';
-import 'package:submon/pages/settings/account_link_page.dart';
-import 'package:submon/pages/settings/customize.dart';
-import 'package:submon/pages/settings/functions.dart';
-import 'package:submon/pages/settings/general.dart';
-import 'package:submon/pages/settings/google_tasks.dart';
-import 'package:submon/pages/settings/timetable.dart';
-import 'package:submon/pages/settings_page.dart';
-import 'package:submon/pages/sign_in_page.dart';
-import 'package:submon/pages/submission_create_page.dart';
-import 'package:submon/pages/submission_detail_page.dart';
-import 'package:submon/pages/submission_edit_page.dart';
-import 'package:submon/pages/timetable_edit_page.dart';
-import 'package:submon/pages/timetable_table_view_page.dart';
-import 'package:submon/pages/welcome_page.dart';
+import "package:animations/animations.dart";
+import "package:firebase_analytics/firebase_analytics.dart";
+import "package:firebase_auth/firebase_auth.dart";
+import "package:firebase_core/firebase_core.dart";
+import "package:firebase_crashlytics/firebase_crashlytics.dart";
+import "package:flutter/cupertino.dart";
+import "package:flutter/foundation.dart";
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:flutter_dotenv/flutter_dotenv.dart";
+import "package:flutter_localizations/flutter_localizations.dart";
+import "package:google_mobile_ads/google_mobile_ads.dart";
+import "package:google_sign_in/google_sign_in.dart";
+import "package:googleapis/tasks/v1.dart" as tasks;
+import "package:intl/intl.dart";
+import "package:package_info_plus/package_info_plus.dart";
 
-import 'link_handler/link_handler.dart';
+import "db/shared_prefs.dart";
+import "event_api/uri_event_api.dart";
+import "link_handler/link_handler.dart";
+import "models/sign_in_result.dart";
+import "pages/done_submissions_page.dart";
+import "pages/email_registration_page.dart";
+import "pages/email_sign_in_page.dart";
+import "pages/focus_timer_page.dart";
+import "pages/home_page.dart";
+import "pages/settings/account_edit_page.dart";
+import "pages/settings/account_link_page.dart";
+import "pages/settings/customize.dart";
+import "pages/settings/functions.dart";
+import "pages/settings/general.dart";
+import "pages/settings/google_tasks.dart";
+import "pages/settings/timetable.dart";
+import "pages/settings_page.dart";
+import "pages/sign_in_page.dart";
+import "pages/submission_create_page.dart";
+import "pages/submission_detail_page.dart";
+import "pages/submission_edit_page.dart";
+import "pages/timetable_edit_page.dart";
+import "pages/timetable_table_view_page.dart";
+import "pages/welcome_page.dart";
 
 var scopes = [tasks.TasksApi.tasksScope];
 var googleSignIn = GoogleSignIn(scopes: scopes);
@@ -68,13 +68,13 @@ void main() async {
       // register font licenses
       LicenseRegistry.addLicense(() async* {
         yield LicenseEntryWithLineBreaks(["google_fonts"],
-            await rootBundle.loadString('assets/google_fonts/Murecho/OFL.txt'));
+            await rootBundle.loadString("assets/google_fonts/Murecho/OFL.txt"));
         yield LicenseEntryWithLineBreaks(
             ["google_fonts"],
             await rootBundle
-                .loadString('assets/google_fonts/B612_Mono/OFL.txt'));
+                .loadString("assets/google_fonts/B612_Mono/OFL.txt"));
         yield LicenseEntryWithLineBreaks(["google_fonts"],
-            await rootBundle.loadString('assets/google_fonts/Play/OFL.txt'));
+            await rootBundle.loadString("assets/google_fonts/Play/OFL.txt"));
       });
 
       Intl.defaultLocale = PlatformDispatcher.instance.locale.toString();
@@ -131,7 +131,7 @@ class _ApplicationState extends State<Application> {
       return Container();
     }
 
-    var textTheme = const TextTheme(
+    final textTheme = const TextTheme(
       bodySmall: TextStyle(
         height: 1.2,
       ),
@@ -177,7 +177,7 @@ class _ApplicationState extends State<Application> {
       TargetPlatform.iOS: CupertinoPageTransitionsBuilder()
     });
     return MaterialApp(
-      title: 'Submon',
+      title: "Submon",
       debugShowCheckedModeBanner: !screenShotMode,
       navigatorKey: Application.globalKey,
       navigatorObservers: [
@@ -217,23 +217,23 @@ class _ApplicationState extends State<Application> {
             return generatePageRoute(
                 (context) => const WelcomePage(), settings);
           case FocusTimerPage.routeName:
-            var args = settings.arguments as FocusTimerPageArguments;
+            final args = settings.arguments as FocusTimerPageArguments;
             return generatePageRoute<bool>(
                 (context) => FocusTimerPage(digestive: args.digestive),
                 settings);
           case SubmissionEditPage.routeName:
-            var args = settings.arguments as SubmissionEditPageArguments;
+            final args = settings.arguments as SubmissionEditPageArguments;
             return generatePageRoute(
                 (context) => SubmissionEditPage(args.submissionId), settings);
           case CreateSubmissionPage.routeName:
-            var args = settings.arguments as CreateSubmissionPageArguments;
+            final args = settings.arguments as CreateSubmissionPageArguments;
             return generatePageRoute<int>(
                 (context) => CreateSubmissionPage(
                     initialTitle: args.initialTitle,
                     initialDeadline: args.initialDeadline),
                 settings);
           case SubmissionDetailPage.routeName:
-            var args = settings.arguments as SubmissionDetailPageArguments;
+            final args = settings.arguments as SubmissionDetailPageArguments;
             return generatePageRoute(
                 (context) => SubmissionDetailPage(args.submissionId), settings);
           case TimetableEditPage.routeName:
@@ -246,7 +246,7 @@ class _ApplicationState extends State<Application> {
             return generatePageRoute(
                 (context) => const DoneSubmissionsPage(), settings);
           case SignInPage.routeName:
-            var args = settings.arguments as SignInPageArguments;
+            final args = settings.arguments as SignInPageArguments;
             return generatePageRoute<bool>(
               (context) => SignInPage(
                 initialCred: args.initialCred,
@@ -256,11 +256,11 @@ class _ApplicationState extends State<Application> {
               settings,
             );
           case EmailSignInPage.routeName:
-            var args = settings.arguments as EmailSignInPageArguments;
+            final args = settings.arguments as EmailSignInPageArguments;
             return generatePageRoute<SignInResult>(
                 (context) => EmailSignInPage(mode: args.mode), settings);
           case EmailRegistrationPage.routeName:
-            var args = settings.arguments as EmailRegistrationPageArguments;
+            final args = settings.arguments as EmailRegistrationPageArguments;
             return generatePageRoute<UserCredential>(
                 (context) => EmailRegistrationPage(email: args.email),
                 settings);
@@ -333,7 +333,7 @@ class _ApplicationState extends State<Application> {
     }
   }
 
-  void initFirebase() async {
+  Future<void> initFirebase() async {
     try {
       await Firebase.initializeApp();
       if (!screenShotMode) {

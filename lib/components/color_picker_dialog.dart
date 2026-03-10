@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
 class ColorPickerDialog extends StatefulWidget {
   const ColorPickerDialog({super.key, required this.initialColor});
@@ -6,10 +6,10 @@ class ColorPickerDialog extends StatefulWidget {
   final Color initialColor;
 
   @override
-  _ColorPickerDialogState createState() => _ColorPickerDialogState();
+  ColorPickerDialogState createState() => ColorPickerDialogState();
 }
 
-class _ColorPickerDialogState extends State<ColorPickerDialog> {
+class ColorPickerDialogState extends State<ColorPickerDialog> {
   static final colors = [
     Colors.white,
     Colors.pink,
@@ -116,13 +116,13 @@ class _ColorPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    var outlinePaint = Paint()
+    final outlinePaint = Paint()
       ..isAntiAlias = true
       ..color = Colors.grey
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
 
-    var innerPaint = Paint()
+    final innerPaint = Paint()
       ..isAntiAlias = true
       ..color = color
       ..style = PaintingStyle.fill;

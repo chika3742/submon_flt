@@ -1,14 +1,15 @@
-import 'package:isar_community/isar.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:submon/isar_db/isar_digestive.dart';
-import 'package:submon/isar_db/isar_memorization_card_group.dart';
-import 'package:submon/isar_db/isar_submission.dart';
-import 'package:submon/isar_db/isar_timetable.dart';
-import 'package:submon/isar_db/isar_timetable_class_time.dart';
-import 'package:submon/isar_db/isar_timetable_table.dart';
-import 'package:submon/main.dart';
-import 'package:submon/utils/ui.dart';
-import 'package:submon/utils/utils.dart';
+import "package:isar_community/isar.dart";
+import "package:path_provider/path_provider.dart";
+
+import "../main.dart";
+import "../utils/ui.dart";
+import "../utils/utils.dart";
+import "isar_digestive.dart";
+import "isar_memorization_card_group.dart";
+import "isar_submission.dart";
+import "isar_timetable.dart";
+import "isar_timetable_class_time.dart";
+import "isar_timetable_table.dart";
 
 const schemaVersion = 7;
 
@@ -18,7 +19,7 @@ abstract class IsarProvider<T> {
   static var opening = false;
 
   static Future<void> clear() async {
-    var isar = await _openInternal();
+    final isar = await _openInternal();
     await isar.writeTxn(() async {
       await isar.clear();
     });
@@ -30,7 +31,7 @@ abstract class IsarProvider<T> {
       return instance;
     } else {
       opening = true;
-      var dir = await getApplicationSupportDirectory();
+      final dir = await getApplicationSupportDirectory();
       instance = await Isar.open([
         SubmissionSchema,
         DigestiveSchema,
@@ -67,7 +68,7 @@ abstract class IsarProvider<T> {
   /// オブジェクト [data] を挿入または更新し、割り当てられた [id] を返す。Firestore上のデータも同様に挿入・更新する。
   ///
   Future<int> put(T data) async {
-    var id = await collection.put(data);
+    final id = await collection.put(data);
     _setFirestore(data, id);
     return id;
   }

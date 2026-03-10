@@ -1,31 +1,31 @@
-import 'dart:io';
+import "dart:io";
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/material.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:submon/db/firestore_provider.dart';
-import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/pages/done_submissions_page.dart';
-import 'package:submon/pages/settings/customize.dart';
-import 'package:submon/pages/settings/functions.dart';
-import 'package:submon/pages/settings/general.dart';
-import 'package:submon/ui_components/hidable_progress_indicator.dart';
-import 'package:submon/ui_components/settings_ui.dart';
-import 'package:submon/utils/utils.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:device_info_plus/device_info_plus.dart";
+import "package:firebase_crashlytics/firebase_crashlytics.dart";
+import "package:flutter/material.dart";
+import "package:package_info_plus/package_info_plus.dart";
+import "package:url_launcher/url_launcher_string.dart";
 
-import '../../browser.dart';
+import "../../browser.dart";
+import "../../db/firestore_provider.dart";
+import "../../db/shared_prefs.dart";
+import "../../ui_components/hidable_progress_indicator.dart";
+import "../../ui_components/settings_ui.dart";
+import "../../utils/utils.dart";
+import "../done_submissions_page.dart";
+import "../settings/customize.dart";
+import "../settings/functions.dart";
+import "../settings/general.dart";
 
 class TabOthers extends StatefulWidget {
   const TabOthers({super.key});
 
   @override
-  _TabOthersState createState() => _TabOthersState();
+  TabOthersState createState() => TabOthersState();
 }
 
-class _TabOthersState extends State<TabOthers> {
+class TabOthersState extends State<TabOthers> {
   var _loading = false;
   SharedPrefs? prefs;
 
@@ -117,23 +117,23 @@ class _TabOthersState extends State<TabOthers> {
                     subtitle: "不具合報告や細かな改善要望はこちら。",
                     leading: const Icon(Icons.rate_review),
                     onTap: () async {
-                      var deviceInfoPlugin = DeviceInfoPlugin();
+                      final deviceInfoPlugin = DeviceInfoPlugin();
                       var deviceNameAndVer = "";
 
                       // TODO: macOS / Windows
                       if (Platform.isAndroid) {
-                        var info = await deviceInfoPlugin.androidInfo;
+                        final info = await deviceInfoPlugin.androidInfo;
                         deviceNameAndVer =
                             "${info.model} / Android ${info.version.release}";
                       } else if (Platform.isIOS) {
-                        var info = await deviceInfoPlugin.iosInfo;
+                        final info = await deviceInfoPlugin.iosInfo;
                         deviceNameAndVer =
                             "${info.utsname.machine} / iOS ${info.systemVersion}";
                       }
 
-                      var appVer = (await PackageInfo.fromPlatform()).version;
+                      final appVer = (await PackageInfo.fromPlatform()).version;
 
-                      var url =
+                      final url =
                           "https://docs.google.com/forms/d/e/1FAIpQLSeb0kHMcYWkl8LDpiS6NqoViuU5DHL8FcRRBHyMXXSzhiCx3Q/viewform?usp=pp_url&entry.1179597929=${Uri.encodeQueryComponent(deviceNameAndVer)}&entry.1250051436=${Uri.encodeQueryComponent(appVer)}";
                       launchUrlString(url,
                           mode: LaunchMode.externalApplication);

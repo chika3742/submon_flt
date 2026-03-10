@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:submon/utils/ui.dart';
+import "package:flutter/material.dart";
+import "../utils/ui.dart";
 
 class TappableCard extends StatelessWidget {
   const TappableCard({super.key, this.child, this.onTap, this.color});

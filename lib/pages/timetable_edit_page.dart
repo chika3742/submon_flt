@@ -1,9 +1,9 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/material.dart';
-import 'package:submon/components/timetable/timetable.dart';
-import 'package:submon/events.dart';
-import 'package:submon/isar_db/isar_timetable.dart' as db;
+import "package:flutter/material.dart";
+import "../components/timetable/timetable.dart";
+import "../events.dart";
+import "../isar_db/isar_timetable.dart" as db;
 
 class TimetableEditPage extends StatefulWidget {
   const TimetableEditPage({super.key});

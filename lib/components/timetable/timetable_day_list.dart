@@ -1,18 +1,18 @@
-import 'dart:async';
-import 'dart:math';
+import "dart:async";
+import "dart:math";
 
-import 'package:animations/animations.dart';
-import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
-import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/main.dart';
-import 'package:submon/pages/timetable_cell_edit_page.dart';
-import 'package:submon/utils/ui.dart';
-import 'package:submon/utils/utils.dart';
+import "package:animations/animations.dart";
+import "package:collection/collection.dart";
+import "package:flutter/material.dart";
 
-import '../../isar_db/isar_timetable.dart';
-import '../../isar_db/isar_timetable_class_time.dart';
-import '../../sample_data.dart';
+import "../../db/shared_prefs.dart";
+import "../../isar_db/isar_timetable.dart";
+import "../../isar_db/isar_timetable_class_time.dart";
+import "../../main.dart";
+import "../../pages/timetable_cell_edit_page.dart";
+import "../../sample_data.dart";
+import "../../utils/ui.dart";
+import "../../utils/utils.dart";
 
 class TimetableDayList extends StatefulWidget {
   const TimetableDayList({
@@ -58,13 +58,13 @@ class _TimetableDayListState extends State<TimetableDayList> {
     }
     Future(() {
       setState(() {
-        var currentTime = TimeOfDay.now();
-        var currentPeriod = widget.classTimeItems.firstWhereOrNull((element) {
+        final currentTime = TimeOfDay.now();
+        final currentPeriod = widget.classTimeItems.firstWhereOrNull((element) {
           return currentTime.isInsideRange(element.startTime, element.endTime);
         });
 
         if (currentPeriod != null) {
-          var currentContext =
+          final currentContext =
               GlobalObjectKey(getWidgetId(currentPeriod.period - 1))
                   .currentContext;
           _markerPos = getWidgetPos(currentContext)!.dy -
@@ -74,14 +74,14 @@ class _TimetableDayListState extends State<TimetableDayList> {
                       (currentPeriod.endTime.toMinutes() -
                           currentPeriod.startTime.toMinutes()));
         } else {
-          var interval = widget.classTimeItems.firstWhereOrNull((e) {
+          final interval = widget.classTimeItems.firstWhereOrNull((e) {
             return e.endTime.toMinutes() < currentTime.toMinutes() &&
                 widget.classTimeItems.any((element) =>
                 element.period == e.period + 1 &&
                     currentTime.toMinutes() < element.startTime.toMinutes());
           });
           if (interval != null) {
-            var currentContext =
+            final currentContext =
                 GlobalObjectKey(getWidgetId(interval.period - 1))
                     .currentContext;
             _markerPos = getWidgetPos(currentContext)!.dy -
@@ -98,7 +98,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
 
   @override
   Widget build(BuildContext context) {
-    var isCurrentDay = widget.weekday == DateTime.now().weekday - 1;
+    final isCurrentDay = widget.weekday == DateTime.now().weekday - 1;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -141,7 +141,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
 
   Offset? getWidgetPos(BuildContext? context) {
     if (context == null) return null;
-    var childOffset =
+    final childOffset =
         (context.findRenderObject() as RenderBox).localToGlobal(Offset.zero);
     return (_columnKey.currentContext?.findRenderObject() as RenderBox)
         .globalToLocal(childOffset);
@@ -199,7 +199,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
   Widget _buildTimetableCell(int index, Timetable? data) {
     TimetableClassTime? timeItem;
     if (screenShotMode) {
-      var startHour = [9, 10, 11, 13, 14][index];
+      final startHour = [9, 10, 11, 13, 14][index];
       timeItem = TimetableClassTime.fromStartEnd(TimeOfDay(hour: startHour, minute: 0), TimeOfDay(hour: startHour, minute: 50));
     } else {
       timeItem = widget.classTimeItems

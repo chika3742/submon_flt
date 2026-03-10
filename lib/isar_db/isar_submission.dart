@@ -1,16 +1,17 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collection/collection.dart';
-import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:googleapis/tasks/v1.dart' as tasks;
-import 'package:isar_community/isar.dart';
-import 'package:submon/db/firestore_provider.dart';
-import 'package:submon/isar_db/isar_digestive.dart';
-import 'package:submon/isar_db/isar_provider.dart';
-import 'package:submon/main.dart';
-import 'package:submon/src/pigeons.g.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:collection/collection.dart";
+import "package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart";
+import "package:flutter/material.dart";
+import "package:googleapis/tasks/v1.dart" as tasks;
+import "package:isar_community/isar.dart";
 
-part '../generated/isar_db/isar_submission.g.dart';
+import "../db/firestore_provider.dart";
+import "../main.dart";
+import "../src/pigeons.g.dart";
+import "isar_digestive.dart";
+import "isar_provider.dart";
+
+part "../generated/isar_db/isar_submission.g.dart";
 
 typedef Restorable = Future<void> Function();
 
@@ -31,7 +32,7 @@ class Submission {
   bool? repeatSubmissionCreated;
 
   Submission() {
-    var nextDate = DateTime.now()..add(const Duration(days: 1)).toLocal();
+    final nextDate = DateTime.now()..add(const Duration(days: 1)).toLocal();
     due = DateTime(nextDate.year, nextDate.month, nextDate.day, 23, 59);
   }
 
@@ -170,9 +171,9 @@ class SubmissionProvider extends IsarProvider<Submission> {
     if (taskId != null) {
       googleSignIn.authenticatedClient().then((client) async {
         if (client != null) {
-          var tasksApi = tasks.TasksApi(client);
+          final tasksApi = tasks.TasksApi(client);
 
-          var tasklist =
+          final tasklist =
               (await tasksApi.tasklists.list(maxResults: 1)).items?.firstOrNull;
           if (tasklist != null) {
             tasksApi.tasks.delete(tasklist.id!, taskId);

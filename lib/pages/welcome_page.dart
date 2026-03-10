@@ -1,19 +1,19 @@
-import 'dart:io';
+import "dart:io";
 
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:submon/auth/sign_in_handler.dart';
-import 'package:submon/browser.dart';
-import 'package:submon/db/firestore_provider.dart';
-import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/main.dart';
-import 'package:submon/pages/sign_in_page.dart';
-import 'package:submon/utils/ui.dart';
+import "package:firebase_analytics/firebase_analytics.dart";
+import "package:firebase_auth/firebase_auth.dart";
+import "package:firebase_crashlytics/firebase_crashlytics.dart";
+import "package:flutter/foundation.dart";
+import "package:flutter/material.dart";
 
-import 'home_page.dart';
+import "../auth/sign_in_handler.dart";
+import "../browser.dart";
+import "../db/firestore_provider.dart";
+import "../db/shared_prefs.dart";
+import "../main.dart";
+import "../utils/ui.dart";
+import "home_page.dart";
+import "sign_in_page.dart";
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -38,7 +38,7 @@ class _WelcomePageState extends State<WelcomePage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: const Text('ようこそ'),
+        title: const Text("ようこそ"),
       ),
       body: SizedBox.expand(
         child: SingleChildScrollView(
@@ -48,21 +48,21 @@ class _WelcomePageState extends State<WelcomePage> {
               child: Column(
                 children: [
                   const SizedBox(height: 32),
-                  const Text('Submon',
+                  const Text("Submon",
                       style: TextStyle(
                         fontFamily: "Play",
                         fontSize: 50,
                         fontWeight: FontWeight.bold,
                       )),
                   const SizedBox(height: 8),
-                  const Text('簡単に提出物を一括管理', style: TextStyle(fontSize: 15)),
+                  const Text("簡単に提出物を一括管理", style: TextStyle(fontSize: 15)),
                   const SizedBox(height: 96),
                   SizedBox(
                     height: 55,
                     width: 240,
                     child: ElevatedButton(
                       onPressed: () async {
-                        var result = await Navigator.pushNamed(
+                        final result = await Navigator.pushNamed(
                             context, SignInPage.routeName,
                             arguments:
                                 const SignInPageArguments(SignInMode.normal));
@@ -73,7 +73,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.redAccent),
-                      child: const Text('ログインして始める',
+                      child: const Text("ログインして始める",
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 20,
@@ -116,7 +116,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.grey),
-                      child: const Text('お試しモードで開始',
+                      child: const Text("お試しモードで開始",
                           style: TextStyle(color: Colors.white, fontSize: 16)),
                     ),
                   ),
@@ -124,8 +124,8 @@ class _WelcomePageState extends State<WelcomePage> {
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
-                      '面倒なアカウント作成手続きは不要。\n\n'
-                      '続けるには、「利用規約」「プライバシーポリシー」に同意する必要があります。',
+                      "面倒なアカウント作成手続きは不要。\n\n"
+                      "続けるには、「利用規約」「プライバシーポリシー」に同意する必要があります。",
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -135,11 +135,11 @@ class _WelcomePageState extends State<WelcomePage> {
                     children: [
                       OutlinedButton(
                         onPressed: Browser.openTermsOfUse,
-                        child: Text('利用規約'),
+                        child: Text("利用規約"),
                       ),
                       OutlinedButton(
                         onPressed: Browser.openPrivacyPolicy,
-                        child: Text('プライバシーポリシー'),
+                        child: Text("プライバシーポリシー"),
                       ),
                     ],
                   ),
@@ -147,9 +147,9 @@ class _WelcomePageState extends State<WelcomePage> {
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
-                        'ログイン後、「他社のAppやWebサイトを横断してトラッキング'
-                        'することを許可」するか尋ねるダイアログが表示される'
-                        '場合があります。これは最適な広告表示のためのものです。',
+                        "ログイン後、「他社のAppやWebサイトを横断してトラッキング"
+                        "することを許可」するか尋ねるダイアログが表示される"
+                        "場合があります。これは最適な広告表示のためのものです。",
                         style: Theme.of(context).textTheme.bodyLarge,
                         textAlign: TextAlign.center,
                       ),
@@ -175,11 +175,11 @@ class _WelcomePageState extends State<WelcomePage> {
                       Flexible(
                         child: Text.rich(
                           const TextSpan(children: [
-                            TextSpan(text: 'アプリの改善に利用する使用状況データ(匿名)の収集を'),
+                            TextSpan(text: "アプリの改善に利用する使用状況データ(匿名)の収集を"),
                             TextSpan(
-                                text: '拒否',
+                                text: "拒否",
                                 style: TextStyle(fontWeight: FontWeight.bold)),
-                            TextSpan(text: 'する'),
+                            TextSpan(text: "する"),
                           ]),
                           style: TextStyle(
                               fontSize: 14,

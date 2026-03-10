@@ -1,14 +1,14 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/main.dart';
-import 'package:submon/models/sign_in_result.dart';
-import 'package:submon/pages/email_registration_page.dart';
-import 'package:submon/utils/ui.dart';
+import "package:firebase_auth/firebase_auth.dart";
+import "package:flutter/material.dart";
 
-import '../auth/sign_in_handler.dart';
-import '../utils/app_links.dart';
-import '../utils/utils.dart';
+import "../auth/sign_in_handler.dart";
+import "../db/shared_prefs.dart";
+import "../main.dart";
+import "../models/sign_in_result.dart";
+import "../utils/app_links.dart";
+import "../utils/ui.dart";
+import "../utils/utils.dart";
+import "email_registration_page.dart";
 
 class EmailSignInPage extends StatefulWidget {
   const EmailSignInPage({
@@ -183,7 +183,7 @@ class EmailSignInPageState extends State<EmailSignInPage>
     );
   }
 
-  void next() async {
+  Future<void> next() async {
     // フォームエラーハンドリング
     if (emailController.text.isEmpty) {
       setState(() {
@@ -205,11 +205,11 @@ class EmailSignInPageState extends State<EmailSignInPage>
     });
 
     // 処理
-    var auth = FirebaseAuth.instance;
+    final auth = FirebaseAuth.instance;
     try {
       if (pwOpacity == 0) {
         // サインイン方法別の処理
-        var result =
+        final result =
             await auth.fetchSignInMethodsForEmail(emailController.text);
 
         setState(() {
@@ -246,7 +246,7 @@ class EmailSignInPageState extends State<EmailSignInPage>
                 }),
                 SelectSheetAction("一般的なログイン", () async {
                   Navigator.pop(context);
-                  var result = await Navigator.pushNamed<UserCredential>(
+                  final result = await Navigator.pushNamed<UserCredential>(
                       context, EmailRegistrationPage.routeName,
                       arguments: EmailRegistrationPageArguments(
                           email: emailController.text));
@@ -294,14 +294,14 @@ class EmailSignInPageState extends State<EmailSignInPage>
       }
     } on FirebaseAuthException catch (e, stack) {
       switch (e.code) {
-        case 'invalid-email':
+        case "invalid-email":
           setState(() {
             processing = false;
             enableEmailForm = true;
             emailError = "メールアドレスの形式が正しくありません";
           });
           break;
-        case 'wrong-password':
+        case "wrong-password":
           setState(() {
             processing = false;
             enablePWForm = true;

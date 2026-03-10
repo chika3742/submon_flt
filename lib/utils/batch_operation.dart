@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
 
 class BatchOperation {
   BatchOperationType type;
@@ -17,10 +17,10 @@ class BatchOperation {
   }
 
   static Future<void> commit(List<BatchOperation> operations) async {
-    var chunks = operations.partition(500);
+    final chunks = operations.partition(500);
 
     for (var chunk in chunks) {
-      var batch = FirebaseFirestore.instance.batch();
+      final batch = FirebaseFirestore.instance.batch();
       for (var operation in chunk) {
         switch (operation.type) {
           case BatchOperationType.set:
@@ -41,7 +41,7 @@ enum BatchOperationType { set, delete }
 
 extension Partition<T> on List<T> {
   List<List<T>> partition(int chunkSize) {
-    var chunks = <List<T>>[];
+    final chunks = <List<T>>[];
     var count = 0;
 
     do {

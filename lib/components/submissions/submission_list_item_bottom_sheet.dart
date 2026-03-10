@@ -1,16 +1,16 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:submon/firebase/analytics.dart';
-import 'package:submon/isar_db/isar_submission.dart';
-import 'package:submon/main.dart';
+import "package:firebase_analytics/firebase_analytics.dart";
+import "package:flutter/material.dart";
+import "package:share_plus/share_plus.dart";
 
-import '../../isar_db/isar_digestive.dart';
-import '../../pages/submission_edit_page.dart';
-import '../../utils/app_links.dart';
-import '../../utils/ui.dart';
-import '../../utils/utils.dart';
-import '../digestive_edit_bottom_sheet.dart';
+import "../../firebase/analytics.dart";
+import "../../isar_db/isar_digestive.dart";
+import "../../isar_db/isar_submission.dart";
+import "../../main.dart";
+import "../../pages/submission_edit_page.dart";
+import "../../utils/app_links.dart";
+import "../../utils/ui.dart";
+import "../../utils/utils.dart";
+import "../digestive_edit_bottom_sheet.dart";
 
 class SubmissionListItemBottomSheet extends StatelessWidget {
   const SubmissionListItemBottomSheet({super.key,
@@ -88,7 +88,7 @@ class SubmissionListItemBottomSheet extends StatelessWidget {
           }
           final submission = s_ ?? (throw Exception("This should not happen"));
 
-          var link = await createSubmissionShareLink({
+          final link = await createSubmissionShareLink({
             "title": submission.title,
             "due": submission.due.toUtc().toIso8601String(),
             if (submission.details.isNotEmpty) "details": submission.details,
@@ -104,7 +104,7 @@ class SubmissionListItemBottomSheet extends StatelessWidget {
         break;
 
       case _ContextMenuAction.addDigestive:
-        var data = await showRoundedBottomSheet<Digestive>(
+        final data = await showRoundedBottomSheet<Digestive>(
           context: globalContext!,
           useRootNavigator: true,
           title: "Digestive 新規作成",

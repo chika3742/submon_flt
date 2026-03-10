@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:submon/components/submissions/submission_editor.dart';
+import "package:flutter/material.dart";
+import "../components/submissions/submission_editor.dart";
 
 class SubmissionEditPage extends StatelessWidget {
   const SubmissionEditPage(this.submissionId, {super.key});
@@ -12,7 +12,7 @@ class SubmissionEditPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('編集'),
+          title: const Text("編集"),
         ),
         body: SubmissionEditor(submissionId: submissionId));
   }

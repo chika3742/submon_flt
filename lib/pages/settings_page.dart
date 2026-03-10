@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage(this.title, this.body, {super.key});
@@ -28,4 +28,3 @@ class CategoryListTile extends StatelessWidget {
       child: Text(title, style: const TextStyle(color: Colors.pinkAccent)));
   }
 }
-

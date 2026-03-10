@@ -1,15 +1,15 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:submon/pages/settings/account_edit_page.dart';
-import 'package:url_launcher/url_launcher.dart';
+import "package:firebase_auth/firebase_auth.dart";
+import "package:firebase_crashlytics/firebase_crashlytics.dart";
+import "package:flutter/material.dart";
+import "package:shared_preferences/shared_preferences.dart";
+import "package:url_launcher/url_launcher.dart";
 
-import '../auth/sign_in_handler.dart';
-import '../db/shared_prefs.dart';
-import '../main.dart';
-import '../utils/ui.dart';
-import '../utils/utils.dart';
+import "../auth/sign_in_handler.dart";
+import "../db/shared_prefs.dart";
+import "../main.dart";
+import "../pages/settings/account_edit_page.dart";
+import "../utils/ui.dart";
+import "../utils/utils.dart";
 
 class AuthLinkHandler {
   AuthLinkHandler._();
@@ -32,8 +32,8 @@ class AuthLinkHandler {
   }
 
   static Future<void> _handleSignIn(Uri url) async {
-    var c = url.queryParameters["continueUrl"];
-    var continueUri = c != null ? Uri.parse(c) : url;
+    final c = url.queryParameters["continueUrl"];
+    final continueUri = c != null ? Uri.parse(c) : url;
 
     if (continueUri.path == "/account/delete") {
       // handle in browser
@@ -41,7 +41,7 @@ class AuthLinkHandler {
       return;
     }
 
-    var mode = continueUri.queryParameters["internalMode"];
+    final mode = continueUri.queryParameters["internalMode"];
     if (mode == SignInMode.normal.name
         && FirebaseAuth.instance.currentUser != null) {
       showSnackBar(globalContext!, "既にログインされています。ログアウトしてからお試しください。");
@@ -84,7 +84,7 @@ class AuthLinkHandler {
   }
 
   static Future<void> _handleVerifyAndChangeEmail(Uri url) async {
-    var codeInfo = await _checkAuthActionCode(url);
+    final codeInfo = await _checkAuthActionCode(url);
 
     if (codeInfo != null) {
       await FirebaseAuth.instance.signOut();
@@ -94,7 +94,7 @@ class AuthLinkHandler {
   }
 
   static Future<ActionCodeInfo?> _checkAuthActionCode(Uri url) async {
-    var oobCode = url.queryParameters["oobCode"];
+    final oobCode = url.queryParameters["oobCode"];
     if (oobCode == null) {
       showSnackBar(globalContext!, "URLの形式が正しくありません");
       return null;

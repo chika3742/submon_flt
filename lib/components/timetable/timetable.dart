@@ -1,14 +1,14 @@
-import 'package:animations/animations.dart';
-import 'package:flutter/material.dart';
-import 'package:submon/components/timetable/open_modal_animation.dart';
-import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/events.dart';
-import 'package:submon/isar_db/isar_timetable.dart' as db;
-import 'package:submon/pages/timetable_cell_edit_page.dart';
-import 'package:submon/pages/timetable_edit_page.dart';
-import 'package:submon/utils/ui.dart';
+import "package:animations/animations.dart";
+import "package:flutter/material.dart";
 
-import '../../utils/utils.dart';
+import "../../db/shared_prefs.dart";
+import "../../events.dart";
+import "../../isar_db/isar_timetable.dart" as db;
+import "../../pages/timetable_cell_edit_page.dart";
+import "../../pages/timetable_edit_page.dart";
+import "../../utils/ui.dart";
+import "../../utils/utils.dart";
+import "open_modal_animation.dart";
 
 class Timetable extends StatefulWidget {
   const Timetable({
@@ -43,7 +43,7 @@ class TimetableState extends State<Timetable> {
 
   void getTable() {
     db.TimetableProvider().use((provider) async {
-      List<db.Timetable> list = await provider.getCurrentTable();
+      final List<db.Timetable> list = await provider.getCurrentTable();
 
       setState(() {
         table = Map.fromIterables(list.map((e) => e.cellId), list);
@@ -71,7 +71,7 @@ class TimetableState extends State<Timetable> {
   }
 
   List<Widget> _buildFirstRow() {
-    var widgets = <Widget>[];
+    final widgets = <Widget>[];
 
     if (timetablePeriodCountToDisplay == null) return widgets;
     // 左上の空欄
@@ -100,12 +100,12 @@ class TimetableState extends State<Timetable> {
   }
 
   List<Widget> _buildRows() {
-    var widgets = <Widget>[];
+    final widgets = <Widget>[];
 
     if (timetablePeriodCountToDisplay == null) return widgets;
 
     for (var youbi = 0; youbi <= 5; youbi++) {
-      var columnItems = <Widget>[];
+      final columnItems = <Widget>[];
       // 曜日テキスト
       columnItems.add(Container(
         padding: const EdgeInsets.all(8),
@@ -125,8 +125,8 @@ class TimetableState extends State<Timetable> {
 
       // 時間割
       for (var index = 1; index <= timetablePeriodCountToDisplay!; index++) {
-        var key = GlobalKey();
-        var cell = table[getWholeIndex(youbi, index)];
+        final key = GlobalKey();
+        final cell = table[getWholeIndex(youbi, index)];
         columnItems.add(Padding(
           padding: const EdgeInsets.all(3.0),
           child: GestureDetector(
@@ -203,8 +203,8 @@ class TimetableState extends State<Timetable> {
   }
 
   Widget _buildTimetableCell(GlobalKey containerKey, int youbi, int index) {
-    var weekday = DateTime.now().weekday;
-    var orange = weekday == youbi + 1 && !widget.edit;
+    final weekday = DateTime.now().weekday;
+    final orange = weekday == youbi + 1 && !widget.edit;
     return Material(
       color: orange
           ? Colors.orange

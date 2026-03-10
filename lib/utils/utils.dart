@@ -1,15 +1,15 @@
-import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:googleapis/oauth2/v2.dart' as oauth;
-import 'package:googleapis_auth/auth_io.dart';
-import 'package:submon/browser.dart';
-import 'package:submon/main.dart';
-import 'package:submon/pages/submission_create_page.dart';
-import 'package:submon/utils/ui.dart';
+import "package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart";
+import "package:firebase_auth/firebase_auth.dart";
+import "package:firebase_crashlytics/firebase_crashlytics.dart";
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:flutter_dotenv/flutter_dotenv.dart";
+import "package:googleapis/oauth2/v2.dart" as oauth;
+import "package:googleapis_auth/auth_io.dart";
+import "../browser.dart";
+import "../main.dart";
+import "../pages/submission_create_page.dart";
+import "ui.dart";
 
 bool get isAdEnabled {
   return FirebaseAuth.instance.currentUser?.email != dotenv.get("ADMIN_EMAIL");
@@ -62,7 +62,7 @@ void handleFirebaseError(FirebaseException e, StackTrace stackTrace,
         okText: "お知らせを開く",
         onOKPressed: () {
           Browser.openAnnouncements();
-          SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+          SystemChannels.platform.invokeMethod("SystemNavigator.pop");
         },
       );
       break;
@@ -76,10 +76,10 @@ void handleFirebaseError(FirebaseException e, StackTrace stackTrace,
 
 Future<bool> canAccessTasks() async {
   try {
-    var client = await googleSignIn.authenticatedClient();
+    final client = await googleSignIn.authenticatedClient();
     if (client == null) return false;
 
-    var tokenInfo = await oauth.Oauth2Api(client).tokeninfo();
+    final tokenInfo = await oauth.Oauth2Api(client).tokeninfo();
 
     return tokenInfo.scope
             ?.split(" ")
@@ -137,8 +137,8 @@ extension TimeOfDayToMinutes on TimeOfDay {
 }
 
 Iterable<int> range(int start, int end, [int step = 1]) sync* {
-  if (step == 0) throw ArgumentError('step cannot be 0');
-  if (step < 0) throw ArgumentError('step cannot be negative');
+  if (step == 0) throw ArgumentError("step cannot be 0");
+  if (step < 0) throw ArgumentError("step cannot be negative");
 
   for (int value = start; value <= end; value += step) {
     yield value;

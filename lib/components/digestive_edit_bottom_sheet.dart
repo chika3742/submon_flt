@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:submon/isar_db/isar_digestive.dart';
+import "package:flutter/material.dart";
+import "package:intl/intl.dart";
+import "../isar_db/isar_digestive.dart";
 
 class DigestiveEditBottomSheet extends StatefulWidget {
   const DigestiveEditBottomSheet(
@@ -94,7 +94,7 @@ class _DigestiveEditBottomSheetState extends State<DigestiveEditBottomSheet> {
                         icon: const Icon(Icons.edit_calendar),
                         splashRadius: 24,
                         onPressed: () async {
-                          var result = await showDatePicker(
+                          final result = await showDatePicker(
                             context: context,
                             initialDate: startAt.isBefore(DateTime.now())
                                 ? DateTime.now()
@@ -123,7 +123,7 @@ class _DigestiveEditBottomSheetState extends State<DigestiveEditBottomSheet> {
                         icon: const Icon(Icons.schedule),
                         splashRadius: 24,
                         onPressed: () async {
-                          var result = await showTimePicker(
+                          final result = await showTimePicker(
                             context: context,
                             initialTime: TimeOfDay.fromDateTime(startAt),
                           );
@@ -178,7 +178,7 @@ class _DigestiveEditBottomSheetState extends State<DigestiveEditBottomSheet> {
         if ((widget.initialData == null || startAtChanged) &&
             startAt.isBefore(DateTime.now()) &&
             _selection == DigestiveSelection.dateTime)
-          const Text('現在時刻より後の時刻を選択してください',
+          const Text("現在時刻より後の時刻を選択してください",
               style: TextStyle(color: Colors.redAccent)),
         const SizedBox(height: 16),
         Padding(

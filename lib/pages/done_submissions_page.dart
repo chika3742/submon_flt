@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:submon/components/submissions/submission_list.dart';
+import "package:flutter/material.dart";
+import "../components/submissions/submission_list.dart";
 
 class DoneSubmissionsPage extends StatefulWidget {
   const DoneSubmissionsPage({super.key});
@@ -7,15 +7,15 @@ class DoneSubmissionsPage extends StatefulWidget {
   static const routeName = "/done-submissions";
 
   @override
-  _DoneSubmissionsPageState createState() => _DoneSubmissionsPageState();
+  DoneSubmissionsPageState createState() => DoneSubmissionsPageState();
 }
 
-class _DoneSubmissionsPageState extends State<DoneSubmissionsPage> {
+class DoneSubmissionsPageState extends State<DoneSubmissionsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('完了済みの提出物'),
+          title: const Text("完了済みの提出物"),
         ),
         body: const SubmissionList(done: true));
   }

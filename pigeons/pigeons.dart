@@ -1,4 +1,4 @@
-import 'package:pigeon/pigeon.dart';
+import "package:pigeon/pigeon.dart";
 
 @ConfigurePigeon(PigeonOptions(
   dartOut: "lib/src/pigeons.g.dart",

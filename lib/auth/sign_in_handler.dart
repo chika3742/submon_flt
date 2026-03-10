@@ -1,26 +1,26 @@
-import 'dart:io';
+import "dart:io";
 
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:submon/apple_web_auth_options.dart';
-import 'package:submon/main.dart';
-import 'package:submon/models/sign_in_result.dart';
-import 'package:submon/pages/email_sign_in_page.dart';
-import 'package:submon/src/pigeons.g.dart';
+import "package:firebase_analytics/firebase_analytics.dart";
+import "package:firebase_auth/firebase_auth.dart";
+import "package:firebase_crashlytics/firebase_crashlytics.dart";
+import "package:flutter/material.dart";
+import "package:google_sign_in/google_sign_in.dart";
+import "package:sign_in_with_apple/sign_in_with_apple.dart";
 
-import '../db/firestore_provider.dart';
-import '../db/shared_prefs.dart';
-import '../isar_db/isar_provider.dart';
-import '../pages/home_page.dart';
-import '../pages/welcome_page.dart';
-import '../user_config.dart';
-import '../utils/firestore.dart';
-import '../utils/ui.dart';
-import 'apple_sign_in.dart';
+import "../apple_web_auth_options.dart";
+import "../db/firestore_provider.dart";
+import "../db/shared_prefs.dart";
+import "../isar_db/isar_provider.dart";
+import "../main.dart";
+import "../models/sign_in_result.dart";
+import "../pages/email_sign_in_page.dart";
+import "../pages/home_page.dart";
+import "../pages/welcome_page.dart";
+import "../src/pigeons.g.dart";
+import "../user_config.dart";
+import "../utils/firestore.dart";
+import "../utils/ui.dart";
+import "apple_sign_in.dart";
 
 class SignInHandler {
   final _auth = FirebaseAuth.instance;
@@ -76,13 +76,13 @@ class SignInHandler {
 
   Future<SignInResult> signIn(AuthProvider provider,
       {BuildContext? context}) async {
-    var result = await _signInByProvider(provider, context: context);
+    final result = await _signInByProvider(provider, context: context);
 
     if (result.errorCode != null) {
       return result;
     }
 
-    var completionResult = await completeSignIn(result.credential!);
+    final completionResult = await completeSignIn(result.credential!);
 
     return SignInResult(
         credential: result.credential, errorCode: completionResult);
@@ -97,7 +97,7 @@ class SignInHandler {
       return SignInResult(errorCode: SignInError.cancelled);
     }
 
-    var completionResult = await completeSignIn(result);
+    final completionResult = await completeSignIn(result);
 
     return SignInResult(credential: result, errorCode: completionResult);
   }
@@ -113,7 +113,7 @@ class SignInHandler {
 
       case AuthProvider.email:
         assert(context != null);
-        var result = await Navigator.pushNamed<SignInResult>(
+        final result = await Navigator.pushNamed<SignInResult>(
             context!, EmailSignInPage.routeName,
             arguments: EmailSignInPageArguments(mode));
         if (result == null) {
@@ -143,7 +143,7 @@ class SignInHandler {
   }
 
   Future<SignInResult> _signInWithGoogle() async {
-    var googleSignIn = GoogleSignIn();
+    final googleSignIn = GoogleSignIn();
     await googleSignIn.signOut(); // sign out before signing in
 
     final googleUser = await googleSignIn.signIn();
@@ -236,7 +236,7 @@ class SignInHandler {
 
       try {
         // check account exists
-        var doc = await userDoc!
+        final doc = await userDoc!
             .withConverter(
                 fromFirestore: UserConfig.fromFirestore,
                 toFirestore: (_, __) {
@@ -244,17 +244,17 @@ class SignInHandler {
                 })
             .get();
 
-        var data = doc.data()!;
+        final data = doc.data()!;
 
         FirebaseAnalytics.instance.logLogin(
             loginMethod: userCred.additionalUserInfo?.providerId ?? "unknown");
 
         // save messaging token
-        var notificationToken = await MessagingApi().getToken();
+        final notificationToken = await MessagingApi().getToken();
         await FirestoreProvider.saveNotificationToken(notificationToken);
         GeneralApi().updateWidgets();
 
-        var requestPermResult =
+        final requestPermResult =
             await requestNotificationPermissionIfEnabled(data);
         if (requestPermResult == NotificationPermissionState.denied) {
           return SignInError.notificationPermissionDenied;

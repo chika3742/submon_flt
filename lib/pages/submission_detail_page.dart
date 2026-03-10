@@ -1,20 +1,20 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:intl/intl.dart';
-import 'package:submon/components/digestive_detail_card.dart';
-import 'package:submon/components/digestive_edit_bottom_sheet.dart';
-import 'package:submon/components/submissions/formatted_date_remaining.dart';
-import 'package:submon/isar_db/isar_digestive.dart';
-import 'package:submon/isar_db/isar_submission.dart';
-import 'package:submon/main.dart';
-import 'package:submon/pages/submission_edit_page.dart';
-import 'package:submon/utils/ui.dart';
-import 'package:submon/utils/utils.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import "package:flutter/material.dart";
+import "package:flutter_linkify/flutter_linkify.dart";
+import "package:google_mobile_ads/google_mobile_ads.dart";
+import "package:intl/intl.dart";
+import "package:url_launcher/url_launcher_string.dart";
 
-import '../sample_data.dart';
-import '../utils/ad_unit_ids.dart';
+import "../components/digestive_detail_card.dart";
+import "../components/digestive_edit_bottom_sheet.dart";
+import "../components/submissions/formatted_date_remaining.dart";
+import "../isar_db/isar_digestive.dart";
+import "../isar_db/isar_submission.dart";
+import "../main.dart";
+import "../sample_data.dart";
+import "../utils/ad_unit_ids.dart";
+import "../utils/ui.dart";
+import "../utils/utils.dart";
+import "submission_edit_page.dart";
 
 class SubmissionDetailPage extends StatefulWidget {
   const SubmissionDetailPage(this.submissionId, {super.key});
@@ -158,7 +158,7 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
                             const SizedBox(width: 8),
                             if (item != null)
                               Text(
-                                  DateFormat("M/d (E)", 'ja_JP')
+                                  DateFormat("M/d (E)", "ja_JP")
                                       .format(item!.due),
                                   style: const TextStyle(fontSize: 18)),
                           ],
@@ -200,7 +200,7 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
                                 await launchUrlString(link.url,
                                     mode: LaunchMode.externalApplication);
                               } else {
-                                throw 'Could not launch $link';
+                                throw "Could not launch $link";
                               }
                             },
                             text: item!.details,
@@ -210,7 +210,7 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
                       const Divider(thickness: 2, indent: 32, endIndent: 32),
                       const Align(
                         alignment: Alignment.center,
-                        child: Text('Digestive',
+                        child: Text("Digestive",
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold)),
                       ),
@@ -229,7 +229,7 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
                             child: Opacity(
                               opacity: 0.7,
                               child: Text(
-                                'Digestiveがありません。右下の「+」から\n追加できます。',
+                                "Digestiveがありません。右下の「+」から\n追加できます。",
                               ),
                             ),
                           ),
@@ -252,8 +252,8 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
     );
   }
 
-  void showCreateDigestiveBottomSheet() async {
-    var data = await showRoundedBottomSheet<Digestive>(
+  Future<void> showCreateDigestiveBottomSheet() async {
+    final data = await showRoundedBottomSheet<Digestive>(
       context: context,
       title: "Digestive 新規作成",
       child: DigestiveEditBottomSheet(submissionId: widget.submissionId),

@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:submon/ui_components/list_tile.dart';
+import "package:flutter/material.dart";
+import "list_tile.dart";
 
 class SettingsListView extends StatelessWidget {
   const SettingsListView(
@@ -10,7 +10,7 @@ class SettingsListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var list = <Widget>[];
+    final list = <Widget>[];
 
     for (var element in categories) {
       list.add(CategoryListTile(element.title));

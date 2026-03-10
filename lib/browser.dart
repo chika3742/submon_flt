@@ -1,7 +1,8 @@
-import 'dart:io';
+import "dart:io";
 
-import 'package:submon/src/pigeons.g.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import "package:url_launcher/url_launcher_string.dart";
+
+import "src/pigeons.g.dart";
 
 class Browser {
   static void openTermsOfUse() {

@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:submon/components/submissions/submission_editor.dart';
+import "package:flutter/material.dart";
+import "../components/submissions/submission_editor.dart";
 
 class CreateSubmissionPage extends StatelessWidget {
   const CreateSubmissionPage(
@@ -16,7 +16,7 @@ class CreateSubmissionPage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('新規作成'),
+          title: const Text("新規作成"),
         ),
         body: PopScope(
           canPop: focusScopeNode.focusedChild?.hasFocus != true,
@@ -41,4 +41,3 @@ class CreateSubmissionPageArguments {
 
   CreateSubmissionPageArguments({this.initialTitle, this.initialDeadline});
 }
-

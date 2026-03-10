@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
 class HidableLinearProgressIndicator extends StatelessWidget {
   const HidableLinearProgressIndicator({super.key, required this.show});

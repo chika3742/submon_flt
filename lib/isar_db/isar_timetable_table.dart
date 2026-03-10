@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:isar_community/isar.dart';
-import 'package:submon/db/firestore_provider.dart';
-import 'package:submon/isar_db/isar_provider.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:isar_community/isar.dart";
+import "../db/firestore_provider.dart";
+import "isar_provider.dart";
 
-part '../generated/isar_db/isar_timetable_table.g.dart';
+part "../generated/isar_db/isar_timetable_table.g.dart";
 
 @Collection()
 class TimetableTable {

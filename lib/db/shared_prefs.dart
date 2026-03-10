@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import "package:flutter/material.dart";
+import "package:shared_preferences/shared_preferences.dart";
 
 class SharedPrefs {
   SharedPreferences? pref;
@@ -181,7 +181,7 @@ class SharedPrefs {
 
   static Future<void> use(dynamic Function(SharedPrefs prefs) callback) {
     return SharedPreferences.getInstance().then((pref) async {
-      var prefs = SharedPrefs(pref);
+      final prefs = SharedPrefs(pref);
       await callback(prefs);
     });
   }

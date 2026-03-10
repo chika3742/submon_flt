@@ -1,11 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:isar_community/isar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:submon/db/firestore_provider.dart';
-import 'package:submon/db/shared_prefs.dart';
-import 'package:submon/isar_db/isar_provider.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:isar_community/isar.dart";
+import "package:shared_preferences/shared_preferences.dart";
+import "../db/firestore_provider.dart";
+import "../db/shared_prefs.dart";
+import "isar_provider.dart";
 
-part '../generated/isar_db/isar_timetable.g.dart';
+part "../generated/isar_db/isar_timetable.g.dart";
 
 @Collection()
 class Timetable {
@@ -63,7 +63,7 @@ class TimetableProvider extends IsarProvider<Timetable> {
   }
 
   Future<void> deleteFromCurrentTable(int cellId) async {
-    var data = await this.collection
+    final data = await this.collection
         .filter()
         .cellIdEqualTo(cellId)
         .and()
@@ -76,7 +76,7 @@ class TimetableProvider extends IsarProvider<Timetable> {
   }
 
   Future<void> deleteAllInTableLocalOnly(int tableId) async {
-    var data = await this.collection.filter().tableIdEqualTo(tableId).findAll();
+    final data = await this.collection.filter().tableIdEqualTo(tableId).findAll();
     await this.collection.deleteAll(data.map((e) => e.id!).toList());
   }
 

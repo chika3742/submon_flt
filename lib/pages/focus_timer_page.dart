@@ -1,17 +1,17 @@
-import 'dart:async';
-import 'dart:io';
+import "dart:async";
+import "dart:io";
 
-import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:submon/components/digestive_detail_card.dart';
-import 'package:submon/isar_db/isar_digestive.dart';
-import 'package:submon/isar_db/isar_submission.dart';
-import 'package:submon/src/pigeons.g.dart';
-import 'package:submon/utils/ui.dart';
+import "package:audioplayers/audioplayers.dart";
+import "package:flutter/foundation.dart";
+import "package:flutter/material.dart";
+import "package:google_mobile_ads/google_mobile_ads.dart";
 
-import '../utils/ad_unit_ids.dart';
+import "../components/digestive_detail_card.dart";
+import "../isar_db/isar_digestive.dart";
+import "../isar_db/isar_submission.dart";
+import "../src/pigeons.g.dart";
+import "../utils/ad_unit_ids.dart";
+import "../utils/ui.dart";
 
 const addMinutes = 20;
 const breakMinutes = 10;
@@ -28,7 +28,7 @@ class FocusTimerPage extends StatefulWidget {
   final Digestive digestive;
 
   static Future<void> openFocusTimer(BuildContext context, Digestive digestive) async {
-    var result = await Navigator.of(context, rootNavigator: true).pushNamed<bool>(routeName, arguments: FocusTimerPageArguments(digestive));
+    final result = await Navigator.of(context, rootNavigator: true).pushNamed<bool>(routeName, arguments: FocusTimerPageArguments(digestive));
 
     if (result == true) {
       DigestiveDetailCardState.done(digestive, true);
@@ -125,7 +125,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('集中タイマー'),
+        title: const Text("集中タイマー"),
         backgroundColor: Theme.of(context).colorScheme.surface,
       ),
       body: PopScope(
@@ -163,7 +163,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                               fontSize: 18, fontWeight: FontWeight.bold)),
                     ])),
                   const SizedBox(height: 16),
-                  const Text('※アプリのタスクを終了するとタイマーがキャンセルされます。'),
+                  const Text("※アプリのタスクを終了するとタイマーがキャンセルされます。"),
                 ],
               ),
             ),
@@ -177,8 +177,8 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                     if (_takingBreak)
                       Text(
                           _breakRemainingTime.inSeconds > 0
-                              ? '休憩中...'
-                              : '休憩時間終わり！',
+                              ? "休憩中..."
+                              : "休憩時間終わり！",
                           style: const TextStyle(fontSize: 24)),
                     const SizedBox(height: 16),
                     Opacity(
@@ -212,7 +212,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                               width: 300,
                               height: 50,
                               child: ElevatedButton(
-                                child: const Text('スタート'),
+                                child: const Text("スタート"),
                                 onPressed: () async {
                                   setState(() {
                                     _started = true;
@@ -248,7 +248,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                     child: Opacity(
                                       opacity:
                                           _dndAccessGranted == true ? 1 : 0.7,
-                                      child: const Text('通知をミュートに設定する'),
+                                      child: const Text("通知をミュートに設定する"),
                                     ),
                                   ),
                                 ),
@@ -261,12 +261,12 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                 child: Column(
                                   children: [
                                     Text(
-                                        '「通知をミュート」設定へのアクセス権限を許可する必要があります。「Submon」を選択し、「許可」をタップしてください。',
+                                        "「通知をミュート」設定へのアクセス権限を許可する必要があります。「Submon」を選択し、「許可」をタップしてください。",
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodySmall),
                                     OutlinedButton(
-                                      child: const Text('許可設定へ'),
+                                      child: const Text("許可設定へ"),
                                       onPressed: () {
                                         DndApi().goToPolicySettings();
                                       },
@@ -304,11 +304,11 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                       }
                                     : null,
                                 child:
-                                    const Text('もっといけそう (+ $addMinutes min)'),
+                                    const Text("もっといけそう (+ $addMinutes min)"),
                               ),
                             ),
                             if (_remainingTime.inMinutes >= 10)
-                              Text('残り10分以下になると追加できます',
+                              Text("残り10分以下になると追加できます",
                                   style: Theme.of(context).textTheme.bodySmall),
                             const SizedBox(height: 8),
                             SizedBox(
@@ -328,12 +328,12 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                         });
                                       }
                                     : null,
-                                child: const Text('休憩 ($breakMinutes min)'),
+                                child: const Text("休憩 ($breakMinutes min)"),
                               ),
                             ),
                             if (!_takingBreak && !_takingBreakAvailable())
                               Text(
-                                  '最後に休憩してから$breakCoolingMinutes分以上経過する必要があります',
+                                  "最後に休憩してから$breakCoolingMinutes分以上経過する必要があります",
                                   style: Theme.of(context).textTheme.bodySmall),
                             const SizedBox(height: 8),
                             SizedBox(
@@ -346,7 +346,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
                                           Colors.blue.shade200)
                                       : null,
                                 ),
-                                child: Text(!_takingBreak ? '終わった！' : "休憩終わり！"),
+                                child: Text(!_takingBreak ? "終わった！" : "休憩終わり！"),
                                 onPressed: () async {
                                   if (!_takingBreak) {
                                     ad?.show();
@@ -378,7 +378,7 @@ class _FocusTimerPageState extends State<FocusTimerPage>
   }
 
   bool _takingBreakAvailable() {
-    var elapsedTime = _lastTookBreak - _remainingTime;
+    final elapsedTime = _lastTookBreak - _remainingTime;
     return elapsedTime.inMinutes > breakCoolingMinutes ||
         elapsedTime.isNegative;
   }

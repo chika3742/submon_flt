@@ -1,19 +1,19 @@
-import 'dart:async';
-import 'dart:io';
+import "dart:async";
+import "dart:io";
 
-import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:submon/auth/sign_in_handler.dart';
-import 'package:submon/browser.dart';
-import 'package:submon/main.dart';
-import 'package:submon/pages/email_sign_in_page.dart';
-import 'package:submon/ui_components/hidable_progress_indicator.dart';
-import 'package:submon/utils/ui.dart';
-import 'package:submon/utils/utils.dart';
+import "package:firebase_auth/firebase_auth.dart" hide AuthProvider;
+import "package:firebase_crashlytics/firebase_crashlytics.dart";
+import "package:flutter/material.dart";
+import "package:flutter_svg/flutter_svg.dart";
 
-import '../utils/app_links.dart';
+import "../auth/sign_in_handler.dart";
+import "../browser.dart";
+import "../main.dart";
+import "../ui_components/hidable_progress_indicator.dart";
+import "../utils/app_links.dart";
+import "../utils/ui.dart";
+import "../utils/utils.dart";
+import "email_sign_in_page.dart";
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key,
@@ -54,7 +54,7 @@ class _SignInPageState extends State<SignInPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('ログイン / 新規登録'),
+          title: const Text("ログイン / 新規登録"),
         ),
         body: SafeArea(
           child: Stack(
@@ -177,8 +177,8 @@ class _SignInPageState extends State<SignInPage> {
     });
 
     try {
-      var signInHandler = SignInHandler(widget.mode);
-      var result = await signInHandler.signIn(provider, context: context);
+      final signInHandler = SignInHandler(widget.mode);
+      final result = await signInHandler.signIn(provider, context: context);
 
       await signInHandler.handleSignInResult(result);
 
@@ -217,21 +217,21 @@ class _SignInPageState extends State<SignInPage> {
 
   void reAuth() {
     Future(() async {
-      var auth = FirebaseAuth.instance;
+      final auth = FirebaseAuth.instance;
 
-      var currentUser = auth.currentUser!;
-      var providerId = currentUser.providerData.first.providerId;
+      final currentUser = auth.currentUser!;
+      final providerId = currentUser.providerData.first.providerId;
 
       if (providerId == EmailAuthProvider.PROVIDER_ID) {
         showLoadingModal(context);
 
         // TODO: remove fetching sign in method
-        var methods = await auth.fetchSignInMethodsForEmail(currentUser.email!);
+        final methods = await auth.fetchSignInMethodsForEmail(currentUser.email!);
 
         Navigator.pop(globalContext!); // Close Loading modal
 
         if (methods.first == EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {
-          var result = await Navigator.pushNamed(globalContext!, EmailSignInPage.routeName,
+          final result = await Navigator.pushNamed(globalContext!, EmailSignInPage.routeName,
               arguments: const EmailSignInPageArguments(SignInMode.reauthenticate));
           Navigator.pop(globalContext!, result != null);
         } else if (methods.first ==

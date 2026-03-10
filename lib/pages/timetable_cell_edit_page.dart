@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:submon/pages/timetable_edit_page.dart';
-import 'package:submon/utils/ui.dart';
-import 'package:submon/utils/utils.dart';
+import "package:flutter/material.dart";
 
-import '../events.dart';
-import '../isar_db/isar_timetable.dart';
+import "../events.dart";
+import "../isar_db/isar_timetable.dart";
+import "../utils/ui.dart";
+import "../utils/utils.dart";
+import "timetable_edit_page.dart";
 
 class TimetableCellEditPage extends StatefulWidget {
   const TimetableCellEditPage({super.key,
@@ -42,7 +42,7 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            '${getWeekdayString(widget.weekDay)}曜日 ${widget.period + 1}時間目 編集'),
+            "${getWeekdayString(widget.weekDay)}曜日 ${widget.period + 1}時間目 編集"),
         actions: [
           if (widget.initialData != null)
             IconButton(
@@ -75,7 +75,7 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
                 controller: _subjectController,
                 decoration: InputDecoration(
                   filled: true,
-                  label: const Text('教科名'),
+                  label: const Text("教科名"),
                   errorText: _subjectError,
                 ),
               ),
@@ -89,7 +89,7 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
                       controller: _roomController,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        label: Text('教室'),
+                        label: Text("教室"),
                         isDense: true,
                       ),
                     ),
@@ -106,7 +106,7 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
                       controller: _teacherController,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        label: Text('先生'),
+                        label: Text("先生"),
                         isDense: true,
                       ),
                     ),
@@ -120,7 +120,7 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
                 maxLines: 8,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  label: Text('メモ'),
+                  label: Text("メモ"),
                 ),
               ),
             ],
@@ -130,7 +130,7 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
     );
   }
 
-  void save() async {
+  Future<void> save() async {
     if (_subjectController.text.isEmpty) {
       setState(() {
         _subjectError = "入力してください";
@@ -142,7 +142,7 @@ class _TimetableCellEditPageState extends State<TimetableCellEditPage> {
       _subjectError = null;
     });
 
-    var data = Timetable()
+    final data = Timetable()
       ..id = widget.initialData?.id
       ..cellId = getTimetableCellId(widget.period, widget.weekDay)
       ..subject = _subjectController.text

@@ -1,16 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:firebase_auth/firebase_auth.dart";
+import "package:flutter/material.dart";
+import "package:intl/intl.dart";
 
-import '../events.dart';
-import '../isar_db/isar_digestive.dart';
-import '../isar_db/isar_submission.dart';
-import '../main.dart';
-import '../pages/focus_timer_page.dart';
-import '../pages/submission_create_page.dart';
-import '../pages/submission_detail_page.dart';
-import '../utils/ui.dart';
+import "../events.dart";
+import "../isar_db/isar_digestive.dart";
+import "../isar_db/isar_submission.dart";
+import "../main.dart";
+import "../pages/focus_timer_page.dart";
+import "../pages/submission_create_page.dart";
+import "../pages/submission_detail_page.dart";
+import "../utils/ui.dart";
 
 class OpenLinkHandler {
   OpenLinkHandler._();
@@ -176,7 +176,7 @@ class OpenLinkHandler {
 
   static void _openFocusTimer(Uri url) {
     DigestiveProvider().use((provider) async {
-      var digestive =
+      final digestive =
           await provider.get(int.parse(url.queryParameters["digestiveId"]!));
       if (digestive != null) {
         FocusTimerPage.openFocusTimer(globalContext!, digestive);
