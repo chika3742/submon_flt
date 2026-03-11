@@ -93,7 +93,10 @@ class SubmissionListItemBottomSheet extends StatelessWidget {
             "due": submission.due.toUtc().toIso8601String(),
             if (submission.details.isNotEmpty) "details": submission.details,
           });
-          await Share.share(link, subject: submission.title);
+          await SharePlus.instance.share(ShareParams(
+            text: "提出物「${submission.title}」が共有されました。Submonで開いてみよう！\n"
+                "$link"
+          ));
           showSnackBar(globalContext!, "共有リンクの有効期間は7日間です。");
         } catch (error, stackTrace) {
           showSnackBar(globalContext!, "エラーが発生しました。");

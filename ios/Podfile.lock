@@ -1229,9 +1229,6 @@ PODS:
   - Firebase/Crashlytics (11.13.0):
     - Firebase/CoreOnly
     - FirebaseCrashlytics (~> 11.13.0)
-  - Firebase/DynamicLinks (11.13.0):
-    - Firebase/CoreOnly
-    - FirebaseDynamicLinks (~> 11.13.0)
   - Firebase/Firestore (11.13.0):
     - Firebase/CoreOnly
     - FirebaseFirestore (~> 11.13.0)
@@ -1254,10 +1251,6 @@ PODS:
     - Flutter
   - firebase_crashlytics (4.3.7):
     - Firebase/Crashlytics (= 11.13.0)
-    - firebase_core
-    - Flutter
-  - firebase_dynamic_links (6.1.7):
-    - Firebase/DynamicLinks (= 11.13.0)
     - firebase_core
     - Flutter
   - firebase_performance (0.10.1-7):
@@ -1318,8 +1311,6 @@ PODS:
     - GoogleUtilities/Environment (~> 8.1)
     - nanopb (~> 3.30910.0)
     - PromisesObjC (~> 2.4)
-  - FirebaseDynamicLinks (11.13.0):
-    - FirebaseCore (~> 11.13.0)
   - FirebaseFirestore (11.13.0):
     - FirebaseCore (~> 11.13.0)
     - FirebaseCoreExtension (~> 11.13.0)
@@ -1601,7 +1592,6 @@ DEPENDENCIES:
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_crashlytics (from `.symlinks/plugins/firebase_crashlytics/ios`)
-  - firebase_dynamic_links (from `.symlinks/plugins/firebase_dynamic_links/ios`)
   - firebase_performance (from `.symlinks/plugins/firebase_performance/ios`)
   - FirebaseAnalytics
   - FirebaseAppCheck
@@ -1640,7 +1630,6 @@ SPEC REPOS:
     - FirebaseCoreExtension
     - FirebaseCoreInternal
     - FirebaseCrashlytics
-    - FirebaseDynamicLinks
     - FirebaseFirestore
     - FirebaseFirestoreInternal
     - FirebaseFunctions
@@ -1685,8 +1674,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_core/ios"
   firebase_crashlytics:
     :path: ".symlinks/plugins/firebase_crashlytics/ios"
-  firebase_dynamic_links:
-    :path: ".symlinks/plugins/firebase_dynamic_links/ios"
   firebase_performance:
     :path: ".symlinks/plugins/firebase_performance/ios"
   Flutter:
@@ -1728,7 +1715,6 @@ SPEC CHECKSUMS:
   firebase_auth: ebc1f561cc3077efebad5005974c9ed58008973b
   firebase_core: 700bac7ed92bb754fd70fbf01d72b36ecdd6d450
   firebase_crashlytics: d101fbdc2dba187f483f13ae3ce9281779d664db
-  firebase_dynamic_links: e7d860fff34de6d9d5910fa7ef6f85d2def89501
   firebase_performance: 6ce3a918ea7413497c028bf52f14d21d74ed3ccc
   FirebaseABTesting: 4048f61cc10d2fad064d3089ace6bd5fb910169b
   FirebaseAnalytics: 630349facf4a114a0977e5d7570e104261973287
@@ -1740,7 +1726,6 @@ SPEC CHECKSUMS:
   FirebaseCoreExtension: c048485c347616dba6165358dbef765c5197597b
   FirebaseCoreInternal: 29d7b3af4aaf0b8f3ed20b568c13df399b06f68c
   FirebaseCrashlytics: 8281e577b6f85a08ea7aeb8b66f95e1ae430c943
-  FirebaseDynamicLinks: a784b5beaf9850a7ee4270b0fb189dba6263edcc
   FirebaseFirestore: 3ae3aeaad5b5ef5ec0dba86882a7156f509ff480
   FirebaseFirestoreInternal: 6c8aa676751593471f66d857db5b8674ea66116b
   FirebaseFunctions: 57b6625728d4b171731b6883d49f136bbddcefc8
@@ -1774,7 +1759,7 @@ SPEC CHECKSUMS:
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
-  share_plus: de6030e33b4e106470e09322d87cf2a4258d2d1d
+  share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
   sign_in_with_apple: c5dcc141574c8c54d5ac99dd2163c0c72ad22418
   url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
