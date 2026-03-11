@@ -15,6 +15,7 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		C74832222A867F7F00AC52D3 /* BrowserApiImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C74832212A867F7F00AC52D3 /* BrowserApiImplementation.swift */; };
+		C74A2FC52F60FCCC009990F5 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C74A2FC42F60FCCC009990F5 /* GoogleService-Info.plist */; };
 		C75C96562A88CAB9009FD728 /* GeneralApiImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75C96552A88CAB9009FD728 /* GeneralApiImplementation.swift */; };
 		C766556C28614B0E00B244CA /* MyAppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C766556B28614B0E00B244CA /* MyAppCheckProviderFactory.swift */; };
 		C766556D28614B0E00B244CA /* MyAppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C766556B28614B0E00B244CA /* MyAppCheckProviderFactory.swift */; };
@@ -96,6 +97,7 @@
 		C7263CC7285853D000416681 /* RunnerRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerRelease.entitlements; sourceTree = "<group>"; };
 		C73B6CC228AC684B0022A6B3 /* RunnerDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerDebug.entitlements; sourceTree = "<group>"; };
 		C74832212A867F7F00AC52D3 /* BrowserApiImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserApiImplementation.swift; sourceTree = "<group>"; };
+		C74A2FC42F60FCCC009990F5 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C75C96552A88CAB9009FD728 /* GeneralApiImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralApiImplementation.swift; sourceTree = "<group>"; };
 		C766556B28614B0E00B244CA /* MyAppCheckProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAppCheckProviderFactory.swift; sourceTree = "<group>"; };
 		C7908096283E221D001C7835 /* Info-Debug.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-Debug.plist"; sourceTree = "<group>"; };
@@ -179,6 +181,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				C74A2FC42F60FCCC009990F5 /* GoogleService-Info.plist */,
 				C7AB690C2A89B44A00892894 /* EventApi */,
 				C7FA92F62A866C5E000F67B6 /* PigeonImpl */,
 				C797875D2A85308E0025319A /* Pigeons.g.swift */,
@@ -285,7 +288,7 @@
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				59856562ECD001C1B2DD59AB /* [CP] Embed Pods Frameworks */,
 				52D497E2C3F8735C3F075FD3 /* [CP] Copy Pods Resources */,
-				C7CCF9092A8B850C002BBF82 /* ShellScript */,
+				C7CCF9092A8B850C002BBF82 /* Upload Crashlytics Debug Symbols If Release */,
 			);
 			buildRules = (
 			);
@@ -366,6 +369,7 @@
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				C7908098283E221D001C7835 /* Info-Debug.plist in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
+				C74A2FC52F60FCCC009990F5 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -492,7 +496,7 @@
 			shellPath = /bin/bash;
 			shellScript = "cp \"$PROJECT_DIR/Runner/GoogleService-Info.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.appex/\"\n";
 		};
-		C7CCF9092A8B850C002BBF82 /* ShellScript */ = {
+		C7CCF9092A8B850C002BBF82 /* Upload Crashlytics Debug Symbols If Release */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -506,13 +510,14 @@
 				"$(BUILT_PRODUCTS_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
 				"$(BUILT_PRODUCTS_DIR)/$(EXECUTABLE_PATH)",
 			);
+			name = "Upload Crashlytics Debug Symbols If Release";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"$CONFIGURATION\" = \"Release\" ]; then\n    APP_ID=$(/usr/libexec/PlistBuddy -c \"print GOOGLE_APP_ID\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\")\n\n    $PODS_ROOT/FirebaseCrashlytics/upload-symbols --build-phase --validate -ai $APP_ID\n    $PODS_ROOT/FirebaseCrashlytics/upload-symbols --build-phase -ai $APP_ID\nfi\n";
+			shellScript = "echo \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\"\n\nif [ \"$CONFIGURATION\" = \"Release\" ]; then\n    $PODS_ROOT/FirebaseCrashlytics/run\nfi\n";
 		};
 		D584C8E40A551EA19494ABA2 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
