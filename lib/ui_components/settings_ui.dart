@@ -120,32 +120,3 @@ class CheckBoxSettingsTile extends AbstractSettingsTile {
     );
   }
 }
-
-class RadioSettingsTile extends AbstractSettingsTile {
-  RadioSettingsTile({
-    this.title,
-    this.subtitle,
-    required this.value,
-    // TODO: remove
-    required this.groupValue,
-    // TODO: remove
-    required this.onChanged,
-  });
-
-  final String? title;
-  final String? subtitle;
-  final Object value;
-  final Object groupValue;
-  final void Function(Object?) onChanged;
-
-  @override
-  Widget buildWidget(BuildContext context) {
-    return RadioListTile(
-      title: title != null ? Text(title!) : null,
-      subtitle: subtitle != null ? Text(subtitle!) : null,
-      value: value,
-      groupValue: groupValue,
-      onChanged: onChanged,
-    );
-  }
-}
