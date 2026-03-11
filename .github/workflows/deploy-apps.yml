@@ -34,9 +34,9 @@ jobs:
       codesign_cert_base64: ${{ secrets.APPLE_CERTIFICATES_P12_BASE64 }}
       codesign_cert_pw: ${{ secrets.APPLE_CERTIFICATES_PASSWORD }}
       google_service_info_plist_base64: ${{ secrets.APPLE_GOOGLE_SERVICE_INFO_RELEASE_PLIST_BASE64 }}
-      asc_key_id: ${{ secrets.APP_STORE_PRIVKEY_ID }}
-      asc_issuer_id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER }}
-      asc_key_base64: ${{ secrets.APP_STORE_PRIVKEY_P8_BASE64 }}
+      asc_key_id: ${{ secrets.ASC_KEY_ID }}
+      asc_issuer_id: ${{ secrets.ASC_ISSUER_ID }}
+      asc_key_base64: ${{ secrets.ASC_KEY_BASE64 }}
       dotenv_base64: ${{ secrets.DOTENV_BASE64 }}
 
   deploy-play-store:
@@ -51,7 +51,7 @@ jobs:
       build-number: ${{ needs.build-attr.outputs.build_num }}
       wif-audience: ${{ vars.WI_AUDIENCE }}
     secrets:
-      keystore_base64: ${{ secrets.ANDROID_KEYSTORE }}
+      keystore_base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
       key_properties_base64: ${{ secrets.ANDROID_KEY_PROPERTIES_BASE64 }}
       google_services_json_base64: ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON_BASE64 }}
       wif_provider: ${{ secrets.WI_PROVIDER }}
