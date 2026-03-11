@@ -54,24 +54,6 @@ class OpenLinkHandler {
         }
         _openSubmissionDetailPage(int.parse(id));
         break;
-      case "submission-sharing":
-        final title = url.queryParameters["title"];
-        final due = DateTime.tryParse(url.queryParameters["date"] ?? "");
-        final detail = url.queryParameters["detail"];
-        final color = int.tryParse(url.queryParameters["color"] ?? "");
-
-        if (title == null || due == null) {
-          showSnackBar(globalContext!, "不正なパラメーターです。");
-          return;
-        }
-
-        _showSubmissionSharingDialog(
-          title: title,
-          due: due,
-          detail: detail,
-          color: color,
-        );
-        break;
       case "share":
         // v2 sharing link
         if (url.pathSegments.length < 2) {

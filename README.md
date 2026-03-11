@@ -4,7 +4,7 @@
 
 [Website](https://hp.submon.app)
 
-[Download (Android / iOS)](https://open.submon.app/dl)
+[Download (Android / iOS)](https://submon.app)
 
 ## Issueについて
 

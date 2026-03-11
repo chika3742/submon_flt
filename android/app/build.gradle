@@ -69,7 +69,7 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            manifestPlaceholders["appLinkHostName"] = "open.submon.app"
+            manifestPlaceholders["appLinkHostName"] = "submon.app"
             manifestPlaceholders["applicationLabel"] = "Submon"
             minifyEnabled = true
             shrinkResources = true
@@ -83,13 +83,13 @@ android {
         }
         profile {
             versionNameSuffix "-profile"
-            manifestPlaceholders["appLinkHostName"] = "dev.open.submon.app"
+            manifestPlaceholders["appLinkHostName"] = "dev.submon.app"
             manifestPlaceholders["applicationLabel"] = "[P]Submon"
             applicationIdSuffix ".debug"
         }
         debug {
             versionNameSuffix "-debug"
-            manifestPlaceholders["appLinkHostName"] = "dev.open.submon.app"
+            manifestPlaceholders["appLinkHostName"] = "dev.submon.app"
             manifestPlaceholders["applicationLabel"] = "[D]Submon"
             applicationIdSuffix ".debug"
         }

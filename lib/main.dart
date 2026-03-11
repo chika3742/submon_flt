@@ -21,7 +21,6 @@ import "package:package_info_plus/package_info_plus.dart";
 
 import "db/shared_prefs.dart";
 import "event_api/uri_event_api.dart";
-import "link_handler/link_handler.dart";
 import "models/sign_in_result.dart";
 import "pages/done_submissions_page.dart";
 import "pages/email_registration_page.dart";
@@ -353,7 +352,6 @@ class _ApplicationState extends State<Application> {
         });
         WidgetsBinding.instance.addPostFrameCallback((_) {
           UriEventApi().listen();
-          LinkHandler.initDynamicLinksListener();
         });
       });
     } catch (e) {

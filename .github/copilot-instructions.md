@@ -56,7 +56,7 @@ Native APIs (FCM tokens, OAuth custom tabs, DND control, widget updates) are acc
 
 ### Firebase Services
 
-Auth (Google, Apple, Email), Firestore, Cloud Functions (region: `asia-northeast1`), Analytics, Crashlytics, Dynamic Links, Performance Monitoring, and Google Mobile Ads.
+Auth (Google, Apple, Email), Firestore, Cloud Functions (region: `asia-northeast1`), Analytics, Crashlytics, Performance Monitoring, and Google Mobile Ads.
 
 ### External Integrations
 
