@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../../isar_db/isar_timetable_class_time.dart';
+part of 'isar_timetable_class_time.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator

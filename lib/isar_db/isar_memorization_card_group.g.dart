@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../../isar_db/isar_timetable_table.dart';
+part of 'isar_memorization_card_group.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator
@@ -9,13 +9,14 @@ part of '../../isar_db/isar_timetable_table.dart';
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
-extension GetTimetableTableCollection on Isar {
-  IsarCollection<TimetableTable> get timetableTables => this.collection();
+extension GetMemorizationCardGroupCollection on Isar {
+  IsarCollection<MemorizationCardGroup> get memorizationCardGroups =>
+      this.collection();
 }
 
-const TimetableTableSchema = CollectionSchema(
-  name: r'TimetableTable',
-  id: -7694100642909355567,
+const MemorizationCardGroupSchema = CollectionSchema(
+  name: r'MemorizationCardGroup',
+  id: -3584954084259191415,
   properties: {
     r'title': PropertySchema(
       id: 0,
@@ -23,22 +24,22 @@ const TimetableTableSchema = CollectionSchema(
       type: IsarType.string,
     )
   },
-  estimateSize: _timetableTableEstimateSize,
-  serialize: _timetableTableSerialize,
-  deserialize: _timetableTableDeserialize,
-  deserializeProp: _timetableTableDeserializeProp,
+  estimateSize: _memorizationCardGroupEstimateSize,
+  serialize: _memorizationCardGroupSerialize,
+  deserialize: _memorizationCardGroupDeserialize,
+  deserializeProp: _memorizationCardGroupDeserializeProp,
   idName: r'id',
   indexes: {},
   links: {},
   embeddedSchemas: {},
-  getId: _timetableTableGetId,
-  getLinks: _timetableTableGetLinks,
-  attach: _timetableTableAttach,
+  getId: _memorizationCardGroupGetId,
+  getLinks: _memorizationCardGroupGetLinks,
+  attach: _memorizationCardGroupAttach,
   version: '3.3.0',
 );
 
-int _timetableTableEstimateSize(
-  TimetableTable object,
+int _memorizationCardGroupEstimateSize(
+  MemorizationCardGroup object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
@@ -47,8 +48,8 @@ int _timetableTableEstimateSize(
   return bytesCount;
 }
 
-void _timetableTableSerialize(
-  TimetableTable object,
+void _memorizationCardGroupSerialize(
+  MemorizationCardGroup object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
@@ -56,19 +57,19 @@ void _timetableTableSerialize(
   writer.writeString(offsets[0], object.title);
 }
 
-TimetableTable _timetableTableDeserialize(
+MemorizationCardGroup _memorizationCardGroupDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = TimetableTable();
+  final object = MemorizationCardGroup();
   object.id = id;
   object.title = reader.readString(offsets[0]);
   return object;
 }
 
-P _timetableTableDeserializeProp<P>(
+P _memorizationCardGroupDeserializeProp<P>(
   IsarReader reader,
   int propertyId,
   int offset,
@@ -82,32 +83,34 @@ P _timetableTableDeserializeProp<P>(
   }
 }
 
-Id _timetableTableGetId(TimetableTable object) {
+Id _memorizationCardGroupGetId(MemorizationCardGroup object) {
   return object.id ?? Isar.autoIncrement;
 }
 
-List<IsarLinkBase<dynamic>> _timetableTableGetLinks(TimetableTable object) {
+List<IsarLinkBase<dynamic>> _memorizationCardGroupGetLinks(
+    MemorizationCardGroup object) {
   return [];
 }
 
-void _timetableTableAttach(
-    IsarCollection<dynamic> col, Id id, TimetableTable object) {
+void _memorizationCardGroupAttach(
+    IsarCollection<dynamic> col, Id id, MemorizationCardGroup object) {
   object.id = id;
 }
 
-extension TimetableTableQueryWhereSort
-    on QueryBuilder<TimetableTable, TimetableTable, QWhere> {
-  QueryBuilder<TimetableTable, TimetableTable, QAfterWhere> anyId() {
+extension MemorizationCardGroupQueryWhereSort
+    on QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QWhere> {
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhere>
+      anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
 }
 
-extension TimetableTableQueryWhere
-    on QueryBuilder<TimetableTable, TimetableTable, QWhereClause> {
-  QueryBuilder<TimetableTable, TimetableTable, QAfterWhereClause> idEqualTo(
-      Id id) {
+extension MemorizationCardGroupQueryWhere on QueryBuilder<MemorizationCardGroup,
+    MemorizationCardGroup, QWhereClause> {
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhereClause>
+      idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
         lower: id,
@@ -116,8 +119,8 @@ extension TimetableTableQueryWhere
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterWhereClause> idNotEqualTo(
-      Id id) {
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhereClause>
+      idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -139,9 +142,8 @@ extension TimetableTableQueryWhere
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterWhereClause> idGreaterThan(
-      Id id,
-      {bool include = false}) {
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhereClause>
+      idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -149,9 +151,8 @@ extension TimetableTableQueryWhere
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterWhereClause> idLessThan(
-      Id id,
-      {bool include = false}) {
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhereClause>
+      idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -159,7 +160,8 @@ extension TimetableTableQueryWhere
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterWhereClause> idBetween(
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhereClause>
+      idBetween(
     Id lowerId,
     Id upperId, {
     bool includeLower = true,
@@ -176,10 +178,10 @@ extension TimetableTableQueryWhere
   }
 }
 
-extension TimetableTableQueryFilter
-    on QueryBuilder<TimetableTable, TimetableTable, QFilterCondition> {
-  QueryBuilder<TimetableTable, TimetableTable, QAfterFilterCondition>
-      idIsNull() {
+extension MemorizationCardGroupQueryFilter on QueryBuilder<
+    MemorizationCardGroup, MemorizationCardGroup, QFilterCondition> {
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+      QAfterFilterCondition> idIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'id',
@@ -187,8 +189,8 @@ extension TimetableTableQueryFilter
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterFilterCondition>
-      idIsNotNull() {
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+      QAfterFilterCondition> idIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'id',
@@ -196,8 +198,8 @@ extension TimetableTableQueryFilter
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterFilterCondition> idEqualTo(
-      Id? value) {
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+      QAfterFilterCondition> idEqualTo(Id? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -206,8 +208,8 @@ extension TimetableTableQueryFilter
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterFilterCondition>
-      idGreaterThan(
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+      QAfterFilterCondition> idGreaterThan(
     Id? value, {
     bool include = false,
   }) {
@@ -220,8 +222,8 @@ extension TimetableTableQueryFilter
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterFilterCondition>
-      idLessThan(
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+      QAfterFilterCondition> idLessThan(
     Id? value, {
     bool include = false,
   }) {
@@ -234,7 +236,8 @@ extension TimetableTableQueryFilter
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterFilterCondition> idBetween(
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+      QAfterFilterCondition> idBetween(
     Id? lower,
     Id? upper, {
     bool includeLower = true,
@@ -251,8 +254,8 @@ extension TimetableTableQueryFilter
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterFilterCondition>
-      titleEqualTo(
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+      QAfterFilterCondition> titleEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -265,8 +268,8 @@ extension TimetableTableQueryFilter
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterFilterCondition>
-      titleGreaterThan(
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+      QAfterFilterCondition> titleGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -281,8 +284,8 @@ extension TimetableTableQueryFilter
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterFilterCondition>
-      titleLessThan(
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+      QAfterFilterCondition> titleLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -297,8 +300,8 @@ extension TimetableTableQueryFilter
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterFilterCondition>
-      titleBetween(
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+      QAfterFilterCondition> titleBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -317,8 +320,8 @@ extension TimetableTableQueryFilter
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterFilterCondition>
-      titleStartsWith(
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+      QAfterFilterCondition> titleStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -331,8 +334,8 @@ extension TimetableTableQueryFilter
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterFilterCondition>
-      titleEndsWith(
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+      QAfterFilterCondition> titleEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -345,7 +348,8 @@ extension TimetableTableQueryFilter
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterFilterCondition>
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+          QAfterFilterCondition>
       titleContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
@@ -356,7 +360,8 @@ extension TimetableTableQueryFilter
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterFilterCondition>
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+          QAfterFilterCondition>
       titleMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
@@ -367,8 +372,8 @@ extension TimetableTableQueryFilter
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterFilterCondition>
-      titleIsEmpty() {
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+      QAfterFilterCondition> titleIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'title',
@@ -377,8 +382,8 @@ extension TimetableTableQueryFilter
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterFilterCondition>
-      titleIsNotEmpty() {
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
+      QAfterFilterCondition> titleIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'title',
@@ -388,73 +393,80 @@ extension TimetableTableQueryFilter
   }
 }
 
-extension TimetableTableQueryObject
-    on QueryBuilder<TimetableTable, TimetableTable, QFilterCondition> {}
+extension MemorizationCardGroupQueryObject on QueryBuilder<
+    MemorizationCardGroup, MemorizationCardGroup, QFilterCondition> {}
 
-extension TimetableTableQueryLinks
-    on QueryBuilder<TimetableTable, TimetableTable, QFilterCondition> {}
+extension MemorizationCardGroupQueryLinks on QueryBuilder<MemorizationCardGroup,
+    MemorizationCardGroup, QFilterCondition> {}
 
-extension TimetableTableQuerySortBy
-    on QueryBuilder<TimetableTable, TimetableTable, QSortBy> {
-  QueryBuilder<TimetableTable, TimetableTable, QAfterSortBy> sortByTitle() {
+extension MemorizationCardGroupQuerySortBy
+    on QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QSortBy> {
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
+      sortByTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.asc);
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterSortBy> sortByTitleDesc() {
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
+      sortByTitleDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.desc);
     });
   }
 }
 
-extension TimetableTableQuerySortThenBy
-    on QueryBuilder<TimetableTable, TimetableTable, QSortThenBy> {
-  QueryBuilder<TimetableTable, TimetableTable, QAfterSortBy> thenById() {
+extension MemorizationCardGroupQuerySortThenBy
+    on QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QSortThenBy> {
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
+      thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterSortBy> thenByIdDesc() {
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
+      thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterSortBy> thenByTitle() {
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
+      thenByTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.asc);
     });
   }
 
-  QueryBuilder<TimetableTable, TimetableTable, QAfterSortBy> thenByTitleDesc() {
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
+      thenByTitleDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.desc);
     });
   }
 }
 
-extension TimetableTableQueryWhereDistinct
-    on QueryBuilder<TimetableTable, TimetableTable, QDistinct> {
-  QueryBuilder<TimetableTable, TimetableTable, QDistinct> distinctByTitle(
-      {bool caseSensitive = true}) {
+extension MemorizationCardGroupQueryWhereDistinct
+    on QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QDistinct> {
+  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QDistinct>
+      distinctByTitle({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'title', caseSensitive: caseSensitive);
     });
   }
 }
 
-extension TimetableTableQueryProperty
-    on QueryBuilder<TimetableTable, TimetableTable, QQueryProperty> {
-  QueryBuilder<TimetableTable, int, QQueryOperations> idProperty() {
+extension MemorizationCardGroupQueryProperty on QueryBuilder<
+    MemorizationCardGroup, MemorizationCardGroup, QQueryProperty> {
+  QueryBuilder<MemorizationCardGroup, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
     });
   }
 
-  QueryBuilder<TimetableTable, String, QQueryOperations> titleProperty() {
+  QueryBuilder<MemorizationCardGroup, String, QQueryOperations>
+      titleProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'title');
     });

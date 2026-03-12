@@ -5,7 +5,7 @@ import "../db/firestore_provider.dart";
 import "../db/shared_prefs.dart";
 import "isar_provider.dart";
 
-part "../generated/isar_db/isar_timetable.g.dart";
+part "isar_timetable.g.dart";
 
 @Collection()
 class Timetable {

@@ -11,7 +11,7 @@ import "../src/pigeons.g.dart";
 import "isar_digestive.dart";
 import "isar_provider.dart";
 
-part "../generated/isar_db/isar_submission.g.dart";
+part "isar_submission.g.dart";
 
 typedef Restorable = Future<void> Function();
 

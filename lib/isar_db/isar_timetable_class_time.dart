@@ -3,7 +3,7 @@ import "package:isar_community/isar.dart";
 import "../db/firestore_provider.dart";
 import "isar_provider.dart";
 
-part "../generated/isar_db/isar_timetable_class_time.g.dart";
+part "isar_timetable_class_time.g.dart";
 
 @Collection()
 class TimetableClassTime {
