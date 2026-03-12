@@ -1,0 +1,126 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'submission_providers.dart';
+
+// **************************************************************************
+// RiverpodGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(submissionRepository)
+final submissionRepositoryProvider = SubmissionRepositoryProvider._();
+
+final class SubmissionRepositoryProvider extends $FunctionalProvider<
+    SubmissionRepository,
+    SubmissionRepository,
+    SubmissionRepository> with $Provider<SubmissionRepository> {
+  SubmissionRepositoryProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'submissionRepositoryProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$submissionRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<SubmissionRepository> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  SubmissionRepository create(Ref ref) {
+    return submissionRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SubmissionRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SubmissionRepository>(value),
+    );
+  }
+}
+
+String _$submissionRepositoryHash() =>
+    r'1b88504527b253032aa59af93d62ca19548cc484';
+
+@ProviderFor(undoneSubmissions)
+final undoneSubmissionsProvider = UndoneSubmissionsProvider._();
+
+final class UndoneSubmissionsProvider extends $FunctionalProvider<
+        AsyncValue<List<Submission>>,
+        List<Submission>,
+        Stream<List<Submission>>>
+    with $FutureModifier<List<Submission>>, $StreamProvider<List<Submission>> {
+  UndoneSubmissionsProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'undoneSubmissionsProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$undoneSubmissionsHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<List<Submission>> $createElement(
+          $ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<Submission>> create(Ref ref) {
+    return undoneSubmissions(ref);
+  }
+}
+
+String _$undoneSubmissionsHash() => r'2b36bd02e475d3725b7d7c441665a64f9614a9fc';
+
+@ProviderFor(doneSubmissions)
+final doneSubmissionsProvider = DoneSubmissionsProvider._();
+
+final class DoneSubmissionsProvider extends $FunctionalProvider<
+        AsyncValue<List<Submission>>,
+        List<Submission>,
+        Stream<List<Submission>>>
+    with $FutureModifier<List<Submission>>, $StreamProvider<List<Submission>> {
+  DoneSubmissionsProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'doneSubmissionsProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$doneSubmissionsHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<List<Submission>> $createElement(
+          $ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<Submission>> create(Ref ref) {
+    return doneSubmissions(ref);
+  }
+}
+
+String _$doneSubmissionsHash() => r'0c26fa537eb5903ab0132784fe47f62b2309b39c';

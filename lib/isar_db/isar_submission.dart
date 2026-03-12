@@ -8,12 +8,11 @@ import "package:isar_community/isar.dart";
 import "../db/firestore_provider.dart";
 import "../main.dart";
 import "../src/pigeons.g.dart";
+import "../utils/types.dart";
 import "isar_digestive.dart";
 import "isar_provider.dart";
 
 part "isar_submission.g.dart";
-
-typedef Restorable = Future<void> Function();
 
 @Collection()
 class Submission {
