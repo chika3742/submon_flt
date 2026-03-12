@@ -298,8 +298,6 @@ class HomePageState extends State<HomePage> {
             return const CreateSubmissionPage();
           },
           onClosed: (result) {
-            if (result != null) eventBus.fire(SubmissionInserted(result));
-
             setState(() {
               _hideAd = false;
             });

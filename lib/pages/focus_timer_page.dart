@@ -4,11 +4,12 @@ import "dart:io";
 import "package:audioplayers/audioplayers.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:google_mobile_ads/google_mobile_ads.dart";
 
 import "../components/digestive_detail_card.dart";
 import "../isar_db/isar_digestive.dart";
-import "../isar_db/isar_submission.dart";
+import "../providers/submission_providers.dart";
 import "../src/pigeons.g.dart";
 import "../utils/ad_unit_ids.dart";
 import "../utils/ui.dart";
@@ -20,7 +21,7 @@ const breakCoolingMinutes = 10;
 ///
 /// Whether focus timer is finished will be returned.
 ///
-class FocusTimerPage extends StatefulWidget {
+class FocusTimerPage extends ConsumerStatefulWidget {
   const FocusTimerPage({super.key, required this.digestive});
 
   static const routeName = "/focus-timer";
@@ -36,7 +37,7 @@ class FocusTimerPage extends StatefulWidget {
   }
 
   @override
-  State<FocusTimerPage> createState() => _FocusTimerPageState();
+  ConsumerState<FocusTimerPage> createState() => _FocusTimerPageState();
 }
 
 class FocusTimerPageArguments {
@@ -45,9 +46,8 @@ class FocusTimerPageArguments {
   FocusTimerPageArguments(this.digestive);
 }
 
-class _FocusTimerPageState extends State<FocusTimerPage>
+class _FocusTimerPageState extends ConsumerState<FocusTimerPage>
     with WidgetsBindingObserver {
-  String _submissionName = "";
   final _player = AudioPlayer();
   bool? _dndAccessGranted = Platform.isAndroid ? false : null;
 
@@ -69,14 +69,6 @@ class _FocusTimerPageState extends State<FocusTimerPage>
     WidgetsBinding.instance.addObserver(this);
 
     _remainingTime = Duration(minutes: widget.digestive.minute);
-
-    if (widget.digestive.submissionId != null) {
-      SubmissionProvider().use((provider) async {
-        _submissionName =
-            (await provider.get(widget.digestive.submissionId!))!.title;
-        setState(() {});
-      });
-    }
 
     if (!kIsWeb && Platform.isAndroid) {
       GeneralApi().setFullscreen(true);
@@ -123,6 +115,14 @@ class _FocusTimerPageState extends State<FocusTimerPage>
 
   @override
   Widget build(BuildContext context) {
+    final submissionName = switch (widget.digestive.submissionId) {
+      final id? => switch (ref.watch(submissionProvider(id))) {
+          AsyncData(:final value) => value?.title,
+          _ => null,
+        },
+      null => null,
+    };
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("集中タイマー"),
@@ -145,11 +145,11 @@ class _FocusTimerPageState extends State<FocusTimerPage>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (_submissionName.isNotEmpty)
+                  if (submissionName != null)
                     Text.rich(TextSpan(children: [
                       const TextSpan(text: "提出物: "),
                       TextSpan(
-                          text: _submissionName,
+                          text: submissionName,
                           style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold)),
                     ])),

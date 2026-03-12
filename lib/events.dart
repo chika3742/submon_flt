@@ -8,18 +8,8 @@ class BottomNavDoubleClickEvent {
   BottomNavDoubleClickEvent(this.index);
 }
 
-class SubmissionInserted {
-  int id;
-
-  SubmissionInserted(this.id);
-}
-
 class UndoRedoUpdatedEvent {
   UndoRedoUpdatedEvent();
-}
-
-class SubmissionFetched {
-  SubmissionFetched();
 }
 
 class TimetableListChanged {}

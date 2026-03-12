@@ -96,6 +96,7 @@ extension RepeatToLocaleString on Repeat {
   }
 }
 
+@Deprecated("Use SubmissionRepository via submissionRepositoryProvider instead")
 class SubmissionProvider extends IsarProvider<Submission> {
   @override
   Future<void> use(

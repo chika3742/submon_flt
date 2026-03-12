@@ -123,23 +123,16 @@ class OpenLinkHandler {
           "${detail != null ? "詳細: $detail" : ""}",
       showCancel: true,
       onOKPressed: () {
-        int id = 0;
-
         SubmissionProvider().use((provider) {
           return provider.writeTransaction(() {
-            return provider
-                .put(Submission.from(
+            return provider.put(Submission.from(
               title: title,
               due: due.toLocal(),
               details: detail ?? "",
               color: color ?? Colors.white.toARGB32(),
-            ))
-                .then((id_) {
-              id = id_;
-            });
+            ));
           });
         }).then((value) {
-          eventBus.fire(SubmissionInserted(id));
           showSnackBar(globalContext!, "作成しました。");
         });
       },
@@ -147,13 +140,11 @@ class OpenLinkHandler {
   }
 
   static void _openCreateSubmissionPage() {
-    Navigator.pushNamed(globalContext!, CreateSubmissionPage.routeName,
-            arguments: CreateSubmissionPageArguments())
-        .then((insertedId) {
-      if (insertedId != null) {
-        eventBus.fire(SubmissionInserted(insertedId as int));
-      }
-    });
+    Navigator.pushNamed(
+      globalContext!,
+      CreateSubmissionPage.routeName,
+      arguments: CreateSubmissionPageArguments(),
+    );
   }
 
   static void _openFocusTimer(Uri url) {

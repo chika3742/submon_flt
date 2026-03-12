@@ -33,3 +33,9 @@ Stream<List<Submission>> doneSubmissions(Ref ref) {
       .sortByDueDesc()
       .watch(fireImmediately: true);
 }
+
+@riverpod
+Stream<Submission?> submission(Ref ref, int id) {
+  final repo = ref.watch(submissionRepositoryProvider);
+  return repo.collection.watchObject(id, fireImmediately: true);
+}

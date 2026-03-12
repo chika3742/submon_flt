@@ -50,6 +50,7 @@ var googleSignIn = GoogleSignIn(scopes: scopes);
 
 const screenShotMode = bool.fromEnvironment("SCREENSHOT_MODE");
 
+@Deprecated("Use BuildContext from widget tree instead")
 BuildContext? get globalContext => Application.globalKey.currentContext;
 
 void main() async {

@@ -34,7 +34,11 @@ class SubmissionRepository extends SyncedRepository<Submission> {
     return put(data..done = !data.done);
   }
 
-  /// 提出物を削除し、関連する Digestive も削除する。
+  Future<void> toggleImportant(Submission data) {
+    return put(data..important = !data.important);
+  }
+
+  /// 提出物を削除し、関連する Digestive も削除し、Google Tasks からも削除する。
   /// 戻り値の関数を呼ぶと削除を元に戻せる。
   Future<Restorable> deleteItem(int id) async {
     final submission = await get(id);
@@ -42,6 +46,7 @@ class SubmissionRepository extends SyncedRepository<Submission> {
       return () async {};
     }
 
+    _deleteFromGoogleTasks(submission.googleTasksTaskId);
     await delete(id);
 
     // DigestiveProvider を暫定利用 (Phase 2 で DI に変更)
@@ -62,9 +67,9 @@ class SubmissionRepository extends SyncedRepository<Submission> {
     };
   }
 
-  // --- Google Tasks ---
+  // --- Google Tasks (private) ---
 
-  static void deleteFromGoogleTasks(String? taskId) {
+  static void _deleteFromGoogleTasks(String? taskId) {
     if (taskId != null) {
       googleSignIn.authenticatedClient().then((client) async {
         if (client != null) {

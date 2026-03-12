@@ -1,18 +1,19 @@
 import "package:firebase_analytics/firebase_analytics.dart";
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:intl/intl.dart";
 
 import "../../db/shared_prefs.dart";
-import "../../events.dart";
 import "../../isar_db/isar_submission.dart";
 import "../../main.dart";
+import "../../providers/submission_providers.dart";
 import "../../ui_components/tappable_card.dart";
 import "../../utils/google_tasks.dart";
 import "../../utils/ui.dart";
 import "../../utils/utils.dart";
 import "../color_picker_dialog.dart";
 
-class SubmissionEditor extends StatefulWidget {
+class SubmissionEditor extends ConsumerStatefulWidget {
   const SubmissionEditor(
       {super.key, this.submissionId, this.initialTitle, this.initialDeadline});
 
@@ -21,10 +22,10 @@ class SubmissionEditor extends StatefulWidget {
   final DateTime? initialDeadline;
 
   @override
-  SubmissionEditorState createState() => SubmissionEditorState();
+  ConsumerState<SubmissionEditor> createState() => SubmissionEditorState();
 }
 
-class SubmissionEditorState extends State<SubmissionEditor> {
+class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
   final _titleController = TextEditingController();
   String? _titleError;
   final _detailsController = TextEditingController();
@@ -37,14 +38,13 @@ class SubmissionEditorState extends State<SubmissionEditor> {
   void initState() {
     super.initState();
     if (widget.submissionId != null) {
-      SubmissionProvider().use((provider) async {
-        await provider.get(widget.submissionId!).then((data) {
-          if (data == null) return;
-          setState(() {
-            _titleController.text = data.title;
-            _detailsController.text = data.details;
-            _submission = data;
-          });
+      final repo = ref.read(submissionRepositoryProvider);
+      repo.get(widget.submissionId!).then((data) {
+        if (data == null) return;
+        setState(() {
+          _titleController.text = data.title;
+          _detailsController.text = data.details;
+          _submission = data;
         });
       });
     }
@@ -304,19 +304,12 @@ class SubmissionEditorState extends State<SubmissionEditor> {
     _submission
       ..title = _titleController.text
       ..details = _detailsController.text;
-    await SubmissionProvider().use((provider) async {
-      await provider.writeTransaction(() async {
-        _submission.id = await provider.put(_submission);
+    final repo = ref.read(submissionRepositoryProvider);
+    _submission.id = await repo.put(_submission);
 
-        if (widget.submissionId == null) {
-          eventBus.fire(SubmissionInserted(_submission.id!));
-        }
-      });
-
-      if (_writeGoogleTasks && _googleTasksAvailable == true) {
-        addToGoogleTasks(_submission);
-      }
-    });
+    if (_writeGoogleTasks && _googleTasksAvailable == true) {
+      addToGoogleTasks(_submission);
+    }
 
     // If created new
     if (widget.submissionId == null) {
@@ -401,26 +394,17 @@ class SubmissionEditorState extends State<SubmissionEditor> {
 
 
   Future<void> addToGoogleTasks(Submission data) async {
-    final result = await GoogleTasksHelper.addTask(data);
-
-    switch (result) {
-      case GoogleApiError.failedToAuthenticate:
-        showSnackBar(globalContext!,
-            "Google Tasksへの追加に失敗しました。(認証に失敗しました。)");
-        break;
-
-      case GoogleApiError.taskListDoesNotExist:
-        showSnackBar(globalContext!,
-            "Google Tasksのタスクリストが存在しません。Tasksアプリでタスクリストを作成してください。");
-        break;
-
-      case GoogleApiError.unknown:
-        showSnackBar(globalContext!,
-            "Google Tasksへの追加に失敗しました。");
-        break;
-
-      case null:
-        // Successful
+    try {
+      final taskId = await GoogleTasksHelper.addTask(data);
+      if (taskId != null && data.googleTasksTaskId == null) {
+        final repo = ref.read(submissionRepositoryProvider);
+        await repo.put(data..googleTasksTaskId = taskId);
+      }
+    } on GoogleTasksException catch (e) {
+      if (mounted) showSnackBar(context, e.toString());
+    } catch (e, st) {
+      recordErrorToCrashlytics(e, st);
+      if (mounted) showSnackBar(context, "Google Tasksへの追加に失敗しました。");
     }
   }
 

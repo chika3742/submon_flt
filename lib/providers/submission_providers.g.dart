@@ -124,3 +124,77 @@ final class DoneSubmissionsProvider extends $FunctionalProvider<
 }
 
 String _$doneSubmissionsHash() => r'0c26fa537eb5903ab0132784fe47f62b2309b39c';
+
+@ProviderFor(submission)
+final submissionProvider = SubmissionFamily._();
+
+final class SubmissionProvider extends $FunctionalProvider<
+        AsyncValue<Submission?>, Submission?, Stream<Submission?>>
+    with $FutureModifier<Submission?>, $StreamProvider<Submission?> {
+  SubmissionProvider._(
+      {required SubmissionFamily super.from, required int super.argument})
+      : super(
+          retry: null,
+          name: r'submissionProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$submissionHash();
+
+  @override
+  String toString() {
+    return r'submissionProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<Submission?> $createElement(
+          $ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<Submission?> create(Ref ref) {
+    final argument = this.argument as int;
+    return submission(
+      ref,
+      argument,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SubmissionProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$submissionHash() => r'cd017edad9b29765450d2b1e41da5d1aceae8364';
+
+final class SubmissionFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<Submission?>, int> {
+  SubmissionFamily._()
+      : super(
+          retry: null,
+          name: r'submissionProvider',
+          dependencies: null,
+          $allTransitiveDependencies: null,
+          isAutoDispose: true,
+        );
+
+  SubmissionProvider call(
+    int id,
+  ) =>
+      SubmissionProvider._(argument: id, from: this);
+
+  @override
+  String toString() => r'submissionProvider';
+}

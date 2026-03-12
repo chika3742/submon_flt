@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_linkify/flutter_linkify.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:google_mobile_ads/google_mobile_ads.dart";
 import "package:intl/intl.dart";
 import "package:url_launcher/url_launcher_string.dart";
@@ -10,13 +11,14 @@ import "../components/submissions/formatted_date_remaining.dart";
 import "../isar_db/isar_digestive.dart";
 import "../isar_db/isar_submission.dart";
 import "../main.dart";
+import "../providers/submission_providers.dart";
 import "../sample_data.dart";
 import "../utils/ad_unit_ids.dart";
 import "../utils/ui.dart";
 import "../utils/utils.dart";
 import "submission_edit_page.dart";
 
-class SubmissionDetailPage extends StatefulWidget {
+class SubmissionDetailPage extends ConsumerStatefulWidget {
   const SubmissionDetailPage(this.submissionId, {super.key});
 
   static const routeName = "/submission/detail";
@@ -24,8 +26,8 @@ class SubmissionDetailPage extends StatefulWidget {
   final int submissionId;
 
   @override
-  // ignore: library_private_types_in_public_api
-  _SubmissionDetailPageState createState() => _SubmissionDetailPageState();
+  ConsumerState<SubmissionDetailPage> createState() =>
+      _SubmissionDetailPageState();
 }
 
 enum SubmissionDetailPagePopAction { delete }
@@ -36,35 +38,19 @@ class SubmissionDetailPageArguments {
   SubmissionDetailPageArguments(this.submissionId);
 }
 
-class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
-  Submission? item;
+class _SubmissionDetailPageState extends ConsumerState<SubmissionDetailPage> {
   List<Digestive> _digestiveList = [];
   BannerAd? _bannerAd;
 
   @override
   void initState() {
     super.initState();
-    SubmissionProvider().use((provider) async {
-      if (screenShotMode) {
-        item = SampleData.submissions[0];
-      } else {
-        await provider.get(widget.submissionId).then((value) {
-          if (value == null) {
-            showSnackBar(context, "提出物が見つかりません");
-            Navigator.pop(context);
-          }
-          setState(() {
-            item = value;
-          });
-        });
-      }
-    });
     DigestiveProvider().use((provider) async {
       if (screenShotMode) {
         _digestiveList = [SampleData.digestives[0]];
       } else {
         _digestiveList =
-        await provider.getDigestivesBySubmissionId(widget.submissionId);
+            await provider.getDigestivesBySubmissionId(widget.submissionId);
       }
       setState(() {});
     });
@@ -83,6 +69,14 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final asyncItem = ref.watch(submissionProvider(widget.submissionId));
+    final item = screenShotMode
+        ? SampleData.submissions[0]
+        : switch (asyncItem) {
+            AsyncData(:final value) => value,
+            _ => null,
+          };
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("詳細"),
@@ -95,30 +89,24 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
           ),
           IconButton(
             icon: Icon(
-                item?.important == true ? Icons.star : Icons.star_outline,
-                color: item?.important == true ? Colors.yellowAccent : null),
-            onPressed: () async {
-              await SubmissionProvider().use((provider) {
-                return provider.writeTransaction(() async {
-                  item!.important = !item!.important;
-                  await provider.put(item!);
-                  setState(() {});
-                });
-              });
-            },
+              item?.important == true ? Icons.star : Icons.star_outline,
+              color: item?.important == true ? Colors.yellowAccent : null,
+            ),
+            onPressed: item != null
+                ? () {
+                    final repo = ref.read(submissionRepositoryProvider);
+                    repo.toggleImportant(item);
+                  }
+                : null,
           ),
           IconButton(
             icon: const Icon(Icons.edit),
-            onPressed: () async {
-              await Navigator.pushNamed(context, SubmissionEditPage.routeName,
-                  arguments: SubmissionEditPageArguments(widget.submissionId));
-              SubmissionProvider().use((provider) async {
-                await provider.get(widget.submissionId).then((value) {
-                  setState(() {
-                    item = value;
-                  });
-                });
-              });
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                SubmissionEditPage.routeName,
+                arguments: SubmissionEditPageArguments(widget.submissionId),
+              );
             },
           ),
         ],
@@ -127,7 +115,7 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
         padding:
             EdgeInsets.only(bottom: _bannerAd?.size.height.toDouble() ?? 0.0),
         child: FloatingActionButton(
-          onPressed: showCreateDigestiveBottomSheet,
+          onPressed: _showCreateDigestiveBottomSheet,
           child: const Icon(Icons.add),
         ),
       ),
@@ -144,9 +132,13 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
                       if (item != null)
                         Padding(
                           padding: const EdgeInsets.all(16.0),
-                          child: Text(item!.title,
-                              style: const TextStyle(
-                                  fontSize: 22, fontWeight: FontWeight.bold)),
+                          child: Text(
+                            item.title,
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       const Divider(thickness: 2, indent: 32, endIndent: 32),
                       Padding(
@@ -158,9 +150,10 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
                             const SizedBox(width: 8),
                             if (item != null)
                               Text(
-                                  DateFormat("M/d (E)", "ja_JP")
-                                      .format(item!.due),
-                                  style: const TextStyle(fontSize: 18)),
+                                DateFormat("M/d (E)", "ja_JP")
+                                    .format(item.due),
+                                style: const TextStyle(fontSize: 18),
+                              ),
                           ],
                         ),
                       ),
@@ -173,55 +166,66 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
                             const SizedBox(width: 8),
                             if (item != null)
                               FormattedDateRemaining(
-                                  item!.due.difference(DateTime.now()),
-                                  numberSize: 24),
+                                item.due.difference(DateTime.now()),
+                                numberSize: 24,
+                              ),
                           ],
                         ),
                       ),
-                      if (item != null && item!.repeat != Repeat.none) Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            const Spacer(),
-                            const Icon(Icons.repeat),
-                            const SizedBox(width: 8),
-                            Text(item!.repeat.toLocaleString()),
-                          ],
+                      if (item != null && item.repeat != Repeat.none)
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              const Spacer(),
+                              const Icon(Icons.repeat),
+                              const SizedBox(width: 8),
+                              Text(item.repeat.toLocaleString()),
+                            ],
+                          ),
                         ),
-                      ),
                       if (item != null)
                         Padding(
                           padding: const EdgeInsets.only(
-                              left: 16.0, right: 16.0, bottom: 16.0),
-                          // child: Text(item!.detail, style: const TextStyle(fontSize: 16, height: 1.3)),
+                            left: 16.0,
+                            right: 16.0,
+                            bottom: 16.0,
+                          ),
                           child: Linkify(
                             onOpen: (link) async {
                               if (await canLaunchUrlString(link.url)) {
-                                await launchUrlString(link.url,
-                                    mode: LaunchMode.externalApplication);
+                                await launchUrlString(
+                                  link.url,
+                                  mode: LaunchMode.externalApplication,
+                                );
                               } else {
                                 throw "Could not launch $link";
                               }
                             },
-                            text: item!.details,
+                            text: item.details,
                             style: const TextStyle(fontSize: 16, height: 1.7),
                           ),
                         ),
                       const Divider(thickness: 2, indent: 32, endIndent: 32),
                       const Align(
                         alignment: Alignment.center,
-                        child: Text("Digestive",
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
+                        child: Text(
+                          "Digestive",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                      ..._digestiveList
-                          .map((e) => DigestiveDetailCard(
-                                digestive: e,
-                                parentList: _digestiveList,
-                                onChanged: () {
-                                  setState(() {});
-                                },
-                              )),
+                      ..._digestiveList.map(
+                        (e) => DigestiveDetailCard(
+                          digestive: e,
+                          parentList: _digestiveList,
+                          onChanged: () {
+                            setState(() {});
+                          },
+                        ),
+                      ),
                       if (_digestiveList.isEmpty)
                         const Center(
                           child: Padding(
@@ -252,7 +256,7 @@ class _SubmissionDetailPageState extends State<SubmissionDetailPage> {
     );
   }
 
-  Future<void> showCreateDigestiveBottomSheet() async {
+  Future<void> _showCreateDigestiveBottomSheet() async {
     final data = await showRoundedBottomSheet<Digestive>(
       context: context,
       title: "Digestive 新規作成",
