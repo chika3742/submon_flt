@@ -68,7 +68,7 @@ abstract class SyncedRepository<T> {
   }
 
   void _wrapFirestoreUpdate(Future<void> future) {
-    future.onError((e, st) {
+    future.catchError((e, st) {
       debugPrint("Firestore sync error: $e");
       recordErrorToCrashlytics(e, st);
     }).then((_) {
