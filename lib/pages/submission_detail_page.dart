@@ -11,6 +11,7 @@ import "../components/submissions/formatted_date_remaining.dart";
 import "../isar_db/isar_digestive.dart";
 import "../isar_db/isar_submission.dart";
 import "../main.dart";
+import "../providers/digestive_providers.dart";
 import "../providers/submission_providers.dart";
 import "../sample_data.dart";
 import "../utils/ad_unit_ids.dart";
@@ -39,21 +40,11 @@ class SubmissionDetailPageArguments {
 }
 
 class _SubmissionDetailPageState extends ConsumerState<SubmissionDetailPage> {
-  List<Digestive> _digestiveList = [];
   BannerAd? _bannerAd;
 
   @override
   void initState() {
     super.initState();
-    DigestiveProvider().use((provider) async {
-      if (screenShotMode) {
-        _digestiveList = [SampleData.digestives[0]];
-      } else {
-        _digestiveList =
-            await provider.getDigestivesBySubmissionId(widget.submissionId);
-      }
-      setState(() {});
-    });
 
     if (!screenShotMode && isAdEnabled) {
       _bannerAd = BannerAd(
@@ -75,6 +66,14 @@ class _SubmissionDetailPageState extends ConsumerState<SubmissionDetailPage> {
         : switch (asyncItem) {
             AsyncData(:final value) => value,
             _ => null,
+          };
+
+    final digestiveList = screenShotMode
+        ? [SampleData.digestives[0]]
+        : switch (ref.watch(
+            digestivesBySubmissionProvider(widget.submissionId))) {
+            AsyncData(:final value) => value,
+            _ => <Digestive>[],
           };
 
     return Scaffold(
@@ -217,16 +216,12 @@ class _SubmissionDetailPageState extends ConsumerState<SubmissionDetailPage> {
                           ),
                         ),
                       ),
-                      ..._digestiveList.map(
+                      ...digestiveList.map(
                         (e) => DigestiveDetailCard(
                           digestive: e,
-                          parentList: _digestiveList,
-                          onChanged: () {
-                            setState(() {});
-                          },
                         ),
                       ),
-                      if (_digestiveList.isEmpty)
+                      if (digestiveList.isEmpty)
                         const Center(
                           child: Padding(
                             padding: EdgeInsets.all(16.0),
@@ -263,14 +258,8 @@ class _SubmissionDetailPageState extends ConsumerState<SubmissionDetailPage> {
       child: DigestiveEditBottomSheet(submissionId: widget.submissionId),
     );
     if (data != null) {
-      DigestiveProvider().use((provider) async {
-        provider.writeTransaction(() async {
-          await provider.put(data);
-        });
-      });
-      setState(() {
-        _digestiveList.add(data);
-      });
+      final repo = ref.read(digestiveRepositoryProvider);
+      await repo.create(data);
     }
   }
 }

@@ -32,6 +32,7 @@ abstract class SyncedRepository<T> {
 
   // --- Write (自動同期) ---
 
+  @protected
   Future<int> put(T data) async {
     final id = await isar.writeTxn(() => collection.put(data));
     _syncSet(data, id);

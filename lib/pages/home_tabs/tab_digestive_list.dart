@@ -1,6 +1,7 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:intl/intl.dart";
 
 import "../../components/digestive_detail_card.dart";
@@ -9,46 +10,24 @@ import "../../events.dart";
 import "../../isar_db/isar_digestive.dart";
 import "../../isar_db/isar_submission.dart";
 import "../../main.dart";
+import "../../providers/digestive_providers.dart";
 import "../../sample_data.dart";
 import "../../utils/ui.dart";
 import "../submission_detail_page.dart";
 
-class TabDigestiveList extends StatefulWidget {
+class TabDigestiveList extends ConsumerStatefulWidget {
   const TabDigestiveList({super.key});
 
   @override
-  State<TabDigestiveList> createState() => _TabDigestiveListState();
+  ConsumerState<TabDigestiveList> createState() => _TabDigestiveListState();
 }
 
-class _TabDigestiveListState extends State<TabDigestiveList> {
+class _TabDigestiveListState extends ConsumerState<TabDigestiveList> {
   StreamSubscription? listener;
-
-  List<DigestiveWithSubmission> _digestiveList = [];
 
   @override
   void initState() {
-    if (screenShotMode) {
-      _digestiveList = [
-        DigestiveWithSubmission.fromObject(
-          SampleData.digestives[0],
-          SampleData.submissions[0],
-        ),
-        DigestiveWithSubmission.fromObject(
-          SampleData.digestives[1],
-          SampleData.submissions[1],
-        ),
-        DigestiveWithSubmission.fromObject(
-          SampleData.digestives[2],
-          SampleData.submissions[1],
-        ),
-        DigestiveWithSubmission.fromObject(
-          SampleData.digestives[3],
-          null,
-        ),
-      ];
-    } else {
-      fetchDigestives();
-    }
+    super.initState();
 
     listener = eventBus.on<DigestiveAddButtonPressed>().listen((event) async {
       final result = await showRoundedBottomSheet<Digestive>(
@@ -60,36 +39,12 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
           ));
 
       if (result != null) {
-        DigestiveProvider().use((provider) async {
-          provider.writeTransaction(() async {
-            final id = await provider.put(result);
-            setState(() {
-              _digestiveList.add(
-                  DigestiveWithSubmission.fromObject(result..id = id, null));
-            });
-          });
-        });
-        showSnackBar(globalContext!, "作成しました");
-      }
-    });
-
-    super.initState();
-  }
-
-  void fetchDigestives() {
-    DigestiveProvider().use((provider) async {
-      SubmissionProvider().use((sProvider) async {
-        final digestiveList = await provider.getUndoneDigestives();
-        _digestiveList = await Future.wait(digestiveList.map((e) async {
-          final submission = e.submissionId != null
-              ? await sProvider.get(e.submissionId!)
-              : null;
-          return DigestiveWithSubmission.fromObject(e, submission);
-        }).toList());
+        final repo = ref.read(digestiveRepositoryProvider);
+        await repo.create(result);
         if (mounted) {
-          setState(() {});
+          showSnackBar(context, "作成しました");
         }
-      });
+      }
     });
   }
 
@@ -101,11 +56,35 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
 
   @override
   Widget build(BuildContext context) {
+    final digestiveList = screenShotMode
+        ? [
+            DigestiveWithSubmission.fromObject(
+              SampleData.digestives[0],
+              SampleData.submissions[0],
+            ),
+            DigestiveWithSubmission.fromObject(
+              SampleData.digestives[1],
+              SampleData.submissions[1],
+            ),
+            DigestiveWithSubmission.fromObject(
+              SampleData.digestives[2],
+              SampleData.submissions[1],
+            ),
+            DigestiveWithSubmission.fromObject(
+              SampleData.digestives[3],
+              null,
+            ),
+          ]
+        : switch (ref.watch(undoneDigestivesWithSubmissionProvider)) {
+            AsyncData(:final value) => value,
+            _ => <DigestiveWithSubmission>[],
+          };
+
     final widgets = <Widget>[];
     int? prevSubmissionId;
 
-    for (var i in _digestiveList.asMap().keys) {
-      final e = _digestiveList[i];
+    for (var i in digestiveList.asMap().keys) {
+      final e = digestiveList[i];
       if (e.submissionId != prevSubmissionId) {
         widgets.add(i != 0
             ? const Divider(
@@ -122,12 +101,11 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
         if (e.submission != null) {
           widgets.add(Material(
             child: InkWell(
-              onTap: () async {
-                await Navigator.of(context, rootNavigator: true).pushNamed(
+              onTap: () {
+                Navigator.of(context, rootNavigator: true).pushNamed(
                     SubmissionDetailPage.routeName,
                     arguments:
                         SubmissionDetailPageArguments(e.submission!.id!));
-                fetchDigestives();
               },
               child: Padding(
                 padding:
@@ -172,10 +150,6 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
 
       widgets.add(DigestiveDetailCard(
         digestive: e,
-        parentList: _digestiveList,
-        onChanged: () {
-          setState(() {});
-        },
       ));
     }
     return Stack(
@@ -185,7 +159,7 @@ class _TabDigestiveListState extends State<TabDigestiveList> {
             children: widgets,
           ),
         ),
-        if (_digestiveList.isEmpty)
+        if (digestiveList.isEmpty)
           const Center(child: Text("Digestiveがありません")),
       ],
     );

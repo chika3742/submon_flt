@@ -32,6 +32,19 @@ class DigestiveRepository extends SyncedRepository<Digestive> {
 
   // --- Write ---
 
+  /// 新規作成。
+  Future<int> create(Digestive data) => put(data);
+
+  /// 既存データを更新。
+  Future<void> update(Digestive data) async {
+    await put(data);
+  }
+
+  /// 完了状態を指定値に変更。
+  Future<void> markDone(Digestive digestive, {required bool done}) {
+    return put(digestive..done = done);
+  }
+
   Future<void> toggleDone(Digestive digestive) {
     return put(digestive..done = !digestive.done);
   }

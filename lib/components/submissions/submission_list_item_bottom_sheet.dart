@@ -8,6 +8,7 @@ import "../../isar_db/isar_digestive.dart";
 import "../../isar_db/isar_submission.dart";
 import "../../main.dart";
 import "../../pages/submission_edit_page.dart";
+import "../../providers/digestive_providers.dart";
 import "../../providers/submission_providers.dart";
 import "../../utils/app_links.dart";
 import "../../utils/ui.dart";
@@ -114,11 +115,8 @@ class SubmissionListItemBottomSheet extends ConsumerWidget {
           child: DigestiveEditBottomSheet(submissionId: item.id),
         );
         if (data != null) {
-          await DigestiveProvider().use((provider) async {
-            await provider.writeTransaction(() async {
-              await provider.put(data);
-            });
-          });
+          final repo = ref.read(digestiveRepositoryProvider);
+          await repo.create(data);
           showSnackBar(globalContext!, "作成しました");
         }
         break;
