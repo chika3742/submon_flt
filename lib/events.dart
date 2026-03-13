@@ -29,10 +29,3 @@ class SwitchBottomNav {
 
   SwitchBottomNav(this.path);
 }
-
-class OnDigestiveDoneChanged {
-  int digestiveId;
-  bool done;
-
-  OnDigestiveDoneChanged(this.digestiveId, this.done);
-}

@@ -45,6 +45,7 @@ class Digestive {
   }
 }
 
+@Deprecated("Use DigestiveRepository with Riverpod instead")
 class DigestiveProvider extends IsarProvider<Digestive> {
   ///
   /// [submissionId]に一致するDigestiveを削除する。
