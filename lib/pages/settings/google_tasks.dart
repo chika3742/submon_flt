@@ -1,39 +1,23 @@
 import "package:flutter/material.dart";
-import "../../main.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:google_sign_in/google_sign_in.dart";
+import "package:googleapis/tasks/v1.dart" as tasks;
+import "../../providers/core_providers.dart";
 import "../../utils/ui.dart";
 import "../../utils/utils.dart";
 
-class GoogleTasksSettingsPage extends StatefulWidget {
+class GoogleTasksSettingsPage extends ConsumerWidget {
   const GoogleTasksSettingsPage({super.key});
 
   static const routeName = "/settings/functions/google-tasks";
 
   @override
-  State<GoogleTasksSettingsPage> createState() =>
-      _GoogleTasksSettingsPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(googleSignedInAccountProvider).value;
+    final client = ref.watch(googleAuthenticatedClientProvider).value;
 
-class _GoogleTasksSettingsPageState extends State<GoogleTasksSettingsPage> {
-  bool? googleTasksAvailable;
+    final googleTasksAvailable = user != null && client != null;
 
-  @override
-  void initState() {
-    super.initState();
-
-    Future(() {
-      showLoadingModal(context);
-
-      canAccessTasks().then((value) {
-        Navigator.pop(context);
-        setState(() {
-          googleTasksAvailable = value;
-        });
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return SizedBox.expand(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -45,8 +29,8 @@ class _GoogleTasksSettingsPageState extends State<GoogleTasksSettingsPage> {
                 TextSpan(children: [
                   const TextSpan(text: "連携状態: "),
                   TextSpan(
-                      text: googleTasksAvailable == true
-                          ? "連携済み (${googleSignIn.currentUser?.email})"
+                      text: googleTasksAvailable
+                          ? "連携済み (${user.email})"
                           : "未連携",
                       style: const TextStyle(fontWeight: FontWeight.bold)),
                 ]),
@@ -73,20 +57,34 @@ class _GoogleTasksSettingsPageState extends State<GoogleTasksSettingsPage> {
                       padding: EdgeInsets.zero,
                       child: InkWell(
                         onTap: () async {
-                          dynamic result;
-                          if (googleSignIn.currentUser != null) {
-                            result = await googleSignIn.requestScopes(scopes);
-                          } else {
-                            final r = await googleSignIn.signIn();
-                            if (r == null) return;
-                            result = await googleSignIn.requestScopes(scopes);
-                          }
+                          const scopes = [tasks.TasksApi.tasksScope];
+                          final gsi = GoogleSignIn.instance;
 
-                          if (result == true) {
-                            showSnackBar(context, "Google Tasksと連携しました。");
-                            setState(() {
-                              googleTasksAvailable = true;
-                            });
+                          try {
+                            // request sign in to user if not yet
+                            if (user == null) {
+                              await gsi.authenticate(scopeHint: scopes);
+                            }
+
+                            // check the scope is granted
+                            if (!await canAccessTasks()) {
+                              await gsi.authorizationClient.authorizeScopes(scopes);
+                            }
+
+                            ref.invalidate(googleAuthenticatedClientProvider);
+                            if (context.mounted) {
+                              showSnackBar(context, "Google Tasksと連携しました。");
+                            }
+                          } on GoogleSignInException catch (e, st) {
+                            switch (e.code) {
+                              case GoogleSignInExceptionCode.canceled:
+                                // canceled by user
+                                return;
+                              default:
+                                showSnackBar(context, "エラーが発生しました。");
+                                recordErrorToCrashlytics(e, st);
+                                return;
+                            }
                           }
                         },
                       ),
@@ -103,12 +101,11 @@ class _GoogleTasksSettingsPageState extends State<GoogleTasksSettingsPage> {
                       try {
                         showLoadingModal(context);
 
-                        await googleSignIn.disconnect();
+                        await GoogleSignIn.instance.disconnect();
 
-                        setState(() {
-                          googleTasksAvailable = false;
-                        });
-                        showSnackBar(context, "連携を解除しました。");
+                        if (context.mounted) {
+                          showSnackBar(context, "連携を解除しました。");
+                        }
                       } catch (e, stack) {
                         showSnackBar(context, "エラーが発生しました。");
                         recordErrorToCrashlytics(e, stack);

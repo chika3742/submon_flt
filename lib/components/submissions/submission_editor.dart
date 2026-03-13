@@ -6,6 +6,7 @@ import "package:intl/intl.dart";
 import "../../db/shared_prefs.dart";
 import "../../isar_db/isar_submission.dart";
 import "../../main.dart";
+import "../../providers/core_providers.dart";
 import "../../providers/submission_providers.dart";
 import "../../ui_components/tappable_card.dart";
 import "../../utils/google_tasks.dart";
@@ -395,7 +396,12 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
 
   Future<void> addToGoogleTasks(Submission data) async {
     try {
-      final taskId = await GoogleTasksHelper.addTask(data);
+      final client = await ref.read(googleAuthenticatedClientProvider.future);
+      if (client == null) {
+        if (mounted) showSnackBar(context, "Googleアカウントにログインしてください。");
+        return;
+      }
+      final taskId = await GoogleTasksHelper.addTask(client, data);
       if (taskId != null && data.googleTasksTaskId == null) {
         final repo = ref.read(submissionRepositoryProvider);
         await repo.put(data..googleTasksTaskId = taskId);

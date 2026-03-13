@@ -1,9 +1,8 @@
 import "package:collection/collection.dart";
-import "package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart";
 import "package:googleapis/tasks/v1.dart" as tasks;
+import "package:googleapis_auth/googleapis_auth.dart";
 
 import "../isar_db/isar_submission.dart";
-import "../main.dart";
 import "app_links.dart";
 
 class GoogleTasksException implements Exception {
@@ -26,6 +25,8 @@ enum GoogleTasksError {
 }
 
 class GoogleTasksHelper {
+  const GoogleTasksHelper._();
+
   static Future<tasks.Task> makeTaskRequest(Submission data) async {
     final linkData = createSubmissionLink(data.id!);
     return tasks.Task(
@@ -38,12 +39,7 @@ class GoogleTasksHelper {
 
   /// Google Tasks にタスクを追加/更新し、タスクIDを返す。
   /// 既存タスクの更新時は既存IDをそのまま返す。
-  static Future<String?> addTask(Submission data) async {
-    final client = await googleSignIn.authenticatedClient();
-    if (client == null) {
-      throw const GoogleTasksException(GoogleTasksError.failedToAuthenticate);
-    }
-
+  static Future<String?> addTask(AuthClient client, Submission data) async {
     final tasksApi = tasks.TasksApi(client);
 
     final tasklist =

@@ -20,6 +20,7 @@ import "../src/pigeons.g.dart";
 import "../user_config.dart";
 import "../utils/firestore.dart";
 import "../utils/ui.dart";
+import "../utils/utils.dart";
 import "apple_sign_in.dart";
 
 class SignInHandler {
@@ -32,7 +33,7 @@ class SignInHandler {
     showLoadingModal(globalContext!);
     await FirestoreProvider.removeNotificationToken();
     await FirebaseAuth.instance.signOut();
-    await GoogleSignIn().signOut();
+    await GoogleSignIn.instance.signOut();
     GeneralApi().updateWidgets();
     backToWelcomePage(globalContext!);
   }
@@ -143,18 +144,27 @@ class SignInHandler {
   }
 
   Future<SignInResult> _signInWithGoogle() async {
-    final googleSignIn = GoogleSignIn();
+    final googleSignIn = GoogleSignIn.instance;
     await googleSignIn.signOut(); // sign out before signing in
 
-    final googleUser = await googleSignIn.signIn();
-    if (googleUser == null) {
-      return SignInResult(
-          errorCode: SignInError.cancelled); // if canceled (aborted)
+    final GoogleSignInAccount googleUser;
+    try {
+      googleUser = await googleSignIn.authenticate();
+    } on GoogleSignInException catch (e, st) {
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        // canceled by user
+        return SignInResult(errorCode: SignInError.cancelled);
+      } else {
+        recordErrorToCrashlytics(e, st);
+        return SignInResult(
+            errorCode: SignInError.unknown,
+            errorMessage: "サインインに失敗しました");
+      }
     }
 
-    final googleAuth = await googleUser.authentication;
     final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+      idToken: googleUser.authentication.idToken,
+    );
 
     return SignInResult(credential: await _signInByMode(credential));
   }

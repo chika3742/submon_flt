@@ -125,3 +125,82 @@ final class FirebaseUserProvider
 }
 
 String _$firebaseUserHash() => r'41ccd6f03a5c4ed94888741812ccad955176fcc0';
+
+@ProviderFor(googleSignedInAccount)
+final googleSignedInAccountProvider = GoogleSignedInAccountProvider._();
+
+final class GoogleSignedInAccountProvider extends $FunctionalProvider<
+        AsyncValue<GoogleSignInAccount?>,
+        GoogleSignInAccount?,
+        Stream<GoogleSignInAccount?>>
+    with
+        $FutureModifier<GoogleSignInAccount?>,
+        $StreamProvider<GoogleSignInAccount?> {
+  GoogleSignedInAccountProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'googleSignedInAccountProvider',
+          isAutoDispose: false,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$googleSignedInAccountHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<GoogleSignInAccount?> $createElement(
+          $ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<GoogleSignInAccount?> create(Ref ref) {
+    return googleSignedInAccount(ref);
+  }
+}
+
+String _$googleSignedInAccountHash() =>
+    r'23463f17bc7b28e302f6af93b97b039fc3436915';
+
+/// This provider must be refreshed manually when the authorized scopes changed.
+
+@ProviderFor(googleAuthenticatedClient)
+final googleAuthenticatedClientProvider = GoogleAuthenticatedClientProvider._();
+
+/// This provider must be refreshed manually when the authorized scopes changed.
+
+final class GoogleAuthenticatedClientProvider extends $FunctionalProvider<
+        AsyncValue<AuthClient?>, AuthClient?, FutureOr<AuthClient?>>
+    with $FutureModifier<AuthClient?>, $FutureProvider<AuthClient?> {
+  /// This provider must be refreshed manually when the authorized scopes changed.
+  GoogleAuthenticatedClientProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'googleAuthenticatedClientProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$googleAuthenticatedClientHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<AuthClient?> $createElement(
+          $ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<AuthClient?> create(Ref ref) {
+    return googleAuthenticatedClient(ref);
+  }
+}
+
+String _$googleAuthenticatedClientHash() =>
+    r'd8c49a4517e18f51f5bb1049e47a038a18c4cbfd';

@@ -15,7 +15,6 @@ import "package:flutter_localizations/flutter_localizations.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:google_mobile_ads/google_mobile_ads.dart";
 import "package:google_sign_in/google_sign_in.dart";
-import "package:googleapis/tasks/v1.dart" as tasks;
 import "package:intl/intl.dart";
 import "package:package_info_plus/package_info_plus.dart";
 import "package:shared_preferences/shared_preferences.dart";
@@ -45,9 +44,6 @@ import "pages/timetable_table_view_page.dart";
 import "pages/welcome_page.dart";
 import "providers/core_providers.dart";
 
-var scopes = [tasks.TasksApi.tasksScope];
-var googleSignIn = GoogleSignIn(scopes: scopes);
-
 const screenShotMode = bool.fromEnvironment("SCREENSHOT_MODE");
 
 @Deprecated("Use BuildContext from widget tree instead")
@@ -74,10 +70,10 @@ void main() async {
   );
 
   // initialize Google user (for Tasks API)
-  googleSignIn.signInSilently();
+  await GoogleSignIn.instance.initialize();
 
   // initialize AdMob
-  MobileAds.instance.initialize();
+  await MobileAds.instance.initialize();
 
   // register font licenses
   LicenseRegistry.addLicense(() async* {
