@@ -34,27 +34,27 @@ abstract class SyncedRepository<T> {
 
   @protected
   Future<int> put(T data) async {
-    final id = await isar.writeTxn(() => collection.put(data));
+    final id = await collection.put(data);
     _syncSet(data, id);
     return id;
   }
 
   @protected
   Future<List<int>> putAll(List<T> list) async {
-    final ids = await isar.writeTxn(() => collection.putAll(list));
+    final ids = await collection.putAll(list);
     _syncBatchSet(list, ids);
     return ids;
   }
 
   Future<void> delete(int id) async {
-    await isar.writeTxn(() => collection.delete(id));
+    await collection.delete(id);
     _syncDelete(id);
   }
 
   /// Firestore に同期せずローカルのみに書き込む。
   /// [FirestoreProvider.fetchData] からの一括インポート用。
   Future<void> putAllLocalOnly(List<T> list) {
-    return isar.writeTxn(() => collection.putAll(list));
+    return collection.putAll(list);
   }
 
   // --- Firestore sync (private) ---
