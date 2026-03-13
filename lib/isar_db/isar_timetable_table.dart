@@ -3,7 +3,7 @@ import "package:isar_community/isar.dart";
 import "../db/firestore_provider.dart";
 import "isar_provider.dart";
 
-part "../generated/isar_db/isar_timetable_table.g.dart";
+part "isar_timetable_table.g.dart";
 
 @Collection()
 class TimetableTable {
@@ -17,6 +17,13 @@ class TimetableTable {
         title = map["title"];
 
   TimetableTable.from({this.id, required this.title});
+
+  Map<String, dynamic> toMap() {
+    return {
+      "id": id,
+      "title": title,
+    };
+  }
 }
 
 class TimetableTableProvider extends IsarProvider<TimetableTable> {

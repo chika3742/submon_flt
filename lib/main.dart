@@ -1,4 +1,3 @@
-import "dart:async";
 import "dart:io";
 import "dart:ui";
 
@@ -13,11 +12,12 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_dotenv/flutter_dotenv.dart";
 import "package:flutter_localizations/flutter_localizations.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:google_mobile_ads/google_mobile_ads.dart";
 import "package:google_sign_in/google_sign_in.dart";
-import "package:googleapis/tasks/v1.dart" as tasks;
 import "package:intl/intl.dart";
 import "package:package_info_plus/package_info_plus.dart";
+import "package:shared_preferences/shared_preferences.dart";
 
 import "db/shared_prefs.dart";
 import "event_api/uri_event_api.dart";
@@ -42,48 +42,77 @@ import "pages/submission_edit_page.dart";
 import "pages/timetable_edit_page.dart";
 import "pages/timetable_table_view_page.dart";
 import "pages/welcome_page.dart";
-
-var scopes = [tasks.TasksApi.tasksScope];
-var googleSignIn = GoogleSignIn(scopes: scopes);
+import "providers/core_providers.dart";
 
 const screenShotMode = bool.fromEnvironment("SCREENSHOT_MODE");
 
+@Deprecated("Use BuildContext from widget tree instead")
 BuildContext? get globalContext => Application.globalKey.currentContext;
 
 void main() async {
-  runZonedGuarded<Future<void>>(
-    () async {
-      WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
-      // load .env
-      await dotenv.load();
+  // load .env
+  await dotenv.load();
 
-      // initialize Google user (for Tasks API)
-      googleSignIn.signInSilently();
+  // Initialize Firebase
+  await Firebase.initializeApp();
+  FlutterError.onError =
+      FirebaseCrashlytics.instance.recordFlutterFatalError;
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
 
-      // initialize AdMob
-      MobileAds.instance.initialize();
-
-      // register font licenses
-      LicenseRegistry.addLicense(() async* {
-        yield LicenseEntryWithLineBreaks(["google_fonts"],
-            await rootBundle.loadString("assets/google_fonts/Murecho/OFL.txt"));
-        yield LicenseEntryWithLineBreaks(
-            ["google_fonts"],
-            await rootBundle
-                .loadString("assets/google_fonts/B612_Mono/OFL.txt"));
-        yield LicenseEntryWithLineBreaks(["google_fonts"],
-            await rootBundle.loadString("assets/google_fonts/Play/OFL.txt"));
-      });
-
-      Intl.defaultLocale = PlatformDispatcher.instance.locale.toString();
-
-      runApp(const Application());
-    },
-    (error, stack) {
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    },
+  // Initialize SharedPreferences
+  final prefs = await SharedPreferencesWithCache.create(
+    cacheOptions: const SharedPreferencesWithCacheOptions(),
   );
+
+  // initialize Google user (for Tasks API)
+  await GoogleSignIn.instance.initialize();
+
+  // initialize AdMob
+  await MobileAds.instance.initialize();
+
+  // register font licenses
+  LicenseRegistry.addLicense(() async* {
+    yield LicenseEntryWithLineBreaks(["google_fonts"],
+        await rootBundle.loadString("assets/google_fonts/Murecho/OFL.txt"));
+    yield LicenseEntryWithLineBreaks(
+        ["google_fonts"],
+        await rootBundle
+            .loadString("assets/google_fonts/B612_Mono/OFL.txt"));
+    yield LicenseEntryWithLineBreaks(["google_fonts"],
+        await rootBundle.loadString("assets/google_fonts/Play/OFL.txt"));
+  });
+
+  Intl.defaultLocale = PlatformDispatcher.instance.locale.toString();
+
+  runApp(
+    ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+      ],
+      child: const _EagerInitialization(
+        child: Application(),
+      ),
+    ),
+  );
+}
+
+/// isarProviderとfirebaseUserProviderをアプリ起動時に初期化し、以降の画面で常に利用可能
+/// にするためのWidget
+class _EagerInitialization extends ConsumerWidget {
+  const _EagerInitialization({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(isarProvider);
+    ref.watch(firebaseUserProvider);
+    return child;
+  }
 }
 
 class Application extends StatefulWidget {
@@ -96,39 +125,20 @@ class Application extends StatefulWidget {
 }
 
 class _ApplicationState extends State<Application> {
-  var _initialized = false;
-  var _initializingErrorOccurred = false;
-
   @override
   void initState() {
-    initFirebase();
+    super.initState();
     SharedPrefs.use((prefs) async {
       prefs.lastVersionCode =
           int.parse((await PackageInfo.fromPlatform()).buildNumber);
     });
-    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      UriEventApi().listen();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_initializingErrorOccurred) {
-      return MaterialApp(
-        home: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.redAccent,
-            title: const Text("エラー"),
-          ),
-          body: const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-                "Firebaseの準備に失敗しました。アプリを再起動してください。\n再起動しても改善されない場合は、開発者Twitter (@chikavoid) のDMでご連絡ください。"),
-          ),
-        ),
-      );
-    }
-    if (!_initialized) {
-      return Container();
-    }
 
     final textTheme = const TextTheme(
       bodySmall: TextStyle(
@@ -332,32 +342,4 @@ class _ApplicationState extends State<Application> {
     }
   }
 
-  Future<void> initFirebase() async {
-    try {
-      await Firebase.initializeApp();
-      if (!screenShotMode) {
-        FlutterError.onError = (errorDetails) {
-          FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-        };
-      }
-      if (kDebugMode) {
-        FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
-      }
-      late StreamSubscription listener;
-      listener = FirebaseAuth.instance.authStateChanges().listen((event) {
-        listener.cancel();
-
-        setState(() {
-          _initialized = true;
-        });
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          UriEventApi().listen();
-        });
-      });
-    } catch (e) {
-      setState(() {
-        _initializingErrorOccurred = true;
-      });
-    }
-  }
 }

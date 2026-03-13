@@ -1,11 +1,10 @@
-import "package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_dotenv/flutter_dotenv.dart";
-import "package:googleapis/oauth2/v2.dart" as oauth;
-import "package:googleapis_auth/auth_io.dart";
+import "package:google_sign_in/google_sign_in.dart";
+import "package:googleapis/tasks/v1.dart" as tasks;
 import "../browser.dart";
 import "../main.dart";
 import "../pages/submission_create_page.dart";
@@ -75,31 +74,11 @@ void handleFirebaseError(FirebaseException e, StackTrace stackTrace,
 }
 
 Future<bool> canAccessTasks() async {
-  try {
-    final client = await googleSignIn.authenticatedClient();
-    if (client == null) return false;
-
-    final tokenInfo = await oauth.Oauth2Api(client).tokeninfo();
-
-    return tokenInfo.scope
-            ?.split(" ")
-            .contains("https://www.googleapis.com/auth/tasks") ==
-        true;
-  } on AccessDeniedException catch (e, stackTrace) {
-    if (e.message.contains("invalid_token")) {
-      await googleSignIn.disconnect();
-      return await canAccessTasks();
-    }
-
-    debugPrint(e.toString());
-    debugPrint(stackTrace.toString());
-    return false;
-  } catch (e, st) {
-    await googleSignIn.disconnect();
-    debugPrint(e.toString());
-    debugPrint(st.toString());
-    return false;
-  }
+  final authorization =
+      await GoogleSignIn.instance.authorizationClient.authorizationForScopes(
+    [tasks.TasksApi.tasksScope],
+  );
+  return authorization != null;
 }
 
 void createNewSubmissionForTimetable(

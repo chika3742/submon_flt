@@ -58,6 +58,23 @@ class FirestoreProvider {
     await updateTimestamp();
   }
 
+  /// 複数ドキュメントを Firestore バッチで一括書き込みする。
+  Future<void> batchSet(
+    Map<String, dynamic> entries, [
+    SetOptions? setOptions,
+  ]) async {
+    if (userDoc == null || entries.isEmpty) return;
+    final operations = entries.entries
+        .map((e) => BatchOperation.set(
+              doc: userDoc!.collection(collectionId).doc(e.key),
+              data: e.value,
+              setOptions: setOptions,
+            ))
+        .toList();
+    await BatchOperation.commit(operations);
+    await updateTimestamp();
+  }
+
   static Future<void> updateTimestamp() async {
     final timestamp = Timestamp.now();
     SharedPrefs.use((prefs) {

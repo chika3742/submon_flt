@@ -3,7 +3,7 @@ import "package:isar_community/isar.dart";
 import "../db/firestore_provider.dart";
 import "isar_provider.dart";
 
-part "../generated/isar_db/isar_digestive.g.dart";
+part "isar_digestive.g.dart";
 
 @Collection()
 class Digestive {
@@ -45,6 +45,7 @@ class Digestive {
   }
 }
 
+@Deprecated("Use DigestiveRepository with Riverpod instead")
 class DigestiveProvider extends IsarProvider<Digestive> {
   ///
   /// [submissionId]に一致するDigestiveを削除する。
