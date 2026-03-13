@@ -17,6 +17,13 @@ class TimetableTable {
         title = map["title"];
 
   TimetableTable.from({this.id, required this.title});
+
+  Map<String, dynamic> toMap() {
+    return {
+      "id": id,
+      "title": title,
+    };
+  }
 }
 
 class TimetableTableProvider extends IsarProvider<TimetableTable> {

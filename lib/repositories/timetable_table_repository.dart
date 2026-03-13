@@ -1,0 +1,28 @@
+import "package:isar_community/isar.dart";
+
+import "../db/firestore_provider.dart";
+import "../isar_db/isar_timetable_table.dart";
+import "synced_repository.dart";
+
+class TimetableTableRepository extends SyncedRepository<TimetableTable> {
+  TimetableTableRepository(super.isar);
+
+  @override
+  IsarCollection<TimetableTable> get collection => isar.timetableTables;
+
+  @override
+  FirestoreProvider get firestoreProvider => FirestoreProvider.timetable;
+
+  @override
+  Map<String, dynamic> toFirestoreMap(TimetableTable data) => data.toMap();
+
+  // --- Write ---
+
+  /// 新規作成。
+  Future<int> create(TimetableTable data) => put(data);
+
+  /// 既存データを更新。
+  Future<void> update(TimetableTable data) async {
+    await put(data);
+  }
+}
