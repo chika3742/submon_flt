@@ -306,7 +306,11 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
       ..title = _titleController.text
       ..details = _detailsController.text;
     final repo = ref.read(submissionRepositoryProvider);
-    _submission.id = await repo.put(_submission);
+    if (widget.submissionId == null) {
+      _submission.id = await repo.create(_submission);
+    } else {
+      await repo.update(_submission);
+    }
 
     if (_writeGoogleTasks && _googleTasksAvailable == true) {
       addToGoogleTasks(_submission);
@@ -404,7 +408,7 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
       final taskId = await GoogleTasksHelper.addTask(client, data);
       if (taskId != null && data.googleTasksTaskId == null) {
         final repo = ref.read(submissionRepositoryProvider);
-        await repo.put(data..googleTasksTaskId = taskId);
+        await repo.update(data..googleTasksTaskId = taskId);
       }
     } on GoogleTasksException catch (e) {
       if (mounted) showSnackBar(context, e.toString());

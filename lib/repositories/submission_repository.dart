@@ -4,16 +4,17 @@ import "package:googleapis_auth/googleapis_auth.dart";
 import "package:isar_community/isar.dart";
 
 import "../db/firestore_provider.dart";
-import "../isar_db/isar_digestive.dart";
 import "../isar_db/isar_submission.dart";
 import "../src/pigeons.g.dart";
 import "../utils/types.dart";
+import "digestive_repository.dart";
 import "synced_repository.dart";
 
 class SubmissionRepository extends SyncedRepository<Submission> {
-  SubmissionRepository(super.isar, this._authClient);
+  SubmissionRepository(super.isar, this._authClient, this._digestiveRepository);
 
   final AuthClient? _authClient;
+  final DigestiveRepository _digestiveRepository;
 
   @override
   IsarCollection<Submission> get collection => isar.submissions;
@@ -30,6 +31,14 @@ class SubmissionRepository extends SyncedRepository<Submission> {
   }
 
   // --- Write ---
+
+  /// 新規作成。
+  Future<int> create(Submission data) => put(data);
+
+  /// 既存データを更新。
+  Future<void> update(Submission data) async {
+    await put(data);
+  }
 
   Future<void> invertDone(Submission data) {
     return put(data..done = !data.done);
@@ -52,21 +61,12 @@ class SubmissionRepository extends SyncedRepository<Submission> {
     }
     await delete(id);
 
-    // DigestiveProvider を暫定利用 (Phase 2 で DI に変更)
-    List<Digestive> digestivesToRestore = [];
-    await DigestiveProvider().use((provider) async {
-      digestivesToRestore = await provider.deleteBySubmissionId(id);
-    });
+    final digestivesToRestore =
+        await _digestiveRepository.deleteBySubmissionId(id);
 
     return () async {
       await put(submission);
-      await DigestiveProvider().use((provider) async {
-        for (final digestive in digestivesToRestore) {
-          await provider.writeTransaction(() async {
-            await provider.put(digestive);
-          });
-        }
-      });
+      await _digestiveRepository.createAll(digestivesToRestore);
     };
   }
 

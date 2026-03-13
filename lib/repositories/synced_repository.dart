@@ -39,6 +39,13 @@ abstract class SyncedRepository<T> {
     return id;
   }
 
+  @protected
+  Future<List<int>> putAll(List<T> list) async {
+    final ids = await isar.writeTxn(() => collection.putAll(list));
+    _syncBatchSet(list, ids);
+    return ids;
+  }
+
   Future<void> delete(int id) async {
     await isar.writeTxn(() => collection.delete(id));
     _syncDelete(id);
@@ -59,6 +66,16 @@ abstract class SyncedRepository<T> {
         toFirestoreMap(data),
         SetOptions(merge: true),
       ),
+    );
+  }
+
+  void _syncBatchSet(List<T> list, List<int> ids) {
+    final entries = {
+      for (var i = 0; i < list.length; i++)
+        ids[i].toString(): toFirestoreMap(list[i]),
+    };
+    _wrapFirestoreUpdate(
+      firestoreProvider.batchSet(entries, SetOptions(merge: true)),
     );
   }
 

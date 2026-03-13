@@ -35,6 +35,9 @@ class DigestiveRepository extends SyncedRepository<Digestive> {
   /// 新規作成。
   Future<int> create(Digestive data) => put(data);
 
+  /// 複数の Digestive を一括作成。
+  Future<List<int>> createAll(List<Digestive> list) => putAll(list);
+
   /// 既存データを更新。
   Future<void> update(Digestive data) async {
     await put(data);
