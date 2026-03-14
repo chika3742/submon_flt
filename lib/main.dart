@@ -19,7 +19,7 @@ import "package:intl/intl.dart";
 import "package:package_info_plus/package_info_plus.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
-import "db/shared_prefs.dart";
+import "core/pref_key.dart";
 import "event_api/uri_event_api.dart";
 import "models/sign_in_result.dart";
 import "pages/done_submissions_page.dart";
@@ -115,22 +115,21 @@ class _EagerInitialization extends ConsumerWidget {
   }
 }
 
-class Application extends StatefulWidget {
+class Application extends ConsumerStatefulWidget {
   const Application({super.key});
 
   static var globalKey = GlobalKey<NavigatorState>();
 
   @override
-  State<Application> createState() => _ApplicationState();
+  ConsumerState<Application> createState() => _ApplicationState();
 }
 
-class _ApplicationState extends State<Application> {
+class _ApplicationState extends ConsumerState<Application> {
   @override
   void initState() {
     super.initState();
-    SharedPrefs.use((prefs) async {
-      prefs.lastVersionCode =
-          int.parse((await PackageInfo.fromPlatform()).buildNumber);
+    PackageInfo.fromPlatform().then((info) {
+      ref.updatePref(PrefKey.lastVersionCode, int.parse(info.buildNumber));
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       UriEventApi().listen();

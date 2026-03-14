@@ -23,6 +23,8 @@ enum PrefKey<T extends Object?> {
 
   /// 「科目を長押しで提出物を作成できます」Tips バナーが既に表示済みかどうか。
   isTimetableTipsDisplayed<bool>("isTimetableTipsDisplayed", false),
+  /// 最後に起動したビルド番号。バージョンアップ検出に使用。
+  lastVersionCode<int>("lastVersionCode", 0),
   ;
 
   final String key;

@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
+@Deprecated("Use PrefKey enum with prefProvider / watchPref / updatePref instead.")
 class SharedPrefs {
   SharedPreferences? pref;
 
