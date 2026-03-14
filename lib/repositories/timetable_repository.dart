@@ -34,29 +34,35 @@ class TimetableRepository {
 
   /// 既存セルを更新して Firestore に同期。
   Future<void> update(Timetable data) async {
-    await collection.put(data);
+    await isar.writeTxn(() => collection.put(data));
     _syncSetCell(data);
   }
 
   /// 指定テーブルの特定セルを削除。
   Future<void> deleteCell(int tableId, int cellId) async {
-    await collection
-        .filter()
-        .cellIdEqualTo(cellId)
-        .and()
-        .tableIdEqualTo(tableId)
-        .deleteFirst();
+    await isar.writeTxn(
+      () => collection
+          .filter()
+          .cellIdEqualTo(cellId)
+          .and()
+          .tableIdEqualTo(tableId)
+          .deleteFirst(),
+    );
     _syncDeleteCell(tableId, cellId);
   }
 
   /// 指定テーブルの全セルをローカルから削除。
   Future<void> clearTableLocalOnly(int tableId) async {
-    await collection.filter().tableIdEqualTo(tableId).deleteAll();
+    await isar.writeTxn(
+      () => collection.filter().tableIdEqualTo(tableId).deleteAll(),
+    );
   }
 
   /// 指定テーブルの全セルを削除 (Firestore も含む)。
   Future<void> clearTable(int tableId) async {
-    await collection.filter().tableIdEqualTo(tableId).deleteAll();
+    await isar.writeTxn(
+      () => collection.filter().tableIdEqualTo(tableId).deleteAll(),
+    );
     _wrapFirestoreUpdate(
       FirestoreProvider.timetable.set(
         tableId.toString(),
@@ -68,7 +74,7 @@ class TimetableRepository {
 
   /// テーブルの全セルを一括でローカルに書き込む (Firestore 同期なし)。
   Future<void> putAllLocalOnly(List<Timetable> list) {
-    return collection.putAll(list);
+    return isar.writeTxn(() => collection.putAll(list));
   }
 
   /// スナップショットからテーブルを復元 (Undo/Redo 用)。
@@ -77,9 +83,11 @@ class TimetableRepository {
     int tableId,
     Map<int, Timetable> snapshot,
   ) async {
-    await clearTableLocalOnly(tableId);
     final items = snapshot.values.toList();
-    await collection.putAll(items);
+    await isar.writeTxn(() async {
+      await collection.filter().tableIdEqualTo(tableId).deleteAll();
+      await collection.putAll(items);
+    });
     for (final item in items) {
       _syncSetCell(item);
     }
