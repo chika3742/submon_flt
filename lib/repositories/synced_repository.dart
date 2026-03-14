@@ -2,22 +2,21 @@ import "package:cloud_firestore/cloud_firestore.dart";
 import "package:flutter/material.dart";
 import "package:isar_community/isar.dart";
 
-import "../db/firestore_provider.dart";
+import "../providers/firestore_providers.dart";
 import "../utils/utils.dart";
 
 /// Isar ↔ Firestore 同期を自動化する Repository 基底クラス。
 ///
-/// サブクラスは [collection], [firestoreProvider], [toFirestoreMap] を実装する。
+/// サブクラスは [collection], [toFirestoreMap] を実装する。
 /// [put] / [delete] を呼ぶだけで Firestore 側も自動的に同期される。
 /// Firestore 同期なしでローカルに書き込む場合は [putAllLocalOnly] を使う。
 abstract class SyncedRepository<T> {
-  SyncedRepository(this.isar);
+  SyncedRepository(this.isar, this.firestore);
 
   final Isar isar;
+  final FirestoreNotifier firestore;
 
   IsarCollection<T> get collection;
-
-  FirestoreProvider get firestoreProvider;
 
   Map<String, dynamic> toFirestoreMap(T data);
 
@@ -61,7 +60,7 @@ abstract class SyncedRepository<T> {
 
   void _syncSet(T data, int id) {
     _wrapFirestoreUpdate(
-      firestoreProvider.set(
+      firestore.set(
         id.toString(),
         toFirestoreMap(data),
         SetOptions(merge: true),
@@ -75,13 +74,13 @@ abstract class SyncedRepository<T> {
         ids[i].toString(): toFirestoreMap(list[i]),
     };
     _wrapFirestoreUpdate(
-      firestoreProvider.batchSet(entries, SetOptions(merge: true)),
+      firestore.batchSet(entries, SetOptions(merge: true)),
     );
   }
 
   void _syncDelete(int id) {
     _wrapFirestoreUpdate(
-      firestoreProvider.delete(id.toString()),
+      firestore.delete(id.toString()),
     );
   }
 

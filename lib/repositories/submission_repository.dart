@@ -3,7 +3,6 @@ import "package:googleapis/tasks/v1.dart" as tasks;
 import "package:googleapis_auth/googleapis_auth.dart";
 import "package:isar_community/isar.dart";
 
-import "../db/firestore_provider.dart";
 import "../isar_db/isar_submission.dart";
 import "../src/pigeons.g.dart";
 import "../utils/types.dart";
@@ -11,16 +10,18 @@ import "digestive_repository.dart";
 import "synced_repository.dart";
 
 class SubmissionRepository extends SyncedRepository<Submission> {
-  SubmissionRepository(super.isar, this._authClient, this._digestiveRepository);
+  SubmissionRepository(
+    super.isar,
+    super.firestore,
+    this._authClient,
+    this._digestiveRepository,
+  );
 
   final AuthClient? _authClient;
   final DigestiveRepository _digestiveRepository;
 
   @override
   IsarCollection<Submission> get collection => isar.submissions;
-
-  @override
-  FirestoreProvider get firestoreProvider => FirestoreProvider.submission;
 
   @override
   Map<String, dynamic> toFirestoreMap(Submission data) => data.toMap();

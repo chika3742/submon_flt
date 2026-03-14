@@ -1,20 +1,15 @@
 import "package:isar_community/isar.dart";
 
-import "../db/firestore_provider.dart";
 import "../isar_db/isar_timetable_class_time.dart";
 import "synced_repository.dart";
 
 class TimetableClassTimeRepository
     extends SyncedRepository<TimetableClassTime> {
-  TimetableClassTimeRepository(super.isar);
+  TimetableClassTimeRepository(super.isar, super.firestore);
 
   @override
   IsarCollection<TimetableClassTime> get collection =>
       isar.timetableClassTimes;
-
-  @override
-  FirestoreProvider get firestoreProvider =>
-      FirestoreProvider.timetableClassTime;
 
   @override
   Map<String, dynamic> toFirestoreMap(TimetableClassTime data) => data.toMap();

@@ -9,7 +9,6 @@ import "../../db/firestore_provider.dart";
 import "../../isar_db/isar_timetable_class_time.dart";
 import "../../isar_db/isar_timetable_table.dart";
 import "../../main.dart";
-import "../../providers/core_providers.dart";
 import "../../providers/timetable_providers.dart";
 import "../../src/pigeons.g.dart";
 import "../../ui_components/settings_ui.dart";

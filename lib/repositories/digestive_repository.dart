@@ -6,13 +6,10 @@ import "../utils/types.dart";
 import "synced_repository.dart";
 
 class DigestiveRepository extends SyncedRepository<Digestive> {
-  DigestiveRepository(super.isar);
+  DigestiveRepository(super.isar, super.firestore);
 
   @override
   IsarCollection<Digestive> get collection => isar.digestives;
-
-  @override
-  FirestoreProvider get firestoreProvider => FirestoreProvider.digestive;
 
   @override
   Map<String, dynamic> toFirestoreMap(Digestive data) => data.toMap();

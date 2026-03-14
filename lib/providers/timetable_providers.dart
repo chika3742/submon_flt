@@ -9,6 +9,7 @@ import "../repositories/timetable_class_time_repository.dart";
 import "../repositories/timetable_repository.dart";
 import "../repositories/timetable_table_repository.dart";
 import "core_providers.dart";
+import "firestore_providers.dart";
 
 part "timetable_providers.g.dart";
 
@@ -17,19 +18,23 @@ part "timetable_providers.g.dart";
 @riverpod
 TimetableRepository timetableRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
-  return TimetableRepository(isar);
+  final firestore = ref.watch(firestoreProvider("timetable").notifier);
+  return TimetableRepository(isar, firestore);
 }
 
 @riverpod
 TimetableTableRepository timetableTableRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
-  return TimetableTableRepository(isar);
+  final firestore = ref.watch(firestoreProvider("timetable").notifier);
+  return TimetableTableRepository(isar, firestore);
 }
 
 @riverpod
 TimetableClassTimeRepository timetableClassTimeRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
-  return TimetableClassTimeRepository(isar);
+  final firestore =
+      ref.watch(firestoreProvider("timetableClassTime").notifier);
+  return TimetableClassTimeRepository(isar, firestore);
 }
 
 // --- Data streams ---

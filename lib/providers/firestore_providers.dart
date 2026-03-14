@@ -13,7 +13,7 @@ part "firestore_providers.g.dart";
 ///
 /// コレクションごとにインスタンスが生成される (family provider)。
 /// ```dart
-/// final notifier = ref.watch(firestoreNotifierProvider("submission").notifier);
+/// final notifier = ref.watch(firestoreProvider("submission").notifier);
 /// await notifier.set(docId, data);
 /// ```
 @riverpod

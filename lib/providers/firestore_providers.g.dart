@@ -13,7 +13,7 @@ part of 'firestore_providers.dart';
 ///
 /// コレクションごとにインスタンスが生成される (family provider)。
 /// ```dart
-/// final notifier = ref.watch(firestoreNotifierProvider("submission").notifier);
+/// final notifier = ref.watch(firestoreProvider("submission").notifier);
 /// await notifier.set(docId, data);
 /// ```
 
@@ -25,7 +25,7 @@ final firestoreProvider = FirestoreNotifierFamily._();
 ///
 /// コレクションごとにインスタンスが生成される (family provider)。
 /// ```dart
-/// final notifier = ref.watch(firestoreNotifierProvider("submission").notifier);
+/// final notifier = ref.watch(firestoreProvider("submission").notifier);
 /// await notifier.set(docId, data);
 /// ```
 final class FirestoreNotifierProvider
@@ -35,7 +35,7 @@ final class FirestoreNotifierProvider
   ///
   /// コレクションごとにインスタンスが生成される (family provider)。
   /// ```dart
-  /// final notifier = ref.watch(firestoreNotifierProvider("submission").notifier);
+  /// final notifier = ref.watch(firestoreProvider("submission").notifier);
   /// await notifier.set(docId, data);
   /// ```
   FirestoreNotifierProvider._(
@@ -89,7 +89,7 @@ String _$firestoreNotifierHash() => r'dd4bf9b8e3b0b24fc83ba34cbf6ece6ec3ed0d4e';
 ///
 /// コレクションごとにインスタンスが生成される (family provider)。
 /// ```dart
-/// final notifier = ref.watch(firestoreNotifierProvider("submission").notifier);
+/// final notifier = ref.watch(firestoreProvider("submission").notifier);
 /// await notifier.set(docId, data);
 /// ```
 
@@ -109,7 +109,7 @@ final class FirestoreNotifierFamily extends $Family
   ///
   /// コレクションごとにインスタンスが生成される (family provider)。
   /// ```dart
-  /// final notifier = ref.watch(firestoreNotifierProvider("submission").notifier);
+  /// final notifier = ref.watch(firestoreProvider("submission").notifier);
   /// await notifier.set(docId, data);
   /// ```
 
@@ -127,7 +127,7 @@ final class FirestoreNotifierFamily extends $Family
 ///
 /// コレクションごとにインスタンスが生成される (family provider)。
 /// ```dart
-/// final notifier = ref.watch(firestoreNotifierProvider("submission").notifier);
+/// final notifier = ref.watch(firestoreProvider("submission").notifier);
 /// await notifier.set(docId, data);
 /// ```
 

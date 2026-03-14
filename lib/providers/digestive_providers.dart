@@ -6,13 +6,15 @@ import "../isar_db/isar_submission.dart";
 import "../pages/home_tabs/tab_digestive_list.dart";
 import "../repositories/digestive_repository.dart";
 import "core_providers.dart";
+import "firestore_providers.dart";
 
 part "digestive_providers.g.dart";
 
 @riverpod
 DigestiveRepository digestiveRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
-  return DigestiveRepository(isar);
+  final firestore = ref.watch(firestoreProvider("digestive").notifier);
+  return DigestiveRepository(isar, firestore);
 }
 
 @riverpod

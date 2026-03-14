@@ -5,14 +5,21 @@ import "../isar_db/isar_submission.dart";
 import "../repositories/submission_repository.dart";
 import "core_providers.dart";
 import "digestive_providers.dart";
+import "firestore_providers.dart";
 
 part "submission_providers.g.dart";
 
 @riverpod
 SubmissionRepository submissionRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
+  final firestore = ref.watch(firestoreProvider("submission").notifier);
   final authClient = ref.watch(googleAuthenticatedClientProvider).value;
-  return SubmissionRepository(isar, authClient, ref.watch(digestiveRepositoryProvider));
+  return SubmissionRepository(
+    isar,
+    firestore,
+    authClient,
+    ref.watch(digestiveRepositoryProvider),
+  );
 }
 
 @riverpod
