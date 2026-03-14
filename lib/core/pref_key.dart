@@ -25,6 +25,9 @@ enum PrefKey<T extends Object?> {
   isTimetableTipsDisplayed<bool>("isTimetableTipsDisplayed", false),
   /// 最後に起動したビルド番号。バージョンアップ検出に使用。
   lastVersionCode<int>("lastVersionCode", 0),
+
+  /// Firestore 最終更新タイムスタンプ (マイクロ秒)。ローカルとサーバーの差分比較に使用。
+  firestoreLastChanged<int>("firestoreLastChanged", 0),
   ;
 
   final String key;
@@ -34,13 +37,31 @@ enum PrefKey<T extends Object?> {
 }
 
 extension RefPrefExtension on Ref {
+  /// {@template watchPref}
+  /// 指定したプリファレンスキーに対応する値を監視します。
+  /// {@endtemplate}
   T watchPref<T extends Object?>(PrefKey<T> key) => watch(prefProvider(key));
+
+  /// {@template readPref}
+  /// 指定したプリファレンスキーに対応する値を読み取ります。Widgetのビルドスタック外からの読み取りを想定しています。可能な限り [watchPref] を使用してください。
+  /// {@endtemplate}
+  T readPref<T extends Object?>(PrefKey<T> key) => read(prefProvider(key));
+
+  /// {@template updatePref}
+  /// 指定したプリファレンスキーに対応する値を更新します。
+  /// {@endtemplate}
   void updatePref<T extends Object?>(PrefKey<T> key, T value) =>
       read(prefProvider(key).notifier).update(value);
 }
 
 extension WidgetRefPrefExtension on WidgetRef {
+  /// {@macro watchPref}
   T watchPref<T extends Object?>(PrefKey<T> key) => watch(prefProvider(key));
+
+  /// {@macro readPref}
+  T readPref<T extends Object?>(PrefKey<T> key) => read(prefProvider(key));
+
+  /// {@macro updatePref}
   void updatePref<T extends Object?>(PrefKey<T> key, T value) =>
       read(prefProvider(key).notifier).update(value);
 }

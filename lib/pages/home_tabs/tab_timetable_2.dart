@@ -31,7 +31,7 @@ class _TabTimetable2State extends ConsumerState<TabTimetable2> {
 
   void _initPageController() {
     final showSaturday =
-        ref.read(prefProvider(PrefKey.timetableShowSaturday));
+        ref.readPref(PrefKey.timetableShowSaturday);
     var page = DateTime.now().weekday - 1;
     if (!showSaturday && page == 5) {
       page = 0;

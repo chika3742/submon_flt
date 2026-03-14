@@ -418,7 +418,7 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
       timetableRepo.clearTableLocalOnly(table.id!);
 
       final currentTableId =
-          ref.read(prefProvider(PrefKey.intCurrentTimetableId));
+          ref.readPref(PrefKey.intCurrentTimetableId);
       if (currentTableId == table.id) {
         ref.updatePref(PrefKey.intCurrentTimetableId, -1);
       }
