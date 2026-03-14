@@ -82,12 +82,16 @@ abstract interface class UndoRedoHandler<T> {
   void clear();
 }
 
-/// Undo/Redo スタックの SSoT。
-@riverpod
-class UndoRedo extends _$UndoRedo implements UndoRedoHandler<TimetableSnapshot> {
+/// tableId ごとの Undo/Redo スタック。
+@Riverpod(keepAlive: true)
+class UndoRedo extends _$UndoRedo
+    implements UndoRedoHandler<TimetableSnapshot> {
+  void Function()? cancelKeepAlive;
+
   @override
   ({List<TimetableSnapshot> undoStack, List<TimetableSnapshot> redoStack})
-      build() {
+      build(int tableId) {
+    cancelKeepAlive = ref.keepAlive().close;
     return (undoStack: [], redoStack: []);
   }
 
@@ -131,45 +135,48 @@ class UndoRedo extends _$UndoRedo implements UndoRedoHandler<TimetableSnapshot> 
 
 // --- UseCase ---
 
+/// tableId スコープの UseCase プロバイダー。
 @riverpod
-TimetableEditUseCase timetableEditUseCase(Ref ref) {
+TimetableEditUseCase timetableEditUseCase(Ref ref, int tableId) {
   return TimetableEditUseCase(
+    tableId,
     ref.watch(timetableRepositoryProvider),
-    ref.watch(undoRedoProvider.notifier),
+    ref.watch(undoRedoProvider(tableId).notifier),
   );
 }
 
 /// Timetable 編集の UseCase。
 /// [TimetableRepository] (データ永続化) と [UndoRedoHandler] (状態) を協調させる。
 class TimetableEditUseCase {
-  TimetableEditUseCase(this._repo, this._undoRedo);
+  TimetableEditUseCase(this._tableId, this._repo, this._undoRedo);
 
+  final int _tableId;
   final TimetableRepository _repo;
   final UndoRedoHandler<TimetableSnapshot> _undoRedo;
 
   /// 現在のテーブル状態を undo スタックに積む。
-  Future<void> pushUndoSnapshot(int tableId) async {
-    final entries = await _repo.getByTableId(tableId);
+  Future<void> pushUndoSnapshot() async {
+    final entries = await _repo.getByTableId(_tableId);
     _undoRedo.pushSnapshot(entries.toCellIdMap());
   }
 
-  Future<void> undo(int tableId) async {
-    final current = await _repo.getByTableId(tableId);
+  Future<void> undo() async {
+    final current = await _repo.getByTableId(_tableId);
     final snapshot = _undoRedo.popUndo(current.toCellIdMap());
     if (snapshot == null) return;
-    await _repo.restoreSnapshot(tableId, snapshot);
+    await _repo.restoreSnapshot(_tableId, snapshot);
   }
 
-  Future<void> redo(int tableId) async {
-    final current = await _repo.getByTableId(tableId);
+  Future<void> redo() async {
+    final current = await _repo.getByTableId(_tableId);
     final snapshot = _undoRedo.popRedo(current.toCellIdMap());
     if (snapshot == null) return;
-    await _repo.restoreSnapshot(tableId, snapshot);
+    await _repo.restoreSnapshot(_tableId, snapshot);
   }
 
   /// テーブルを全クリア (undo スナップショット付き)。
-  Future<void> clearTable(int tableId) async {
-    await pushUndoSnapshot(tableId);
-    await _repo.clearTable(tableId);
+  Future<void> clearTable() async {
+    await pushUndoSnapshot();
+    await _repo.clearTable(_tableId);
   }
 }

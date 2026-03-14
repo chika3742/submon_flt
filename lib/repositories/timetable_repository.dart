@@ -27,7 +27,7 @@ class TimetableRepository {
 
   /// セルを作成して Firestore に同期。
   Future<int> create(Timetable data) async {
-    final id = await collection.put(data);
+    final id = await isar.writeTxn(() => collection.put(data));
     _syncSetCell(data);
     return id;
   }

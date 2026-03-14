@@ -352,32 +352,38 @@ final class CurrentTimetableProvider extends $FunctionalProvider<
 
 String _$currentTimetableHash() => r'e7b54ec9c3173662bb0a5019381f5c09855437ea';
 
-/// Undo/Redo スタックの SSoT。
+/// tableId ごとの Undo/Redo スタック。
 
 @ProviderFor(UndoRedo)
-final undoRedoProvider = UndoRedoProvider._();
+final undoRedoProvider = UndoRedoFamily._();
 
-/// Undo/Redo スタックの SSoT。
+/// tableId ごとの Undo/Redo スタック。
 final class UndoRedoProvider extends $NotifierProvider<
     UndoRedo,
     ({
       List<TimetableSnapshot> redoStack,
       List<TimetableSnapshot> undoStack,
     })> {
-  /// Undo/Redo スタックの SSoT。
-  UndoRedoProvider._()
+  /// tableId ごとの Undo/Redo スタック。
+  UndoRedoProvider._(
+      {required UndoRedoFamily super.from, required int super.argument})
       : super(
-          from: null,
-          argument: null,
           retry: null,
           name: r'undoRedoProvider',
-          isAutoDispose: true,
+          isAutoDispose: false,
           dependencies: null,
           $allTransitiveDependencies: null,
         );
 
   @override
   String debugGetCreateSourceHash() => _$undoRedoHash();
+
+  @override
+  String toString() {
+    return r'undoRedoProvider'
+        ''
+        '($argument)';
+  }
 
   @$internal
   @override
@@ -398,21 +404,75 @@ final class UndoRedoProvider extends $NotifierProvider<
           })>(value),
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    return other is UndoRedoProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
 }
 
-String _$undoRedoHash() => r'd3d9bf21b173e1864568b1dfc8f8a94545a53b3b';
+String _$undoRedoHash() => r'55a4934a1dce573dac62c3d8b82d3838fed0b373';
 
-/// Undo/Redo スタックの SSoT。
+/// tableId ごとの Undo/Redo スタック。
+
+final class UndoRedoFamily extends $Family
+    with
+        $ClassFamilyOverride<
+            UndoRedo,
+            ({
+              List<TimetableSnapshot> redoStack,
+              List<TimetableSnapshot> undoStack,
+            }),
+            ({
+              List<TimetableSnapshot> redoStack,
+              List<TimetableSnapshot> undoStack,
+            }),
+            ({
+              List<TimetableSnapshot> redoStack,
+              List<TimetableSnapshot> undoStack,
+            }),
+            int> {
+  UndoRedoFamily._()
+      : super(
+          retry: null,
+          name: r'undoRedoProvider',
+          dependencies: null,
+          $allTransitiveDependencies: null,
+          isAutoDispose: false,
+        );
+
+  /// tableId ごとの Undo/Redo スタック。
+
+  UndoRedoProvider call(
+    int tableId,
+  ) =>
+      UndoRedoProvider._(argument: tableId, from: this);
+
+  @override
+  String toString() => r'undoRedoProvider';
+}
+
+/// tableId ごとの Undo/Redo スタック。
 
 abstract class _$UndoRedo extends $Notifier<
     ({
       List<TimetableSnapshot> redoStack,
       List<TimetableSnapshot> undoStack,
     })> {
+  late final _$args = ref.$arg as int;
+  int get tableId => _$args;
+
   ({
     List<TimetableSnapshot> redoStack,
     List<TimetableSnapshot> undoStack,
-  }) build();
+  }) build(
+    int tableId,
+  );
   @$mustCallSuper
   @override
   void runBuild() {
@@ -441,21 +501,30 @@ abstract class _$UndoRedo extends $Notifier<
         }),
         Object?,
         Object?>;
-    element.handleCreate(ref, build);
+    element.handleCreate(
+        ref,
+        () => build(
+              _$args,
+            ));
   }
 }
 
+/// tableId スコープの UseCase プロバイダー。
+
 @ProviderFor(timetableEditUseCase)
-final timetableEditUseCaseProvider = TimetableEditUseCaseProvider._();
+final timetableEditUseCaseProvider = TimetableEditUseCaseFamily._();
+
+/// tableId スコープの UseCase プロバイダー。
 
 final class TimetableEditUseCaseProvider extends $FunctionalProvider<
     TimetableEditUseCase,
     TimetableEditUseCase,
     TimetableEditUseCase> with $Provider<TimetableEditUseCase> {
-  TimetableEditUseCaseProvider._()
+  /// tableId スコープの UseCase プロバイダー。
+  TimetableEditUseCaseProvider._(
+      {required TimetableEditUseCaseFamily super.from,
+      required int super.argument})
       : super(
-          from: null,
-          argument: null,
           retry: null,
           name: r'timetableEditUseCaseProvider',
           isAutoDispose: true,
@@ -466,6 +535,13 @@ final class TimetableEditUseCaseProvider extends $FunctionalProvider<
   @override
   String debugGetCreateSourceHash() => _$timetableEditUseCaseHash();
 
+  @override
+  String toString() {
+    return r'timetableEditUseCaseProvider'
+        ''
+        '($argument)';
+  }
+
   @$internal
   @override
   $ProviderElement<TimetableEditUseCase> $createElement(
@@ -474,7 +550,11 @@ final class TimetableEditUseCaseProvider extends $FunctionalProvider<
 
   @override
   TimetableEditUseCase create(Ref ref) {
-    return timetableEditUseCase(ref);
+    final argument = this.argument as int;
+    return timetableEditUseCase(
+      ref,
+      argument,
+    );
   }
 
   /// {@macro riverpod.override_with_value}
@@ -484,7 +564,41 @@ final class TimetableEditUseCaseProvider extends $FunctionalProvider<
       providerOverride: $SyncValueProvider<TimetableEditUseCase>(value),
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    return other is TimetableEditUseCaseProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
 }
 
 String _$timetableEditUseCaseHash() =>
-    r'20f3abf9da42cdb1edae3062a2386ccb0a3e73c9';
+    r'6ccf1b6c9dc2cea1319d5a54e362f773570abb09';
+
+/// tableId スコープの UseCase プロバイダー。
+
+final class TimetableEditUseCaseFamily extends $Family
+    with $FunctionalFamilyOverride<TimetableEditUseCase, int> {
+  TimetableEditUseCaseFamily._()
+      : super(
+          retry: null,
+          name: r'timetableEditUseCaseProvider',
+          dependencies: null,
+          $allTransitiveDependencies: null,
+          isAutoDispose: true,
+        );
+
+  /// tableId スコープの UseCase プロバイダー。
+
+  TimetableEditUseCaseProvider call(
+    int tableId,
+  ) =>
+      TimetableEditUseCaseProvider._(argument: tableId, from: this);
+
+  @override
+  String toString() => r'timetableEditUseCaseProvider';
+}
