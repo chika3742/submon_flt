@@ -8,6 +8,7 @@ import "package:path_provider/path_provider.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
+import "../core/pref_key.dart";
 import "../isar_db/isar_digestive.dart";
 import "../isar_db/isar_memorization_card_group.dart";
 import "../isar_db/isar_submission.dart";
@@ -35,13 +36,38 @@ Future<Isar> isar(Ref ref) async {
   return instance;
 }
 
-/// main() で初期化済みの SharedPreferencesWithCache を受け取る同期 Provider。
+/// main() で初期化済みの [SharedPreferencesWithCache] を受け取る同期 Provider。
 /// ProviderScope の overrides で実体を注入する。
+/// 外部からは [prefProvider] を通じてアクセスすること。
 @riverpod
-SharedPreferencesWithCache sharedPreferences(Ref ref) {
+SharedPreferencesWithCache sharedPrefsService(Ref ref) {
   throw UnimplementedError(
-    "sharedPreferencesProvider must be overridden in ProviderScope",
+    "sharedPrefsServiceProvider must be overridden in ProviderScope",
   );
+}
+
+@riverpod
+class PrefNotifier<T extends Object?> extends _$PrefNotifier<T> {
+  @override
+  T build(PrefKey<T> key) {
+    final prefs = ref.watch(sharedPrefsServiceProvider);
+    final value = prefs.get(key.key);
+    return (value is T ? value : null) ?? key.defaultValue;
+  }
+
+  void update(T value) {
+    final prefs = ref.read(sharedPrefsServiceProvider);
+    switch (value) {
+      case final String value: prefs.setString(key.key, value);
+      case final int value: prefs.setInt(key.key, value);
+      case final double value: prefs.setDouble(key.key, value);
+      case final bool value: prefs.setBool(key.key, value);
+      case final List<String> value: prefs.setStringList(key.key, value);
+      case null: prefs.remove(key.key);
+      default: throw UnsupportedError("Unsupported type for PrefKey: ${T.runtimeType}");
+    }
+    state = value;
+  }
 }
 
 @riverpod

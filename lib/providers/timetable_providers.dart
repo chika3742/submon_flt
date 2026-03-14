@@ -1,6 +1,7 @@
 import "package:isar_community/isar.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
+import "../core/pref_key.dart";
 import "../isar_db/isar_timetable.dart";
 import "../isar_db/isar_timetable_class_time.dart";
 import "../isar_db/isar_timetable_table.dart";
@@ -29,25 +30,6 @@ TimetableTableRepository timetableTableRepository(Ref ref) {
 TimetableClassTimeRepository timetableClassTimeRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
   return TimetableClassTimeRepository(isar);
-}
-
-// --- Current table ID ---
-
-@riverpod
-class CurrentTableId extends _$CurrentTableId {
-  static const _key = "intCurrentTimetableId";
-
-  @override
-  int build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getInt(_key) ?? -1;
-  }
-
-  Future<void> update(int id) async {
-    final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setInt(_key, id);
-    state = id;
-  }
 }
 
 // --- Data streams ---
@@ -85,7 +67,7 @@ extension TimetableCellIdMap on List<Timetable> {
 /// [timetableCellsProvider] に依存し、Map に変換する。
 @riverpod
 TimetableSnapshot currentTimetable(Ref ref) {
-  final tableId = ref.watch(currentTableIdProvider);
+  final tableId = ref.watchPref(PrefKey.intCurrentTimetableId);
   final cells = ref.watch(timetableCellsProvider(tableId)).value ?? [];
   return cells.toCellIdMap();
 }

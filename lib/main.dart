@@ -92,7 +92,7 @@ void main() async {
   runApp(
     ProviderScope(
       overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
+        sharedPrefsServiceProvider.overrideWithValue(prefs),
       ],
       child: const _EagerInitialization(
         child: Application(),

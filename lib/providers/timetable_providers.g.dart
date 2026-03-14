@@ -142,52 +142,6 @@ final class TimetableClassTimeRepositoryProvider extends $FunctionalProvider<
 String _$timetableClassTimeRepositoryHash() =>
     r'519dd5e818b4983778db32fb5097e0734f0f728b';
 
-@ProviderFor(CurrentTableId)
-final currentTableIdProvider = CurrentTableIdProvider._();
-
-final class CurrentTableIdProvider
-    extends $NotifierProvider<CurrentTableId, int> {
-  CurrentTableIdProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'currentTableIdProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
-
-  @override
-  String debugGetCreateSourceHash() => _$currentTableIdHash();
-
-  @$internal
-  @override
-  CurrentTableId create() => CurrentTableId();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(int value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<int>(value),
-    );
-  }
-}
-
-String _$currentTableIdHash() => r'f4f04849e6631c937bb47b0e492d5ab13e4bb83d';
-
-abstract class _$CurrentTableId extends $Notifier<int> {
-  int build();
-  @$mustCallSuper
-  @override
-  void runBuild() {
-    final ref = this.ref as $Ref<int, int>;
-    final element = ref.element
-        as $ClassProviderElement<AnyNotifier<int, int>, int, Object?, Object?>;
-    element.handleCreate(ref, build);
-  }
-}
-
 @ProviderFor(timetableTables)
 final timetableTablesProvider = TimetableTablesProvider._();
 
@@ -396,7 +350,7 @@ final class CurrentTimetableProvider extends $FunctionalProvider<
   }
 }
 
-String _$currentTimetableHash() => r'08e48b0b5ef6e94f53a17faa06be913a06c7dca4';
+String _$currentTimetableHash() => r'e7b54ec9c3173662bb0a5019381f5c09855437ea';
 
 /// Undo/Redo スタックの SSoT。
 
