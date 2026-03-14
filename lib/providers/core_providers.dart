@@ -1,3 +1,4 @@
+import "package:cloud_firestore/cloud_firestore.dart";
 import "package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:google_sign_in/google_sign_in.dart";
@@ -73,6 +74,15 @@ class PrefNotifier<T extends Object?> extends _$PrefNotifier<T> {
 @riverpod
 Stream<User?> firebaseUser(Ref ref) {
   return FirebaseAuth.instance.authStateChanges();
+}
+
+/// 現在の認証ユーザーに対応する Firestore ドキュメント参照。
+/// 未認証時は null。
+@riverpod
+DocumentReference<Map<String, dynamic>>? userDoc(Ref ref) {
+  final user = ref.watch(firebaseUserProvider).value;
+  if (user == null) return null;
+  return FirebaseFirestore.instance.collection("users").doc(user.uid);
 }
 
 @Riverpod(keepAlive: true)

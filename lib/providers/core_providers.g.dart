@@ -255,6 +255,59 @@ final class FirebaseUserProvider
 
 String _$firebaseUserHash() => r'41ccd6f03a5c4ed94888741812ccad955176fcc0';
 
+/// 現在の認証ユーザーに対応する Firestore ドキュメント参照。
+/// 未認証時は null。
+
+@ProviderFor(userDoc)
+final userDocProvider = UserDocProvider._();
+
+/// 現在の認証ユーザーに対応する Firestore ドキュメント参照。
+/// 未認証時は null。
+
+final class UserDocProvider extends $FunctionalProvider<
+        DocumentReference<Map<String, dynamic>>?,
+        DocumentReference<Map<String, dynamic>>?,
+        DocumentReference<Map<String, dynamic>>?>
+    with $Provider<DocumentReference<Map<String, dynamic>>?> {
+  /// 現在の認証ユーザーに対応する Firestore ドキュメント参照。
+  /// 未認証時は null。
+  UserDocProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'userDocProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$userDocHash();
+
+  @$internal
+  @override
+  $ProviderElement<DocumentReference<Map<String, dynamic>>?> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  DocumentReference<Map<String, dynamic>>? create(Ref ref) {
+    return userDoc(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(DocumentReference<Map<String, dynamic>>? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride:
+          $SyncValueProvider<DocumentReference<Map<String, dynamic>>?>(value),
+    );
+  }
+}
+
+String _$userDocHash() => r'c358cae1c4936d3ee3380634a55a7cdfc61329b0';
+
 @ProviderFor(googleSignedInAccount)
 final googleSignedInAccountProvider = GoogleSignedInAccountProvider._();
 
