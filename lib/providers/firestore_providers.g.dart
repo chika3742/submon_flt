@@ -8,60 +8,174 @@ part of 'firestore_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Firestore コレクションへの CRUD をラップし、
-/// 書き込み時にタイムスタンプを自動更新する Notifier。
-///
-/// コレクションごとにインスタンスが生成される (family provider)。
-/// ```dart
-/// final notifier = ref.watch(firestoreProvider("submission").notifier);
-/// await notifier.set(docId, data);
-/// ```
+/// 現在の認証ユーザーに対応する Firestore ドキュメント参照。
+/// 未認証時は null。
 
-@ProviderFor(FirestoreNotifier)
-final firestoreProvider = FirestoreNotifierFamily._();
+@ProviderFor(userDoc)
+final userDocProvider = UserDocProvider._();
 
-/// Firestore コレクションへの CRUD をラップし、
-/// 書き込み時にタイムスタンプを自動更新する Notifier。
-///
-/// コレクションごとにインスタンスが生成される (family provider)。
-/// ```dart
-/// final notifier = ref.watch(firestoreProvider("submission").notifier);
-/// await notifier.set(docId, data);
-/// ```
-final class FirestoreNotifierProvider
-    extends $NotifierProvider<FirestoreNotifier, void> {
-  /// Firestore コレクションへの CRUD をラップし、
-  /// 書き込み時にタイムスタンプを自動更新する Notifier。
-  ///
-  /// コレクションごとにインスタンスが生成される (family provider)。
-  /// ```dart
-  /// final notifier = ref.watch(firestoreProvider("submission").notifier);
-  /// await notifier.set(docId, data);
-  /// ```
-  FirestoreNotifierProvider._(
-      {required FirestoreNotifierFamily super.from,
-      required String super.argument})
+/// 現在の認証ユーザーに対応する Firestore ドキュメント参照。
+/// 未認証時は null。
+
+final class UserDocProvider extends $FunctionalProvider<
+        DocumentReference<Map<String, dynamic>>?,
+        DocumentReference<Map<String, dynamic>>?,
+        DocumentReference<Map<String, dynamic>>?>
+    with $Provider<DocumentReference<Map<String, dynamic>>?> {
+  /// 現在の認証ユーザーに対応する Firestore ドキュメント参照。
+  /// 未認証時は null。
+  UserDocProvider._()
       : super(
+          from: null,
+          argument: null,
           retry: null,
-          name: r'firestoreProvider',
+          name: r'userDocProvider',
           isAutoDispose: true,
           dependencies: null,
           $allTransitiveDependencies: null,
         );
 
   @override
-  String debugGetCreateSourceHash() => _$firestoreNotifierHash();
+  String debugGetCreateSourceHash() => _$userDocHash();
+
+  @$internal
+  @override
+  $ProviderElement<DocumentReference<Map<String, dynamic>>?> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  DocumentReference<Map<String, dynamic>>? create(Ref ref) {
+    return userDoc(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(DocumentReference<Map<String, dynamic>>? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride:
+          $SyncValueProvider<DocumentReference<Map<String, dynamic>>?>(value),
+    );
+  }
+}
+
+String _$userDocHash() => r'c358cae1c4936d3ee3380634a55a7cdfc61329b0';
+
+/// Firestore 上のユーザー設定 (UserConfig) を管理する AsyncNotifier。
+///
+/// `build()` で UserConfig を fetch し、各メソッドでユーザードキュメントの
+/// フィールドを更新する。
+
+@ProviderFor(FirestoreUserConfigNotifier)
+final firestoreUserConfigProvider = FirestoreUserConfigNotifierProvider._();
+
+/// Firestore 上のユーザー設定 (UserConfig) を管理する AsyncNotifier。
+///
+/// `build()` で UserConfig を fetch し、各メソッドでユーザードキュメントの
+/// フィールドを更新する。
+final class FirestoreUserConfigNotifierProvider
+    extends $AsyncNotifierProvider<FirestoreUserConfigNotifier, UserConfig?> {
+  /// Firestore 上のユーザー設定 (UserConfig) を管理する AsyncNotifier。
+  ///
+  /// `build()` で UserConfig を fetch し、各メソッドでユーザードキュメントの
+  /// フィールドを更新する。
+  FirestoreUserConfigNotifierProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'firestoreUserConfigProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$firestoreUserConfigNotifierHash();
+
+  @$internal
+  @override
+  FirestoreUserConfigNotifier create() => FirestoreUserConfigNotifier();
+}
+
+String _$firestoreUserConfigNotifierHash() =>
+    r'1abb23cd8370e0e4a72f235dc234accdb333e23e';
+
+/// Firestore 上のユーザー設定 (UserConfig) を管理する AsyncNotifier。
+///
+/// `build()` で UserConfig を fetch し、各メソッドでユーザードキュメントの
+/// フィールドを更新する。
+
+abstract class _$FirestoreUserConfigNotifier
+    extends $AsyncNotifier<UserConfig?> {
+  FutureOr<UserConfig?> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<UserConfig?>, UserConfig?>;
+    final element = ref.element as $ClassProviderElement<
+        AnyNotifier<AsyncValue<UserConfig?>, UserConfig?>,
+        AsyncValue<UserConfig?>,
+        Object?,
+        Object?>;
+    element.handleCreate(ref, build);
+  }
+}
+
+/// Firestore コレクションへの CRUD をラップし、
+/// 書き込み時にタイムスタンプを自動更新する Notifier。
+///
+/// コレクションごとにインスタンスが生成される (family provider)。
+/// ```dart
+/// final notifier = ref.watch(firestoreCollectionProvider("submission").notifier);
+/// await notifier.set(docId, data);
+/// ```
+
+@ProviderFor(FirestoreCollectionNotifier)
+final firestoreCollectionProvider = FirestoreCollectionNotifierFamily._();
+
+/// Firestore コレクションへの CRUD をラップし、
+/// 書き込み時にタイムスタンプを自動更新する Notifier。
+///
+/// コレクションごとにインスタンスが生成される (family provider)。
+/// ```dart
+/// final notifier = ref.watch(firestoreCollectionProvider("submission").notifier);
+/// await notifier.set(docId, data);
+/// ```
+final class FirestoreCollectionNotifierProvider
+    extends $NotifierProvider<FirestoreCollectionNotifier, void> {
+  /// Firestore コレクションへの CRUD をラップし、
+  /// 書き込み時にタイムスタンプを自動更新する Notifier。
+  ///
+  /// コレクションごとにインスタンスが生成される (family provider)。
+  /// ```dart
+  /// final notifier = ref.watch(firestoreCollectionProvider("submission").notifier);
+  /// await notifier.set(docId, data);
+  /// ```
+  FirestoreCollectionNotifierProvider._(
+      {required FirestoreCollectionNotifierFamily super.from,
+      required String super.argument})
+      : super(
+          retry: null,
+          name: r'firestoreCollectionProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$firestoreCollectionNotifierHash();
 
   @override
   String toString() {
-    return r'firestoreProvider'
+    return r'firestoreCollectionProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  FirestoreNotifier create() => FirestoreNotifier();
+  FirestoreCollectionNotifier create() => FirestoreCollectionNotifier();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(void value) {
@@ -73,7 +187,8 @@ final class FirestoreNotifierProvider
 
   @override
   bool operator ==(Object other) {
-    return other is FirestoreNotifierProvider && other.argument == argument;
+    return other is FirestoreCollectionNotifierProvider &&
+        other.argument == argument;
   }
 
   @override
@@ -82,23 +197,26 @@ final class FirestoreNotifierProvider
   }
 }
 
-String _$firestoreNotifierHash() => r'dd4bf9b8e3b0b24fc83ba34cbf6ece6ec3ed0d4e';
+String _$firestoreCollectionNotifierHash() =>
+    r'a2141d746a7d7941a114b74c9adf0dd67ae04887';
 
 /// Firestore コレクションへの CRUD をラップし、
 /// 書き込み時にタイムスタンプを自動更新する Notifier。
 ///
 /// コレクションごとにインスタンスが生成される (family provider)。
 /// ```dart
-/// final notifier = ref.watch(firestoreProvider("submission").notifier);
+/// final notifier = ref.watch(firestoreCollectionProvider("submission").notifier);
 /// await notifier.set(docId, data);
 /// ```
 
-final class FirestoreNotifierFamily extends $Family
-    with $ClassFamilyOverride<FirestoreNotifier, void, void, void, String> {
-  FirestoreNotifierFamily._()
+final class FirestoreCollectionNotifierFamily extends $Family
+    with
+        $ClassFamilyOverride<FirestoreCollectionNotifier, void, void, void,
+            String> {
+  FirestoreCollectionNotifierFamily._()
       : super(
           retry: null,
-          name: r'firestoreProvider',
+          name: r'firestoreCollectionProvider',
           dependencies: null,
           $allTransitiveDependencies: null,
           isAutoDispose: true,
@@ -109,17 +227,17 @@ final class FirestoreNotifierFamily extends $Family
   ///
   /// コレクションごとにインスタンスが生成される (family provider)。
   /// ```dart
-  /// final notifier = ref.watch(firestoreProvider("submission").notifier);
+  /// final notifier = ref.watch(firestoreCollectionProvider("submission").notifier);
   /// await notifier.set(docId, data);
   /// ```
 
-  FirestoreNotifierProvider call(
+  FirestoreCollectionNotifierProvider call(
     String collectionId,
   ) =>
-      FirestoreNotifierProvider._(argument: collectionId, from: this);
+      FirestoreCollectionNotifierProvider._(argument: collectionId, from: this);
 
   @override
-  String toString() => r'firestoreProvider';
+  String toString() => r'firestoreCollectionProvider';
 }
 
 /// Firestore コレクションへの CRUD をラップし、
@@ -127,11 +245,11 @@ final class FirestoreNotifierFamily extends $Family
 ///
 /// コレクションごとにインスタンスが生成される (family provider)。
 /// ```dart
-/// final notifier = ref.watch(firestoreProvider("submission").notifier);
+/// final notifier = ref.watch(firestoreCollectionProvider("submission").notifier);
 /// await notifier.set(docId, data);
 /// ```
 
-abstract class _$FirestoreNotifier extends $Notifier<void> {
+abstract class _$FirestoreCollectionNotifier extends $Notifier<void> {
   late final _$args = ref.$arg as String;
   String get collectionId => _$args;
 
@@ -151,42 +269,3 @@ abstract class _$FirestoreNotifier extends $Notifier<void> {
             ));
   }
 }
-
-/// Firestore 上のユーザー設定 (UserConfig) を取得する Provider。
-
-@ProviderFor(userConfig)
-final userConfigProvider = UserConfigProvider._();
-
-/// Firestore 上のユーザー設定 (UserConfig) を取得する Provider。
-
-final class UserConfigProvider extends $FunctionalProvider<
-        AsyncValue<UserConfig?>, UserConfig?, FutureOr<UserConfig?>>
-    with $FutureModifier<UserConfig?>, $FutureProvider<UserConfig?> {
-  /// Firestore 上のユーザー設定 (UserConfig) を取得する Provider。
-  UserConfigProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'userConfigProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
-
-  @override
-  String debugGetCreateSourceHash() => _$userConfigHash();
-
-  @$internal
-  @override
-  $FutureProviderElement<UserConfig?> $createElement(
-          $ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<UserConfig?> create(Ref ref) {
-    return userConfig(ref);
-  }
-}
-
-String _$userConfigHash() => r'b8b5bf0c9fccf5be0c941619327214faa4d48b8f';

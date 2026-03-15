@@ -18,14 +18,16 @@ part "timetable_providers.g.dart";
 @riverpod
 TimetableRepository timetableRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
-  final firestore = ref.watch(firestoreProvider("timetable").notifier);
+  final firestore =
+      ref.watch(firestoreCollectionProvider("timetable").notifier);
   return TimetableRepository(isar, firestore);
 }
 
 @riverpod
 TimetableTableRepository timetableTableRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
-  final firestore = ref.watch(firestoreProvider("timetable").notifier);
+  final firestore =
+      ref.watch(firestoreCollectionProvider("timetable").notifier);
   return TimetableTableRepository(isar, firestore);
 }
 
@@ -33,7 +35,7 @@ TimetableTableRepository timetableTableRepository(Ref ref) {
 TimetableClassTimeRepository timetableClassTimeRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
   final firestore =
-      ref.watch(firestoreProvider("timetableClassTime").notifier);
+      ref.watch(firestoreCollectionProvider("timetableClassTime").notifier);
   return TimetableClassTimeRepository(isar, firestore);
 }
 

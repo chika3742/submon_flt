@@ -51,7 +51,7 @@ final class SubmissionRepositoryProvider extends $FunctionalProvider<
 }
 
 String _$submissionRepositoryHash() =>
-    r'3f145933e59a6c3dee3b865f8780be65e41803d8';
+    r'506694dd28c036a9a03e89e67b04f8073b4b59aa';
 
 @ProviderFor(undoneSubmissions)
 final undoneSubmissionsProvider = UndoneSubmissionsProvider._();

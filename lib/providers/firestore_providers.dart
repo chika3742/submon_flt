@@ -1,23 +1,166 @@
 import "package:cloud_firestore/cloud_firestore.dart";
+import "package:cloud_functions/cloud_functions.dart";
+import "package:flutter/material.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../core/pref_key.dart";
+import "../isar_db/isar_provider.dart";
+import "../src/pigeons.g.dart";
 import "../user_config.dart";
 import "../utils/batch_operation.dart";
 import "core_providers.dart";
 
 part "firestore_providers.g.dart";
 
+/// 現在の認証ユーザーに対応する Firestore ドキュメント参照。
+/// 未認証時は null。
+@riverpod
+DocumentReference<Map<String, dynamic>>? userDoc(Ref ref) {
+  final user = ref.watch(firebaseUserProvider).value;
+  if (user == null) return null;
+  return FirebaseFirestore.instance.collection("users").doc(user.uid);
+}
+
+/// Firestore 上のユーザー設定 (UserConfig) を管理する AsyncNotifier。
+///
+/// `build()` で UserConfig を fetch し、各メソッドでユーザードキュメントの
+/// フィールドを更新する。
+@riverpod
+class FirestoreUserConfigNotifier extends _$FirestoreUserConfigNotifier {
+  DocumentReference<Map<String, dynamic>>? get _userDoc =>
+      ref.read(userDocProvider);
+
+  @override
+  Future<UserConfig?> build() async {
+    final doc = ref.watch(userDocProvider);
+    if (doc == null) return null;
+    return (await doc
+            .withConverter<UserConfig>(
+              fromFirestore: UserConfig.fromFirestore,
+              toFirestore: (config, options) => config.toFirestore(),
+            )
+            .get())
+        .data();
+  }
+
+  /// タイムスタンプを更新する (PrefKey + Firestore)。
+  Future<void> updateTimestamp() async {
+    final timestamp = Timestamp.now();
+    ref.updatePref(
+      PrefKey.firestoreLastChanged,
+      timestamp.toDate().microsecondsSinceEpoch,
+    );
+    await _userDoc?.set({"lastChanged": timestamp}, SetOptions(merge: true));
+  }
+
+  /// 最終アプリ起動日時をサーバータイムスタンプで記録する。
+  Future<void> setLastAppOpened() async {
+    await _userDoc?.set(
+      {"lastAppOpened": FieldValue.serverTimestamp()},
+      SetOptions(merge: true),
+    );
+  }
+
+  Future<void> saveNotificationToken(String? token) async {
+    if (_userDoc != null && token != null) {
+      await _userDoc!.set({
+        "notificationTokens": FieldValue.arrayUnion([token]),
+      }, SetOptions(merge: true));
+    }
+  }
+
+  Future<void> removeNotificationToken() async {
+    final token = await MessagingApi().getToken();
+    if (_userDoc != null) {
+      await _userDoc!.set({
+        "notificationTokens": FieldValue.arrayRemove([token]),
+      }, SetOptions(merge: true));
+    }
+  }
+
+  Future<void> setReminderNotificationTime(TimeOfDay? time) async {
+    if (_userDoc != null) {
+      String? timeString;
+      if (time != null) {
+        timeString = "${time.hour}:${time.minute}";
+      }
+      await _userDoc!.set(
+        {"reminderNotificationTime": timeString},
+        SetOptions(merge: true),
+      );
+    }
+  }
+
+  Future<void> setTimetableNotificationTime(TimeOfDay? time) async {
+    if (_userDoc != null) {
+      await _userDoc!.set({
+        "timetableNotificationTime":
+            time != null ? "${time.hour}:${time.minute}" : null,
+      }, SetOptions(merge: true));
+    }
+  }
+
+  Future<void> setTimetableNotificationId(int id) async {
+    if (_userDoc != null) {
+      await _userDoc!.set({
+        "timetableNotificationId": id,
+      }, SetOptions(merge: true));
+    }
+  }
+
+  Future<void> addDigestiveNotification(int? id) async {
+    if (_userDoc != null && id != null) {
+      await _userDoc!.set({
+        "digestiveNotifications": FieldValue.arrayUnion(
+          [_userDoc!.collection("digestive").doc(id.toString())],
+        ),
+      }, SetOptions(merge: true));
+    }
+  }
+
+  Future<void> removeDigestiveNotification(int? id) async {
+    if (_userDoc != null && id != null) {
+      await _userDoc!.set({
+        "digestiveNotifications": FieldValue.arrayRemove(
+          [_userDoc!.collection("digestive").doc(id.toString())],
+        ),
+      }, SetOptions(merge: true));
+    }
+  }
+
+  Future<void> setDigestiveNotificationTimeBefore(int value) async {
+    if (_userDoc != null) {
+      await _userDoc!.set(
+        {"digestiveNotificationTimeBefore": value},
+        SetOptions(merge: true),
+      );
+    }
+  }
+
+  /// 任意のフィールドを更新する。
+  Future<void> updateField(String field, dynamic data) async {
+    await _userDoc?.update({field: data});
+  }
+
+  /// ユーザーを初期化する (Cloud Functions 経由)。
+  Future<void> initializeUser() async {
+    await FirebaseFunctions.instanceFor(region: "asia-northeast1")
+        .httpsCallable("createUser")
+        .call();
+    await _userDoc!.set({"schemaVersion": schemaVersion});
+  }
+}
+
 /// Firestore コレクションへの CRUD をラップし、
 /// 書き込み時にタイムスタンプを自動更新する Notifier。
 ///
 /// コレクションごとにインスタンスが生成される (family provider)。
 /// ```dart
-/// final notifier = ref.watch(firestoreProvider("submission").notifier);
+/// final notifier = ref.watch(firestoreCollectionProvider("submission").notifier);
 /// await notifier.set(docId, data);
 /// ```
 @riverpod
-class FirestoreNotifier extends _$FirestoreNotifier {
+class FirestoreCollectionNotifier extends _$FirestoreCollectionNotifier {
   DocumentReference<Map<String, dynamic>>? _userDoc;
   late String _collectionId;
 
@@ -29,8 +172,6 @@ class FirestoreNotifier extends _$FirestoreNotifier {
 
   CollectionReference<Map<String, dynamic>>? get _collectionRef =>
       _userDoc?.collection(_collectionId);
-
-  // --- CRUD ---
 
   Future<void> set(
     String docId,
@@ -79,30 +220,11 @@ class FirestoreNotifier extends _$FirestoreNotifier {
     await _updateTimestamp();
   }
 
-  // --- Timestamp ---
-
   Future<void> _updateTimestamp() async {
-    final timestamp = Timestamp.now();
-    ref.updatePref(
-      PrefKey.firestoreLastChanged,
-      timestamp.toDate().microsecondsSinceEpoch,
-    );
-    await _userDoc?.set({"lastChanged": timestamp}, SetOptions(merge: true));
+    await ref
+        .read(firestoreUserConfigProvider.notifier)
+        .updateTimestamp();
   }
-}
-
-/// Firestore 上のユーザー設定 (UserConfig) を取得する Provider。
-@riverpod
-Future<UserConfig?> userConfig(Ref ref) async {
-  final doc = ref.watch(userDocProvider);
-  if (doc == null) return null;
-  return (await doc
-          .withConverter<UserConfig>(
-            fromFirestore: UserConfig.fromFirestore,
-            toFirestore: (config, options) => config.toFirestore(),
-          )
-          .get())
-      .data();
 }
 
 /// リモートに未同期の変更があるかを判定する。

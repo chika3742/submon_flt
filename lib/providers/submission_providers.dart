@@ -12,7 +12,7 @@ part "submission_providers.g.dart";
 @riverpod
 SubmissionRepository submissionRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
-  final firestore = ref.watch(firestoreProvider("submission").notifier);
+  final firestore = ref.watch(firestoreCollectionProvider("submission").notifier);
   final authClient = ref.watch(googleAuthenticatedClientProvider).value;
   return SubmissionRepository(
     isar,

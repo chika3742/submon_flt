@@ -14,7 +14,7 @@ abstract class SyncedRepository<T> {
   SyncedRepository(this.isar, this.firestore);
 
   final Isar isar;
-  final FirestoreNotifier firestore;
+  final FirestoreCollectionNotifier firestore;
 
   IsarCollection<T> get collection;
 

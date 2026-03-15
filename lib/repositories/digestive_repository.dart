@@ -1,12 +1,14 @@
 import "package:isar_community/isar.dart";
 
-import "../db/firestore_provider.dart";
 import "../isar_db/isar_digestive.dart";
+import "../providers/firestore_providers.dart";
 import "../utils/types.dart";
 import "synced_repository.dart";
 
 class DigestiveRepository extends SyncedRepository<Digestive> {
-  DigestiveRepository(super.isar, super.firestore);
+  DigestiveRepository(super.isar, super.firestore, this._userConfig);
+
+  final FirestoreUserConfigNotifier _userConfig;
 
   @override
   IsarCollection<Digestive> get collection => isar.digestives;
@@ -24,7 +26,7 @@ class DigestiveRepository extends SyncedRepository<Digestive> {
   @override
   Future<void> delete(int id) async {
     await super.delete(id);
-    FirestoreProvider.removeDigestiveNotification(id);
+    _userConfig.removeDigestiveNotification(id);
   }
 
   // --- Write ---
@@ -77,9 +79,9 @@ class DigestiveRepository extends SyncedRepository<Digestive> {
 
   void _syncNotification(Digestive data) {
     if (data.done) {
-      FirestoreProvider.removeDigestiveNotification(data.id);
+      _userConfig.removeDigestiveNotification(data.id);
     } else if (data.startAt.isAfter(DateTime.now())) {
-      FirestoreProvider.addDigestiveNotification(data.id);
+      _userConfig.addDigestiveNotification(data.id);
     }
   }
 }

@@ -13,8 +13,10 @@ part "digestive_providers.g.dart";
 @riverpod
 DigestiveRepository digestiveRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
-  final firestore = ref.watch(firestoreProvider("digestive").notifier);
-  return DigestiveRepository(isar, firestore);
+  final firestore =
+      ref.watch(firestoreCollectionProvider("digestive").notifier);
+  final userConfig = ref.watch(firestoreUserConfigProvider.notifier);
+  return DigestiveRepository(isar, firestore, userConfig);
 }
 
 @riverpod

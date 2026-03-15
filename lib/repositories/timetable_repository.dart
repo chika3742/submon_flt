@@ -14,7 +14,7 @@ class TimetableRepository {
   TimetableRepository(this.isar, this.firestore);
 
   final Isar isar;
-  final FirestoreNotifier firestore;
+  final FirestoreCollectionNotifier firestore;
 
   IsarCollection<Timetable> get collection => isar.timetables;
 
