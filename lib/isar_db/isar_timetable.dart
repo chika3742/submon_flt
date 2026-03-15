@@ -44,6 +44,7 @@ class Timetable {
   }
 }
 
+@Deprecated("Use TimetableRepository with timetableRepositoryProvider instead.")
 class TimetableProvider extends IsarProvider<Timetable> {
   late int currentTableId;
 

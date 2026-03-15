@@ -26,6 +26,7 @@ class TimetableTable {
   }
 }
 
+@Deprecated("Use TimetableTableRepository with timetableTableRepositoryProvider instead.")
 class TimetableTableProvider extends IsarProvider<TimetableTable> {
   @override
   Future<void> setFirestore(TimetableTable data, int id) {

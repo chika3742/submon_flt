@@ -17,6 +17,10 @@ import "../utils/firestore.dart";
 import "../utils/ui.dart";
 import "shared_prefs.dart";
 
+@Deprecated(
+  "Use FirestoreCollectionNotifier, FirestoreUserConfigNotifier, "
+  "and DataSyncService instead.",
+)
 class FirestoreProvider {
   FirestoreProvider(this.collectionId);
 
@@ -442,6 +446,7 @@ class FirestoreProvider {
   }
 }
 
+@Deprecated("Use firestoreUserConfigProvider instead.")
 class CheckTimestampResult {
   bool changed;
   UserConfig? configData;
@@ -449,6 +454,7 @@ class CheckTimestampResult {
   CheckTimestampResult({required this.changed, required this.configData});
 }
 
+@Deprecated("Use SchemaVersionMismatchException from data_sync_service.dart.")
 class SchemaVersionMismatchException {
   final int serverVersion;
   final int expectedVersion;
