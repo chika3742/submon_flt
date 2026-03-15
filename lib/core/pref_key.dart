@@ -23,11 +23,36 @@ enum PrefKey<T extends Object?> {
 
   /// 「科目を長押しで提出物を作成できます」Tips バナーが既に表示済みかどうか。
   isTimetableTipsDisplayed<bool>("isTimetableTipsDisplayed", false),
+
   /// 最後に起動したビルド番号。バージョンアップ検出に使用。
   lastVersionCode<int>("lastVersionCode", 0),
 
   /// Firestore 最終更新タイムスタンプ (マイクロ秒)。ローカルとサーバーの差分比較に使用。
   firestoreLastChanged<int>("firestoreLastChanged", 0),
+
+  /// Firebase Analytics の有効/無効。
+  isAnalyticsEnabled<bool>("isAnalyticsEnabled", true),
+
+  /// 提出物作成後のスワイプ操作 Tips バナー表示済みフラグ。
+  isSubmissionTipsDisplayed<bool>("isSubmissionTipsDisplayed", false),
+
+  /// Google Tasks 同期デフォルト設定 Tips バナー表示済みフラグ。
+  isWriteToGoogleTasksTipsDisplayed<bool>(
+    "isWriteToGoogleTasksTipsDisplayed",
+    false,
+  ),
+
+  /// Google Tasks 同期をデフォルトで有効にするかどうか。
+  isWriteToGoogleTasksByDefault<bool>("isWriteToGoogleTasksByDefault", false),
+
+  /// ボトムナビに時間割タブを表示するかどうか。
+  showTimetableMenu<bool>("showTimetableMenu", true),
+
+  /// 「レビューを書く」ボタンを表示するかどうか。
+  showReviewBtn<bool>("showReviewBtn", true),
+
+  /// メールリンク認証用に一時保存するメールアドレス。
+  emailForUrlLogin<String?>("emailForUrlSignIn", null),
   ;
 
   final String key;
