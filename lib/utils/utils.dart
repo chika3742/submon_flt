@@ -45,6 +45,9 @@ void handleAuthError(
 
 void handleFirebaseError(FirebaseException e, StackTrace stackTrace,
     BuildContext context, String message) {
+  FirebaseCrashlytics.instance.recordError(e, stackTrace);
+  if (!context.mounted) return;
+
   switch (e.code) {
     case "permission-denied":
       showSimpleDialog(
@@ -70,7 +73,6 @@ void handleFirebaseError(FirebaseException e, StackTrace stackTrace,
       showSnackBar(context, "$message(${e.code})",
           duration: const Duration(seconds: 20));
   }
-  FirebaseCrashlytics.instance.recordError(e, stackTrace);
 }
 
 Future<bool> canAccessTasks() async {

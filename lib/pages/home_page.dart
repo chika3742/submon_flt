@@ -7,19 +7,20 @@ import "package:firebase_auth/firebase_auth.dart";
 import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:google_mobile_ads/google_mobile_ads.dart";
 
 import "../browser.dart";
-import "../db/firestore_provider.dart";
-import "../db/shared_prefs.dart";
+import "../core/pref_key.dart";
 import "../events.dart";
 import "../fade_through_page_route.dart";
 import "../isar_db/isar_provider.dart";
 import "../main.dart";
+import "../providers/data_sync_service.dart";
+import "../providers/firestore_providers.dart";
 import "../src/pigeons.g.dart";
 import "../ui_components/hidable_progress_indicator.dart";
 import "../utils/ad_unit_ids.dart";
-import "../utils/firestore.dart";
 import "../utils/ui.dart";
 import "../utils/utils.dart";
 import "home_tabs/tab_digestive_list.dart";
@@ -30,7 +31,7 @@ import "settings/timetable.dart";
 import "submission_create_page.dart";
 import "timetable_table_view_page.dart";
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   static const routeName = "/";
@@ -39,98 +40,64 @@ class HomePage extends StatefulWidget {
   HomePageState createState() => HomePageState();
 }
 
-class HomePageState extends State<HomePage> {
+class HomePageState extends ConsumerState<HomePage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
   StreamSubscription? hideAdListener;
   StreamSubscription? switchBottomNavListener;
 
   var tabIndex = 0;
-  var _loading = false;
   var _hideAd = false;
-  SharedPrefs? _prefs;
 
   BannerAd? bannerAd;
 
-  List<BottomNavItem> get _bottomNavItems => [
-        BottomNavItem(
-          "home",
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "提出物",
-          ),
-        ),
-        BottomNavItem(
-          "digestive",
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.task),
-            label: "Digestive",
-          ),
-        ),
-        if (_prefs?.showTimetableMenu != false)
-          BottomNavItem(
-            "timetable",
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.table_chart_outlined),
-              label: "時間割表",
-            ),
-          ),
-        BottomNavItem(
-          "more",
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.more_horiz),
-            label: "その他",
-          ),
-        ),
-      ];
-
-  List<List<ActionItem>> get actions => [
-    [],
-    [
-      ActionItem(Icons.help, "ヘルプ", () {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text("Digestiveとは？"),
-              content: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const Text(
-                        "ダイジェスティブでは、提出物に取り掛かる時間と、何分続けるかをスケジュールすることができます。\n集中タイマーで重い腰を上げるのにも最適。"),
-                    const SizedBox(height: 16),
-                    Image.asset("assets/img/digestive_guide.jpg"),
-                    const SizedBox(height: 16),
-                    const Text(
-                        "※Digestiveの通知は5分毎(サーバー時間)に行われます。例えば、28分にセットしていて「通知する時間」を5分前に設定していた場合、25分に通知されます。\n"
-                            "また、ユーザー数が増えれば増えるほど、サーバー側の処理量が増え通知が遅れる可能性があります。対策を検討しています。")
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  child: const Text("OK"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                )
-              ],
-            );
-          },
-        );
-      }),
-    ],
-    if (_prefs?.showTimetableMenu != false)
-      [
-        ActionItem(Icons.table_view, "テーブルビュー", () async {
-          await Navigator.pushNamed(context, TimetableTableViewPage.routeName);
-        }),
-        ActionItem(Icons.settings, "設定", () async {
-          await Navigator.pushNamed(context, TimetableSettingsPage.routeName);
-          eventBus.fire(TimetableListChanged());
-        }),
-      ],
-    [],
-  ];
+  List<ActionItem> _buildAction(String path) => switch (path) {
+        "digestive" => [
+            ActionItem(Icons.help, "ヘルプ", () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text("Digestiveとは？"),
+                    content: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          const Text(
+                              "ダイジェスティブでは、提出物に取り掛かる時間と、何分続けるかをスケジュールすることができます。\n集中タイマーで重い腰を上げるのにも最適。"),
+                          const SizedBox(height: 16),
+                          Image.asset("assets/img/digestive_guide.jpg"),
+                          const SizedBox(height: 16),
+                          const Text(
+                              "※Digestiveの通知は5分毎(サーバー時間)に行われます。例えば、28分にセットしていて「通知する時間」を5分前に設定していた場合、25分に通知されます。\n"
+                                  "また、ユーザー数が増えれば増えるほど、サーバー側の処理量が増え通知が遅れる可能性があります。対策を検討しています。")
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        child: const Text("OK"),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      )
+                    ],
+                  );
+                },
+              );
+            }),
+          ],
+        "timetable" => [
+            ActionItem(Icons.table_view, "テーブルビュー", () async {
+              await Navigator.pushNamed(
+                  context, TimetableTableViewPage.routeName);
+            }),
+            ActionItem(Icons.settings, "設定", () async {
+              await Navigator.pushNamed(
+                  context, TimetableSettingsPage.routeName);
+              eventBus.fire(TimetableListChanged());
+            }),
+          ],
+        _ => [],
+      };
 
   final _scaffoldKey = GlobalKey();
 
@@ -168,9 +135,16 @@ class HomePageState extends State<HomePage> {
     switchBottomNavListener = eventBus.on<SwitchBottomNav>().listen((event) {
       Timer.periodic(const Duration(milliseconds: 25), (timer) {
         if (_navigatorKey.currentState != null && IsarProvider.opening == false) {
-          final index = _bottomNavItems.indexWhere((e) => e.path == event.path);
+          final showTimetable = ref.readPref(PrefKey.showTimetableMenu);
+          final paths = [
+            "home",
+            "digestive",
+            if (showTimetable) "timetable",
+            "more",
+          ];
+          final index = paths.indexOf(event.path);
           if (index != -1) {
-            onBottomNavTap(index);
+            _onBottomNavTap(index, event.path);
           } else {
             showSnackBar(context, "この機能は無効化されています。カスタマイズ設定から有効化してください。");
           }
@@ -180,12 +154,6 @@ class HomePageState extends State<HomePage> {
     });
 
     fetchData();
-
-    SharedPrefs.use((prefs) {
-      setState(() {
-        _prefs = prefs;
-      });
-    });
   }
 
   @override
@@ -198,15 +166,45 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_bottomNavItems.isEmpty) {
-      return Container();
-    }
+    final showTimetableMenu = ref.watchPref(PrefKey.showTimetableMenu);
+
+    final bottomNavItems = [
+      const BottomNavItem(
+        "home",
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: "提出物",
+        ),
+      ),
+      const BottomNavItem(
+        "digestive",
+        BottomNavigationBarItem(
+          icon: Icon(Icons.task),
+          label: "Digestive",
+        ),
+      ),
+      if (showTimetableMenu)
+        const BottomNavItem(
+          "timetable",
+          BottomNavigationBarItem(
+            icon: Icon(Icons.table_chart_outlined),
+            label: "時間割表",
+          ),
+        ),
+      const BottomNavItem(
+        "more",
+        BottomNavigationBarItem(
+          icon: Icon(Icons.more_horiz),
+          label: "その他",
+        ),
+      ),
+    ];
 
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(_bottomNavItems[tabIndex].item.label!),
-        actions: actions[tabIndex]
+        title: Text(bottomNavItems[tabIndex].item.label!),
+        actions: _buildAction(bottomNavItems[tabIndex].path)
             .map((e) => IconButton(
                   icon: Icon(e.icon),
                   onPressed: e.onPressed,
@@ -246,10 +244,14 @@ class HomePageState extends State<HomePage> {
               },
             ),
           ),
-          HidableLinearProgressIndicator(show: _loading),
+          HidableLinearProgressIndicator(
+            show: ref.watch(dataSyncServiceProvider).isLoading,
+          ),
         ],
       ),
-      floatingActionButton: _buildFloatingActionButton(),
+      floatingActionButton: _buildFloatingActionButton(
+        bottomNavItems[tabIndex].path,
+      ),
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.end,
@@ -268,16 +270,17 @@ class HomePageState extends State<HomePage> {
             ),
           BottomNavigationBar(
             currentIndex: tabIndex,
-            items: _bottomNavItems.map((e) => e.item).toList(),
-            onTap: onBottomNavTap,
+            items: bottomNavItems.map((e) => e.item).toList(),
+            onTap: (index) =>
+                _onBottomNavTap(index, bottomNavItems[index].path),
           ),
         ],
       ),
     );
   }
 
-  Widget? _buildFloatingActionButton() {
-    switch (_bottomNavItems[tabIndex].path) {
+  Widget? _buildFloatingActionButton(String currentPath) {
+    switch (currentPath) {
       case "home":
         return OpenContainer<int>(
           useRootNavigator: true,
@@ -322,7 +325,7 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  void onBottomNavTap(int index) {
+  void _onBottomNavTap(int index, String path) {
     if (index < 0) return;
     if (tabIndex == index) {
       eventBus.fire(BottomNavDoubleClickEvent(index));
@@ -331,31 +334,34 @@ class HomePageState extends State<HomePage> {
     setState(() {
       tabIndex = index;
     });
-    _navigatorKey.currentState
-        ?.pushReplacementNamed(_bottomNavItems[index].path);
+    _navigatorKey.currentState?.pushReplacementNamed(path);
     FirebaseAnalytics.instance
-        .logScreenView(screenName: "/tab/${_bottomNavItems[index].path}");
+        .logScreenView(screenName: "/tab/$path");
   }
 
   Future<void> fetchData() async {
-    if (userDoc == null) return;
-    setState(() {
-      _loading = true;
-    });
+    final userConfigNotifier =
+        ref.read(firestoreUserConfigProvider.notifier);
+    await ref.read(dataSyncServiceProvider.notifier).fetchData();
 
-    try {
-      final result = await FirestoreProvider.fetchData();
+    final syncState = ref.read(dataSyncServiceProvider);
+    if (syncState case AsyncError(:final error, :final stackTrace)) {
+      _handleSyncError(error, stackTrace);
+    } else if (mounted) {
+      _navigatorKey.currentState?.pushReplacementNamed("home");
+      userConfigNotifier.setLastAppOpened();
+    }
+  }
 
-      if (result) {
-        _navigatorKey.currentState
-            ?.pushReplacementNamed(_bottomNavItems[tabIndex].path);
-      }
-    } on FirebaseException catch (e, stackTrace) {
-      handleFirebaseError(e, stackTrace, context, "データの取得に失敗しました。");
-    } on SchemaVersionMismatchException catch (e) {
-      debugPrint(e.toString());
+  void _handleSyncError(Object error, StackTrace stackTrace) {
+    if (error is FirebaseException) {
+      handleFirebaseError(error, stackTrace, context, "データの取得に失敗しました。");
+    } else if (error is SchemaVersionMismatchException) {
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      debugPrint(error.toString());
+      if (!mounted) return;
       showSimpleDialog(
-          context, "エラー", "Submonを最新版にアップデートしてください。\n\n(${e.toString()})",
+          context, "エラー", "Submonを最新版にアップデートしてください。\n\n(${error.toString()})",
           allowCancel: false,
           showCancel: true,
           cancelText: "ログアウト", onCancelPressed: () {
@@ -365,14 +371,11 @@ class HomePageState extends State<HomePage> {
         Browser.openStoreListing();
         SystemChannels.platform.invokeMethod("SystemNavigator.pop");
       });
-    } catch (e, stackTrace) {
+    } else {
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      if (!mounted) return;
       showSnackBar(context, "エラーが発生しました");
-      FirebaseCrashlytics.instance.recordError(e, stackTrace);
     }
-
-    setState(() {
-      _loading = false;
-    });
   }
 }
 
@@ -388,5 +391,5 @@ class BottomNavItem {
   final String path;
   final BottomNavigationBarItem item;
 
-  BottomNavItem(this.path, this.item);
+  const BottomNavItem(this.path, this.item);
 }
