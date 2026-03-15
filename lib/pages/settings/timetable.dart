@@ -1,14 +1,14 @@
-import "package:cloud_firestore/cloud_firestore.dart";
 import "package:collection/collection.dart";
+import "package:firebase_core/firebase_core.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../components/dropdown_time_picker_bottom_sheet.dart";
 import "../../core/pref_key.dart";
-import "../../db/firestore_provider.dart";
 import "../../isar_db/isar_timetable_class_time.dart";
 import "../../isar_db/isar_timetable_table.dart";
 import "../../main.dart";
+import "../../providers/firestore_providers.dart";
 import "../../providers/timetable_providers.dart";
 import "../../src/pigeons.g.dart";
 import "../../ui_components/settings_ui.dart";
@@ -35,19 +35,28 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
   @override
   void initState() {
     super.initState();
+    // TODO: hooksを使ってbuild関数内で完結できるようにする
+    _initTimetableNotification();
+  }
 
-    FirestoreProvider.config.then((value) {
+  Future<void> _initTimetableNotification() async {
+    try {
+      final config = await ref.read(firestoreUserConfigProvider.future);
+      if (!mounted) return;
       setState(() {
-        _timetableNotificationId = value!.timetableNotificationId;
-        _timetableNotificationTime = value.timetableNotificationTime;
+        _timetableNotificationId = config?.timetableNotificationId;
+        _timetableNotificationTime = config?.timetableNotificationTime;
       });
-    }).onError<FirebaseException>((error, stackTrace) {
-      handleFirebaseError(error, stackTrace, context, "時間割通知設定の取得に失敗しました。");
-    }).whenComplete(() {
-      setState(() {
-        _loadingTimetableNotification = false;
-      });
-    });
+    } on FirebaseException catch (e, stackTrace) {
+      handleFirebaseError(
+          e, stackTrace, context, "時間割通知設定の取得に失敗しました。");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _loadingTimetableNotification = false;
+        });
+      }
+    }
   }
 
   @override
@@ -122,7 +131,9 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
                               _timetableNotificationId = e.id;
                               _loadingTimetableNotification = true;
                             });
-                            FirestoreProvider.setTimetableNotificationId(
+                            ref
+                                .read(firestoreUserConfigProvider.notifier)
+                                .setTimetableNotificationId(
                                     _timetableNotificationId!)
                                 .onError((error, stackTrace) {
                               showSnackBar(context, "エラーが発生しました。");
@@ -206,8 +217,10 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
                       setState(() {
                         _timetableNotificationTime = result;
                       });
-                      await FirestoreProvider.setTimetableNotificationTime(
-                          _timetableNotificationTime);
+                      await ref
+                          .read(firestoreUserConfigProvider.notifier)
+                          .setTimetableNotificationTime(
+                              _timetableNotificationTime);
                     } catch (e) {
                       showSnackBar(globalContext!, "設定に失敗しました");
                     }
@@ -243,8 +256,11 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
                     onSelected: (value) {
                       ref.updatePref(
                           PrefKey.timetablePeriodCountToDisplay, value);
-                      FirestoreProvider.updateUserConfig(
-                          UserConfig.pathTimetablePeriodCountToDisplay, value);
+                      ref
+                          .read(firestoreUserConfigProvider.notifier)
+                          .updateField(
+                              UserConfig.pathTimetablePeriodCountToDisplay,
+                              value);
                     },
                   ),
                 );
@@ -254,8 +270,9 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
             value: ref.watchPref(PrefKey.timetableShowSaturday),
             onChanged: (value) {
               ref.updatePref(PrefKey.timetableShowSaturday, value);
-              FirestoreProvider.updateUserConfig(
-                  UserConfig.pathTimetableShowSaturday, value);
+              ref
+                  .read(firestoreUserConfigProvider.notifier)
+                  .updateField(UserConfig.pathTimetableShowSaturday, value);
             },
           ),
           SwitchSettingsTile(
@@ -358,8 +375,9 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
         setState(() {
           _timetableNotificationTime = null;
         });
-        FirestoreProvider.setTimetableNotificationTime(
-            _timetableNotificationTime);
+        ref
+            .read(firestoreUserConfigProvider.notifier)
+            .setTimetableNotificationTime(_timetableNotificationTime);
       },
     );
   }

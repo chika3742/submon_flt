@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:intl/intl.dart";
 
-import "../../db/shared_prefs.dart";
+import "../../core/pref_key.dart";
 import "../../isar_db/isar_submission.dart";
 import "../../main.dart";
 import "../../providers/core_providers.dart";
@@ -62,11 +62,7 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
       });
     });
 
-    SharedPrefs.use((prefs) {
-      setState(() {
-        _writeGoogleTasks = prefs.isWriteToGoogleTasksByDefault;
-      });
-    });
+    _writeGoogleTasks = ref.readPref(PrefKey.isWriteToGoogleTasksByDefault);
   }
 
   @override
@@ -318,78 +314,77 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
 
     // If created new
     if (widget.submissionId == null) {
-      SharedPrefs.use((prefs) {
-        final context = Application.globalKey.currentContext!;
+      final globalContext = Application.globalKey.currentContext!;
 
-        // submission tips banner
-        if (!prefs.isSubmissionTipsDisplayed) {
-          ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
-            content: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text.rich(
-                const TextSpan(children: [
-                  TextSpan(text: "提出物を完了にするには"),
-                  TextSpan(
-                      text: "右にスワイプ",
-                      style: TextStyle(color: Colors.greenAccent)),
-                  TextSpan(text: "、\n提出物を削除するには"),
-                  TextSpan(
-                      text: "左にスワイプ",
-                      style: TextStyle(color: Colors.redAccent)),
-                  TextSpan(text: "します。\n\n"),
-                  TextSpan(text: "また、提出物を"),
-                  TextSpan(
-                      text: "長押し", style: TextStyle(color: Colors.redAccent)),
-                  TextSpan(text: "で、提出物の共有やその他のメニューが表示されます。"),
-                ]),
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ),
-            actions: [
-              TextButton(
-                child: const Text("閉じる"),
-                onPressed: () {
-                  hideMaterialBanner(context);
-                },
-              ),
-            ],
-          ));
-
-          prefs.isSubmissionTipsDisplayed = true;
-        }
-
-        // google tasks default tips banner
-        if (!prefs.isWriteToGoogleTasksTipsDisplayed && _writeGoogleTasks) {
-          showMaterialBanner(
-            context,
-            content: Text.rich(
+      // submission tips banner
+      if (!ref.readPref(PrefKey.isSubmissionTipsDisplayed)) {
+        ScaffoldMessenger.of(globalContext).showMaterialBanner(MaterialBanner(
+          content: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Text.rich(
               const TextSpan(children: [
+                TextSpan(text: "提出物を完了にするには"),
                 TextSpan(
-                    text:
-                    "今後、「Google Tasksに提出物を同期」をデフォルトにしますか？\n(この設定は「カスタマイズ設定」から変更できます)"),
+                    text: "右にスワイプ",
+                    style: TextStyle(color: Colors.greenAccent)),
+                TextSpan(text: "、\n提出物を削除するには"),
+                TextSpan(
+                    text: "左にスワイプ",
+                    style: TextStyle(color: Colors.redAccent)),
+                TextSpan(text: "します。\n\n"),
+                TextSpan(text: "また、提出物を"),
+                TextSpan(
+                    text: "長押し", style: TextStyle(color: Colors.redAccent)),
+                TextSpan(text: "で、提出物の共有やその他のメニューが表示されます。"),
               ]),
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: Theme.of(globalContext).textTheme.bodyLarge,
             ),
-            actions: [
-              TextButton(
-                child: const Text("しない"),
-                onPressed: () {
-                  hideMaterialBanner(context);
-                },
-              ),
-              TextButton(
-                child: const Text("する"),
-                onPressed: () {
-                  hideMaterialBanner(context);
-                  prefs.isWriteToGoogleTasksByDefault = true;
-                },
-              ),
-            ],
-          );
+          ),
+          actions: [
+            TextButton(
+              child: const Text("閉じる"),
+              onPressed: () {
+                hideMaterialBanner(globalContext);
+              },
+            ),
+          ],
+        ));
 
-          prefs.isWriteToGoogleTasksTipsDisplayed = true;
-        }
-      });
+        ref.updatePref(PrefKey.isSubmissionTipsDisplayed, true);
+      }
+
+      // google tasks default tips banner
+      if (!ref.readPref(PrefKey.isWriteToGoogleTasksTipsDisplayed) &&
+          _writeGoogleTasks) {
+        showMaterialBanner(
+          globalContext,
+          content: Text.rich(
+            const TextSpan(children: [
+              TextSpan(
+                  text:
+                  "今後、「Google Tasksに提出物を同期」をデフォルトにしますか？\n(この設定は「カスタマイズ設定」から変更できます)"),
+            ]),
+            style: Theme.of(globalContext).textTheme.bodyLarge,
+          ),
+          actions: [
+            TextButton(
+              child: const Text("しない"),
+              onPressed: () {
+                hideMaterialBanner(globalContext);
+              },
+            ),
+            TextButton(
+              child: const Text("する"),
+              onPressed: () {
+                hideMaterialBanner(globalContext);
+                ref.updatePref(PrefKey.isWriteToGoogleTasksByDefault, true);
+              },
+            ),
+          ],
+        );
+
+        ref.updatePref(PrefKey.isWriteToGoogleTasksTipsDisplayed, true);
+      }
 
       FirebaseAnalytics.instance.logEvent(name: "create_submission");
     }

@@ -5,38 +5,27 @@ import "package:firebase_auth/firebase_auth.dart";
 import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../auth/sign_in_handler.dart";
 import "../browser.dart";
+import "../core/pref_key.dart";
 import "../db/firestore_provider.dart";
-import "../db/shared_prefs.dart";
 import "../main.dart";
 import "../utils/ui.dart";
 import "home_page.dart";
 import "sign_in_page.dart";
 
-class WelcomePage extends StatefulWidget {
+class WelcomePage extends ConsumerWidget {
   const WelcomePage({super.key});
 
   static const routeName = "welcome";
 
   @override
-  State<WelcomePage> createState() => _WelcomePageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final disableStatistics = !ref.watchPref(PrefKey.isAnalyticsEnabled);
 
-class _WelcomePageState extends State<WelcomePage> {
-  var _disableStatistics = false;
-  final _scaffoldKey = GlobalKey();
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
         title: const Text("ようこそ"),
       ),
@@ -66,7 +55,7 @@ class _WelcomePageState extends State<WelcomePage> {
                             context, SignInPage.routeName,
                             arguments:
                                 const SignInPageArguments(SignInMode.normal));
-                        if (result == true && mounted) {
+                        if (result == true && context.mounted) {
                           Navigator.pushReplacementNamed(
                               context, HomePage.routeName);
                         }
@@ -159,17 +148,12 @@ class _WelcomePageState extends State<WelcomePage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Checkbox(
-                        value: _disableStatistics,
+                        value: disableStatistics,
                         activeColor: Colors.red,
                         onChanged: (value) {
                           FirebaseAnalytics.instance
                               .setAnalyticsCollectionEnabled(!value!);
-                          SharedPrefs.use((prefs) {
-                            prefs.isAnalyticsEnabled = !value;
-                          });
-                          setState(() {
-                            _disableStatistics = value;
-                          });
+                          ref.updatePref(PrefKey.isAnalyticsEnabled, !value);
                         },
                       ),
                       Flexible(

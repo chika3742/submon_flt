@@ -1,12 +1,14 @@
 import "dart:async";
 
 import "package:firebase_auth/firebase_auth.dart";
+import "package:firebase_core/firebase_core.dart";
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../auth/sign_in_handler.dart";
 import "../../components/dropdown_time_picker_bottom_sheet.dart";
-import "../../db/firestore_provider.dart";
 import "../../main.dart";
+import "../../providers/firestore_providers.dart";
 import "../../src/pigeons.g.dart";
 import "../../ui_components/settings_ui.dart";
 import "../../utils/ui.dart";
@@ -17,16 +19,17 @@ import "account_link_page.dart";
 import "google_tasks.dart";
 import "timetable.dart";
 
-class FunctionsSettingsPage extends StatefulWidget {
+class FunctionsSettingsPage extends ConsumerStatefulWidget {
   const FunctionsSettingsPage({super.key});
 
   static const routeName = "/settings/functions";
 
   @override
-  State<FunctionsSettingsPage> createState() => _FunctionsSettingsPageState();
+  ConsumerState<FunctionsSettingsPage> createState() =>
+      _FunctionsSettingsPageState();
 }
 
-class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
+class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
   bool _pwEnabled = true;
   TimeOfDay? _reminderTime;
   bool _loadingReminderTime = true;
@@ -37,18 +40,27 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
   @override
   void initState() {
     super.initState();
+    // TODO: hooksを使ってbuild関数内で完結できるようにする
+    _initReminderTime();
+  }
 
-    FirestoreProvider.config.then((value) {
+  Future<void> _initReminderTime() async {
+    try {
+      final config = await ref.read(firestoreUserConfigProvider.future);
+      if (!mounted) return;
       setState(() {
-        _reminderTime = value!.reminderNotificationTime;
+        _reminderTime = config?.reminderNotificationTime;
       });
-    }).onError<FirebaseException>((error, stackTrace) {
-      handleFirebaseError(error, stackTrace, context, "リマインダー設定の取得に失敗しました。");
-    }).whenComplete(() {
-      setState(() {
-        _loadingReminderTime = false;
-      });
-    });
+    } on FirebaseException catch (e, stackTrace) {
+      handleFirebaseError(
+          e, stackTrace, context, "リマインダー設定の取得に失敗しました。");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _loadingReminderTime = false;
+        });
+      }
+    }
   }
 
   @override
@@ -104,8 +116,9 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                       _loadingReminderTime = true;
                     });
                     try {
-                      await FirestoreProvider.setReminderNotificationTime(
-                          result);
+                      await ref
+                          .read(firestoreUserConfigProvider.notifier)
+                          .setReminderNotificationTime(result);
                       setState(() {
                         _reminderTime = result;
                       });
@@ -237,7 +250,9 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
             _reminderTime = null;
           });
           // NotificationMethodChannel.unregisterReminder();
-          FirestoreProvider.setReminderNotificationTime(null);
+          ref
+              .read(firestoreUserConfigProvider.notifier)
+              .setReminderNotificationTime(null);
         },
       );
     }

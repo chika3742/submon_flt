@@ -1,46 +1,33 @@
 import "dart:io";
 
-import "package:cloud_firestore/cloud_firestore.dart";
 import "package:device_info_plus/device_info_plus.dart";
+import "package:firebase_core/firebase_core.dart";
 import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:package_info_plus/package_info_plus.dart";
 import "package:url_launcher/url_launcher_string.dart";
 
 import "../../browser.dart";
-import "../../db/firestore_provider.dart";
-import "../../db/shared_prefs.dart";
+import "../../core/pref_key.dart";
+import "../../providers/data_sync_service.dart";
 import "../../ui_components/hidable_progress_indicator.dart";
 import "../../ui_components/settings_ui.dart";
+import "../../utils/ui.dart";
 import "../../utils/utils.dart";
 import "../done_submissions_page.dart";
 import "../settings/customize.dart";
 import "../settings/functions.dart";
 import "../settings/general.dart";
 
-class TabOthers extends StatefulWidget {
+class TabOthers extends ConsumerWidget {
   const TabOthers({super.key});
 
   @override
-  TabOthersState createState() => TabOthersState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = ref.watch(dataSyncServiceProvider).isLoading;
+    final showReviewBtn = ref.watchPref(PrefKey.showReviewBtn);
 
-class TabOthersState extends State<TabOthers> {
-  var _loading = false;
-  SharedPrefs? prefs;
-
-  @override
-  void initState() {
-    super.initState();
-    SharedPrefs.use((prefs) {
-      setState(() {
-        this.prefs = prefs;
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Stack(
       children: [
         Material(
@@ -49,22 +36,32 @@ class TabOthersState extends State<TabOthers> {
               SettingsCategory(title: "Have a nice day", tiles: [
                 SettingsTile(
                   title: "今すぐ同期",
-                  enabled: !_loading,
+                  enabled: !isLoading,
                   leading: const Icon(Icons.sync),
                   onTap: () async {
-                    setState(() {
-                      _loading = true;
-                    });
-                    try {
-                      await FirestoreProvider.fetchData(force: true);
-                    } on FirebaseException catch (e, stackTrace) {
-                      handleFirebaseError(e, stackTrace, context, "同期に失敗しました。");
-                    } catch (e, stackTrace) {
-                      FirebaseCrashlytics.instance.recordError(e, stackTrace);
+                    await ref
+                        .read(dataSyncServiceProvider.notifier)
+                        .fetchData(force: true);
+                    final syncState = ref.read(dataSyncServiceProvider);
+                    if (syncState
+                        case AsyncError(
+                          :final FirebaseException error,
+                          :final stackTrace,
+                        )) {
+                      handleFirebaseError(
+                        error,
+                        stackTrace,
+                        context,
+                        "同期に失敗しました。",
+                      );
+                    } else if (syncState
+                        case AsyncError(:final error, :final stackTrace)) {
+                      FirebaseCrashlytics.instance
+                          .recordError(error, stackTrace);
+                      if (context.mounted) {
+                        showSnackBar(context, "同期に失敗しました。");
+                      }
                     }
-                    setState(() {
-                      _loading = false;
-                    });
                   },
                 ),
                 SettingsTile(
@@ -103,7 +100,7 @@ class TabOthersState extends State<TabOthers> {
               SettingsCategory(
                 title: "フィードバック・お知らせ",
                 tiles: [
-                  if (prefs == null || prefs!.showReviewBtn)
+                  if (showReviewBtn)
                     SettingsTile(
                       title: "レビューを書く",
                       subtitle: "全体的なアプリ評価はこちら。",
@@ -152,7 +149,7 @@ class TabOthersState extends State<TabOthers> {
             ],
           ),
         ),
-        HidableLinearProgressIndicator(show: _loading)
+        HidableLinearProgressIndicator(show: isLoading),
       ],
     );
   }

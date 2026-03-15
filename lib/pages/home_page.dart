@@ -354,27 +354,28 @@ class HomePageState extends ConsumerState<HomePage> {
   }
 
   void _handleSyncError(Object error, StackTrace stackTrace) {
-    if (error is FirebaseException) {
-      handleFirebaseError(error, stackTrace, context, "データの取得に失敗しました。");
-    } else if (error is SchemaVersionMismatchException) {
-      FirebaseCrashlytics.instance.recordError(error, stackTrace);
-      debugPrint(error.toString());
-      if (!mounted) return;
-      showSimpleDialog(
-          context, "エラー", "Submonを最新版にアップデートしてください。\n\n(${error.toString()})",
-          allowCancel: false,
-          showCancel: true,
-          cancelText: "ログアウト", onCancelPressed: () {
-        FirebaseAuth.instance.signOut();
-        backToWelcomePage(context);
-      }, onOKPressed: () {
-        Browser.openStoreListing();
-        SystemChannels.platform.invokeMethod("SystemNavigator.pop");
-      });
-    } else {
-      FirebaseCrashlytics.instance.recordError(error, stackTrace);
-      if (!mounted) return;
-      showSnackBar(context, "エラーが発生しました");
+    switch (error) {
+      case final FirebaseException e:
+        handleFirebaseError(e, stackTrace, context, "データの取得に失敗しました。");
+      case final SchemaVersionMismatchException e:
+        FirebaseCrashlytics.instance.recordError(e, stackTrace);
+        debugPrint(e.toString());
+        if (!mounted) return;
+        showSimpleDialog(
+            context, "エラー", "Submonを最新版にアップデートしてください。\n\n(${e.toString()})",
+            allowCancel: false,
+            showCancel: true,
+            cancelText: "ログアウト", onCancelPressed: () {
+          FirebaseAuth.instance.signOut();
+          backToWelcomePage(context);
+        }, onOKPressed: () {
+          Browser.openStoreListing();
+          SystemChannels.platform.invokeMethod("SystemNavigator.pop");
+        });
+      default:
+        FirebaseCrashlytics.instance.recordError(error, stackTrace);
+        if (!mounted) return;
+        showSnackBar(context, "エラーが発生しました");
     }
   }
 }

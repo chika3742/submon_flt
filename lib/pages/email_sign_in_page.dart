@@ -1,8 +1,9 @@
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../auth/sign_in_handler.dart";
-import "../db/shared_prefs.dart";
+import "../core/pref_key.dart";
 import "../main.dart";
 import "../models/sign_in_result.dart";
 import "../utils/app_links.dart";
@@ -10,7 +11,7 @@ import "../utils/ui.dart";
 import "../utils/utils.dart";
 import "email_registration_page.dart";
 
-class EmailSignInPage extends StatefulWidget {
+class EmailSignInPage extends ConsumerStatefulWidget {
   const EmailSignInPage({
     super.key,
     required this.mode,
@@ -21,7 +22,7 @@ class EmailSignInPage extends StatefulWidget {
   final SignInMode mode;
 
   @override
-  State<StatefulWidget> createState() => EmailSignInPageState();
+  ConsumerState<EmailSignInPage> createState() => EmailSignInPageState();
 }
 
 class EmailSignInPageArguments {
@@ -30,7 +31,7 @@ class EmailSignInPageArguments {
   const EmailSignInPageArguments(this.mode);
 }
 
-class EmailSignInPageState extends State<EmailSignInPage>
+class EmailSignInPageState extends ConsumerState<EmailSignInPage>
     with SingleTickerProviderStateMixin {
   var enableEmailForm = true;
   var enablePWForm = false;
@@ -343,9 +344,7 @@ class EmailSignInPageState extends State<EmailSignInPage>
         .whenComplete(() {
       Navigator.pop(Application.globalKey.currentContext!);
     }).then((value) {
-      SharedPrefs.use((prefs) {
-        prefs.emailForUrlLogin = emailController.text;
-      });
+      ref.updatePref(PrefKey.emailForUrlLogin, emailController.text);
       showSimpleDialog(
           Application.globalKey.currentContext!,
           "完了",

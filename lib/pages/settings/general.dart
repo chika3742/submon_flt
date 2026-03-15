@@ -1,38 +1,40 @@
 import "package:firebase_analytics/firebase_analytics.dart";
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:package_info_plus/package_info_plus.dart";
+
 import "../../browser.dart";
-import "../../db/shared_prefs.dart";
+import "../../core/pref_key.dart";
 import "../../ui_components/settings_ui.dart";
 
-class GeneralSettingsPage extends StatefulWidget {
+class GeneralSettingsPage extends ConsumerStatefulWidget {
   const GeneralSettingsPage({super.key});
 
   static const routeName = "/settings/general";
 
   @override
-  State<GeneralSettingsPage> createState() => _GeneralSettingsPageState();
+  ConsumerState<GeneralSettingsPage> createState() =>
+      _GeneralSettingsPageState();
 }
 
-class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
+class _GeneralSettingsPageState extends ConsumerState<GeneralSettingsPage> {
   String _version = "取得中";
-  bool? _analyticsEnabled;
 
   @override
   void initState() {
     super.initState();
     PackageInfo.fromPlatform().then((info) {
+      if (!mounted) return;
       setState(() {
         _version = "${info.version} (build ${info.buildNumber})";
       });
-    });
-    SharedPrefs.use((prefs) {
-      _analyticsEnabled = prefs.isAnalyticsEnabled;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final analyticsEnabled = ref.watchPref(PrefKey.isAnalyticsEnabled);
+
     return SettingsListView(
       categories: [
         SettingsCategory(
@@ -48,22 +50,16 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
                 Browser.openChangelog();
               },
             ),
-            if (_analyticsEnabled != null)
-              SwitchSettingsTile(
-                title: "ユーザー使用状況の収集を許可",
-                subtitle: "個人が特定できないよう加工された統計情報の収集を許可します。",
-                value: _analyticsEnabled!,
-                onChanged: (value) {
-                  setState(() {
-                    _analyticsEnabled = value;
-                  });
-                  SharedPrefs.use((prefs) {
-                    prefs.isAnalyticsEnabled = value;
-                  });
-                  FirebaseAnalytics.instance
-                      .setAnalyticsCollectionEnabled(value);
-                },
-              ),
+            SwitchSettingsTile(
+              title: "ユーザー使用状況の収集を許可",
+              subtitle: "個人が特定できないよう加工された統計情報の収集を許可します。",
+              value: analyticsEnabled,
+              onChanged: (value) {
+                ref.updatePref(PrefKey.isAnalyticsEnabled, value);
+                FirebaseAnalytics.instance
+                    .setAnalyticsCollectionEnabled(value);
+              },
+            ),
             SettingsTile(
               title: "Q&A (よくあると思う質問)",
               subtitle: "他にも質問があれば、リンク先ページにコメントしていただければ回答追記するかも",
