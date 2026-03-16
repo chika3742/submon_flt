@@ -10,8 +10,8 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "../auth/sign_in_handler.dart";
 import "../browser.dart";
 import "../core/pref_key.dart";
-import "../db/firestore_provider.dart";
 import "../main.dart";
+import "../providers/firestore_providers.dart";
 import "../utils/ui.dart";
 import "home_page.dart";
 import "sign_in_page.dart";
@@ -88,7 +88,9 @@ class WelcomePage extends ConsumerWidget {
 
                             try {
                               await FirebaseAuth.instance.signInAnonymously();
-                              await FirestoreProvider.initializeUser();
+                              await ref
+                                  .read(firestoreUserConfigProvider.notifier)
+                                  .initializeUser();
 
                               Navigator.pop(globalContext!);
                               Navigator.pushReplacementNamed(

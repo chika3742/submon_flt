@@ -1,6 +1,8 @@
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:flutter/material.dart";
 
+import "utils/value.dart";
+
 class UserConfig {
   int? schemaVersion;
   Timestamp? lastChanged;
@@ -34,6 +36,46 @@ class UserConfig {
     this.colorSubmissionAddedFromLms,
     required this.digestiveNotifications,
   });
+
+  UserConfig copyWith({
+    int? schemaVersion,
+    Timestamp? lastChanged,
+    Timestamp? lastAppOpened,
+    Value<TimeOfDay?>? reminderNotificationTime,
+    Value<TimeOfDay?>? timetableNotificationTime,
+    Value<int?>? timetableNotificationId,
+    Value<int?>? digestiveNotificationTimeBefore,
+    Lms? lms,
+    TimetableConfig? timetable,
+    bool? isSEEnabled,
+    Color? colorSubmissionAddedFromLms,
+    List<String>? digestiveNotifications,
+  }) {
+    return UserConfig(
+      schemaVersion: schemaVersion ?? this.schemaVersion,
+      lastChanged: lastChanged ?? this.lastChanged,
+      lastAppOpened: lastAppOpened ?? this.lastAppOpened,
+      reminderNotificationTime: reminderNotificationTime != null
+          ? reminderNotificationTime.value
+          : this.reminderNotificationTime,
+      timetableNotificationTime: timetableNotificationTime != null
+          ? timetableNotificationTime.value
+          : this.timetableNotificationTime,
+      timetableNotificationId: timetableNotificationId != null
+          ? timetableNotificationId.value
+          : this.timetableNotificationId,
+      digestiveNotificationTimeBefore: digestiveNotificationTimeBefore != null
+          ? digestiveNotificationTimeBefore.value
+          : this.digestiveNotificationTimeBefore,
+      lms: lms ?? this.lms,
+      timetable: timetable ?? this.timetable,
+      isSEEnabled: isSEEnabled ?? this.isSEEnabled,
+      colorSubmissionAddedFromLms:
+          colorSubmissionAddedFromLms ?? this.colorSubmissionAddedFromLms,
+      digestiveNotifications:
+          digestiveNotifications ?? this.digestiveNotifications,
+    );
+  }
 
   factory UserConfig.fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot, SnapshotOptions? options) {
     final data = snapshot.data();
