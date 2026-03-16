@@ -11,12 +11,15 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:google_mobile_ads/google_mobile_ads.dart";
 
 import "../browser.dart";
+import "../components/digestive_edit_bottom_sheet.dart";
 import "../core/pref_key.dart";
 import "../events.dart";
 import "../fade_through_page_route.dart";
+import "../isar_db/isar_digestive.dart";
 import "../isar_db/isar_provider.dart";
 import "../main.dart";
 import "../providers/data_sync_service.dart";
+import "../providers/digestive_providers.dart";
 import "../providers/firestore_providers.dart";
 import "../src/pigeons.g.dart";
 import "../ui_components/hidable_progress_indicator.dart";
@@ -42,8 +45,12 @@ class HomePage extends ConsumerStatefulWidget {
 
 class HomePageState extends ConsumerState<HomePage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
-  StreamSubscription? hideAdListener;
   StreamSubscription? switchBottomNavListener;
+
+  final _scrollControllers = {
+    for (final path in ["home", "digestive", "more"])
+      path: ScrollController(),
+  };
 
   var tabIndex = 0;
   var _hideAd = false;
@@ -93,7 +100,6 @@ class HomePageState extends ConsumerState<HomePage> {
             ActionItem(Icons.settings, "設定", () async {
               await Navigator.pushNamed(
                   context, TimetableSettingsPage.routeName);
-              eventBus.fire(TimetableListChanged());
             }),
           ],
         _ => [],
@@ -126,12 +132,6 @@ class HomePageState extends ConsumerState<HomePage> {
       }
     });
 
-    hideAdListener = eventBus.on<SetAdHidden>().listen((event) {
-      setState(() {
-        _hideAd = event.hidden;
-      });
-    });
-
     switchBottomNavListener = eventBus.on<SwitchBottomNav>().listen((event) {
       Timer.periodic(const Duration(milliseconds: 25), (timer) {
         if (_navigatorKey.currentState != null && IsarProvider.opening == false) {
@@ -158,9 +158,11 @@ class HomePageState extends ConsumerState<HomePage> {
 
   @override
   void dispose() {
-    hideAdListener?.cancel();
     bannerAd?.dispose();
     switchBottomNavListener?.cancel();
+    for (final controller in _scrollControllers.values) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -240,6 +242,13 @@ class HomePageState extends ConsumerState<HomePage> {
                   default:
                     page = const Center(child: Text("?"));
                 }
+                final controller = _scrollControllers[settings.name];
+                if (controller != null) {
+                  page = PrimaryScrollController(
+                    controller: controller,
+                    child: page,
+                  );
+                }
                 return FadeThroughPageRoute(page);
               },
             ),
@@ -310,7 +319,22 @@ class HomePageState extends ConsumerState<HomePage> {
         return FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () async {
-            eventBus.fire(DigestiveAddButtonPressed());
+            final result = await showRoundedBottomSheet<Digestive>(
+              context: context,
+              useRootNavigator: true,
+              title: "Digestive単体作成 (提出物なし)",
+              child: const DigestiveEditBottomSheet(
+                submissionId: null,
+              ),
+            );
+
+            if (result != null) {
+              final repo = ref.read(digestiveRepositoryProvider);
+              await repo.create(result);
+              if (mounted) {
+                showSnackBar(context, "作成しました");
+              }
+            }
           },
         );
       // case BottomNavItemId.memorizeCard:
@@ -328,7 +352,14 @@ class HomePageState extends ConsumerState<HomePage> {
   void _onBottomNavTap(int index, String path) {
     if (index < 0) return;
     if (tabIndex == index) {
-      eventBus.fire(BottomNavDoubleClickEvent(index));
+      final controller = _scrollControllers[path];
+      if (controller != null && controller.hasClients) {
+        controller.animateTo(
+          0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutQuint,
+        );
+      }
       return;
     }
     setState(() {

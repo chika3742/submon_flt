@@ -1,12 +1,8 @@
-import "dart:async";
-
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:intl/intl.dart";
 
 import "../../components/digestive_detail_card.dart";
-import "../../components/digestive_edit_bottom_sheet.dart";
-import "../../events.dart";
 import "../../isar_db/isar_digestive.dart";
 import "../../isar_db/isar_submission.dart";
 import "../../main.dart";
@@ -15,47 +11,11 @@ import "../../sample_data.dart";
 import "../../utils/ui.dart";
 import "../submission_detail_page.dart";
 
-class TabDigestiveList extends ConsumerStatefulWidget {
+class TabDigestiveList extends ConsumerWidget {
   const TabDigestiveList({super.key});
 
   @override
-  ConsumerState<TabDigestiveList> createState() => _TabDigestiveListState();
-}
-
-class _TabDigestiveListState extends ConsumerState<TabDigestiveList> {
-  StreamSubscription? listener;
-
-  @override
-  void initState() {
-    super.initState();
-
-    listener = eventBus.on<DigestiveAddButtonPressed>().listen((event) async {
-      final result = await showRoundedBottomSheet<Digestive>(
-          context: context,
-          useRootNavigator: true,
-          title: "Digestive単体作成 (提出物なし)",
-          child: const DigestiveEditBottomSheet(
-            submissionId: null,
-          ));
-
-      if (result != null) {
-        final repo = ref.read(digestiveRepositoryProvider);
-        await repo.create(result);
-        if (mounted) {
-          showSnackBar(context, "作成しました");
-        }
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    listener?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final digestiveList = screenShotMode
         ? [
             DigestiveWithSubmission.fromObject(
