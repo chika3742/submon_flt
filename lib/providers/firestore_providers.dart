@@ -21,26 +21,26 @@ DocumentReference<Map<String, dynamic>>? userDoc(Ref ref) {
   return FirebaseFirestore.instance.collection("users").doc(user.uid);
 }
 
-/// Firestore 上のユーザー設定 (UserConfig) を管理する AsyncNotifier。
+/// Firestore 上のユーザー設定 (UserConfig) を管理する StreamNotifier。
 ///
-/// `build()` で UserConfig を fetch し、各メソッドでユーザードキュメントの
-/// フィールドを更新する。
-@riverpod
+/// `build()` で Firestore ドキュメントの `snapshots()` を購読し、
+/// 各メソッドでの書き込みが自動的に state に反映される。
+@Riverpod(keepAlive: true)
 class FirestoreUserConfigNotifier extends _$FirestoreUserConfigNotifier {
   DocumentReference<Map<String, dynamic>>? get _userDoc =>
       ref.read(userDocProvider);
 
   @override
-  Future<UserConfig?> build() async {
+  Stream<UserConfig?> build() {
     final doc = ref.watch(userDocProvider);
-    if (doc == null) return null;
-    return (await doc
-            .withConverter<UserConfig>(
-              fromFirestore: UserConfig.fromFirestore,
-              toFirestore: (config, options) => config.toFirestore(),
-            )
-            .get())
-        .data();
+    if (doc == null) return Stream.value(null);
+    return doc
+        .withConverter<UserConfig>(
+          fromFirestore: UserConfig.fromFirestore,
+          toFirestore: (config, options) => config.toFirestore(),
+        )
+        .snapshots()
+        .map((snapshot) => snapshot.data());
   }
 
   /// タイムスタンプを更新する (PrefKey + Firestore)。
@@ -137,9 +137,20 @@ class FirestoreUserConfigNotifier extends _$FirestoreUserConfigNotifier {
     }
   }
 
-  /// 任意のフィールドを更新する。
-  Future<void> updateField(String field, dynamic data) async {
-    await _userDoc?.update({field: data});
+  Future<void> setTimetableShowSaturday(bool value) async {
+    final doc = _userDoc;
+    if (doc == null) {
+      throw StateError("Cannot update timetable config: user is not signed in");
+    }
+    await doc.update({UserConfig.pathTimetableShowSaturday: value});
+  }
+
+  Future<void> setTimetablePeriodCountToDisplay(int value) async {
+    final doc = _userDoc;
+    if (doc == null) {
+      throw StateError("Cannot update timetable config: user is not signed in");
+    }
+    await doc.update({UserConfig.pathTimetablePeriodCountToDisplay: value});
   }
 
   /// ユーザーを初期化する (Cloud Functions 経由)。

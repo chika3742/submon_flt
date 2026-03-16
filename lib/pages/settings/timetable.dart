@@ -12,7 +12,6 @@ import "../../providers/firestore_providers.dart";
 import "../../providers/timetable_providers.dart";
 import "../../src/pigeons.g.dart";
 import "../../ui_components/settings_ui.dart";
-import "../../user_config.dart";
 import "../../utils/ui.dart";
 import "../../utils/utils.dart";
 import "customize.dart";
@@ -258,9 +257,7 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
                           PrefKey.timetablePeriodCountToDisplay, value);
                       ref
                           .read(firestoreUserConfigProvider.notifier)
-                          .updateField(
-                              UserConfig.pathTimetablePeriodCountToDisplay,
-                              value);
+                          .setTimetablePeriodCountToDisplay(value);
                     },
                   ),
                 );
@@ -272,7 +269,7 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
               ref.updatePref(PrefKey.timetableShowSaturday, value);
               ref
                   .read(firestoreUserConfigProvider.notifier)
-                  .updateField(UserConfig.pathTimetableShowSaturday, value);
+                  .setTimetableShowSaturday(value);
             },
           ),
           SwitchSettingsTile(

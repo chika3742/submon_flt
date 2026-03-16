@@ -61,31 +61,31 @@ final class UserDocProvider extends $FunctionalProvider<
 
 String _$userDocHash() => r'c358cae1c4936d3ee3380634a55a7cdfc61329b0';
 
-/// Firestore 上のユーザー設定 (UserConfig) を管理する AsyncNotifier。
+/// Firestore 上のユーザー設定 (UserConfig) を管理する StreamNotifier。
 ///
-/// `build()` で UserConfig を fetch し、各メソッドでユーザードキュメントの
-/// フィールドを更新する。
+/// `build()` で Firestore ドキュメントの `snapshots()` を購読し、
+/// 各メソッドでの書き込みが自動的に state に反映される。
 
 @ProviderFor(FirestoreUserConfigNotifier)
 final firestoreUserConfigProvider = FirestoreUserConfigNotifierProvider._();
 
-/// Firestore 上のユーザー設定 (UserConfig) を管理する AsyncNotifier。
+/// Firestore 上のユーザー設定 (UserConfig) を管理する StreamNotifier。
 ///
-/// `build()` で UserConfig を fetch し、各メソッドでユーザードキュメントの
-/// フィールドを更新する。
+/// `build()` で Firestore ドキュメントの `snapshots()` を購読し、
+/// 各メソッドでの書き込みが自動的に state に反映される。
 final class FirestoreUserConfigNotifierProvider
-    extends $AsyncNotifierProvider<FirestoreUserConfigNotifier, UserConfig?> {
-  /// Firestore 上のユーザー設定 (UserConfig) を管理する AsyncNotifier。
+    extends $StreamNotifierProvider<FirestoreUserConfigNotifier, UserConfig?> {
+  /// Firestore 上のユーザー設定 (UserConfig) を管理する StreamNotifier。
   ///
-  /// `build()` で UserConfig を fetch し、各メソッドでユーザードキュメントの
-  /// フィールドを更新する。
+  /// `build()` で Firestore ドキュメントの `snapshots()` を購読し、
+  /// 各メソッドでの書き込みが自動的に state に反映される。
   FirestoreUserConfigNotifierProvider._()
       : super(
           from: null,
           argument: null,
           retry: null,
           name: r'firestoreUserConfigProvider',
-          isAutoDispose: true,
+          isAutoDispose: false,
           dependencies: null,
           $allTransitiveDependencies: null,
         );
@@ -99,16 +99,16 @@ final class FirestoreUserConfigNotifierProvider
 }
 
 String _$firestoreUserConfigNotifierHash() =>
-    r'1abb23cd8370e0e4a72f235dc234accdb333e23e';
+    r'5e889549b4f9e8aefdce2cac65d8a2decefba47b';
 
-/// Firestore 上のユーザー設定 (UserConfig) を管理する AsyncNotifier。
+/// Firestore 上のユーザー設定 (UserConfig) を管理する StreamNotifier。
 ///
-/// `build()` で UserConfig を fetch し、各メソッドでユーザードキュメントの
-/// フィールドを更新する。
+/// `build()` で Firestore ドキュメントの `snapshots()` を購読し、
+/// 各メソッドでの書き込みが自動的に state に反映される。
 
 abstract class _$FirestoreUserConfigNotifier
-    extends $AsyncNotifier<UserConfig?> {
-  FutureOr<UserConfig?> build();
+    extends $StreamNotifier<UserConfig?> {
+  Stream<UserConfig?> build();
   @$mustCallSuper
   @override
   void runBuild() {
