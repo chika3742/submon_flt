@@ -1,26 +1,32 @@
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../utils/app_links.dart";
 import "auth_link_handler.dart";
 import "open_link_handler.dart";
 
-class LinkHandler {
-  LinkHandler._();
-
-  static void handleLink(Uri url) {
-    try {
-      if (url.host == appDomain || url.scheme == "submon") {
-        if (url.path == "/__/auth/action") {
-          AuthLinkHandler.handle(url);
-        } else if (url.path == "/__/auth/links") {
-          AuthLinkHandler.handle(Uri.parse(url.queryParameters["link"]!));
-        } else {
-          OpenLinkHandler.handle(url);
-        }
+void handleLink(
+  BuildContext context,
+  WidgetRef ref,
+  Uri url, {
+  required void Function(String tabName) onSwitchTab,
+}) {
+  try {
+    if (url.host == appDomain || url.scheme == "submon") {
+      if (url.path == "/__/auth/action") {
+        handleAuthLink(context, ref, url);
+      } else if (url.path == "/__/auth/links") {
+        handleAuthLink(
+          context,
+          ref,
+          Uri.parse(url.queryParameters["link"]!),
+        );
+      } else {
+        handleOpenLink(context, ref, url, onSwitchTab: onSwitchTab);
       }
-    } on RangeError catch (_, stack) {
-      debugPrint("Malformed URL or the URL should not be handled here");
-      debugPrintStack(stackTrace: stack);
     }
+  } on RangeError catch (_, stack) {
+    debugPrint("Malformed URL or the URL should not be handled here");
+    debugPrintStack(stackTrace: stack);
   }
 }

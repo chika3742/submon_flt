@@ -20,7 +20,8 @@ import "package:package_info_plus/package_info_plus.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
 import "core/pref_key.dart";
-import "event_api/uri_event_api.dart";
+import "events.dart";
+import "link_handler/link_handler.dart";
 import "models/sign_in_result.dart";
 import "pages/done_submissions_page.dart";
 import "pages/email_registration_page.dart";
@@ -43,6 +44,7 @@ import "pages/timetable_edit_page.dart";
 import "pages/timetable_table_view_page.dart";
 import "pages/welcome_page.dart";
 import "providers/core_providers.dart";
+import "providers/link_events_provider.dart";
 
 const screenShotMode = bool.fromEnvironment("SCREENSHOT_MODE");
 
@@ -131,13 +133,17 @@ class _ApplicationState extends ConsumerState<Application> {
     PackageInfo.fromPlatform().then((info) {
       ref.updatePref(PrefKey.lastVersionCode, int.parse(info.buildNumber));
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      UriEventApi().listen();
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(linkEventsProvider, (prev, next) {
+      if (next case AsyncData(:final value)) {
+        handleLink(context, ref, value, onSwitchTab: (tabName) {
+          eventBus.fire(SwitchBottomNav(tabName));
+        });
+      }
+    });
 
     final textTheme = const TextTheme(
       bodySmall: TextStyle(
