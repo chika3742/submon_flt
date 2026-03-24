@@ -4,15 +4,18 @@ import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
-import "../../auth/sign_in_handler.dart";
+import "../../auth_new/email_link_auth_use_case.dart";
+import "../../auth_new/sign_out_use_case.dart";
 import "../../components/dropdown_time_picker_bottom_sheet.dart";
 import "../../main.dart";
+import "../../providers/core_providers.dart";
 import "../../providers/firestore_providers.dart";
 import "../../src/pigeons.g.dart";
 import "../../ui_components/settings_ui.dart";
 import "../../utils/ui.dart";
 import "../../utils/utils.dart";
 import "../sign_in_page.dart";
+import "../welcome_page.dart";
 import "account_edit_page.dart";
 import "account_link_page.dart";
 import "google_tasks.dart";
@@ -71,8 +74,8 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = FirebaseAuth.instance;
-    final displayName = auth.currentUser?.displayName;
+    final user = ref.watch(firebaseUserProvider).value;
+    final displayName = user?.displayName;
 
     return SettingsListView(
       categories: [
@@ -134,23 +137,34 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
           ],
         ),
         SettingsCategory(title: "アカウント", tiles: [
-          if (auth.currentUser != null && !auth.currentUser!.isAnonymous)
+          if (user != null && !user.isAnonymous)
             SettingsTile(
               title: "ログアウト",
-              onTap: () async {
-                showSimpleDialog(context, "確認", "ログアウトしますか？",
-                    onOKPressed: () async {
-                  await SignInHandler.signOut();
-                  showSnackBar(globalContext!, "ログアウトしました");
-                }, showCancel: true);
+              onTap: () {
+                showSimpleDialog(
+                  context,
+                  "ログアウト",
+                  "ログアウトしますか？",
+                  onOKPressed: () async {
+                    await ref.read(signOutUseCaseProvider).execute();
+                    if (mounted) {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        WelcomePage.routeName,
+                        (_) => false,
+                      );
+                    }
+                  },
+                  showCancel: true,
+                );
               },
             ),
-          if (auth.currentUser != null &&
-              auth.currentUser!.email != "" &&
-              !auth.currentUser!.isAnonymous)
+          if (user != null &&
+              user.email != "" &&
+              !user.isAnonymous)
             SettingsTile(
               title: emailChangeable() ? "メールアドレスの変更" : "メールアドレス",
-              subtitle: auth.currentUser!.email,
+              subtitle: user.email,
               onTap: emailChangeable()
                   ? () async {
                       await Navigator.pushNamed(
@@ -159,7 +173,7 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
                     }
                   : null,
             ),
-          if (auth.currentUser != null && passwordChangeable() && _pwEnabled)
+          if (user != null && passwordChangeable() && _pwEnabled)
             SettingsTile(
               title: "パスワードの変更",
               onTap: () {
@@ -172,7 +186,7 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
                 await Navigator.pushNamed(context, AccountLinkPage.routeName);
                 setState(() {});
               }),
-          if (auth.currentUser != null)
+          if (user != null)
             SettingsTile(
               title: "ユーザー名の変更",
               subtitle: displayName != null && displayName.isNotEmpty
@@ -184,23 +198,23 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
                 setState(() {});
               },
             ),
-          if (auth.currentUser != null && auth.currentUser!.isAnonymous)
+          if (user != null && user.isAnonymous)
             SettingsTile(
               title: "アカウントをアップグレード",
               subtitle: "お試しアカウントを通常アカウントにアップグレードできます。",
               onTap: () async {
                 final result = await Navigator.pushNamed(
                     context, SignInPage.routeName,
-                    arguments: const SignInPageArguments(SignInMode.upgrade));
+                    arguments: const SignInPageArguments(AuthMode.upgrade));
                 if (result == true) {
                   setState(() {});
                   showSnackBar(globalContext!, "アカウントがアップグレードされました！");
                 }
               },
             ),
-          if (auth.currentUser != null)
+          if (user != null)
             SettingsTile(
-              title: auth.currentUser!.isAnonymous
+              title: user.isAnonymous
                   ? "ログアウト(アカウントの削除)"
                   : "アカウントの削除",
               titleTextStyle: const TextStyle(color: Colors.red),
@@ -260,10 +274,10 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
   }
 
   Future<void> _changePassword() async {
-    final auth = FirebaseAuth.instance;
+    final user = ref.read(firebaseUserProvider).requireValue!;
     showLoadingModal(context);
     try {
-      final providerData = auth.currentUser!.providerData;
+      final providerData = user.providerData;
       if (providerData.isEmpty) throw FirebaseAuthException(code: "user-not-found");
       Navigator.pop(globalContext!);
       if (providerData.first.providerId == EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {
@@ -295,13 +309,13 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
       EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD,
       EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD
     ];
-    final currentUser = FirebaseAuth.instance.currentUser!;
+    final currentUser = ref.read(firebaseUserProvider).requireValue!;
     return !currentUser.isAnonymous &&
         providers.contains(currentUser.providerData.firstOrNull?.providerId);
   }
 
   bool passwordChangeable() {
-    final currentUser = FirebaseAuth.instance.currentUser!;
+    final currentUser = ref.read(firebaseUserProvider).requireValue!;
     return !currentUser.isAnonymous &&
         currentUser.providerData.firstOrNull?.providerId ==
             EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD;
