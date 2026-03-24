@@ -28,7 +28,7 @@ enum PrefKey<T extends Object?> {
   lastVersionCode<int>("lastVersionCode", 0),
 
   /// Firestore 最終更新タイムスタンプ (マイクロ秒)。ローカルとサーバーの差分比較に使用。
-  firestoreLastChanged<int>("firestoreLastChanged", 0),
+  firestoreLastChanged<int?>("firestoreLastChanged", 0),
 
   /// Firebase Analytics の有効/無効。
   isAnalyticsEnabled<bool>("isAnalyticsEnabled", true),
