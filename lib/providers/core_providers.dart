@@ -1,5 +1,7 @@
 import "package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart";
+import "package:firebase_analytics/firebase_analytics.dart";
 import "package:firebase_auth/firebase_auth.dart";
+import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:google_sign_in/google_sign_in.dart";
 import "package:googleapis/tasks/v1.dart";
 import "package:googleapis_auth/googleapis_auth.dart";
@@ -8,6 +10,7 @@ import "package:path_provider/path_provider.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
+import "../auth/apple_sign_in.dart";
 import "../core/pref_key.dart";
 import "../isar_db/isar_digestive.dart";
 import "../isar_db/isar_memorization_card_group.dart";
@@ -15,6 +18,7 @@ import "../isar_db/isar_submission.dart";
 import "../isar_db/isar_timetable.dart";
 import "../isar_db/isar_timetable_class_time.dart";
 import "../isar_db/isar_timetable_table.dart";
+import "../src/pigeons.g.dart";
 
 part "core_providers.g.dart";
 
@@ -46,15 +50,24 @@ SharedPreferencesWithCache sharedPrefsService(Ref ref) {
   );
 }
 
+abstract interface class PrefAccessor<T> {
+  T get();
+  void update(T value);
+}
+
 @riverpod
-class PrefNotifier<T extends Object?> extends _$PrefNotifier<T> {
+class PrefNotifier<T extends Object?> extends _$PrefNotifier<T> implements PrefAccessor<T> {
   @override
-  T build(PrefKey<T> key) {
+  T build(PrefKey<T> key) => get();
+
+  @override
+  T get() {
     final prefs = ref.watch(sharedPrefsServiceProvider);
     final value = prefs.get(key.key);
     return (value is T ? value : null) ?? key.defaultValue;
   }
 
+  @override
   void update(T value) {
     final prefs = ref.read(sharedPrefsServiceProvider);
     switch (value) {
@@ -70,14 +83,36 @@ class PrefNotifier<T extends Object?> extends _$PrefNotifier<T> {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
+FirebaseAuth firebaseAuth(Ref ref) => FirebaseAuth.instance;
+
+@Riverpod(keepAlive: true)
+GoogleSignIn googleSignIn(Ref ref) => GoogleSignIn.instance;
+
+@Riverpod(keepAlive: true)
+FirebaseCrashlytics crashlytics(Ref ref) => FirebaseCrashlytics.instance;
+
+@Riverpod(keepAlive: true)
+FirebaseAnalytics analytics(Ref ref) => FirebaseAnalytics.instance;
+
+@Riverpod(keepAlive: true)
+AppleSignIn appleSignIn(Ref ref) => AppleSignIn();
+
+@Riverpod(keepAlive: true)
+MessagingApi messagingApi(Ref ref) => MessagingApi();
+
+@Riverpod(keepAlive: true)
+GeneralApi generalApi(Ref ref) => GeneralApi();
+
+@Riverpod(keepAlive: true)
 Stream<User?> firebaseUser(Ref ref) {
-  return FirebaseAuth.instance.authStateChanges();
+  final auth = ref.watch(firebaseAuthProvider);
+  return auth.authStateChanges();
 }
 
 @Riverpod(keepAlive: true)
 Stream<GoogleSignInAccount?> googleSignedInAccount(Ref ref) async* {
-  final gsi = GoogleSignIn.instance;
+  final gsi = ref.watch(googleSignInProvider);
   yield await gsi.attemptLightweightAuthentication();
   yield* gsi.authenticationEvents.asyncMap((ev) {
     return switch (ev) {

@@ -152,7 +152,7 @@ final class PrefNotifierProvider<T extends Object?>
   }
 }
 
-String _$prefNotifierHash() => r'c461662b203c70ca6af831492f5da4c5781e2cc0';
+String _$prefNotifierHash() => r'902ec897aced9f954fd7e46e69220bd6f1af73de';
 
 final class PrefNotifierFamily extends $Family {
   PrefNotifierFamily._()
@@ -222,6 +222,295 @@ abstract class _$PrefNotifier<T extends Object?> extends $Notifier<T> {
   }
 }
 
+@ProviderFor(firebaseAuth)
+final firebaseAuthProvider = FirebaseAuthProvider._();
+
+final class FirebaseAuthProvider
+    extends $FunctionalProvider<FirebaseAuth, FirebaseAuth, FirebaseAuth>
+    with $Provider<FirebaseAuth> {
+  FirebaseAuthProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'firebaseAuthProvider',
+          isAutoDispose: false,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$firebaseAuthHash();
+
+  @$internal
+  @override
+  $ProviderElement<FirebaseAuth> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  FirebaseAuth create(Ref ref) {
+    return firebaseAuth(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(FirebaseAuth value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<FirebaseAuth>(value),
+    );
+  }
+}
+
+String _$firebaseAuthHash() => r'8c3e9d11b27110ca96130356b5ef4d5d34a5ffc2';
+
+@ProviderFor(googleSignIn)
+final googleSignInProvider = GoogleSignInProvider._();
+
+final class GoogleSignInProvider
+    extends $FunctionalProvider<GoogleSignIn, GoogleSignIn, GoogleSignIn>
+    with $Provider<GoogleSignIn> {
+  GoogleSignInProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'googleSignInProvider',
+          isAutoDispose: false,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$googleSignInHash();
+
+  @$internal
+  @override
+  $ProviderElement<GoogleSignIn> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  GoogleSignIn create(Ref ref) {
+    return googleSignIn(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(GoogleSignIn value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<GoogleSignIn>(value),
+    );
+  }
+}
+
+String _$googleSignInHash() => r'be6e657edfb1790d127cff1d3820a50c34e65011';
+
+@ProviderFor(crashlytics)
+final crashlyticsProvider = CrashlyticsProvider._();
+
+final class CrashlyticsProvider extends $FunctionalProvider<
+    FirebaseCrashlytics,
+    FirebaseCrashlytics,
+    FirebaseCrashlytics> with $Provider<FirebaseCrashlytics> {
+  CrashlyticsProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'crashlyticsProvider',
+          isAutoDispose: false,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$crashlyticsHash();
+
+  @$internal
+  @override
+  $ProviderElement<FirebaseCrashlytics> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  FirebaseCrashlytics create(Ref ref) {
+    return crashlytics(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(FirebaseCrashlytics value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<FirebaseCrashlytics>(value),
+    );
+  }
+}
+
+String _$crashlyticsHash() => r'155108b0d2e2c244304ed72e1be15318f2f933c5';
+
+@ProviderFor(analytics)
+final analyticsProvider = AnalyticsProvider._();
+
+final class AnalyticsProvider extends $FunctionalProvider<FirebaseAnalytics,
+    FirebaseAnalytics, FirebaseAnalytics> with $Provider<FirebaseAnalytics> {
+  AnalyticsProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'analyticsProvider',
+          isAutoDispose: false,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$analyticsHash();
+
+  @$internal
+  @override
+  $ProviderElement<FirebaseAnalytics> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  FirebaseAnalytics create(Ref ref) {
+    return analytics(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(FirebaseAnalytics value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<FirebaseAnalytics>(value),
+    );
+  }
+}
+
+String _$analyticsHash() => r'8fb06ce3653ba0d954e4379b42d73d731065c520';
+
+@ProviderFor(appleSignIn)
+final appleSignInProvider = AppleSignInProvider._();
+
+final class AppleSignInProvider
+    extends $FunctionalProvider<AppleSignIn, AppleSignIn, AppleSignIn>
+    with $Provider<AppleSignIn> {
+  AppleSignInProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'appleSignInProvider',
+          isAutoDispose: false,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$appleSignInHash();
+
+  @$internal
+  @override
+  $ProviderElement<AppleSignIn> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  AppleSignIn create(Ref ref) {
+    return appleSignIn(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AppleSignIn value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AppleSignIn>(value),
+    );
+  }
+}
+
+String _$appleSignInHash() => r'f695813fab9007e54adff85c6179b5b18bb8c829';
+
+@ProviderFor(messagingApi)
+final messagingApiProvider = MessagingApiProvider._();
+
+final class MessagingApiProvider
+    extends $FunctionalProvider<MessagingApi, MessagingApi, MessagingApi>
+    with $Provider<MessagingApi> {
+  MessagingApiProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'messagingApiProvider',
+          isAutoDispose: false,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$messagingApiHash();
+
+  @$internal
+  @override
+  $ProviderElement<MessagingApi> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  MessagingApi create(Ref ref) {
+    return messagingApi(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(MessagingApi value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<MessagingApi>(value),
+    );
+  }
+}
+
+String _$messagingApiHash() => r'28e12dc1c33cb0da097d6509addf5369b6326936';
+
+@ProviderFor(generalApi)
+final generalApiProvider = GeneralApiProvider._();
+
+final class GeneralApiProvider
+    extends $FunctionalProvider<GeneralApi, GeneralApi, GeneralApi>
+    with $Provider<GeneralApi> {
+  GeneralApiProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'generalApiProvider',
+          isAutoDispose: false,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$generalApiHash();
+
+  @$internal
+  @override
+  $ProviderElement<GeneralApi> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  GeneralApi create(Ref ref) {
+    return generalApi(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(GeneralApi value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<GeneralApi>(value),
+    );
+  }
+}
+
+String _$generalApiHash() => r'e05c61c908667fae59dab08ee2a9f4a98bfe6863';
+
 @ProviderFor(firebaseUser)
 final firebaseUserProvider = FirebaseUserProvider._();
 
@@ -234,7 +523,7 @@ final class FirebaseUserProvider
           argument: null,
           retry: null,
           name: r'firebaseUserProvider',
-          isAutoDispose: true,
+          isAutoDispose: false,
           dependencies: null,
           $allTransitiveDependencies: null,
         );
@@ -253,7 +542,7 @@ final class FirebaseUserProvider
   }
 }
 
-String _$firebaseUserHash() => r'41ccd6f03a5c4ed94888741812ccad955176fcc0';
+String _$firebaseUserHash() => r'5b024f43ad3d70c4d847f7a7deb854c3ce160e6a';
 
 @ProviderFor(googleSignedInAccount)
 final googleSignedInAccountProvider = GoogleSignedInAccountProvider._();
@@ -292,7 +581,7 @@ final class GoogleSignedInAccountProvider extends $FunctionalProvider<
 }
 
 String _$googleSignedInAccountHash() =>
-    r'23463f17bc7b28e302f6af93b97b039fc3436915';
+    r'ae8e52c384c0633d873faafc6d0c6ee81aa403fb';
 
 /// This provider must be refreshed manually when the authorized scopes changed.
 
