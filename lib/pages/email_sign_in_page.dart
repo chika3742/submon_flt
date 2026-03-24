@@ -2,14 +2,14 @@ import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
-import "../auth/sign_in_handler.dart";
-import "../core/pref_key.dart";
+import "../auth_new/email_link_auth_use_case.dart";
+import "../auth_new/sign_in_state_notifier.dart";
 import "../main.dart";
-import "../models/sign_in_result.dart";
-import "../utils/app_links.dart";
+import "../providers/core_providers.dart";
 import "../utils/ui.dart";
-import "../utils/utils.dart";
 import "email_registration_page.dart";
+
+enum _EmailSignInStep { email, password }
 
 class EmailSignInPage extends ConsumerStatefulWidget {
   const EmailSignInPage({
@@ -19,50 +19,78 @@ class EmailSignInPage extends ConsumerStatefulWidget {
 
   static const routeName = "/sign-in/email";
 
-  final SignInMode mode;
+  final AuthMode mode;
 
   @override
   ConsumerState<EmailSignInPage> createState() => EmailSignInPageState();
 }
 
 class EmailSignInPageArguments {
-  final SignInMode mode;
+  final AuthMode mode;
 
   const EmailSignInPageArguments(this.mode);
 }
 
 class EmailSignInPageState extends ConsumerState<EmailSignInPage>
     with SingleTickerProviderStateMixin {
-  var enableEmailForm = true;
-  var enablePWForm = false;
+  var _step = _EmailSignInStep.email;
   var processing = false;
   var visiblePW = false;
-  var emailController = TextEditingController();
-  var pwController = TextEditingController();
+  final emailController = TextEditingController();
+  final pwController = TextEditingController();
   AnimationController? pwAnimController;
-  var pwOpacity = 0.0;
   String? emailError;
   String? pwError;
-  String? message = msgEmail;
 
-  static const msgEmail = "メールアドレスを入力してください";
-  static const msgPW = "パスワードを入力してください";
+  bool get _isPasswordStep => _step == _EmailSignInStep.password;
 
   @override
   void initState() {
     super.initState();
     pwAnimController = AnimationController(vsync: this);
-    if (widget.mode == SignInMode.reauthenticate) {
-      message = "本人確認のため、再度ログインをお願いします。";
-      emailController.text = FirebaseAuth.instance.currentUser!.email!;
-      enableEmailForm = false;
-      enablePWForm = true;
-      switchPasswordForm(true);
+    if (widget.mode == AuthMode.reauthenticate) {
+      emailController.text =
+          ref.read(firebaseUserProvider).requireValue!.email!;
+      _step = _EmailSignInStep.password;
+      pwAnimController!.value = 1;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(signInStateProvider, (_, next) {
+      final newProcessing = next is AuthBusyState;
+      if (newProcessing != processing) {
+        setState(() {
+          processing = newProcessing;
+        });
+      }
+
+      if (next is SignInStateSignInLinkSent) {
+        showSimpleDialog(
+            context,
+            "完了",
+            "入力されたアドレスにメールを送信しました。受信したメールのリンクをタップしてログインしてください。\n\n"
+                "※メールは「submon.app」ドメインから送信されます。迷惑メールに振り分けられていないかご確認ください。",
+            onOKPressed: () {
+          Navigator.pop(context);
+          Navigator.pop(context);
+        }, allowCancel: false);
+      }
+
+      if (next is SignInStatePasswordResetLinkSent) {
+        showSimpleDialog(
+            context,
+            "完了",
+            "入力されたアドレスにメールを送信しました。受信したメールのリンクからパスワードをリセットしてください。\n\n"
+                "※メールは「submon.app」ドメインから送信されます。迷惑メールに振り分けられていないかご確認ください。",
+            onOKPressed: () {
+          Navigator.pop(context);
+          Navigator.pop(context);
+        }, allowCancel: false);
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(title: const Text("メールアドレスを使用")),
       body: SafeArea(
@@ -78,10 +106,16 @@ class EmailSignInPageState extends ConsumerState<EmailSignInPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 16),
-                  Text(message!),
+                  Text(switch (_step) {
+                    _EmailSignInStep.email => "メールアドレスを入力してください",
+                    _EmailSignInStep.password =>
+                      widget.mode == AuthMode.reauthenticate
+                          ? "本人確認のため、再度ログインをお願いします。"
+                          : "パスワードを入力してください",
+                  }),
                   const SizedBox(height: 16),
                   TextFormField(
-                    enabled: enableEmailForm,
+                    enabled: _step == _EmailSignInStep.email && !processing,
                     controller: emailController,
                     decoration: InputDecoration(
                         labelText: "メールアドレス",
@@ -98,16 +132,17 @@ class EmailSignInPageState extends ConsumerState<EmailSignInPage>
                             end: const Offset(0, 0))
                         .animate(pwAnimController!),
                     child: IgnorePointer(
-                      ignoring: pwOpacity == 0,
+                      ignoring: !_isPasswordStep,
                       child: AnimatedOpacity(
-                        opacity: pwOpacity,
+                        opacity: _isPasswordStep ? 1.0 : 0.0,
                         curve: Curves.easeInOut,
                         duration: const Duration(milliseconds: 300),
                         child: Column(
                           children: [
                             TextFormField(
                               obscureText: !visiblePW,
-                              enabled: enablePWForm,
+                              enabled: _step == _EmailSignInStep.password &&
+                                  !processing,
                               controller: pwController,
                               decoration: InputDecoration(
                                 labelText: "パスワード",
@@ -148,22 +183,15 @@ class EmailSignInPageState extends ConsumerState<EmailSignInPage>
                 child: Row(
                   children: [
                     Visibility(
-                      visible: widget.mode == SignInMode.reauthenticate,
+                      visible: _isPasswordStep &&
+                          widget.mode != AuthMode.reauthenticate,
                       child: SizedBox(
                         width: 80,
                         child: OutlinedButton(
                           onPressed: processing
                               ? null
                               : () {
-                                  if (pwOpacity != 0) {
-                                    switchPasswordForm(false);
-                                    setState(() {
-                                      message = msgEmail;
-                                      enableEmailForm = true;
-                                    });
-                                  } else {
-                                    Navigator.pop(context);
-                                  }
+                                  _transitionToStep(_EmailSignInStep.email);
                                 },
                           child: const Text("戻る"),
                         ),
@@ -188,176 +216,96 @@ class EmailSignInPageState extends ConsumerState<EmailSignInPage>
     // フォームエラーハンドリング
     if (emailController.text.isEmpty) {
       setState(() {
-        emailError = msgEmail;
+        emailError = "メールアドレスを入力してください";
       });
       return;
     }
-    if (pwOpacity != 0 && pwController.text.isEmpty) {
+    if (_isPasswordStep && pwController.text.isEmpty) {
       setState(() {
-        pwError = msgPW;
+        pwError = "パスワードを入力してください";
       });
       return;
     }
     setState(() {
       emailError = null;
+      pwError = null;
       processing = true;
-      enableEmailForm = false;
-      enablePWForm = false;
     });
 
-    // 処理
-    final auth = FirebaseAuth.instance;
-    try {
-      if (pwOpacity == 0) {
-        // サインイン方法別の処理
-        final result =
-            await auth.fetchSignInMethodsForEmail(emailController.text);
-
-        setState(() {
-          enablePWForm = true;
-          processing = false;
-        });
-
-        if (result.isEmpty) {
-          // アカウント新規作成
-          setState(() {
-            enableEmailForm = true;
-          });
-          showSelectSheet(
-              context: context,
-              title: "ログイン方法の選択",
-              message:
-                  "メールアドレスで新規登録を行います。\nメールアドレスでのログイン方法は2種類存在します。どちらか選択してください。(現状、以後変更できません)\n\n"
-                  "・パスワードレス・・・登録したメールアドレスに送信されたリンクを踏むことでログインできます。(推奨)\n"
-                  "・一般的なログイン・・・パスワードを利用してログインします。",
-              actions: [
-                SelectSheetAction("パスワードレス(推奨)", () async {
-                  Navigator.pop(context);
-                  setState(() {
-                    processing = true;
-                    enableEmailForm = false;
-                  });
-
-                  sendSignInEmail();
-
-                  setState(() {
-                    processing = false;
-                    enableEmailForm = true;
-                  });
-                }),
-                SelectSheetAction("一般的なログイン", () async {
-                  Navigator.pop(context);
-                  final result = await Navigator.pushNamed<UserCredential>(
-                      context, EmailRegistrationPage.routeName,
-                      arguments: EmailRegistrationPageArguments(
-                          email: emailController.text));
-                  if (result != null && mounted) {
-                    Navigator.pop(context, SignInResult(credential: result));
-                  }
-                }),
-              ]);
-        } else if (result.first ==
-            EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {
-          // パスワードサインイン
-          switchPasswordForm(true);
-          setState(() {
-            message = msgPW;
-          });
-        } else if (result.first ==
-            EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD) {
-          // パスワードレスサインイン
-          sendSignInEmail();
-        } else {
-          // その他(ソーシャルログイン)
-          setState(() {
-            enableEmailForm = true;
-          });
-          showSimpleDialog(globalContext!, "エラー",
-              "このアカウントは既にGoogleログインを利用して作成されています。\n前の画面に戻り、「Google でログイン」からログインしてください。",
-              onOKPressed: () {});
-        }
-      } else {
-        // パスワードを用いたログイン処理
-        UserCredential result;
-
-        if (widget.mode == SignInMode.reauthenticate) {
-          result = await auth.currentUser!.reauthenticateWithCredential(
-              EmailAuthProvider.credential(
-                  email: emailController.text, password: pwController.text));
-        } else {
-          result = await auth.signInWithEmailAndPassword(
-              email: emailController.text, password: pwController.text);
-        }
-
-        if (result.user != null && mounted) {
-          Navigator.of(context).pop(SignInResult(credential: result));
-        }
-      }
-    } on FirebaseAuthException catch (e, stack) {
-      switch (e.code) {
-        case "invalid-email":
-          setState(() {
-            processing = false;
-            enableEmailForm = true;
-            emailError = "メールアドレスの形式が正しくありません";
-          });
-          break;
-        case "wrong-password":
-          setState(() {
-            processing = false;
-            enablePWForm = true;
-            pwError = "パスワードが間違っています";
-          });
-          break;
-        default:
-          setState(() {
-            processing = false;
-            enableEmailForm = true;
-            enablePWForm = false;
-          });
-          handleAuthError(e, stack, context);
-          break;
-      }
+    if (!_isPasswordStep) {
+      await _handleEmailLookup();
+    } else {
+      ref.read(signInStateProvider.notifier).signInWithEmailPassword(
+            emailController.text,
+            pwController.text,
+            mode: widget.mode,
+          );
     }
   }
 
-  void switchPasswordForm(bool show) {
+  Future<void> _handleEmailLookup() async {
+    final methods = await ref
+        .read(signInStateProvider.notifier)
+        .lookupEmailSignInMethod(emailController.text);
+
+    if (methods == null || !mounted) return;
+
+    if (methods.isEmpty) {
+      showSelectSheet(
+          context: context,
+          title: "ログイン方法の選択",
+          message:
+              "メールアドレスで新規登録を行います。\nメールアドレスでのログイン方法は2種類存在します。どちらか選択してください。(現状、以後変更できません)\n\n"
+              "・パスワードレス・・・登録したメールアドレスに送信されたリンクを踏むことでログインできます。(推奨)\n"
+              "・一般的なログイン・・・パスワードを利用してログインします。",
+          actions: [
+            SelectSheetAction("パスワードレス(推奨)", () {
+              Navigator.pop(context);
+              sendSignInEmail();
+            }),
+            SelectSheetAction("一般的なログイン", () async {
+              Navigator.pop(context);
+              final result = await Navigator.pushNamed<UserCredential>(
+                  context, EmailRegistrationPage.routeName,
+                  arguments: EmailRegistrationPageArguments(
+                      email: emailController.text));
+              if (result != null && mounted) {
+                ref
+                    .read(signInStateProvider.notifier)
+                    .completeCurrentSignIn();
+              }
+            }),
+          ]);
+    } else if (methods.first ==
+        EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {
+      _transitionToStep(_EmailSignInStep.password);
+    } else if (methods.first ==
+        EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD) {
+      sendSignInEmail();
+    } else {
+      showSimpleDialog(globalContext!, "エラー",
+          "このアカウントは既にGoogleログインを利用して作成されています。\n前の画面に戻り、「Google でログイン」からログインしてください。",
+          onOKPressed: () {});
+    }
+  }
+
+  void _transitionToStep(_EmailSignInStep newStep) {
     setState(() {
-      pwOpacity = show ? 1 : 0;
+      _step = newStep;
     });
-    pwAnimController?.animateTo(show ? 1 : 0,
-        duration: const Duration(milliseconds: 300),
-        curve: show ? Curves.easeOutQuint : Curves.easeInQuint);
+    final show = newStep == _EmailSignInStep.password;
+    pwAnimController?.animateTo(
+      show ? 1 : 0,
+      duration: const Duration(milliseconds: 300),
+      curve: show ? Curves.easeOutQuint : Curves.easeInQuint,
+    );
   }
 
   void sendSignInEmail() {
-    showLoadingModal(context);
-
-    FirebaseAuth.instance
-        .sendSignInLinkToEmail(
-      email: emailController.text,
-      actionCodeSettings:
-          actionCodeSettings(
-              "https://$appDomain/auth-action?internalMode=${widget.mode.name}"
-          ),
-    )
-        .whenComplete(() {
-      Navigator.pop(Application.globalKey.currentContext!);
-    }).then((value) {
-      ref.updatePref(PrefKey.emailForUrlLogin, emailController.text);
-      showSimpleDialog(
-          Application.globalKey.currentContext!,
-          "完了",
-          "メールを入力されたアドレスに送信しました。受信したメールのリンクをタップしてログインしてください。\n\n"
-              "※メールは「submon.app」ドメインから送信されます。迷惑メールに振り分けられていないかご確認ください。",
-          onOKPressed: () {
-        Navigator.pop(context);
-        Navigator.pop(context);
-      }, allowCancel: false);
-    }).onError((error, stackTrace) {
-      showSnackBar(context, "エラーが発生しました。");
-      recordErrorToCrashlytics(error, stackTrace);
-    });
+    ref.read(signInStateProvider.notifier).sendSignInEmail(
+          emailController.text,
+          widget.mode,
+        );
   }
 
   void onPWForgot() {
@@ -366,20 +314,9 @@ class EmailSignInPageState extends ConsumerState<EmailSignInPage>
         onOKPressed: () async {
       setState(() {
         processing = true;
-        enablePWForm = false;
       });
-      try {
-        await FirebaseAuth.instance
-            .sendPasswordResetEmail(email: emailController.text);
-        showSnackBar(context, "送信しました。ご確認ください。");
-      } on FirebaseAuthException catch (e, stack) {
-        handleAuthError(e, stack, context);
-      } finally {
-        setState(() {
-          processing = false;
-          enablePWForm = true;
-        });
-      }
+      ref.read(signInStateProvider.notifier)
+          .sendPasswordResetLink(emailController.text);
     }, showCancel: true);
   }
 }
