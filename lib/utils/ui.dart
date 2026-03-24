@@ -148,6 +148,7 @@ Future<T?> showSimpleDialog<T>(
 void showLoadingModal(BuildContext context) {
   showModal(
       context: context,
+      routeSettings: RouteSettings(name: "loading_modal"),
       builder: (context) {
         return PopScope(
           canPop: false,
@@ -156,6 +157,12 @@ void showLoadingModal(BuildContext context) {
           )),
         );
       });
+}
+
+void closeLoadingModal(BuildContext context) {
+  Navigator.of(context, rootNavigator: true).popUntil((route) {
+    return route.settings.name != "loading_modal";
+  });
 }
 
 void showSelectSheet(
