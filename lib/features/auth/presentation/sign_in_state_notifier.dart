@@ -8,12 +8,12 @@ import "../../../utils/app_links.dart";
 import "../../../utils/notifier_state_guard.dart";
 import "../models/auth_exception.dart";
 import "../repositories/auth_repository.dart";
+import "../use_cases/auth_ui_use_case.dart";
 import "../use_cases/common.dart";
 import "../use_cases/complete_sign_in_use_case.dart";
-import "../use_cases/sign_in_use_case.dart";
 
-part "sign_in_state_notifier.g.dart";
 part "sign_in_state_notifier.freezed.dart";
+part "sign_in_state_notifier.g.dart";
 
 mixin AuthBusyState {}
 

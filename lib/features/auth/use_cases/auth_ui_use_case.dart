@@ -3,7 +3,7 @@ import "package:riverpod_annotation/riverpod_annotation.dart";
 import "../repositories/auth_repository.dart";
 import "common.dart";
 
-part "sign_in_use_case.g.dart";
+part "auth_ui_use_case.g.dart";
 
 @riverpod
 AuthUiUseCase authUiUseCase(Ref ref) {
