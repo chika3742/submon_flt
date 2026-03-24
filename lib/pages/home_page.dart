@@ -153,7 +153,7 @@ class HomePageState extends ConsumerState<HomePage> {
       });
     });
 
-    fetchData();
+    Future(fetchData);
   }
 
   @override

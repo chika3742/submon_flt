@@ -137,7 +137,7 @@ class _ApplicationState extends ConsumerState<Application> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(linkEventsProvider, (prev, next) {
+    ref.listen(linkEventsProvider, (_, next) {
       if (next case AsyncData(:final value)) {
         handleLink(context, ref, value, onSwitchTab: (tabName) {
           eventBus.fire(SwitchBottomNav(tabName));
