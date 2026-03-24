@@ -30,7 +30,7 @@ final class UserDocProvider extends $FunctionalProvider<
           argument: null,
           retry: null,
           name: r'userDocProvider',
-          isAutoDispose: true,
+          isAutoDispose: false,
           dependencies: null,
           $allTransitiveDependencies: null,
         );
@@ -59,7 +59,7 @@ final class UserDocProvider extends $FunctionalProvider<
   }
 }
 
-String _$userDocHash() => r'c358cae1c4936d3ee3380634a55a7cdfc61329b0';
+String _$userDocHash() => r'639bcd558f0743b7ce8227afaa73e8e9631abc74';
 
 /// Firestore 上のユーザー設定 (UserConfig) を管理する StreamNotifier。
 ///
@@ -99,7 +99,7 @@ final class FirestoreUserConfigNotifierProvider
 }
 
 String _$firestoreUserConfigNotifierHash() =>
-    r'5e889549b4f9e8aefdce2cac65d8a2decefba47b';
+    r'2c63f4b5c94f6797d79dd0b33be3e785d6a40901';
 
 /// Firestore 上のユーザー設定 (UserConfig) を管理する StreamNotifier。
 ///

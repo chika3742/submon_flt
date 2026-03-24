@@ -5,7 +5,6 @@ import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../core/pref_key.dart";
 import "../isar_db/isar_provider.dart";
-import "../src/pigeons.g.dart";
 import "../user_config.dart";
 import "../utils/batch_operation.dart";
 import "core_providers.dart";
@@ -14,11 +13,17 @@ part "firestore_providers.g.dart";
 
 /// 現在の認証ユーザーに対応する Firestore ドキュメント参照。
 /// 未認証時は null。
-@riverpod
+@Riverpod(keepAlive: true)
 DocumentReference<Map<String, dynamic>>? userDoc(Ref ref) {
   final user = ref.watch(firebaseUserProvider).value;
   if (user == null) return null;
   return FirebaseFirestore.instance.collection("users").doc(user.uid);
+}
+
+abstract interface class FirestoreUserConfigUpdater {
+  Future<void> saveNotificationToken(String token);
+  Future<void> removeNotificationToken(String token);
+  Future<void> initializeUser();
 }
 
 /// Firestore 上のユーザー設定 (UserConfig) を管理する StreamNotifier。
@@ -26,19 +31,24 @@ DocumentReference<Map<String, dynamic>>? userDoc(Ref ref) {
 /// `build()` で Firestore ドキュメントの `snapshots()` を購読し、
 /// 各メソッドでの書き込みが自動的に state に反映される。
 @Riverpod(keepAlive: true)
-class FirestoreUserConfigNotifier extends _$FirestoreUserConfigNotifier {
+class FirestoreUserConfigNotifier extends _$FirestoreUserConfigNotifier
+    implements FirestoreUserConfigUpdater {
   DocumentReference<Map<String, dynamic>>? get _userDoc =>
       ref.read(userDocProvider);
 
   @override
-  Stream<UserConfig?> build() {
-    final doc = ref.watch(userDocProvider);
-    if (doc == null) return Stream.value(null);
-    return doc
-        .withConverter<UserConfig>(
-          fromFirestore: UserConfig.fromFirestore,
-          toFirestore: (config, options) => config.toFirestore(),
-        )
+  Stream<UserConfig?> build() async* {
+    final doc = _userDoc?.withConverter<UserConfig>(
+      fromFirestore: UserConfig.fromFirestore,
+      toFirestore: (config, options) => config.toFirestore(),
+    );
+    if (doc == null) {
+      // 未認証状態: null を返す
+      yield null;
+      return;
+    }
+    yield (await doc.get()).data(); // 初回値を取得してからストリームを購読する
+    yield* doc
         .snapshots()
         .map((snapshot) => snapshot.data());
   }
@@ -61,16 +71,17 @@ class FirestoreUserConfigNotifier extends _$FirestoreUserConfigNotifier {
     );
   }
 
-  Future<void> saveNotificationToken(String? token) async {
-    if (_userDoc != null && token != null) {
+  @override
+  Future<void> saveNotificationToken(String token) async {
+    if (_userDoc != null) {
       await _userDoc!.set({
         "notificationTokens": FieldValue.arrayUnion([token]),
       }, SetOptions(merge: true));
     }
   }
 
-  Future<void> removeNotificationToken() async {
-    final token = await MessagingApi().getToken();
+  @override
+  Future<void> removeNotificationToken(String token) async {
     if (_userDoc != null) {
       await _userDoc!.set({
         "notificationTokens": FieldValue.arrayRemove([token]),
@@ -154,11 +165,13 @@ class FirestoreUserConfigNotifier extends _$FirestoreUserConfigNotifier {
   }
 
   /// ユーザーを初期化する (Cloud Functions 経由)。
+  @override
   Future<void> initializeUser() async {
     await FirebaseFunctions.instanceFor(region: "asia-northeast1")
         .httpsCallable("createUser")
         .call();
     await _userDoc!.set({"schemaVersion": schemaVersion});
+    ref.invalidateSelf();
   }
 }
 
@@ -242,8 +255,8 @@ class FirestoreCollectionNotifier extends _$FirestoreCollectionNotifier {
 ///
 /// [config] が null または lastChanged が未設定の場合は `true` を返す
 /// (初回起動やデータ未作成)。
-bool hasRemoteChanges(UserConfig? config, int localTimestampMicros) {
-  if (config == null || config.lastChanged == null) return true;
+bool hasRemoteChanges(UserConfig? config, int? localTimestampMicros) {
+  if (config == null || config.lastChanged == null || localTimestampMicros == null) return true;
   return config.lastChanged!.toDate().microsecondsSinceEpoch >
       localTimestampMicros;
 }
