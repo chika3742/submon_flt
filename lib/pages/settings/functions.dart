@@ -4,9 +4,9 @@ import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
-import "../../auth_new/email_link_auth_use_case.dart";
-import "../../auth_new/sign_out_use_case.dart";
 import "../../components/dropdown_time_picker_bottom_sheet.dart";
+import "../../features/auth/use_cases/common.dart";
+import "../../features/auth/use_cases/sign_out_use_case.dart";
 import "../../main.dart";
 import "../../providers/core_providers.dart";
 import "../../providers/firestore_providers.dart";
@@ -147,7 +147,8 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
                   "ログアウトしますか？",
                   onOKPressed: () async {
                     await ref.read(signOutUseCaseProvider).execute();
-                    if (mounted) {
+                    if (context.mounted) {
+                      showSnackBar(context, "ログアウトしました");
                       Navigator.pushNamedAndRemoveUntil(
                         context,
                         WelcomePage.routeName,

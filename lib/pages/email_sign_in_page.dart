@@ -2,8 +2,8 @@ import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
-import "../auth_new/email_link_auth_use_case.dart";
-import "../auth_new/sign_in_state_notifier.dart";
+import "../features/auth/presentation/sign_in_state_notifier.dart";
+import "../features/auth/use_cases/common.dart";
 import "../main.dart";
 import "../providers/core_providers.dart";
 import "../utils/ui.dart";

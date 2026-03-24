@@ -7,9 +7,9 @@ import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
-import "../auth_new/email_link_auth_use_case.dart";
 import "../browser.dart";
 import "../core/pref_key.dart";
+import "../features/auth/use_cases/common.dart";
 import "../main.dart";
 import "../providers/firestore_providers.dart";
 import "../utils/ui.dart";

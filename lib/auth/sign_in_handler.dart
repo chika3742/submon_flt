@@ -10,6 +10,7 @@ import "package:sign_in_with_apple/sign_in_with_apple.dart";
 import "../apple_web_auth_options.dart";
 import "../db/firestore_provider.dart";
 import "../db/shared_prefs.dart";
+import "../features/auth/use_cases/common.dart";
 import "../isar_db/isar_provider.dart";
 import "../main.dart";
 import "../models/sign_in_result.dart";

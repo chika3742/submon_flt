@@ -1,7 +1,7 @@
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 
-import "../../auth_new/email_link_auth_use_case.dart";
+import "../../features/auth/use_cases/common.dart";
 import "../../main.dart";
 import "../../utils/app_links.dart";
 import "../../utils/ui.dart";
