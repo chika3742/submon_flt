@@ -7,7 +7,7 @@ import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
-import "../auth/sign_in_handler.dart";
+import "../auth_new/email_link_auth_use_case.dart";
 import "../browser.dart";
 import "../core/pref_key.dart";
 import "../main.dart";
@@ -54,7 +54,7 @@ class WelcomePage extends ConsumerWidget {
                         final result = await Navigator.pushNamed(
                             context, SignInPage.routeName,
                             arguments:
-                                const SignInPageArguments(SignInMode.normal));
+                                const SignInPageArguments(AuthMode.signIn));
                         if (result == true && context.mounted) {
                           Navigator.pushReplacementNamed(
                               context, HomePage.routeName);

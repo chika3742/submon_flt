@@ -1,7 +1,7 @@
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 
-import "../../auth/sign_in_handler.dart";
+import "../../auth_new/email_link_auth_use_case.dart";
 import "../../main.dart";
 import "../../utils/app_links.dart";
 import "../../utils/ui.dart";
@@ -194,7 +194,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
           showSnackBar(context, "この操作をするには、再ログインが必要です。");
           final result = await Navigator.pushNamed(context, SignInPage.routeName,
               arguments: SignInPageArguments(
-                SignInMode.reauthenticate,
+                AuthMode.reauthenticate,
                 continueUri: Uri(
                   scheme: "https",
                   host: appDomain,
@@ -335,7 +335,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
         showSnackBar(context, "セキュリティのため再ログインが必要です。");
         final result = await Navigator.pushNamed(context, SignInPage.routeName,
             arguments: SignInPageArguments(
-              SignInMode.reauthenticate,
+              AuthMode.reauthenticate,
               continueUri: Uri(
                 scheme: "https",
                 host: appDomain,
