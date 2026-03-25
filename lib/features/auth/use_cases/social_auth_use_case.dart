@@ -3,17 +3,17 @@ import "package:riverpod_annotation/riverpod_annotation.dart";
 import "../repositories/auth_repository.dart";
 import "common.dart";
 
-part "auth_ui_use_case.g.dart";
+part "social_auth_use_case.g.dart";
 
 @riverpod
-AuthUiUseCase authUiUseCase(Ref ref) {
-  return AuthUiUseCase(ref.watch(authRepositoryProvider));
+SocialAuthUseCase socialAuthUseCase(Ref ref) {
+  return SocialAuthUseCase(ref.watch(authRepositoryProvider));
 }
 
-class AuthUiUseCase {
+class SocialAuthUseCase {
   final AuthRepository _repo;
 
-  const AuthUiUseCase(this._repo);
+  const SocialAuthUseCase(this._repo);
 
   /// Returns `true` if sign-in succeeded, `false` if the user canceled the
   /// sign-in flow.
