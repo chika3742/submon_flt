@@ -13,7 +13,6 @@ import "../isar_db/isar_submission.dart";
 import "../main.dart";
 import "../providers/digestive_providers.dart";
 import "../providers/submission_providers.dart";
-import "../sample_data.dart";
 import "../utils/ad_unit_ids.dart";
 import "../utils/ui.dart";
 import "../utils/utils.dart";
@@ -61,21 +60,28 @@ class _SubmissionDetailPageState extends ConsumerState<SubmissionDetailPage> {
   @override
   Widget build(BuildContext context) {
     final asyncItem = ref.watch(submissionProvider(widget.submissionId));
-    final item = screenShotMode
-        ? SampleData.submissions[0]
-        : switch (asyncItem) {
-            AsyncData(:final value) => value,
-            _ => null,
-          };
+    final asyncDigestive = ref.watch(digestivesBySubmissionProvider(widget.submissionId));
 
-    final digestiveList = screenShotMode
-        ? [SampleData.digestives[0]]
-        : switch (ref.watch(
-            digestivesBySubmissionProvider(widget.submissionId))) {
-            AsyncData(:final value) => value,
-            _ => <Digestive>[],
-          };
 
+    return switch ((asyncItem, asyncDigestive)) {
+      (AsyncLoading(), _) || (_, AsyncLoading()) => Scaffold(
+          appBar: AppBar(),
+          body: const Center(child: CircularProgressIndicator()),
+        ),
+      (AsyncError(:final error), _) || (_, AsyncError(:final error)) => Scaffold(
+          appBar: AppBar(),
+          body: Center(child: Text("エラーが発生しました: $error")),
+        ),
+      (AsyncData(value: final item?), AsyncData(value: final digestiveList)) =>
+        _buildContent(item, digestiveList),
+      _ => Scaffold(
+          appBar: AppBar(),
+          body: const Center(child: Text("提出物が見つかりません")),
+        ),
+    };
+  }
+
+  Widget _buildContent(Submission item, List<Digestive> digestiveList) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("詳細"),
@@ -88,15 +94,13 @@ class _SubmissionDetailPageState extends ConsumerState<SubmissionDetailPage> {
           ),
           IconButton(
             icon: Icon(
-              item?.important == true ? Icons.star : Icons.star_outline,
-              color: item?.important == true ? Colors.yellowAccent : null,
+              item.important == true ? Icons.star : Icons.star_outline,
+              color: item.important == true ? Colors.yellowAccent : null,
             ),
-            onPressed: item != null
-                ? () {
-                    final repo = ref.read(submissionRepositoryProvider);
-                    repo.toggleImportant(item);
-                  }
-                : null,
+            onPressed: () {
+              final repo = ref.read(submissionRepositoryProvider);
+              repo.toggleImportant(item);
+            },
           ),
           IconButton(
             icon: const Icon(Icons.edit),
@@ -112,7 +116,7 @@ class _SubmissionDetailPageState extends ConsumerState<SubmissionDetailPage> {
       ),
       floatingActionButton: Padding(
         padding:
-            EdgeInsets.only(bottom: _bannerAd?.size.height.toDouble() ?? 0.0),
+        EdgeInsets.only(bottom: _bannerAd?.size.height.toDouble() ?? 0.0),
         child: FloatingActionButton(
           onPressed: _showCreateDigestiveBottomSheet,
           child: const Icon(Icons.add),
@@ -128,17 +132,16 @@ class _SubmissionDetailPageState extends ConsumerState<SubmissionDetailPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (item != null)
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                            item.title,
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          item.title,
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
+                      ),
                       const Divider(thickness: 2, indent: 32, endIndent: 32),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -147,12 +150,11 @@ class _SubmissionDetailPageState extends ConsumerState<SubmissionDetailPage> {
                             const Spacer(),
                             const Icon(Icons.event_available),
                             const SizedBox(width: 8),
-                            if (item != null)
-                              Text(
-                                DateFormat("M/d (E)", "ja_JP")
-                                    .format(item.due),
-                                style: const TextStyle(fontSize: 18),
-                              ),
+                            Text(
+                              DateFormat("M/d (E)", "ja_JP")
+                                  .format(item.due),
+                              style: const TextStyle(fontSize: 18),
+                            ),
                           ],
                         ),
                       ),
@@ -163,15 +165,14 @@ class _SubmissionDetailPageState extends ConsumerState<SubmissionDetailPage> {
                             const Spacer(),
                             const Icon(Icons.schedule),
                             const SizedBox(width: 8),
-                            if (item != null)
-                              FormattedDateRemaining(
-                                item.due.difference(DateTime.now()),
-                                numberSize: 24,
-                              ),
+                            FormattedDateRemaining(
+                              item.due.difference(DateTime.now()),
+                              numberSize: 24,
+                            ),
                           ],
                         ),
                       ),
-                      if (item != null && item.repeat != Repeat.none)
+                      if (item.repeat != Repeat.none)
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -183,28 +184,27 @@ class _SubmissionDetailPageState extends ConsumerState<SubmissionDetailPage> {
                             ],
                           ),
                         ),
-                      if (item != null)
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 16.0,
-                            right: 16.0,
-                            bottom: 16.0,
-                          ),
-                          child: Linkify(
-                            onOpen: (link) async {
-                              if (await canLaunchUrlString(link.url)) {
-                                await launchUrlString(
-                                  link.url,
-                                  mode: LaunchMode.externalApplication,
-                                );
-                              } else {
-                                throw "Could not launch $link";
-                              }
-                            },
-                            text: item.details,
-                            style: const TextStyle(fontSize: 16, height: 1.7),
-                          ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 16.0,
+                          right: 16.0,
+                          bottom: 16.0,
                         ),
+                        child: Linkify(
+                          onOpen: (link) async {
+                            if (await canLaunchUrlString(link.url)) {
+                              await launchUrlString(
+                                link.url,
+                                mode: LaunchMode.externalApplication,
+                              );
+                            } else {
+                              throw "Could not launch $link";
+                            }
+                          },
+                          text: item.details,
+                          style: const TextStyle(fontSize: 16, height: 1.7),
+                        ),
+                      ),
                       const Divider(thickness: 2, indent: 32, endIndent: 32),
                       const Align(
                         alignment: Alignment.center,
@@ -217,7 +217,7 @@ class _SubmissionDetailPageState extends ConsumerState<SubmissionDetailPage> {
                         ),
                       ),
                       ...digestiveList.map(
-                        (e) => DigestiveDetailCard(
+                            (e) => DigestiveDetailCard(
                           digestive: e,
                         ),
                       ),
