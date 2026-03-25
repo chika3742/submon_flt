@@ -392,18 +392,22 @@ class _ApplicationState extends ConsumerState<Application> {
     BuildContext context,
     AuthActionState state,
   ) {
+    if (state is! AuthActionStateProcessing) {
+      closeLoadingModal(globalContext!);
+    }
+
     switch (state) {
       case AuthActionStateSignedOut():
-        backToWelcomePage(context);
+        backToWelcomePage(globalContext!);
       case AuthActionStateFailed(:final error):
         showSnackBar(
-          context,
+          globalContext!,
           authErrorMessage(error),
           duration: Duration(seconds: 20),
         );
-      case AuthActionStateIdle():
       case AuthActionStateProcessing():
-        break;
+        showLoadingModal(globalContext!);
+      case AuthActionStateIdle():
     }
   }
 
