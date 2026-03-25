@@ -1,213 +1,135 @@
-import "package:collection/collection.dart";
-import "package:firebase_auth/firebase_auth.dart" hide AuthProvider;
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_svg/flutter_svg.dart";
-import "../../auth/sign_in_handler.dart";
-import "../../models/sign_in_result.dart";
+
+import "../../features/auth/models/auth_exception.dart";
+import "../../features/auth/presentation/account_link_notifier.dart";
+import "../../features/auth/repositories/auth_repository.dart";
 import "../../utils/ui.dart";
 
-class AccountLinkPage extends StatefulWidget {
+class AccountLinkPage extends ConsumerWidget {
   const AccountLinkPage({super.key});
 
   static const routeName = "/settings/account_link";
 
-  @override
-  State<AccountLinkPage> createState() => _AccountLinkPageState();
-}
-
-class _AccountLinkPageState extends State<AccountLinkPage> {
-  late FirebaseAuth auth;
-  bool _notSignedIn = false;
-  bool _hasEmailProvider = false;
-
-  final _providers = [
-    _Provider(
+  static const _providerUiInfo = <AuthProvider, _ProviderUi>{
+    AuthProvider.apple: _ProviderUi(
       name: "Apple",
-      providerId: "apple.com",
       iconPath: "assets/vector/apple.svg",
       applyColorFilter: true,
     ),
-    _Provider(
+    AuthProvider.google: _ProviderUi(
       name: "Google",
-      providerId: "google.com",
       iconPath: "assets/vector/google.svg",
     ),
-  ];
+  };
 
   @override
-  void initState() {
-    super.initState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final linkState = ref.watch(accountLinkProvider);
+    final providerInfo = ref.watch(linkedProviderInfoProvider);
 
-    auth = FirebaseAuth.instance;
-
-    final user = auth.currentUser;
-    if (user != null) {
-      for (final provider in _providers) {
-        provider.linked =
-            user.providerData.any((e) => e.providerId == provider.providerId);
+    ref.listen(accountLinkProvider, (prev, next) {
+      switch (next) {
+        case AccountLinkLinkSucceeded():
+          showSnackBar(context, "連携しました。");
+        case AccountLinkUnlinkSucceeded():
+          showSnackBar(context, "連携を解除しました。");
+        case AccountLinkFailed(:final error):
+          final message = error is AuthException
+              ? error.code.userFriendlyMessage
+              : "エラーが発生しました。";
+          showSnackBar(context, message);
+        default:
+          break;
       }
+    });
 
-      _hasEmailProvider = user.providerData
-          .any((e) => e.providerId == EmailAuthProvider.PROVIDER_ID);
-    } else {
-      _notSignedIn = true;
-    }
+    return ListView(
+      children: [
+        for (final provider in AuthProvider.values)
+          _buildProviderTile(
+            context,
+            ref,
+            provider: provider,
+            isLinked: providerInfo.linkedProviders.contains(provider),
+            isProcessing: linkState is AccountLinkProcessing &&
+                linkState.processingProvider == provider,
+            isDisabled: linkState is AccountLinkProcessing,
+          ),
+      ],
+    );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (_notSignedIn) {
-      return const Center(
-        child: Text("サインインされていません"),
-      );
-    }
+  Widget _buildProviderTile(
+    BuildContext context,
+    WidgetRef ref, {
+    required AuthProvider provider,
+    required bool isLinked,
+    required bool isProcessing,
+    required bool isDisabled,
+  }) {
+    final ui = _providerUiInfo[provider]!;
 
-    return ListView(children: [
-      ..._providers
-          .map((e) => ListTile(
-                leading: SvgPicture.asset(
-                  e.iconPath,
-                  colorFilter: e.applyColorFilter
-                      ? ColorFilter.mode(
-                          Theme.of(context).brightness == Brightness.light
-                              ? const Color(0xFF000000)
-                              : const Color(0xFFF9F6EF),
-                          BlendMode.srcIn,
-                        )
-                      : null,
+    return ListTile(
+      leading: SvgPicture.asset(
+        ui.iconPath,
+        colorFilter: ui.applyColorFilter
+            ? ColorFilter.mode(
+                Theme.of(context).brightness == Brightness.light
+                    ? const Color(0xFF000000)
+                    : const Color(0xFFF9F6EF),
+                BlendMode.srcIn,
+              )
+            : null,
+      ),
+      title: Text(ui.name),
+      trailing: isProcessing
+          ? const CircularProgressIndicator()
+          : isLinked
+              ? OutlinedButton(
+                  onPressed: isDisabled
+                      ? null
+                      : () => _confirmUnlink(context, ref, provider, ui.name),
+                  child: const Text("連携解除"),
+                )
+              : ElevatedButton(
+                  onPressed: isDisabled
+                      ? null
+                      : () => ref
+                          .read(accountLinkProvider.notifier)
+                          .link(provider),
+                  child: const Text("連携"),
                 ),
-                title: Text(e.name),
-                trailing: _buildLinkButton(e),
-              )),
-    ]);
+    );
   }
 
-  Widget _buildLinkButton(_Provider provider) {
-    if (provider.linked == null || provider.processing) {
-      return const CircularProgressIndicator();
-    }
-
-    if (provider.linked!) {
-      return OutlinedButton(
-        onPressed: _providers.none((e) => e.processing)
-            ? () {
-                showSimpleDialog(
-                  context,
-                  "連携の解除",
-                  "${provider.name}との連携を解除しますか？",
-                  showCancel: true,
-                  onOKPressed: () {
-                    _unlink(provider);
-                  },
-                );
-              }
-            : null,
-        child: const Text("連携解除"),
-      );
-    } else {
-      return ElevatedButton(
-        onPressed: _providers.none((e) => e.processing)
-            ? () {
-                _link(provider);
-              }
-            : null,
-        child: const Text("連携"),
-      );
-    }
-  }
-
-  Future<void> _link(_Provider provider) async {
-    final user = auth.currentUser;
-    if (user == null) {
-      return;
-    }
-
-    setState(() {
-      provider.processing = true;
-    });
-
-    SignInHandler(SignInMode.upgrade)
-        .signIn(provider.providerType)
-        .then((value) {
-      if (value.errorCode != null) {
-        throw value.errorCode!;
-      }
-
-      setState(() {
-        provider.linked = true;
-      });
-      showSnackBar(context, "連携しました。");
-    }).catchError((e) {
-      debugPrint(e.toString());
-
-      if (e is SignInError && e == SignInError.cancelled) {
-        return;
-      }
-
-      if (e is FirebaseAuthException) {
-        switch (e.code) {
-          case "credential-already-in-use":
-            showSnackBar(context, "この${provider.name}アカウントは既に他のアカウントに連携されています");
-            return;
-        }
-      }
-
-      showSnackBar(context, "連携に失敗しました。(${e.toString()})");
-    }).whenComplete(() {
-      setState(() {
-        provider.processing = false;
-      });
-    });
-  }
-
-  Future<void> _unlink(_Provider provider) async {
-    final user = auth.currentUser;
-    if (user == null) {
-      return;
-    }
-
-    setState(() {
-      provider.processing = true;
-    });
-
-    try {
-      await user.unlink(provider.providerId);
-      setState(() {
-        provider.linked = false;
-      });
-    } catch (e) {
-      showSimpleDialog(context, "エラー", "連携の解除に失敗しました。");
-    } finally {
-      setState(() {
-        provider.processing = false;
-      });
-    }
+  void _confirmUnlink(
+    BuildContext context,
+    WidgetRef ref,
+    AuthProvider provider,
+    String providerName,
+  ) {
+    showSimpleDialog(
+      context,
+      "連携の解除",
+      "$providerNameとの連携を解除しますか？",
+      showCancel: true,
+      onOKPressed: () {
+        ref.read(accountLinkProvider.notifier).unlink(provider);
+      },
+    );
   }
 }
 
-class _Provider {
+class _ProviderUi {
   final String name;
-  final String providerId;
   final String iconPath;
   final bool applyColorFilter;
-  bool? linked;
-  bool processing = false;
 
-  _Provider({
+  const _ProviderUi({
     required this.name,
-    required this.providerId,
     required this.iconPath,
     this.applyColorFilter = false,
   });
-
-  AuthProvider get providerType {
-    switch (providerId) {
-      case "apple.com":
-        return AuthProvider.apple;
-      case "google.com":
-        return AuthProvider.google;
-      default:
-        throw ArgumentError("Invalid providerId: $providerId");
-    }
-  }
 }
