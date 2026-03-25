@@ -23,6 +23,9 @@ enum AuthErrorCode {
   userMismatch("現在サインイン中のユーザーと異なるアカウントです。"),
   noLinkedProvider("このアカウントには紐づけられたプロバイダがありません。"),
   unknownProvider("この認証方法はサポートされていません。"),
+  noSavedAuthEmail("このデバイスでサインインしようとしたことを確認してください。"),
+  missingContinueUrl("再認証リンクが正しくありません。"),
+  expiredActionCode("このURLの有効期限が切れています。もう一度お試しください。"),
   unknown("不明なエラーが発生しました。しばらく待ってからもう一度お試しください。"),
   ;
 
@@ -31,7 +34,7 @@ enum AuthErrorCode {
   const AuthErrorCode(this.userFriendlyMessage);
 
   factory AuthErrorCode.fromFirebaseAuthErrorCode(String code) {
-    return switch (code.replaceFirst(RegExp("^auth/"), "")) {
+    return switch (code.replaceFirst(RegExp("^(firebase_)?auth/"), "")) {
       "account-exists-with-different-credential" => AuthErrorCode.userAlreadyExists,
       "invalid-credential" => AuthErrorCode.invalidCredential,
       "user-disabled" => AuthErrorCode.userDisabled,
@@ -43,6 +46,7 @@ enum AuthErrorCode {
       "email-already-in-use" => AuthErrorCode.emailAlreadyInUse,
       "credential-already-in-use" => AuthErrorCode.credentialAlreadyInUse,
       "user-mismatch" => AuthErrorCode.userMismatch,
+      "expired-action-code" => AuthErrorCode.expiredActionCode,
       _ => AuthErrorCode.unknown,
     };
   }

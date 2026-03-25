@@ -14,11 +14,10 @@ void handleLink(
   try {
     if (url.host == appDomain || url.scheme == "submon") {
       if (url.path == "/__/auth/action") {
-        handleAuthLink(context, ref, url);
+        handleAuthLink(context, url);
       } else if (url.path == "/__/auth/links") {
         handleAuthLink(
           context,
-          ref,
           Uri.parse(url.queryParameters["link"]!),
         );
       } else {

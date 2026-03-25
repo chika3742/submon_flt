@@ -1,21 +1,22 @@
+import "package:riverpod_annotation/riverpod_annotation.dart";
+
 import "../repositories/auth_repository.dart";
 import "common.dart";
+
+part "email_link_auth_use_case.g.dart";
+
+@Riverpod(keepAlive: true)
+EmailLinkAuthUseCase emailLinkAuthUseCase(Ref ref) {
+  return EmailLinkAuthUseCase(ref.watch(authRepositoryProvider));
+}
 
 class EmailLinkAuthUseCase {
   final AuthRepository _repo;
 
   const EmailLinkAuthUseCase(this._repo);
 
-  Future<void> execute(String modeString, String email, String emailLink) {
-    final mode = AuthMode.values.firstWhere(
-      (e) => e.toString() == modeString,
-      orElse: () => throw ArgumentError("Invalid sign-in mode: $modeString"),
-    );
-
-    final credential = AuthRepository.createEmailLinkCredential(
-      email,
-      emailLink,
-    );
+  Future<void> execute(AuthMode mode, String email, String emailLink) {
+    final credential = AuthRepository.createEmailLinkCredential(email, emailLink);
 
     switch (mode) {
       case AuthMode.signIn:

@@ -21,6 +21,9 @@ import "package:shared_preferences/shared_preferences.dart";
 
 import "core/pref_key.dart";
 import "events.dart";
+import "features/auth/presentation/auth_action_notifier.dart";
+import "features/auth/presentation/auth_messages.dart";
+import "features/auth/presentation/email_link_auth_notifier.dart";
 import "link_handler/link_handler.dart";
 import "models/sign_in_result.dart";
 import "pages/done_submissions_page.dart";
@@ -45,6 +48,7 @@ import "pages/timetable_table_view_page.dart";
 import "pages/welcome_page.dart";
 import "providers/core_providers.dart";
 import "providers/link_events_provider.dart";
+import "utils/ui.dart";
 
 const screenShotMode = bool.fromEnvironment("SCREENSHOT_MODE");
 
@@ -143,6 +147,14 @@ class _ApplicationState extends ConsumerState<Application> {
           eventBus.fire(SwitchBottomNav(tabName));
         });
       }
+    });
+
+    ref.listen(emailLinkAuthProvider, (_, next) {
+      _handleEmailLinkAuthState(context, next);
+    });
+
+    ref.listen(authActionProvider, (_, next) {
+      _handleAuthActionState(context, next);
     });
 
     final textTheme = const TextTheme(
@@ -344,6 +356,55 @@ class _ApplicationState extends ConsumerState<Application> {
           builder: builder, title: "asdf", settings: settings);
     } else {
       return MaterialPageRoute<T>(builder: builder, settings: settings);
+    }
+  }
+
+  void _handleEmailLinkAuthState(
+    BuildContext context,
+    EmailLinkAuthState state,
+  ) {
+    switch (state) {
+      case EmailLinkAuthStateSignInSucceeded(:final result):
+        showSnackBar(context, signInSuccessMessage(result));
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          HomePage.routeName,
+          (route) => false,
+        );
+      case EmailLinkAuthStateReAuthSucceeded(:final destination):
+        Navigator.of(context).pushNamed(
+          destination.routeName,
+          arguments: destination.routeArguments,
+        );
+      case EmailLinkAuthStateUpgradeSucceeded():
+        showSnackBar(context, "アカウントをアップグレードしました。");
+      case EmailLinkAuthStateFailed(:final error):
+        showSnackBar(
+          context,
+          authErrorMessage(error),
+          duration: Duration(seconds: 20),
+        );
+      case EmailLinkAuthStateIdle():
+      case EmailLinkAuthStateProcessing():
+        break;
+    }
+  }
+
+  void _handleAuthActionState(
+    BuildContext context,
+    AuthActionState state,
+  ) {
+    switch (state) {
+      case AuthActionStateSignedOut():
+        backToWelcomePage(context);
+      case AuthActionStateFailed(:final error):
+        showSnackBar(
+          context,
+          authErrorMessage(error),
+          duration: Duration(seconds: 20),
+        );
+      case AuthActionStateIdle():
+      case AuthActionStateProcessing():
+        break;
     }
   }
 

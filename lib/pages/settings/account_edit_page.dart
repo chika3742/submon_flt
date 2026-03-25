@@ -1,6 +1,7 @@
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 
+import "../../features/auth/models/auth_continue_destination.dart";
 import "../../features/auth/use_cases/common.dart";
 import "../../main.dart";
 import "../../utils/app_links.dart";
@@ -195,14 +196,9 @@ class _AccountEditPageState extends State<AccountEditPage> {
           final result = await Navigator.pushNamed(context, SignInPage.routeName,
               arguments: SignInPageArguments(
                 AuthMode.reauthenticate,
-                continueUri: Uri(
-                  scheme: "https",
-                  host: appDomain,
-                  path: AccountEditPage.changeEmailRouteName,
-                  queryParameters: {
-                    "new_email": _form1Controller.text,
-                  },
-                ),
+                continueUri: AuthContinueDestination.changeEmail(
+                  newEmail: _form1Controller.text,
+                ).toUri(),
               ));
           if (result == true) {
             await changeEmail();
@@ -336,11 +332,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
         final result = await Navigator.pushNamed(context, SignInPage.routeName,
             arguments: SignInPageArguments(
               AuthMode.reauthenticate,
-              continueUri: Uri(
-                scheme: "https",
-                host: appDomain,
-                path: AccountEditPage.deleteRouteName,
-              ),
+              continueUri: const AuthContinueDestination.deleteAccount().toUri(),
             ));
         if (result == true) {
           await executeAccountDeletion();

@@ -22,6 +22,23 @@ String get appDomain {
   return kReleaseMode ? "submon.app" : "dev.submon.app";
 }
 
+/// Firebase Auth のアクションURL (`/__/auth/action`) を解決する。
+///
+/// `/__/auth/links` ラッパーの場合は内部の `link` パラメータを展開する。
+/// アプリドメイン外の URL や関係のないパスは `null` を返す。
+Uri? resolveAuthActionUrl(Uri url) {
+  if (url.host != appDomain && url.scheme != "submon") return null;
+
+  if (url.path == "/__/auth/action") return url;
+
+  if (url.path == "/__/auth/links") {
+    final link = url.queryParameters["link"];
+    return link != null ? Uri.parse(link) : null;
+  }
+
+  return null;
+}
+
 /// Creates a submission share link with the given data.
 ///
 /// Returns the document ID of the created link.

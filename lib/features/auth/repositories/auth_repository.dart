@@ -70,6 +70,8 @@ abstract interface class AuthRepository {
 
   Future<void> signOut();
 
+  Future<ActionCodeInfo> checkActionCode(String oobCode);
+
   static AuthCredential createEmailLinkCredential(String email, String emailLink) {
     return EmailAuthProvider.credentialWithLink(
       email: email,
@@ -243,6 +245,16 @@ class AuthRepositoryImpl extends AuthRepository {
       _auth.signOut(),
       _googleSignIn.signOut(),
     ]);
+  }
+
+  @override
+  Future<ActionCodeInfo> checkActionCode(String oobCode) async {
+    try {
+      return await _auth.checkActionCode(oobCode);
+    } on FirebaseAuthException catch (e, st) {
+      await _crashlytics.recordError(e, st, reason: "checkActionCode failed");
+      throw AuthException(AuthErrorCode.fromFirebaseAuthErrorCode(e.code));
+    }
   }
 }
 
