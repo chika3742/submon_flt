@@ -42,7 +42,7 @@ final class EmailLinkAuthNotifierProvider
 }
 
 String _$emailLinkAuthNotifierHash() =>
-    r'9daca8811551e90c880dc2c2689173c4ec0d853a';
+    r'df2ffeb06f7744d534f814353ec5ed283e04c9ed';
 
 abstract class _$EmailLinkAuthNotifier extends $Notifier<EmailLinkAuthState> {
   EmailLinkAuthState build();

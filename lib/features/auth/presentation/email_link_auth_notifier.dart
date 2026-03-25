@@ -44,7 +44,7 @@ class EmailLinkAuthNotifier extends _$EmailLinkAuthNotifier
   EmailLinkAuthState build() {
     ref.listen(linkEventsProvider, (_, next) {
       if (next case AsyncData(:final value)) {
-        _handleUri(value);
+        _handleUri(value.value);
       }
     });
     return const EmailLinkAuthState.idle();
