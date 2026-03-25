@@ -55,7 +55,6 @@ class SignInStateNotifier extends _$SignInStateNotifier with NotifierStateGuard 
   @override
   @protected
   SignInState getErrorState(Object error, StackTrace st) {
-    ref.read(crashlyticsProvider).recordError(error, st);
     return SignInState.failed(error);
   }
 
@@ -209,6 +208,10 @@ class SignInStateNotifier extends _$SignInStateNotifier with NotifierStateGuard 
         return const SignInState.signInLinkSent();
       },
     );
+  }
+
+  void cancel() {
+    state = const SignInState.idle();
   }
 
   Future<SignInState> _completeSignIn() async {
