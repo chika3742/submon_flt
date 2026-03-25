@@ -30,7 +30,6 @@ AuthRepository authRepository(Ref ref) {
 sealed class FetchCredentialResult with _$FetchCredentialResult {
   const factory FetchCredentialResult.success({
     required OAuthCredential credential,
-    @Default(false) bool mayRequireConsent,
   }) = FetchCredentialResultSuccess;
 
   const factory FetchCredentialResult.canceled() =
@@ -171,16 +170,8 @@ class AuthRepositoryImpl extends AuthRepository {
       rawNonce: rawNonce,
     );
 
-    final usesPrivateRelayEmail = () {
-      if (appleCredential.email case final email?) {
-        return email.endsWith("@privaterelay.appleid.com");
-      }
-      return false;
-    }();
-
     return FetchCredentialResult.success(
       credential: credential,
-      mayRequireConsent: usesPrivateRelayEmail,
     );
   }
 

@@ -40,8 +40,9 @@ class AccountLinkPage extends ConsumerWidget {
               ? error.code.userFriendlyMessage
               : "エラーが発生しました。";
           showSnackBar(context, message);
-        default:
-          break;
+        case AccountLinkIdle():
+        case AccountLinkProcessing():
+        // no action
       }
     });
 
@@ -55,10 +56,35 @@ class AccountLinkPage extends ConsumerWidget {
             isLinked: providerInfo.linkedProviders.contains(provider),
             isProcessing: linkState is AccountLinkProcessing &&
                 linkState.processingProvider == provider,
-            isDisabled: linkState is AccountLinkProcessing,
+            isDisabled: linkState is AccountLinkProcessing ||
+                (providerInfo.linkedProviders.contains(provider) && !_canUnlink(providerInfo)),
+          ),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            "※Apple Accountを非公開メールアドレスで新たに連携する場合、"
+                "すでに紐づけられたGoogleアカウントやメールアドレスと紐づけられます。",
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
+        if (!_canUnlink(providerInfo))
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              "外部アカウントを使用して作成されたアカウントのため、最低1つのプロバイダを"
+                  "連携させておく必要があります。",
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
           ),
       ],
     );
+  }
+
+  static bool _canUnlink(LinkedProviderInfo providerInfo) {
+    return providerInfo.hasEmailProvider ||
+        providerInfo.linkedProviders.length >= 2;
   }
 
   Widget _buildProviderTile(

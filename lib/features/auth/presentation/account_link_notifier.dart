@@ -5,8 +5,7 @@ import "package:riverpod_annotation/riverpod_annotation.dart";
 import "../../../providers/core_providers.dart";
 import "../../../utils/notifier_state_guard.dart";
 import "../repositories/auth_repository.dart";
-import "../use_cases/common.dart";
-import "../use_cases/social_auth_use_case.dart";
+import "../use_cases/link_social_use_case.dart";
 
 part "account_link_notifier.freezed.dart";
 part "account_link_notifier.g.dart";
@@ -71,14 +70,17 @@ class AccountLinkNotifier extends _$AccountLinkNotifier
     return guard(
       AccountLinkState.processing(processingProvider: provider),
       () async {
-        final result = await ref
-            .read(socialAuthUseCaseProvider)
-            .execute(provider, AuthMode.upgrade);
-        if (!result) {
-          return const AccountLinkState.idle();
+        final result = await ref.read(linkSocialUseCaseProvider)
+            .execute(provider);
+
+        switch (result) {
+          case LinkSocialResult.success:
+            ref.invalidate(firebaseUserProvider);
+            return const AccountLinkState.linkSucceeded();
+
+          case LinkSocialResult.canceled:
+            return const AccountLinkState.idle();
         }
-        ref.invalidate(firebaseUserProvider);
-        return const AccountLinkState.linkSucceeded();
       },
     );
   }
