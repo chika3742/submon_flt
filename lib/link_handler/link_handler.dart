@@ -2,7 +2,6 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../utils/app_links.dart";
-import "auth_link_handler.dart";
 import "open_link_handler.dart";
 
 void handleLink(

@@ -200,7 +200,7 @@ class AuthRepositoryImpl extends AuthRepository {
     try {
       await user.reauthenticateWithCredential(credential);
     } on FirebaseAuthException catch (e, st) {
-      await _crashlytics.recordError(e, st, reason: "Re-authentication failed");
+      await _recordErrorIfUnexpected(e, st);
       throw AuthException(AuthErrorCode.fromFirebaseAuthErrorCode(e.code));
     }
   }
@@ -211,7 +211,7 @@ class AuthRepositoryImpl extends AuthRepository {
     try {
       await user.linkWithCredential(credential);
     } on FirebaseAuthException catch (e, st) {
-      await _crashlytics.recordError(e, st, reason: "Link credential failed");
+      await _recordErrorIfUnexpected(e, st);
       throw AuthException(AuthErrorCode.fromFirebaseAuthErrorCode(e.code));
     }
   }
@@ -242,7 +242,7 @@ class AuthRepositoryImpl extends AuthRepository {
     try {
       return await _auth.fetchSignInMethodsForEmail(email);
     } on FirebaseAuthException catch (e, st) {
-      await _crashlytics.recordError(e, st, reason: "fetchSignInMethodsForEmail failed");
+      await _recordErrorIfUnexpected(e, st);
       throw AuthException(AuthErrorCode.fromFirebaseAuthErrorCode(e.code));
     }
   }
@@ -260,7 +260,7 @@ class AuthRepositoryImpl extends AuthRepository {
     try {
       return await _auth.checkActionCode(oobCode);
     } on FirebaseAuthException catch (e, st) {
-      await _crashlytics.recordError(e, st, reason: "checkActionCode failed");
+      await _recordErrorIfUnexpected(e, st);
       throw AuthException(AuthErrorCode.fromFirebaseAuthErrorCode(e.code));
     }
   }
@@ -276,11 +276,7 @@ class AuthRepositoryImpl extends AuthRepository {
         password: password,
       );
     } on FirebaseAuthException catch (e, st) {
-      await _crashlytics.recordError(
-        e,
-        st,
-        reason: "createUserWithEmailAndPassword failed",
-      );
+      await _recordErrorIfUnexpected(e, st);
       throw AuthException(AuthErrorCode.fromFirebaseAuthErrorCode(e.code));
     }
   }
@@ -296,11 +292,7 @@ class AuthRepositoryImpl extends AuthRepository {
         ),
       );
     } on FirebaseAuthException catch (e, st) {
-      await _crashlytics.recordError(
-        e,
-        st,
-        reason: "verifyBeforeUpdateEmail failed",
-      );
+      await _recordErrorIfUnexpected(e, st);
       throw AuthException(AuthErrorCode.fromFirebaseAuthErrorCode(e.code));
     }
   }
@@ -311,11 +303,7 @@ class AuthRepositoryImpl extends AuthRepository {
     try {
       await user.updateDisplayName(displayName);
     } on FirebaseAuthException catch (e, st) {
-      await _crashlytics.recordError(
-        e,
-        st,
-        reason: "updateDisplayName failed",
-      );
+      await _recordErrorIfUnexpected(e, st);
       throw AuthException(AuthErrorCode.fromFirebaseAuthErrorCode(e.code));
     }
   }
@@ -326,12 +314,14 @@ class AuthRepositoryImpl extends AuthRepository {
     try {
       await user.delete();
     } on FirebaseAuthException catch (e, st) {
-      await _crashlytics.recordError(
-        e,
-        st,
-        reason: "deleteUser failed",
-      );
+      await _recordErrorIfUnexpected(e, st);
       throw AuthException(AuthErrorCode.fromFirebaseAuthErrorCode(e.code));
+    }
+  }
+
+  Future<void> _recordErrorIfUnexpected(FirebaseAuthException e, StackTrace st) async {
+    if (!AuthErrorCode.fromFirebaseAuthErrorCode(e.code).isCommonError) {
+      await _crashlytics.recordError(e, st);
     }
   }
 }

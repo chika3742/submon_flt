@@ -3,7 +3,6 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../components/timetable/timetable.dart";
 import "../../core/pref_key.dart";
-import "../../main.dart";
 import "../../providers/timetable_providers.dart";
 import "../../utils/ui.dart";
 
