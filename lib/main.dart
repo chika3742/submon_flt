@@ -25,7 +25,6 @@ import "features/auth/presentation/auth_action_notifier.dart";
 import "features/auth/presentation/auth_messages.dart";
 import "features/auth/presentation/email_link_auth_notifier.dart";
 import "link_handler/link_handler.dart";
-import "models/sign_in_result.dart";
 import "pages/done_submissions_page.dart";
 import "pages/email_registration_page.dart";
 import "pages/email_sign_in_page.dart";
@@ -283,11 +282,11 @@ class _ApplicationState extends ConsumerState<Application> {
             );
           case EmailSignInPage.routeName:
             final args = settings.arguments as EmailSignInPageArguments;
-            return generatePageRoute<SignInResult>(
+            return generatePageRoute<bool>(
                 (context) => EmailSignInPage(mode: args.mode), settings);
           case EmailRegistrationPage.routeName:
             final args = settings.arguments as EmailRegistrationPageArguments;
-            return generatePageRoute<UserCredential>(
+            return generatePageRoute<bool>(
                 (context) => EmailRegistrationPage(email: args.email),
                 settings);
           case CustomizeSettingsPage.routeName:
