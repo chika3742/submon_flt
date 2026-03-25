@@ -25,6 +25,8 @@ enum AuthErrorCode {
   unknownProvider("この認証方法はサポートされていません。"),
   noSavedAuthEmail("このデバイスでサインインしようとしたことを確認してください。"),
   missingContinueUrl("再認証リンクが正しくありません。"),
+  weakPassword("パスワードが短すぎます。最低6文字で指定してください。"),
+  invalidEmail("メールアドレスの形式が正しくありません。"),
   expiredActionCode("このURLの有効期限が切れています。もう一度お試しください。"),
   unknown("不明なエラーが発生しました。しばらく待ってからもう一度お試しください。"),
   ;
@@ -47,6 +49,8 @@ enum AuthErrorCode {
       "credential-already-in-use" => AuthErrorCode.credentialAlreadyInUse,
       "user-mismatch" => AuthErrorCode.userMismatch,
       "expired-action-code" => AuthErrorCode.expiredActionCode,
+      "weak-password" => AuthErrorCode.weakPassword,
+      "invalid-email" => AuthErrorCode.invalidEmail,
       _ => AuthErrorCode.unknown,
     };
   }

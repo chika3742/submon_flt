@@ -265,11 +265,11 @@ class EmailSignInPageState extends ConsumerState<EmailSignInPage>
             }),
             SelectSheetAction("一般的なログイン", () async {
               Navigator.pop(context);
-              final result = await Navigator.pushNamed<UserCredential>(
+              final result = await Navigator.pushNamed<bool>(
                   context, EmailRegistrationPage.routeName,
                   arguments: EmailRegistrationPageArguments(
                       email: emailController.text));
-              if (result != null && mounted) {
+              if (result == true && mounted) {
                 ref
                     .read(signInStateProvider.notifier)
                     .completeCurrentSignIn();

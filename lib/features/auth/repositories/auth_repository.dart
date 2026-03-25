@@ -72,6 +72,8 @@ abstract interface class AuthRepository {
 
   Future<ActionCodeInfo> checkActionCode(String oobCode);
 
+  Future<void> createUserWithEmailAndPassword(String email, String password);
+
   static AuthCredential createEmailLinkCredential(String email, String emailLink) {
     return EmailAuthProvider.credentialWithLink(
       email: email,
@@ -253,6 +255,26 @@ class AuthRepositoryImpl extends AuthRepository {
       return await _auth.checkActionCode(oobCode);
     } on FirebaseAuthException catch (e, st) {
       await _crashlytics.recordError(e, st, reason: "checkActionCode failed");
+      throw AuthException(AuthErrorCode.fromFirebaseAuthErrorCode(e.code));
+    }
+  }
+
+  @override
+  Future<void> createUserWithEmailAndPassword(
+    String email,
+    String password,
+  ) async {
+    try {
+      await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } on FirebaseAuthException catch (e, st) {
+      await _crashlytics.recordError(
+        e,
+        st,
+        reason: "createUserWithEmailAndPassword failed",
+      );
       throw AuthException(AuthErrorCode.fromFirebaseAuthErrorCode(e.code));
     }
   }
