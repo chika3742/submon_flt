@@ -8,6 +8,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:google_mobile_ads/google_mobile_ads.dart";
 
 import "../isar_db/isar_digestive.dart";
+import "../providers/digestive_providers.dart";
 import "../providers/submission_providers.dart";
 import "../src/pigeons.g.dart";
 import "../utils/ad_unit_ids.dart";
@@ -347,6 +348,10 @@ class _FocusTimerPageState extends ConsumerState<FocusTimerPage>
                                 onPressed: () async {
                                   if (!_takingBreak) {
                                     ad?.show();
+                                    await ref
+                                        .read(digestiveRepositoryProvider)
+                                        .markDone(widget.digestive, done: true);
+                                    if (!context.mounted) return;
                                     showSnackBar(context, "Digestiveを完了しました！");
                                     Navigator.pop(context, true);
                                   } else {

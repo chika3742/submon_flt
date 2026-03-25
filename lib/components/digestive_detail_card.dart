@@ -238,11 +238,7 @@ class _DigestiveDetailCardState extends ConsumerState<DigestiveDetailCard> {
             },
           ));
     } else {
-      final result =
-          await FocusTimerPage.openFocusTimer(context, widget.digestive);
-      if (result == true) {
-        await _markDone(true);
-      }
+      await FocusTimerPage.openFocusTimer(context, widget.digestive);
     }
   }
 }
