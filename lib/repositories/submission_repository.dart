@@ -80,7 +80,7 @@ class SubmissionRepository extends SyncedRepository<Submission> {
     final tasklist =
         (await tasksApi.tasklists.list(maxResults: 1)).items?.firstOrNull;
     if (tasklist != null) {
-      tasksApi.tasks.delete(tasklist.id!, taskId);
+      await tasksApi.tasks.delete(tasklist.id!, taskId);
     }
   }
 }
