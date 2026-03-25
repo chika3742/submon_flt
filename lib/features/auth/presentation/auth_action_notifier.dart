@@ -31,7 +31,7 @@ class AuthActionNotifier extends _$AuthActionNotifier
   AuthActionState build() {
     ref.listen(linkEventsProvider, (_, next) {
       if (next case AsyncData(:final value)) {
-        _handleUri(value);
+        _handleUri(value.value);
       }
     });
     return const AuthActionState.idle();
@@ -48,24 +48,27 @@ class AuthActionNotifier extends _$AuthActionNotifier
     final authUrl = resolveAuthActionUrl(url);
     if (authUrl == null) return;
 
-    if (authUrl.queryParameters["mode"] != "verifyAndChangeEmail") return;
+    switch (authUrl.queryParameters["mode"]) {
+      case "resetPassword":
+        launchUrl(authUrl, mode: LaunchMode.externalApplication);
+      case "verifyAndChangeEmail":
+        final oobCode = authUrl.queryParameters["oobCode"];
+        if (oobCode == null) {
+          state = AuthActionState.failed(
+            AuthException(AuthErrorCode.invalidActionCode),
+          );
+          return;
+        }
 
-    final oobCode = authUrl.queryParameters["oobCode"];
-    if (oobCode == null) {
-      state = AuthActionState.failed(
-        AuthException(AuthErrorCode.invalidActionCode),
-      );
-      return;
+        await guard(
+          const AuthActionState.processing(),
+              () async {
+            await ref.read(authRepositoryProvider).checkActionCode(oobCode);
+            await ref.read(signOutUseCaseProvider).execute();
+            await launchUrl(authUrl, mode: LaunchMode.externalApplication);
+            return const AuthActionState.signedOut();
+          },
+        );
     }
-
-    await guard(
-      const AuthActionState.processing(),
-      () async {
-        await ref.read(authRepositoryProvider).checkActionCode(oobCode);
-        await ref.read(signOutUseCaseProvider).execute();
-        await launchUrl(authUrl, mode: LaunchMode.externalApplication);
-        return const AuthActionState.signedOut();
-      },
-    );
   }
 }
