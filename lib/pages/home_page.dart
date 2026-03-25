@@ -379,7 +379,6 @@ class HomePageState extends ConsumerState<HomePage> {
     if (syncState case AsyncError(:final error, :final stackTrace)) {
       _handleSyncError(error, stackTrace);
     } else if (mounted) {
-      _navigatorKey.currentState?.pushReplacementNamed("home");
       userConfigNotifier.setLastAppOpened();
     }
   }
