@@ -130,7 +130,7 @@ class SignInStateNotifier extends _$SignInStateNotifier with NotifierStateGuard 
       () async {
         await ref.read(authRepositoryProvider)
             .sendPasswordResetLink(email);
-        return const SignInState.signInLinkSent();
+        return const SignInState.passwordResetLinkSent();
       },
     );
   }
