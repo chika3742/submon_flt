@@ -4,7 +4,6 @@ import "package:flutter/material.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../core/pref_key.dart";
-import "../isar_db/isar_provider.dart";
 import "../user_config.dart";
 import "../utils/batch_operation.dart";
 import "core_providers.dart";

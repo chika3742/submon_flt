@@ -1,12 +1,6 @@
-import "package:cloud_firestore/cloud_firestore.dart";
 import "package:flutter/material.dart";
 import "package:isar_community/isar.dart";
 
-import "../db/firestore_provider.dart";
-import "../src/pigeons.g.dart";
-import "../utils/types.dart";
-import "isar_digestive.dart";
-import "isar_provider.dart";
 
 part "isar_submission.g.dart";
 
@@ -89,109 +83,5 @@ extension RepeatToLocaleString on Repeat {
       case Repeat.monthly:
         return "毎月";
     }
-  }
-}
-
-@Deprecated("Use SubmissionRepository via submissionRepositoryProvider instead")
-class SubmissionProvider extends IsarProvider<Submission> {
-  @override
-  Future<void> use(
-      Future<void> Function(SubmissionProvider provider) callback) async {
-    await open();
-    try {
-      await callback(this);
-    } catch (e, st) {
-      debugPrint(e.toString());
-      debugPrint(st.toString());
-      rethrow;
-    }
-  }
-
-  Future<List<Submission>> getUndoneSubmissions() {
-    return this.collection
-        .filter()
-        .doneEqualTo(false)
-        .sortByImportantDesc()
-        .thenByDue()
-        .findAll();
-  }
-
-  Future<List<Submission>> getDoneSubmissions() {
-    return this.collection.filter().doneEqualTo(true).sortByDueDesc().findAll();
-  }
-
-  Future<void> invertDone(Submission data) {
-    return put(data..done = !data.done);
-  }
-
-  @Deprecated("Use deleteItem")
-  @override
-  Future<void> delete(int id) async {
-    await super.delete(id);
-  }
-
-  ///
-  /// Do not wrap with [writeTransaction].
-  /// Invoking return function will restore deleted item.
-  ///
-  Future<Restorable> deleteItem(int id) async {
-    final submission = await get(id);
-    if (submission == null) {
-      return () async {};
-    }
-
-    await writeTransaction(() async {
-      // ignore: deprecated_member_use_from_same_package
-      await delete(id);
-    });
-    List<Digestive> digestivesToRestore = [];
-    await DigestiveProvider().use((provider) async {
-      digestivesToRestore = await provider.deleteBySubmissionId(id);
-    });
-
-    return () async {
-      await writeTransaction(() async {
-        await put(submission);
-      });
-      await DigestiveProvider().use((provider) async {
-        for (final digestive in digestivesToRestore) {
-          await provider.writeTransaction(() async {
-            await provider.put(digestive);
-          });
-        }
-      });
-    };
-  }
-
-  // static void deleteFromGoogleTasks(String? taskId) {
-  //   if (taskId != null) {
-  //     googleSignIn.authenticatedClient().then((client) async {
-  //       if (client != null) {
-  //         final tasksApi = tasks.TasksApi(client);
-  //
-  //         final tasklist =
-  //             (await tasksApi.tasklists.list(maxResults: 1)).items?.firstOrNull;
-  //         if (tasklist != null) {
-  //           tasksApi.tasks.delete(tasklist.id!, taskId);
-  //         }
-  //       }
-  //     });
-  //   }
-  // }
-
-  @override
-  Future<void> setFirestore(Submission data, int id) {
-    return FirestoreProvider.submission
-        .set(id.toString(), data.toMap(), SetOptions(merge: true));
-  }
-
-  @override
-  Future<void> deleteFirestore(int id) {
-    return FirestoreProvider.submission.delete(id.toString());
-  }
-
-  @override
-  void firestoreUpdated() {
-    GeneralApi().updateWidgets();
   }
 }

@@ -3,7 +3,6 @@ import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../core/pref_key.dart";
 import "../isar_db/isar_digestive.dart";
-import "../isar_db/isar_provider.dart";
 import "../isar_db/isar_submission.dart";
 import "../isar_db/isar_timetable.dart";
 import "../isar_db/isar_timetable_class_time.dart";

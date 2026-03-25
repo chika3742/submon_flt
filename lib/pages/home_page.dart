@@ -16,8 +16,8 @@ import "../core/pref_key.dart";
 import "../events.dart";
 import "../fade_through_page_route.dart";
 import "../isar_db/isar_digestive.dart";
-import "../isar_db/isar_provider.dart";
 import "../main.dart";
+import "../providers/core_providers.dart";
 import "../providers/data_sync_service.dart";
 import "../providers/digestive_providers.dart";
 import "../providers/firestore_providers.dart";
@@ -134,7 +134,7 @@ class HomePageState extends ConsumerState<HomePage> {
 
     switchBottomNavListener = eventBus.on<SwitchBottomNav>().listen((event) {
       Timer.periodic(const Duration(milliseconds: 25), (timer) {
-        if (_navigatorKey.currentState != null && IsarProvider.opening == false) {
+        if (_navigatorKey.currentState != null && ref.read(isarProvider).hasValue) {
           final showTimetable = ref.readPref(PrefKey.showTimetableMenu);
           final paths = [
             "home",

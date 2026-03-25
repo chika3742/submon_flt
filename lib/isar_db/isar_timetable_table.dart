@@ -1,7 +1,4 @@
-import "package:cloud_firestore/cloud_firestore.dart";
 import "package:isar_community/isar.dart";
-import "../db/firestore_provider.dart";
-import "isar_provider.dart";
 
 part "isar_timetable_table.g.dart";
 
@@ -23,30 +20,5 @@ class TimetableTable {
       "id": id,
       "title": title,
     };
-  }
-}
-
-@Deprecated("Use TimetableTableRepository with timetableTableRepositoryProvider instead.")
-class TimetableTableProvider extends IsarProvider<TimetableTable> {
-  @override
-  Future<void> setFirestore(TimetableTable data, int id) {
-    return FirestoreProvider.timetable.set(
-        id.toString(),
-        {
-          "title": data.title,
-        },
-        SetOptions(merge: true));
-  }
-
-  @override
-  Future<void> deleteFirestore(int id) {
-    return FirestoreProvider.timetable.delete(id.toString());
-  }
-
-  @override
-  Future<void> use(
-      Future<void> Function(TimetableTableProvider provider) callback) async {
-    await open();
-    await callback(this);
   }
 }

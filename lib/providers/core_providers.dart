@@ -22,6 +22,8 @@ import "../src/pigeons.g.dart";
 
 part "core_providers.g.dart";
 
+const schemaVersion = 7;
+
 @riverpod
 Future<Isar> isar(Ref ref) async {
   final dir = await getApplicationSupportDirectory();
