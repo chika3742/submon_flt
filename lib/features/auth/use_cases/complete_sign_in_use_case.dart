@@ -70,6 +70,11 @@ class CompleteSignInUseCase {
       }
     }
 
+
+    if (signUpNeeded) {
+      await _userConfigUpdater.initializeUser();
+    }
+
     // Clear the last changed timestamp to force fetching the latest user data
     // from Firestore.
     _firestoreLastChangedPref.update(null);
@@ -89,10 +94,6 @@ class CompleteSignInUseCase {
     if (userConfig case final userConfig?) {
       final requestResult = await _requestNotificationPermissionIfNeeded(userConfig);
       permissionDenied = requestResult == NotificationPermissionState.denied;
-    }
-
-    if (signUpNeeded) {
-      await _userConfigUpdater.initializeUser();
     }
 
     return CompleteSignInResult(
