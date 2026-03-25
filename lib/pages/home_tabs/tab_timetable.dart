@@ -18,23 +18,20 @@ class TabTimetable extends ConsumerWidget {
     // テーブルTipsの表示 (初回のみ)
     if (ref.watchPref(PrefKey.isTimetableInsertedOnce) &&
         !ref.watchPref(PrefKey.isTimetableTipsDisplayed)) {
-      ref.updatePref(PrefKey.isTimetableTipsDisplayed, true);
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        final ctx = Application.globalKey.currentContext;
-        if (ctx != null) {
-          showMaterialBanner(
-            ctx,
-            content: const Text("科目を長押しで、その科目の提出物を作成できます。"),
-            actions: [
-              TextButton(
-                child: const Text("閉じる"),
-                onPressed: () {
-                  hideMaterialBanner(ctx);
-                },
-              ),
-            ],
-          );
-        }
+        ref.updatePref(PrefKey.isTimetableTipsDisplayed, true);
+        showMaterialBanner(
+          context,
+          content: const Text("科目を長押しで、その科目の提出物を作成できます。"),
+          actions: [
+            TextButton(
+              child: const Text("閉じる"),
+              onPressed: () {
+                hideMaterialBanner(context);
+              },
+            ),
+          ],
+        );
       });
     }
 
