@@ -17,7 +17,7 @@ part "data_sync_service.g.dart";
 /// Firestore → Isar のデータ同期を行うサービス。Stateは同期状態を表す。
 ///
 /// 旧 `FirestoreProvider.fetchData` / `checkMigration` / `_migrate` を置き換える。
-@riverpod
+@Riverpod(keepAlive: true)
 class DataSyncService extends _$DataSyncService {
   @override
   Future<void> build() async {}
