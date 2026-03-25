@@ -58,9 +58,6 @@ BuildContext? get globalContext => Application.globalKey.currentContext;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // load .env
-  await dotenv.load();
-
   // Initialize Firebase
   await Firebase.initializeApp();
   FlutterError.onError =
@@ -69,6 +66,9 @@ void main() async {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;
   };
+
+  // load .env
+  await dotenv.load();
 
   // Initialize SharedPreferences
   final prefs = await SharedPreferencesWithCache.create(
