@@ -185,11 +185,11 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
-  Future<void> signIn(AuthCredential credential) {
+  Future<void> signIn(AuthCredential credential) async {
     try {
-      return _auth.signInWithCredential(credential);
+      await _auth.signInWithCredential(credential);
     } on FirebaseAuthException catch (e, st) {
-      _crashlytics.recordError(e, st, reason: "Sign-in failed with credential: $credential");
+      _recordErrorIfUnexpected(e, st);
       throw AuthException(AuthErrorCode.fromFirebaseAuthErrorCode(e.code));
     }
   }
