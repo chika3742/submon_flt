@@ -42,7 +42,7 @@ final class SignInStateNotifierProvider
 }
 
 String _$signInStateNotifierHash() =>
-    r'663f8e22b1ddeb0f1dfc2f42f7b3fb69afccd5f6';
+    r'cc469e07888f1af1097ff35ca48699f8e76bfeba';
 
 abstract class _$SignInStateNotifier extends $Notifier<SignInState> {
   SignInState build();

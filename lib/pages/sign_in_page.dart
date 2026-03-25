@@ -163,6 +163,8 @@ class _SignInPageState extends ConsumerState<SignInPage> {
         Navigator.of(context).pop(true);
       case SignInStateReAuthSucceeded():
         Navigator.of(context).pop(true);
+      case SignInStateReAuthCanceled():
+        Navigator.of(context).pop(false);
       case SignInStateWaitingForPasswordSignIn():
         final result = await Navigator.pushNamed(
           context,

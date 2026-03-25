@@ -56,6 +56,7 @@ extension SignInStatePatterns on SignInState {
     TResult Function(SignInStateSignInSucceeded value)? signInSucceeded,
     TResult Function(SignInStateUpgradeSucceeded value)? upgradeSucceeded,
     TResult Function(SignInStateReAuthSucceeded value)? reAuthSucceeded,
+    TResult Function(SignInStateReAuthCanceled value)? reAuthCanceled,
     TResult Function(SignInStateWaitingForPasswordSignIn value)?
         waitingForPasswordSignIn,
     TResult Function(SignInStateWaitingForEmailLinkDialog value)?
@@ -79,6 +80,8 @@ extension SignInStatePatterns on SignInState {
         return upgradeSucceeded(_that);
       case SignInStateReAuthSucceeded() when reAuthSucceeded != null:
         return reAuthSucceeded(_that);
+      case SignInStateReAuthCanceled() when reAuthCanceled != null:
+        return reAuthCanceled(_that);
       case SignInStateWaitingForPasswordSignIn()
           when waitingForPasswordSignIn != null:
         return waitingForPasswordSignIn(_that);
@@ -117,6 +120,7 @@ extension SignInStatePatterns on SignInState {
     required TResult Function(SignInStateUpgradeSucceeded value)
         upgradeSucceeded,
     required TResult Function(SignInStateReAuthSucceeded value) reAuthSucceeded,
+    required TResult Function(SignInStateReAuthCanceled value) reAuthCanceled,
     required TResult Function(SignInStateWaitingForPasswordSignIn value)
         waitingForPasswordSignIn,
     required TResult Function(SignInStateWaitingForEmailLinkDialog value)
@@ -139,6 +143,8 @@ extension SignInStatePatterns on SignInState {
         return upgradeSucceeded(_that);
       case SignInStateReAuthSucceeded():
         return reAuthSucceeded(_that);
+      case SignInStateReAuthCanceled():
+        return reAuthCanceled(_that);
       case SignInStateWaitingForPasswordSignIn():
         return waitingForPasswordSignIn(_that);
       case SignInStateWaitingForEmailLinkDialog():
@@ -170,6 +176,7 @@ extension SignInStatePatterns on SignInState {
     TResult? Function(SignInStateSignInSucceeded value)? signInSucceeded,
     TResult? Function(SignInStateUpgradeSucceeded value)? upgradeSucceeded,
     TResult? Function(SignInStateReAuthSucceeded value)? reAuthSucceeded,
+    TResult? Function(SignInStateReAuthCanceled value)? reAuthCanceled,
     TResult? Function(SignInStateWaitingForPasswordSignIn value)?
         waitingForPasswordSignIn,
     TResult? Function(SignInStateWaitingForEmailLinkDialog value)?
@@ -192,6 +199,8 @@ extension SignInStatePatterns on SignInState {
         return upgradeSucceeded(_that);
       case SignInStateReAuthSucceeded() when reAuthSucceeded != null:
         return reAuthSucceeded(_that);
+      case SignInStateReAuthCanceled() when reAuthCanceled != null:
+        return reAuthCanceled(_that);
       case SignInStateWaitingForPasswordSignIn()
           when waitingForPasswordSignIn != null:
         return waitingForPasswordSignIn(_that);
@@ -228,6 +237,7 @@ extension SignInStatePatterns on SignInState {
     TResult Function(CompleteSignInResult completionResult)? signInSucceeded,
     TResult Function()? upgradeSucceeded,
     TResult Function()? reAuthSucceeded,
+    TResult Function()? reAuthCanceled,
     TResult Function()? waitingForPasswordSignIn,
     TResult Function()? waitingForEmailLinkDialog,
     TResult Function()? signInLinkSent,
@@ -248,6 +258,8 @@ extension SignInStatePatterns on SignInState {
         return upgradeSucceeded();
       case SignInStateReAuthSucceeded() when reAuthSucceeded != null:
         return reAuthSucceeded();
+      case SignInStateReAuthCanceled() when reAuthCanceled != null:
+        return reAuthCanceled();
       case SignInStateWaitingForPasswordSignIn()
           when waitingForPasswordSignIn != null:
         return waitingForPasswordSignIn();
@@ -286,6 +298,7 @@ extension SignInStatePatterns on SignInState {
         signInSucceeded,
     required TResult Function() upgradeSucceeded,
     required TResult Function() reAuthSucceeded,
+    required TResult Function() reAuthCanceled,
     required TResult Function() waitingForPasswordSignIn,
     required TResult Function() waitingForEmailLinkDialog,
     required TResult Function() signInLinkSent,
@@ -305,6 +318,8 @@ extension SignInStatePatterns on SignInState {
         return upgradeSucceeded();
       case SignInStateReAuthSucceeded():
         return reAuthSucceeded();
+      case SignInStateReAuthCanceled():
+        return reAuthCanceled();
       case SignInStateWaitingForPasswordSignIn():
         return waitingForPasswordSignIn();
       case SignInStateWaitingForEmailLinkDialog():
@@ -336,6 +351,7 @@ extension SignInStatePatterns on SignInState {
     TResult? Function(CompleteSignInResult completionResult)? signInSucceeded,
     TResult? Function()? upgradeSucceeded,
     TResult? Function()? reAuthSucceeded,
+    TResult? Function()? reAuthCanceled,
     TResult? Function()? waitingForPasswordSignIn,
     TResult? Function()? waitingForEmailLinkDialog,
     TResult? Function()? signInLinkSent,
@@ -355,6 +371,8 @@ extension SignInStatePatterns on SignInState {
         return upgradeSucceeded();
       case SignInStateReAuthSucceeded() when reAuthSucceeded != null:
         return reAuthSucceeded();
+      case SignInStateReAuthCanceled() when reAuthCanceled != null:
+        return reAuthCanceled();
       case SignInStateWaitingForPasswordSignIn()
           when waitingForPasswordSignIn != null:
         return waitingForPasswordSignIn();
@@ -592,6 +610,27 @@ class SignInStateReAuthSucceeded implements SignInState {
   @override
   String toString() {
     return 'SignInState.reAuthSucceeded()';
+  }
+}
+
+/// @nodoc
+
+class SignInStateReAuthCanceled implements SignInState {
+  const SignInStateReAuthCanceled();
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is SignInStateReAuthCanceled);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  String toString() {
+    return 'SignInState.reAuthCanceled()';
   }
 }
 

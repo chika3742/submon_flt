@@ -34,6 +34,8 @@ sealed class SignInState with _$SignInState {
 
   const factory SignInState.reAuthSucceeded() = SignInStateReAuthSucceeded;
 
+  const factory SignInState.reAuthCanceled() = SignInStateReAuthCanceled;
+
   @With<AuthBusyState>()
   const factory SignInState.waitingForPasswordSignIn() =
       SignInStateWaitingForPasswordSignIn;
@@ -161,6 +163,7 @@ class SignInStateNotifier extends _$SignInStateNotifier with NotifierStateGuard 
           throw AuthException(AuthErrorCode.notSignedIn);
         }
 
+        // check the provider of the current user
         final providerId = user.providerData.firstOrNull?.providerId;
         if (providerId == null) {
           final error = AuthException(AuthErrorCode.noLinkedProvider);
@@ -168,6 +171,7 @@ class SignInStateNotifier extends _$SignInStateNotifier with NotifierStateGuard 
           throw error;
         }
 
+        // handle email sign-in
         if (providerId == EmailAuthProvider.PROVIDER_ID) {
           final methods = await ref.read(authRepositoryProvider)
               .fetchSignInMethodsForEmail(user.email!);
@@ -178,6 +182,7 @@ class SignInStateNotifier extends _$SignInStateNotifier with NotifierStateGuard 
           return SignInState.waitingForPasswordSignIn();
         }
 
+        // handle social sign-in
         final AuthProvider provider;
         if (providerId == GoogleAuthProvider.PROVIDER_ID) {
           provider = AuthProvider.google;
@@ -187,8 +192,12 @@ class SignInStateNotifier extends _$SignInStateNotifier with NotifierStateGuard 
           throw AuthException(AuthErrorCode.unknownProvider);
         }
 
-        await ref.read(socialAuthUseCaseProvider).execute(
+        final result = await ref.read(socialAuthUseCaseProvider).execute(
             provider, AuthMode.reauthenticate);
+        if (!result) {
+          return SignInState.reAuthCanceled();
+        }
+
         return const SignInState.reAuthSucceeded();
       },
     );
