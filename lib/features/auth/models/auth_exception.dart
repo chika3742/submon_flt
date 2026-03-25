@@ -27,6 +27,7 @@ enum AuthErrorCode {
   missingContinueUrl("再認証リンクが正しくありません。"),
   weakPassword("パスワードが短すぎます。最低6文字で指定してください。"),
   invalidEmail("メールアドレスの形式が正しくありません。"),
+  requiresRecentLogin("この操作をするには、再ログインが必要です。"),
   expiredActionCode("このURLの有効期限が切れています。もう一度お試しください。"),
   unknown("不明なエラーが発生しました。しばらく待ってからもう一度お試しください。"),
   ;
@@ -51,6 +52,7 @@ enum AuthErrorCode {
       "expired-action-code" => AuthErrorCode.expiredActionCode,
       "weak-password" => AuthErrorCode.weakPassword,
       "invalid-email" => AuthErrorCode.invalidEmail,
+      "requires-recent-login" => AuthErrorCode.requiresRecentLogin,
       _ => AuthErrorCode.unknown,
     };
   }

@@ -74,6 +74,12 @@ abstract interface class AuthRepository {
 
   Future<void> createUserWithEmailAndPassword(String email, String password);
 
+  Future<void> verifyBeforeUpdateEmail(String newEmail);
+
+  Future<void> updateDisplayName(String displayName);
+
+  Future<void> deleteUser();
+
   static AuthCredential createEmailLinkCredential(String email, String emailLink) {
     return EmailAuthProvider.credentialWithLink(
       email: email,
@@ -274,6 +280,56 @@ class AuthRepositoryImpl extends AuthRepository {
         e,
         st,
         reason: "createUserWithEmailAndPassword failed",
+      );
+      throw AuthException(AuthErrorCode.fromFirebaseAuthErrorCode(e.code));
+    }
+  }
+
+  @override
+  Future<void> verifyBeforeUpdateEmail(String newEmail) async {
+    final user = requireUser;
+    try {
+      await user.verifyBeforeUpdateEmail(
+        newEmail,
+        actionCodeSettings(
+          Uri(scheme: "https", host: appDomain).toString(),
+        ),
+      );
+    } on FirebaseAuthException catch (e, st) {
+      await _crashlytics.recordError(
+        e,
+        st,
+        reason: "verifyBeforeUpdateEmail failed",
+      );
+      throw AuthException(AuthErrorCode.fromFirebaseAuthErrorCode(e.code));
+    }
+  }
+
+  @override
+  Future<void> updateDisplayName(String displayName) async {
+    final user = requireUser;
+    try {
+      await user.updateDisplayName(displayName);
+    } on FirebaseAuthException catch (e, st) {
+      await _crashlytics.recordError(
+        e,
+        st,
+        reason: "updateDisplayName failed",
+      );
+      throw AuthException(AuthErrorCode.fromFirebaseAuthErrorCode(e.code));
+    }
+  }
+
+  @override
+  Future<void> deleteUser() async {
+    final user = requireUser;
+    try {
+      await user.delete();
+    } on FirebaseAuthException catch (e, st) {
+      await _crashlytics.recordError(
+        e,
+        st,
+        reason: "deleteUser failed",
       );
       throw AuthException(AuthErrorCode.fromFirebaseAuthErrorCode(e.code));
     }

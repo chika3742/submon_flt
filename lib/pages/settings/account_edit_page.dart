@@ -1,15 +1,16 @@
-import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../features/auth/models/auth_continue_destination.dart";
+import "../../features/auth/models/auth_exception.dart";
+import "../../features/auth/presentation/auth_messages.dart";
+import "../../features/auth/repositories/auth_repository.dart";
 import "../../features/auth/use_cases/common.dart";
-import "../../main.dart";
-import "../../utils/app_links.dart";
+import "../../providers/core_providers.dart";
 import "../../utils/ui.dart";
-import "../../utils/utils.dart";
 import "../sign_in_page.dart";
 
-class AccountEditPage extends StatefulWidget {
+class AccountEditPage extends ConsumerStatefulWidget {
   AccountEditPage(this.type, {super.key, AccountEditPageArguments? args})
       : initialEmail = args?.initialEmail;
 
@@ -23,7 +24,7 @@ class AccountEditPage extends StatefulWidget {
   final EditingType type;
 
   @override
-  State<AccountEditPage> createState() => _AccountEditPageState();
+  ConsumerState<AccountEditPage> createState() => _AccountEditPageState();
 }
 
 class AccountEditPageArguments {
@@ -32,7 +33,7 @@ class AccountEditPageArguments {
   AccountEditPageArguments(this.initialEmail);
 }
 
-class _AccountEditPageState extends State<AccountEditPage> {
+class _AccountEditPageState extends ConsumerState<AccountEditPage> {
   final _form1Controller = TextEditingController();
   String? _form1Error;
   bool _loading = false;
@@ -42,7 +43,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
     super.initState();
     if (widget.type == EditingType.changeDisplayName) {
       _form1Controller.text =
-          FirebaseAuth.instance.currentUser!.displayName ?? "";
+          ref.read(firebaseUserProvider).value?.displayName ?? "";
     }
     if (widget.type == EditingType.changeEmail && widget.initialEmail != null) {
       _form1Controller.text = widget.initialEmail!;
@@ -173,49 +174,48 @@ class _AccountEditPageState extends State<AccountEditPage> {
     });
 
     try {
-      await FirebaseAuth.instance.currentUser!.verifyBeforeUpdateEmail(
-        _form1Controller.text,
-        actionCodeSettings(Uri(
-          scheme: "https",
-          host: appDomain,
-        ).toString()),
-      );
+      await ref
+          .read(authRepositoryProvider)
+          .verifyBeforeUpdateEmail(_form1Controller.text);
 
+      if (!mounted) return;
       showSnackBar(context, "入力されたメールアドレスに確認メールを送信しました。ご確認ください。");
       Navigator.pop(context);
-    } on FirebaseAuthException catch (e, stack) {
+    } on AuthException catch (e) {
+      if (!mounted) return;
       switch (e.code) {
-        case "invalid-email":
-          _form1Error = "メールアドレスの形式が正しくありません";
-          break;
-        case "email-already-in-use":
-          _form1Error = "このメールアドレスは既に使用されています";
-          break;
-        case "requires-recent-login":
-          showSnackBar(context, "この操作をするには、再ログインが必要です。");
-          final result = await Navigator.pushNamed(context, SignInPage.routeName,
-              arguments: SignInPageArguments(
-                AuthMode.reauthenticate,
-                continueUri: AuthContinueDestination.changeEmail(
-                  newEmail: _form1Controller.text,
-                ).toUri(),
-              ));
+        case AuthErrorCode.requiresRecentLogin:
+          showSnackBar(context, e.code.userFriendlyMessage);
+          final result = await Navigator.pushNamed(
+            context,
+            SignInPage.routeName,
+            arguments: SignInPageArguments(
+              AuthMode.reauthenticate,
+              continueUri: AuthContinueDestination.changeEmail(
+                newEmail: _form1Controller.text,
+              ).toUri(),
+            ),
+          );
           if (result == true) {
             await changeEmail();
           } else {
-            Navigator.pop(context);
+            if (mounted) Navigator.pop(context);
           }
-          break;
+        case AuthErrorCode.invalidEmail:
+        case AuthErrorCode.emailAlreadyInUse:
+          _form1Error = e.code.userFriendlyMessage;
         default:
-          handleAuthError(e, stack, context);
+          showSnackBar(context, authErrorMessage(e));
       }
-    } catch (e, stack) {
-      showSnackBar(context, "エラーが発生しました");
-      recordErrorToCrashlytics(e, stack);
+    } catch (e) {
+      if (!mounted) return;
+      showSnackBar(context, authErrorMessage(e));
     }
-    setState(() {
-      _loading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _loading = false;
+      });
+    }
   }
 
   // Change password
@@ -233,17 +233,22 @@ class _AccountEditPageState extends State<AccountEditPage> {
       _loading = true;
     });
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(
-          email: FirebaseAuth.instance.currentUser!.email!);
+      final email = ref.read(firebaseUserProvider).value?.email;
+      if (email == null) return;
+      await ref.read(authRepositoryProvider).sendPasswordResetLink(email);
 
+      if (!mounted) return;
       showSnackBar(context, "送信しました。ご確認ください。");
       Navigator.pop(context);
-    } on FirebaseAuthException catch (e, stack) {
-      handleAuthError(e, stack, context);
+    } catch (e) {
+      if (!mounted) return;
+      showSnackBar(context, authErrorMessage(e));
     }
-    setState(() {
-      _loading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _loading = false;
+      });
+    }
   }
 
   // Change display name
@@ -277,17 +282,22 @@ class _AccountEditPageState extends State<AccountEditPage> {
     });
 
     try {
-      await FirebaseAuth.instance.currentUser!
+      await ref
+          .read(authRepositoryProvider)
           .updateDisplayName(_form1Controller.text);
+      if (!mounted) return;
       Navigator.pop(context);
       showSnackBar(context, "変更しました");
-    } on FirebaseAuthException catch (e, stack) {
-      handleAuthError(e, stack, context);
+    } catch (e) {
+      if (!mounted) return;
+      showSnackBar(context, authErrorMessage(e));
     }
 
-    setState(() {
-      _loading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _loading = false;
+      });
+    }
   }
 
   // Delete
@@ -311,23 +321,27 @@ class _AccountEditPageState extends State<AccountEditPage> {
         setState(() {
           _loading = true;
         });
-        await executeAccountDeletion();
-        setState(() {
-          _loading = false;
-        });
+        await _executeAccountDeletion();
+        if (mounted) {
+          setState(() {
+            _loading = false;
+          });
+        }
       },
       showCancel: true,
     );
   }
 
-  Future<void> executeAccountDeletion() async {
+  Future<void> _executeAccountDeletion() async {
     try {
-      await FirebaseAuth.instance.currentUser!.delete();
+      await ref.read(authRepositoryProvider).deleteUser();
 
-      showSnackBar(globalContext!, "アカウントを削除しました。");
-      backToWelcomePage(globalContext!);
-    } on FirebaseAuthException catch (e, stack) {
-      if (e.code == "requires-recent-login") {
+      if (!mounted) return;
+      showSnackBar(context, "アカウントを削除しました。");
+      backToWelcomePage(context);
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      if (e.code == AuthErrorCode.requiresRecentLogin) {
         showSnackBar(context, "セキュリティのため再ログインが必要です。");
         final result = await Navigator.pushNamed(context, SignInPage.routeName,
             arguments: SignInPageArguments(
@@ -335,14 +349,14 @@ class _AccountEditPageState extends State<AccountEditPage> {
               continueUri: const AuthContinueDestination.deleteAccount().toUri(),
             ));
         if (result == true) {
-          await executeAccountDeletion();
+          await _executeAccountDeletion();
         }
       } else {
-        handleAuthError(e, stack, context);
+        showSnackBar(context, authErrorMessage(e));
       }
-    } catch (e, stack) {
-      showSnackBar(context, "アカウントの削除に失敗しました。");
-      recordErrorToCrashlytics(e, stack);
+    } catch (e) {
+      if (!mounted) return;
+      showSnackBar(context, authErrorMessage(e));
     }
   }
 }
