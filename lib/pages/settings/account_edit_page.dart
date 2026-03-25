@@ -285,6 +285,7 @@ class _AccountEditPageState extends ConsumerState<AccountEditPage> {
       await ref
           .read(authRepositoryProvider)
           .updateDisplayName(_form1Controller.text);
+      ref.invalidate(firebaseUserProvider);
       if (!mounted) return;
       Navigator.pop(context);
       showSnackBar(context, "変更しました");
