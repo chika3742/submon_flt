@@ -41,7 +41,7 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
     if (widget.submissionId != null) {
       final repo = ref.read(submissionRepositoryProvider);
       repo.get(widget.submissionId!).then((data) {
-        if (data == null) return;
+        if (data == null || !mounted) return;
         setState(() {
           _titleController.text = data.title;
           _detailsController.text = data.details;
