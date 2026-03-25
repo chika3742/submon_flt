@@ -150,7 +150,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
         ));
   }
 
-  void _handleStateChange(SignInState next, BuildContext context) {
+  Future<void> _handleStateChange(SignInState next, BuildContext context) async {
     switch (next) {
       case SignInStateSignInSucceeded(:final completionResult):
         showSnackBar(context, signInSuccessMessage(completionResult));
@@ -164,11 +164,15 @@ class _SignInPageState extends ConsumerState<SignInPage> {
       case SignInStateReAuthSucceeded():
         Navigator.of(context).pop(true);
       case SignInStateWaitingForPasswordSignIn():
-        Navigator.pushNamed(
+        final result = await Navigator.pushNamed(
           context,
           EmailSignInPage.routeName,
           arguments: const EmailSignInPageArguments(AuthMode.reauthenticate),
         );
+        if (result != true) {
+          ref.read(signInStateProvider.notifier).cancel();
+          if (context.mounted) Navigator.pop(context);
+        }
       case SignInStateWaitingForEmailLinkDialog():
         showSimpleDialog(
           context,

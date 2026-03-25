@@ -66,6 +66,10 @@ class EmailSignInPageState extends ConsumerState<EmailSignInPage>
         });
       }
 
+      if (next is SignInStateReAuthSucceeded) {
+        Navigator.pop(context, true);
+      }
+
       if (next is SignInStateSignInLinkSent) {
         showSimpleDialog(
             context,
