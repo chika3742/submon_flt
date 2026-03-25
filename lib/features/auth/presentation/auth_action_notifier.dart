@@ -50,6 +50,7 @@ class AuthActionNotifier extends _$AuthActionNotifier
 
     switch (authUrl.queryParameters["mode"]) {
       case "resetPassword":
+      case "recoverEmail":
         launchUrl(authUrl, mode: LaunchMode.externalApplication);
       case "verifyAndChangeEmail":
         final oobCode = authUrl.queryParameters["oobCode"];
