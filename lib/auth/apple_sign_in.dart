@@ -2,12 +2,18 @@ import "dart:async";
 import "dart:convert";
 
 import "package:crypto/crypto.dart";
-import "package:flutter/material.dart";
+import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:sign_in_with_apple/sign_in_with_apple.dart";
 import "../apple_web_auth_options.dart";
+import "../features/auth/models/auth_exception.dart";
 import "../src/pigeons.g.dart";
 
-class AppleSignIn {
+class AppleSignInAndroid {
+  final BrowserApi _browserApi;
+  final FirebaseCrashlytics _crashlytics;
+
+  const AppleSignInAndroid(this._browserApi, this._crashlytics);
+
   static String sha256ofString(String input) {
     final bytes = utf8.encode(input);
     final digest = sha256.convert(bytes);
@@ -33,30 +39,27 @@ class AppleSignIn {
       },
     );
 
-    final resultUri = await BrowserApi().openAuthCustomTab(uri.toString());
+    final resultUri = await _browserApi.openAuthCustomTab(uri.toString());
     if (resultUri == null) {
       return null;
     }
 
-    try {
-      final query = Uri.parse(resultUri).queryParameters;
-      return AuthorizationCredentialAppleID(
-        userIdentifier: null,
-        givenName: null,
-        familyName: null,
-        authorizationCode: query["code"]!,
-        email: null,
-        identityToken: query["id_token"],
-        state: query["state"],
+    final query = Uri.tryParse(resultUri)?.queryParameters;
+    if (query == null) {
+      _crashlytics.recordError(
+        "Failed to parse result URI from Apple Sign-In: $resultUri",
+        StackTrace.current,
       );
-    } on FormatException catch (e, st) {
-      debugPrint("Failed to parse the sign in result URI: ${e.toString()}");
-      debugPrintStack(stackTrace: st);
-      return null;
-    } catch (e, st) {
-      debugPrint("Failed to sign in: ${e.toString()}");
-      debugPrintStack(stackTrace: st);
-      return null;
+      throw AuthException(AuthErrorCode.unknown);
     }
+    return AuthorizationCredentialAppleID(
+      userIdentifier: null,
+      givenName: null,
+      familyName: null,
+      authorizationCode: query["code"]!,
+      email: null,
+      identityToken: query["id_token"],
+      state: query["state"],
+    );
   }
 }

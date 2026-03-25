@@ -96,13 +96,19 @@ FirebaseCrashlytics crashlytics(Ref ref) => FirebaseCrashlytics.instance;
 FirebaseAnalytics analytics(Ref ref) => FirebaseAnalytics.instance;
 
 @Riverpod(keepAlive: true)
-AppleSignIn appleSignIn(Ref ref) => AppleSignIn();
+AppleSignInAndroid appleSignInAndroid(Ref ref) => AppleSignInAndroid(
+  ref.watch(browserApiProvider),
+  ref.watch(crashlyticsProvider),
+);
 
 @Riverpod(keepAlive: true)
 MessagingApi messagingApi(Ref ref) => MessagingApi();
 
 @Riverpod(keepAlive: true)
 GeneralApi generalApi(Ref ref) => GeneralApi();
+
+@Riverpod(keepAlive: true)
+BrowserApi browserApi(Ref ref) => BrowserApi();
 
 @Riverpod(keepAlive: true)
 Stream<User?> firebaseUser(Ref ref) {

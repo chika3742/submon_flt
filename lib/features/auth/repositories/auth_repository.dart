@@ -22,7 +22,7 @@ AuthRepository authRepository(Ref ref) {
     ref.watch(firebaseAuthProvider),
     ref.watch(crashlyticsProvider),
     ref.watch(googleSignInProvider),
-    ref.watch(appleSignInProvider),
+    ref.watch(appleSignInAndroidProvider),
   );
 }
 
@@ -41,13 +41,13 @@ abstract interface class AuthRepository {
   final FirebaseAuth _auth;
   final GoogleSignIn _googleSignIn;
   final FirebaseCrashlytics _crashlytics;
-  final AppleSignIn _appleSignIn;
+  final AppleSignInAndroid _appleSignInAndroid;
 
   const AuthRepository(
     this._auth,
     this._crashlytics,
     this._googleSignIn,
-    this._appleSignIn,
+    this._appleSignInAndroid,
   );
 
   Future<FetchCredentialResult> fetchGoogleCredential();
@@ -93,7 +93,7 @@ class AuthRepositoryImpl extends AuthRepository {
     super._auth,
     super._crashlytics,
     super._googleSignIn,
-    super._appleSignIn,
+    super._appleSignInAndroid,
   );
 
   User get requireUser {
@@ -132,7 +132,7 @@ class AuthRepositoryImpl extends AuthRepository {
   Future<FetchCredentialResult> fetchAppleCredential() async {
     final rawNonce = generateNonce();
     final securityState = generateNonce();
-    final nonce = AppleSignIn.sha256ofString(rawNonce);
+    final nonce = AppleSignInAndroid.sha256ofString(rawNonce);
 
     AuthorizationCredentialAppleID appleCredential;
     if (Platform.isIOS || Platform.isMacOS) {
@@ -154,7 +154,7 @@ class AuthRepositoryImpl extends AuthRepository {
         rethrow;
       }
     } else {
-      final cred = await _appleSignIn.signIn(state: securityState, nonce: nonce);
+      final cred = await _appleSignInAndroid.signIn(state: securityState, nonce: nonce);
       if (cred == null) {
         return FetchCredentialResult.canceled(); // user canceled
       }
