@@ -45,6 +45,7 @@ class DeleteSubmissionUseCase {
       if (submission.googleTasksTaskId != null) {
         final newTask = SaveSubmissionUseCase.createTaskFromSubmission(submission);
         await _tasksRepo?.addTask(newTask);
+        await _repo.update(submission..googleTasksTaskId = newTask.id);
       }
     };
   }

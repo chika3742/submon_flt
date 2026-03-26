@@ -22,14 +22,16 @@ class SaveSubmissionUseCase {
   }) async {
     if (submission.id == null) {
       await _repo.create(submission);
-      if (writeGoogleTasks) {
-        final newTask = createTaskFromSubmission(submission);
-        await _tasksRepo?.addTask(newTask);
-      }
     } else {
       await _repo.update(submission);
-      if (writeGoogleTasks) {
-        final newTask = createTaskFromSubmission(submission);
+    }
+
+    if (writeGoogleTasks) {
+      final newTask = createTaskFromSubmission(submission);
+      if (submission.googleTasksTaskId == null) {
+        final taskId = await _tasksRepo?.addTask(newTask);
+        await _repo.update(submission..googleTasksTaskId = taskId);
+      } else {
         await _tasksRepo?.updateTask(newTask);
       }
     }

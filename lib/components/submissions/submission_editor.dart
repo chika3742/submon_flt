@@ -42,6 +42,7 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
           _titleController.text = data.title;
           _detailsController.text = data.details;
           _submission = data;
+          _writeGoogleTasks = data.googleTasksTaskId != null;
         });
       });
     }
@@ -59,7 +60,9 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
   Widget build(BuildContext context) {
     final authClientSnapshot = ref.watch(tasksAuthProvider);
     final googleTasksAvailabilityLoading = authClientSnapshot is AsyncLoading;
-    final googleTasksAvailable = authClientSnapshot.value != null;
+    final googleTasksAvailable = authClientSnapshot.value != null
+        && (widget.submissionId == null
+        || _submission.googleTasksTaskId == null);
 
     return Stack(
       children: [
@@ -378,6 +381,4 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
           writeGoogleTasks: _writeGoogleTasks,
         );
   }
-
-
 }
