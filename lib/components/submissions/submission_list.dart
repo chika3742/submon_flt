@@ -11,14 +11,24 @@ import "../../utils/ui.dart";
 import "../../utils/utils.dart";
 import "submission_list_item.dart";
 
-class SubmissionList extends ConsumerWidget {
+class SubmissionList extends ConsumerStatefulWidget {
   const SubmissionList({super.key, this.done = false});
 
   final bool done;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final asyncItems = done
+  ConsumerState<SubmissionList> createState() => _SubmissionListState();
+}
+
+class _SubmissionListState extends ConsumerState<SubmissionList> {
+  // Stores a stable UniqueKey per item.id. Cleared on every transition so
+  // the re-entering item always gets a fresh key, avoiding
+  // _MotionBuilderItemGlobalKey conflicts during exit animations.
+  final _itemKeys = <int, Key>{};
+
+  @override
+  Widget build(BuildContext context) {
+    final asyncItems = widget.done
         ? ref.watch(doneSubmissionsProvider)
         : ref.watch(undoneSubmissionsProvider);
 
@@ -50,13 +60,13 @@ class SubmissionList extends ConsumerWidget {
               final item = items[index];
               return SubmissionListItem(
                 item,
-                key: ValueKey(item.id),
-                onDelete: (_) => _delete(context, ref, item),
-                onDone: (_) => _checkDone(context, ref, item),
+                key: _itemKeys.putIfAbsent(item.id!, UniqueKey.new),
+                onDelete: (_) => _delete(context, item),
+                onDone: (_) => _checkDone(context, item),
               );
             },
-            enterTransition: [SlideInUp()],
-            exitTransition: [SlideInUp()],
+            enterTransition: [SlideInUp(curve: Curves.easeOutQuint)],
+            exitTransition: [SlideInUp(curve: Curves.easeInQuint)],
             insertDuration: const Duration(milliseconds: 300),
             removeDuration: const Duration(milliseconds: 300),
           ),
@@ -64,15 +74,20 @@ class SubmissionList extends ConsumerWidget {
     );
   }
 
-  void _checkDone(BuildContext context, WidgetRef ref, Submission item) {
+  void _checkDone(BuildContext context, Submission item) {
     final repo = ref.read(submissionRepositoryProvider);
     repo.invertDone(item);
 
-    showSnackBar(context, !done ? "完了にしました" : "完了を外しました",
+    showSnackBar(context, !widget.done ? "完了にしました" : "完了を外しました",
         action: SnackBarAction(
           label: "元に戻す",
           textColor: Colors.pinkAccent,
           onPressed: () {
+            if (!mounted) return;
+            // Reset key before re-entry so the new widget gets a fresh
+            // UniqueKey, avoiding _MotionBuilderItemGlobalKey conflicts
+            // with any still-running exit animation.
+            setState(() => _itemKeys.remove(item.id));
             repo.invertDone(item);
           },
         ));
@@ -80,7 +95,6 @@ class SubmissionList extends ConsumerWidget {
 
   Future<void> _delete(
     BuildContext context,
-    WidgetRef ref,
     Submission submission,
   ) async {
     try {
@@ -93,6 +107,8 @@ class SubmissionList extends ConsumerWidget {
             label: "元に戻す",
             textColor: Colors.pinkAccent,
             onPressed: () async {
+              if (!mounted) return;
+              setState(() => _itemKeys.remove(submission.id));
               await restore();
             },
           ));
