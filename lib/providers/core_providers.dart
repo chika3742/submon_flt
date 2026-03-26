@@ -1,10 +1,7 @@
-import "package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart";
 import "package:firebase_analytics/firebase_analytics.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:google_sign_in/google_sign_in.dart";
-import "package:googleapis/tasks/v1.dart";
-import "package:googleapis_auth/googleapis_auth.dart";
 import "package:isar_community/isar.dart";
 import "package:path_provider/path_provider.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
@@ -116,28 +113,4 @@ BrowserApi browserApi(Ref ref) => BrowserApi();
 Stream<User?> firebaseUser(Ref ref) {
   final auth = ref.watch(firebaseAuthProvider);
   return auth.authStateChanges();
-}
-
-@Riverpod(keepAlive: true)
-Stream<GoogleSignInAccount?> googleSignedInAccount(Ref ref) async* {
-  final gsi = ref.watch(googleSignInProvider);
-  yield await gsi.attemptLightweightAuthentication();
-  yield* gsi.authenticationEvents.asyncMap((ev) {
-    return switch (ev) {
-      GoogleSignInAuthenticationEventSignIn(:final user) => user,
-      GoogleSignInAuthenticationEventSignOut() => null,
-    };
-  });
-}
-
-/// This provider must be refreshed manually when the authorized scopes changed.
-@riverpod
-Future<AuthClient?> googleAuthenticatedClient(Ref ref) async {
-  const scopes = [TasksApi.tasksScope];
-
-  final user = ref.watch(googleSignedInAccountProvider).value;
-  if (user == null) return null;
-
-  final authorization = await user.authorizationClient.authorizationForScopes(scopes);
-  return authorization?.authClient(scopes: scopes);
 }

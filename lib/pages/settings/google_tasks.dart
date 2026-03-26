@@ -1,10 +1,8 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import "package:google_sign_in/google_sign_in.dart";
-import "package:googleapis/tasks/v1.dart" as tasks;
-import "../../providers/core_providers.dart";
+import "../../features/google_tasks/models/tasks_auth_exception.dart";
+import "../../features/google_tasks/presentation/google_tasks_link_state_notifier.dart";
 import "../../utils/ui.dart";
-import "../../utils/utils.dart";
 
 class GoogleTasksSettingsPage extends ConsumerWidget {
   const GoogleTasksSettingsPage({super.key});
@@ -13,10 +11,24 @@ class GoogleTasksSettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(googleSignedInAccountProvider).value;
-    final client = ref.watch(googleAuthenticatedClientProvider).value;
+    final processState = ref.watch(googleTasksLinkProcessStateProvider);
+    final linkState = ref.watch(connectedGoogleTasksUserProvider);
 
-    final googleTasksAvailable = user != null && client != null;
+    ref.listen(googleTasksLinkProcessStateProvider, (_, next) {
+      switch (next) {
+        case GoogleTasksLinkProcessStateConnected():
+          showSnackBar(context, "Google Tasksとの連携に成功しました。");
+        case GoogleTasksLinkProcessStateDisconnected():
+          showSnackBar(context, "Google Tasksとの連携を解除しました。");
+        case GoogleTasksLinkProcessStateFailed(:final TasksAuthException e):
+          showSnackBar(context, e.code.userFriendlyMessage);
+        case GoogleTasksLinkProcessStateFailed():
+          showSnackBar(context, "Google Tasksとの連携に失敗しました");
+        case GoogleTasksLinkProcessStateIdle():
+        case GoogleTasksLinkProcessStateLoading():
+          // do nothing
+      }
+    });
 
     return SizedBox.expand(
       child: Padding(
@@ -29,9 +41,11 @@ class GoogleTasksSettingsPage extends ConsumerWidget {
                 TextSpan(children: [
                   const TextSpan(text: "連携状態: "),
                   TextSpan(
-                      text: googleTasksAvailable
-                          ? "連携済み (${user.email})"
-                          : "未連携",
+                      text: switch (linkState) {
+                        AsyncLoading() => "読み込み中...",
+                        AsyncData(:final value?) => "連携中 (${value.email})",
+                        _ => "未連携",
+                      },
                       style: const TextStyle(fontWeight: FontWeight.bold)),
                 ]),
                 style: const TextStyle(fontSize: 18),
@@ -42,8 +56,9 @@ class GoogleTasksSettingsPage extends ConsumerWidget {
                 "データの利用方法等についてはプライバシーポリシーをご覧ください。",
                 style: Theme.of(context).textTheme.bodyLarge),
             const SizedBox(height: 16),
-            if (googleTasksAvailable != true)
-              Column(
+            switch ((processState, linkState)) {
+              (GoogleTasksLinkProcessStateLoading(), _) || (_, AsyncLoading()) => const CircularProgressIndicator(),
+              (_, AsyncData(value: null)) => Column(
                 children: [
                   const Text("以下のボタンをタップで連携します。"),
                   const SizedBox(height: 8),
@@ -57,67 +72,27 @@ class GoogleTasksSettingsPage extends ConsumerWidget {
                       padding: EdgeInsets.zero,
                       child: InkWell(
                         onTap: () async {
-                          const scopes = [tasks.TasksApi.tasksScope];
-                          final gsi = GoogleSignIn.instance;
-
-                          try {
-                            // request sign in to user if not yet
-                            if (user == null) {
-                              await gsi.authenticate(scopeHint: scopes);
-                            }
-
-                            // check the scope is granted
-                            if (!await canAccessTasks()) {
-                              await gsi.authorizationClient.authorizeScopes(scopes);
-                            }
-
-                            ref.invalidate(googleAuthenticatedClientProvider);
-                            if (context.mounted) {
-                              showSnackBar(context, "Google Tasksと連携しました。");
-                            }
-                          } on GoogleSignInException catch (e, st) {
-                            switch (e.code) {
-                              case GoogleSignInExceptionCode.canceled:
-                                // canceled by user
-                                return;
-                              default:
-                                showSnackBar(context, "エラーが発生しました。");
-                                recordErrorToCrashlytics(e, st);
-                                return;
-                            }
-                          }
-                        },
-                      ),
+                            ref.read(googleTasksLinkProcessStateProvider.notifier)
+                                .connect();
+                          },
+                        ),
                     ),
                   ),
                 ],
-              )
-            else
-              Column(
+              ),
+              _ => Column(
                 children: [
                   OutlinedButton(
                     child: const Text("連携を解除する"),
                     onPressed: () async {
-                      try {
-                        showLoadingModal(context);
-
-                        await GoogleSignIn.instance.disconnect();
-
-                        if (context.mounted) {
-                          showSnackBar(context, "連携を解除しました。");
-                        }
-                      } catch (e, stack) {
-                        showSnackBar(context, "エラーが発生しました。");
-                        recordErrorToCrashlytics(e, stack);
-                      } finally {
-                        Navigator.pop(context);
-                      }
+                      ref.read(googleTasksLinkProcessStateProvider.notifier).disconnect();
                     },
                   ),
                   const SizedBox(height: 16),
                   const Text("※SubmonにGoogleログインを利用している場合、ログイン時に自動的に連携されます。"),
                 ],
               ),
+            },
           ],
         ),
       ),
