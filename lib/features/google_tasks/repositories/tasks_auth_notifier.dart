@@ -11,7 +11,9 @@ import "../models/tasks_auth_exception.dart";
 
 part "tasks_auth_notifier.g.dart";
 
-@riverpod
+Duration? noRetry(int retryCount, Object error) => null;
+
+@Riverpod(retry: noRetry)
 class TasksAuthNotifier extends _$TasksAuthNotifier {
   static const scopes = [TasksApi.tasksScope];
 

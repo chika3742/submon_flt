@@ -18,7 +18,7 @@ final class TasksAuthNotifierProvider
       : super(
           from: null,
           argument: null,
-          retry: null,
+          retry: noRetry,
           name: r'tasksAuthProvider',
           isAutoDispose: true,
           dependencies: null,
@@ -33,7 +33,7 @@ final class TasksAuthNotifierProvider
   TasksAuthNotifier create() => TasksAuthNotifier();
 }
 
-String _$tasksAuthNotifierHash() => r'463f4b132c6e4bfe6f9a8b28bd778372f62275d1';
+String _$tasksAuthNotifierHash() => r'96e778cc3c96db2c410b415e073ea0bda76750a2';
 
 abstract class _$TasksAuthNotifier extends $AsyncNotifier<AuthClient?> {
   FutureOr<AuthClient?> build();
