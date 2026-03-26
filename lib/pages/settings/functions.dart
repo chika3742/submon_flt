@@ -111,8 +111,6 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
                     ),
                   );
 
-                  print(result);
-
                   if (result != null) {
                     setState(() {
                       _loadingReminderTime = true;
