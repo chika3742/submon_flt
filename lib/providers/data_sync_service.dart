@@ -1,3 +1,5 @@
+import "dart:core";
+
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
@@ -9,6 +11,7 @@ import "../isar_db/isar_timetable_class_time.dart";
 import "../isar_db/isar_timetable_table.dart";
 import "../user_config.dart";
 import "../utils/batch_operation.dart";
+import "../utils/notifier_state_guard.dart";
 import "core_providers.dart";
 import "firestore_providers.dart";
 
@@ -18,18 +21,25 @@ part "data_sync_service.g.dart";
 ///
 /// 旧 `FirestoreProvider.fetchData` / `checkMigration` / `_migrate` を置き換える。
 @Riverpod(keepAlive: true)
-class DataSyncService extends _$DataSyncService {
+class DataSyncService extends _$DataSyncService with NotifierStateGuard {
   @override
   Future<void> build() async {}
 
-  /// Firestore からデータを取得し、ローカル (Isar) を全件更新する。
-  Future<void> fetchData({bool force = false}) async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() => _doFetchData(force: force));
+  @override
+  AsyncValue<void> getErrorState(Object error, StackTrace st) {
+    return AsyncValue.error(error, st);
   }
 
-  Future<void> _doFetchData({required bool force}) async {
-    if (ref.read(userDocProvider) == null) return;
+  /// Firestore からデータを取得し、ローカル (Isar) を全件更新する。
+  void fetchData({bool force = false}) {
+    guard(
+      AsyncValue.loading(),
+      () => _doFetchData(force: force),
+    );
+  }
+
+  Future<AsyncValue> _doFetchData({required bool force}) async {
+    if (ref.read(userDocProvider) == null) return const AsyncValue.data(null);
 
     var shouldUpdate = await _runMigrationIfNeeded();
 
@@ -116,6 +126,10 @@ class DataSyncService extends _$DataSyncService {
         timetableConfig!.periodCountToDisplay!,
       );
     }
+
+    await ref.read(firestoreUserConfigProvider.notifier).setLastAppOpened();
+
+    return const AsyncValue.data(null);
   }
 
   /// マイグレーションが必要か確認し、必要なら実行する。

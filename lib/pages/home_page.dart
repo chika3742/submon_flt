@@ -20,7 +20,6 @@ import "../main.dart";
 import "../providers/core_providers.dart";
 import "../providers/data_sync_service.dart";
 import "../providers/digestive_providers.dart";
-import "../providers/firestore_providers.dart";
 import "../src/pigeons.g.dart";
 import "../ui_components/hidable_progress_indicator.dart";
 import "../utils/ad_unit_ids.dart";
@@ -153,7 +152,9 @@ class HomePageState extends ConsumerState<HomePage> {
       });
     });
 
-    Future(fetchData);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(dataSyncServiceProvider.notifier).fetchData();
+    });
   }
 
   @override
@@ -169,6 +170,14 @@ class HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     final showTimetableMenu = ref.watchPref(PrefKey.showTimetableMenu);
+
+    final dataSyncState = ref.watch(dataSyncServiceProvider);
+
+    ref.listen(dataSyncServiceProvider, (_, next) {
+      if (next is AsyncError) {
+        _handleSyncError(next.error, next.stackTrace);
+      }
+    });
 
     final bottomNavItems = [
       const BottomNavItem(
@@ -254,7 +263,7 @@ class HomePageState extends ConsumerState<HomePage> {
             ),
           ),
           HidableLinearProgressIndicator(
-            show: ref.watch(dataSyncServiceProvider).isLoading,
+            show: dataSyncState is AsyncLoading,
           ),
         ],
       ),
@@ -368,19 +377,6 @@ class HomePageState extends ConsumerState<HomePage> {
     _navigatorKey.currentState?.pushReplacementNamed(path);
     FirebaseAnalytics.instance
         .logScreenView(screenName: "/tab/$path");
-  }
-
-  Future<void> fetchData() async {
-    final userConfigNotifier =
-        ref.read(firestoreUserConfigProvider.notifier);
-    await ref.read(dataSyncServiceProvider.notifier).fetchData();
-
-    final syncState = ref.read(dataSyncServiceProvider);
-    if (syncState case AsyncError(:final error, :final stackTrace)) {
-      _handleSyncError(error, stackTrace);
-    } else if (mounted) {
-      userConfigNotifier.setLastAppOpened();
-    }
   }
 
   void _handleSyncError(Object error, StackTrace stackTrace) {

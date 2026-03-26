@@ -74,7 +74,7 @@ final firestoreUserConfigProvider = FirestoreUserConfigNotifierProvider._();
 /// `build()` で Firestore ドキュメントの `snapshots()` を購読し、
 /// 各メソッドでの書き込みが自動的に state に反映される。
 final class FirestoreUserConfigNotifierProvider
-    extends $StreamNotifierProvider<FirestoreUserConfigNotifier, UserConfig?> {
+    extends $AsyncNotifierProvider<FirestoreUserConfigNotifier, UserConfig?> {
   /// Firestore 上のユーザー設定 (UserConfig) を管理する StreamNotifier。
   ///
   /// `build()` で Firestore ドキュメントの `snapshots()` を購読し、
@@ -99,7 +99,7 @@ final class FirestoreUserConfigNotifierProvider
 }
 
 String _$firestoreUserConfigNotifierHash() =>
-    r'1e5b45cc4b240ad3a53903f37c46c81fcde9870b';
+    r'7f360b49c61b6ea6a5560b1cc3a2a599ef7950f1';
 
 /// Firestore 上のユーザー設定 (UserConfig) を管理する StreamNotifier。
 ///
@@ -107,8 +107,8 @@ String _$firestoreUserConfigNotifierHash() =>
 /// 各メソッドでの書き込みが自動的に state に反映される。
 
 abstract class _$FirestoreUserConfigNotifier
-    extends $StreamNotifier<UserConfig?> {
-  Stream<UserConfig?> build();
+    extends $AsyncNotifier<UserConfig?> {
+  FutureOr<UserConfig?> build();
   @$mustCallSuper
   @override
   void runBuild() {

@@ -38,30 +38,9 @@ class TabOthers extends ConsumerWidget {
                   title: "今すぐ同期",
                   enabled: !isLoading,
                   leading: const Icon(Icons.sync),
-                  onTap: () async {
-                    await ref
-                        .read(dataSyncServiceProvider.notifier)
+                  onTap: () {
+                    ref.read(dataSyncServiceProvider.notifier)
                         .fetchData(force: true);
-                    final syncState = ref.read(dataSyncServiceProvider);
-                    if (syncState
-                        case AsyncError(
-                          :final FirebaseException error,
-                          :final stackTrace,
-                        )) {
-                      handleFirebaseError(
-                        error,
-                        stackTrace,
-                        context,
-                        "同期に失敗しました。",
-                      );
-                    } else if (syncState
-                        case AsyncError(:final error, :final stackTrace)) {
-                      FirebaseCrashlytics.instance
-                          .recordError(error, stackTrace);
-                      if (context.mounted) {
-                        showSnackBar(context, "同期に失敗しました。");
-                      }
-                    }
                   },
                 ),
                 SettingsTile(
@@ -149,7 +128,7 @@ class TabOthers extends ConsumerWidget {
             ],
           ),
         ),
-        HidableLinearProgressIndicator(show: isLoading),
+        // HidableLinearProgressIndicator(show: isLoading),
       ],
     );
   }
