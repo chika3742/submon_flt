@@ -1,8 +1,6 @@
 import "dart:io";
 
 import "package:device_info_plus/device_info_plus.dart";
-import "package:firebase_core/firebase_core.dart";
-import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:package_info_plus/package_info_plus.dart";
@@ -11,10 +9,7 @@ import "package:url_launcher/url_launcher_string.dart";
 import "../../browser.dart";
 import "../../core/pref_key.dart";
 import "../../providers/data_sync_service.dart";
-import "../../ui_components/hidable_progress_indicator.dart";
 import "../../ui_components/settings_ui.dart";
-import "../../utils/ui.dart";
-import "../../utils/utils.dart";
 import "../done_submissions_page.dart";
 import "../settings/customize.dart";
 import "../settings/functions.dart";
