@@ -28,9 +28,14 @@ class SubmissionListItem extends StatefulWidget {
 
 class SubmissionListItemState extends State<SubmissionListItem> {
   var _weekView = true;
+  var _dismissed = false;
 
   @override
   Widget build(BuildContext context) {
+    if (_dismissed) {
+      return const SizedBox.shrink();
+    }
+
     final item = widget.item;
     return Dismissible(
       key: ObjectKey(item.id),
@@ -55,6 +60,9 @@ class SubmissionListItemState extends State<SubmissionListItem> {
         ),
       ),
       onDismissed: (direction) async {
+        setState(() {
+          _dismissed = true;
+        });
         if (direction == DismissDirection.startToEnd) {
           widget.onDone?.call(false);
           AnalyticsHelper.logMarkedAsDone(item.done, "swipe");

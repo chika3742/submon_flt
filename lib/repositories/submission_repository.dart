@@ -72,8 +72,6 @@ class SubmissionRepository extends SyncedRepository<Submission> {
     };
   }
 
-  // --- Google Tasks (private) ---
-
   /// Google Tasks にタスクを追加/更新し、[data] の [googleTasksTaskId] を保存する。
   /// 未認証の場合は [GoogleTasksException] をスローする。
   Future<void> addToGoogleTasks(Submission data) async {
