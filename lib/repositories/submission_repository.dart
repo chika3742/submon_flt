@@ -5,6 +5,7 @@ import "package:isar_community/isar.dart";
 
 import "../isar_db/isar_submission.dart";
 import "../src/pigeons.g.dart";
+import "../utils/google_tasks.dart";
 import "../utils/types.dart";
 import "digestive_repository.dart";
 import "synced_repository.dart";
@@ -73,8 +74,22 @@ class SubmissionRepository extends SyncedRepository<Submission> {
 
   // --- Google Tasks (private) ---
 
+  /// Google Tasks にタスクを追加/更新し、[data] の [googleTasksTaskId] を保存する。
+  /// 未認証の場合は [GoogleTasksException] をスローする。
+  Future<void> addToGoogleTasks(Submission data) async {
+    if (_authClient == null) {
+      throw const GoogleTasksException(GoogleTasksError.failedToAuthenticate);
+    }
+    final taskId = await GoogleTasksHelper.addTask(_authClient, data);
+    if (taskId != null && data.googleTasksTaskId == null) {
+      await update(data..googleTasksTaskId = taskId);
+    }
+  }
+
   Future<void> _deleteFromGoogleTasks(String taskId) async {
-    if (_authClient == null) return;
+    if (_authClient == null) {
+      throw const GoogleTasksException(GoogleTasksError.failedToAuthenticate);
+    }
 
     final tasksApi = tasks.TasksApi(_authClient);
     final tasklist =

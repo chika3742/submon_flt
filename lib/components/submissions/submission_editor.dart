@@ -6,7 +6,6 @@ import "package:intl/intl.dart";
 import "../../core/pref_key.dart";
 import "../../isar_db/isar_submission.dart";
 import "../../main.dart";
-import "../../providers/core_providers.dart";
 import "../../providers/submission_providers.dart";
 import "../../ui_components/tappable_card.dart";
 import "../../utils/google_tasks.dart";
@@ -309,7 +308,14 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
     }
 
     if (_writeGoogleTasks && _googleTasksAvailable == true) {
-      addToGoogleTasks(_submission);
+      try {
+        await ref.read(submissionRepositoryProvider).addToGoogleTasks(_submission);
+      } on GoogleTasksException catch (e) {
+        if (mounted) showSnackBar(context, e.toString());
+      } catch (e, st) {
+        recordErrorToCrashlytics(e, st);
+        if (mounted) showSnackBar(context, "Google Tasksへの追加に失敗しました。");
+      }
     }
 
     // If created new
@@ -392,25 +398,5 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
     if (mounted) Navigator.of(context, rootNavigator: true).maybePop(_submission.id);
   }
 
-
-  Future<void> addToGoogleTasks(Submission data) async {
-    try {
-      final client = await ref.read(googleAuthenticatedClientProvider.future);
-      if (client == null) {
-        if (mounted) showSnackBar(context, "Googleアカウントにログインしてください。");
-        return;
-      }
-      final taskId = await GoogleTasksHelper.addTask(client, data);
-      if (taskId != null && data.googleTasksTaskId == null) {
-        final repo = ref.read(submissionRepositoryProvider);
-        await repo.update(data..googleTasksTaskId = taskId);
-      }
-    } on GoogleTasksException catch (e) {
-      if (mounted) showSnackBar(context, e.toString());
-    } catch (e, st) {
-      recordErrorToCrashlytics(e, st);
-      if (mounted) showSnackBar(context, "Google Tasksへの追加に失敗しました。");
-    }
-  }
 
 }

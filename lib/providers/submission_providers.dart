@@ -9,7 +9,7 @@ import "firestore_providers.dart";
 
 part "submission_providers.g.dart";
 
-@riverpod
+@Riverpod(keepAlive: true)
 SubmissionRepository submissionRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
   final firestore = ref.watch(firestoreCollectionProvider("submission").notifier);

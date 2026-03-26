@@ -13,7 +13,7 @@ class GoogleTasksException implements Exception {
   @override
   String toString() => switch (error) {
         GoogleTasksError.failedToAuthenticate =>
-          "Google Tasksへの追加に失敗しました。(認証に失敗しました。)",
+          "Google Tasksとの連携を行ってください。",
         GoogleTasksError.taskListDoesNotExist =>
           "Google Tasksのタスクリストが存在しません。Tasksアプリでタスクリストを作成してください。",
       };
