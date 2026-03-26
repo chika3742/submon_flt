@@ -35,18 +35,19 @@ class CustomizeSettingsPage extends ConsumerWidget {
               showRoundedBottomSheet(
                 context: context,
                 title: "通知する時間",
-                child: RadioBottomSheet(
+                child: RadioBottomSheet<int>(
                   initialValue: digestiveNotificationTimeBefore,
                   items: [5, 10, 15, 20]
-                      .map((e) => RadioBottomSheetItem(
+                      .map((e) => RadioBottomSheetItem<int>(
                             value: e,
                             title: "$e 分前",
                           ))
                       .toList(),
                   onSelected: (value) {
+                    if (value == null) return;
                     ref
                         .read(firestoreUserConfigProvider.notifier)
-                        .setDigestiveNotificationTimeBefore(value as int);
+                        .setDigestiveNotificationTimeBefore(value);
                   },
                 ),
               );
@@ -92,30 +93,30 @@ class CustomizeSettingsPage extends ConsumerWidget {
   }
 }
 
-class RadioBottomSheet extends StatefulWidget {
+class RadioBottomSheet<T> extends StatefulWidget {
   const RadioBottomSheet(
       {super.key, required this.items, this.initialValue, this.onSelected});
 
-  final List<RadioBottomSheetItem> items;
-  final dynamic initialValue;
-  final void Function(dynamic value)? onSelected;
+  final List<RadioBottomSheetItem<T>> items;
+  final T? initialValue;
+  final void Function(T? value)? onSelected;
 
   @override
-  State<RadioBottomSheet> createState() => _RadioBottomSheetState();
+  State<RadioBottomSheet<T>> createState() => _RadioBottomSheetState<T>();
 }
 
-class _RadioBottomSheetState extends State<RadioBottomSheet> {
-  dynamic selected;
+class _RadioBottomSheetState<T> extends State<RadioBottomSheet<T>> {
+  T? selected;
 
   @override
   void initState() {
-    selected = widget.initialValue;
     super.initState();
+    selected = widget.initialValue;
   }
 
   @override
   Widget build(BuildContext context) {
-    return RadioGroup<dynamic>(
+    return RadioGroup<T>(
       groupValue: selected,
       onChanged: (value) {
         setState(() {
@@ -127,7 +128,7 @@ class _RadioBottomSheetState extends State<RadioBottomSheet> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           ...widget.items
-              .map((e) => RadioListTile<dynamic>(
+              .map((e) => RadioListTile<T>(
                     value: e.value,
                     title: Text(e.title),
                   )),
@@ -148,8 +149,8 @@ class _RadioBottomSheetState extends State<RadioBottomSheet> {
   }
 }
 
-class RadioBottomSheetItem {
-  dynamic value;
+class RadioBottomSheetItem<T> {
+  T value;
   String title;
 
   RadioBottomSheetItem({required this.value, required this.title});

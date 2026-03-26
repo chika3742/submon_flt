@@ -71,7 +71,7 @@ class PrefNotifier<T extends Object?> extends _$PrefNotifier<T> implements PrefA
     final prefs = ref.read(sharedPrefsServiceProvider);
     switch (value) {
       case final String value: prefs.setString(key.key, value);
-      case final int value: prefs.setInt(key.key, value);
+      case final int value: prefs.setInt(key.key, value); print(value);
       case final double value: prefs.setDouble(key.key, value);
       case final bool value: prefs.setBool(key.key, value);
       case final List<String> value: prefs.setStringList(key.key, value);

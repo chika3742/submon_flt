@@ -65,8 +65,7 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final periodCount =
-        ref.watchPref(PrefKey.timetablePeriodCountToDisplay);
+    final periodCount = ref.watchPref(PrefKey.timetablePeriodCountToDisplay);
     final tablesAsync = ref.watch(timetableTablesProvider);
     final classTimesAsync = ref.watch(classTimesProvider);
 
@@ -244,17 +243,17 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
                 showRoundedBottomSheet(
                   context: context,
                   title: "表示する時限数",
-                  child: RadioBottomSheet(
+                  child: RadioBottomSheet<int>(
                     initialValue: periodCount,
                     items: [4, 5, 6, 7, 8].map((e) {
-                      return RadioBottomSheetItem(
+                      return RadioBottomSheetItem<int>(
                         value: e,
                         title: "$e 時限目",
                       );
                     }).toList(),
                     onSelected: (value) {
-                      ref.updatePref(
-                          PrefKey.timetablePeriodCountToDisplay, value);
+                      if (value == null) return;
+                      ref.updatePref(PrefKey.timetablePeriodCountToDisplay, value);
                       ref
                           .read(firestoreUserConfigProvider.notifier)
                           .setTimetablePeriodCountToDisplay(value);

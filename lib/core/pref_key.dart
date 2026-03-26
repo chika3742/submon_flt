@@ -73,7 +73,8 @@ extension RefPrefExtension on Ref {
   T readPref<T extends Object?>(PrefKey<T> key) => read(prefProvider(key));
 
   /// {@template updatePref}
-  /// 指定したプリファレンスキーに対応する値を更新します。
+  /// 指定したプリファレンスキーに対応する値を更新します。更新する値がdynamicであった場合、
+  /// 変更が正しく通知されません。
   /// {@endtemplate}
   void updatePref<T extends Object?>(PrefKey<T> key, T value) =>
       read(prefProvider(key).notifier).update(value);
