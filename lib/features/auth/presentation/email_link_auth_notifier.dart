@@ -57,7 +57,7 @@ class EmailLinkAuthNotifier extends _$EmailLinkAuthNotifier
     return EmailLinkAuthState.failed(error);
   }
 
-  Future<void> _handleUri(Uri url) async {
+  void _handleUri(Uri url) {
     final authUrl = resolveAuthActionUrl(url);
     if (authUrl == null) return;
 
@@ -95,7 +95,7 @@ class EmailLinkAuthNotifier extends _$EmailLinkAuthNotifier
       return;
     }
 
-    await guard(
+    guard(
       const EmailLinkAuthState.processing(),
       () async {
         await ref

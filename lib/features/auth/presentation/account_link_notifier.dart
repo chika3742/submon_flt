@@ -66,8 +66,8 @@ class AccountLinkNotifier extends _$AccountLinkNotifier
     return AccountLinkState.failed(error);
   }
 
-  Future<void> link(AuthProvider provider) {
-    return guard(
+  void link(AuthProvider provider) {
+    guard(
       AccountLinkState.processing(processingProvider: provider),
       () async {
         final result = await ref.read(linkSocialUseCaseProvider)
@@ -85,8 +85,8 @@ class AccountLinkNotifier extends _$AccountLinkNotifier
     );
   }
 
-  Future<void> unlink(AuthProvider provider) {
-    return guard(
+  void unlink(AuthProvider provider) {
+    guard(
       AccountLinkState.processing(processingProvider: provider),
       () async {
         await ref.read(authRepositoryProvider).unlinkProvider(provider);

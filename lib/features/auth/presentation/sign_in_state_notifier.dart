@@ -60,11 +60,11 @@ class SignInStateNotifier extends _$SignInStateNotifier with NotifierStateGuard 
     return SignInState.failed(error);
   }
 
-  Future<void> signInWithProvider(
+  void signInWithProvider(
     AuthProvider provider, {
     AuthMode mode = AuthMode.signIn,
-  }) async {
-    return guard(
+  }) {
+    guard(
       SignInState.busy(),
       () async {
         final signInResult = await ref.read(socialAuthUseCaseProvider)
@@ -82,12 +82,12 @@ class SignInStateNotifier extends _$SignInStateNotifier with NotifierStateGuard 
     );
   }
 
-  Future<void> signInWithEmailPassword(
+  void signInWithEmailPassword(
     String email,
     String password, {
     required AuthMode mode,
-  }) async {
-    return guard(
+  }) {
+    guard(
       SignInState.busy(),
       () async {
         final credential = EmailAuthProvider.credential(
@@ -112,8 +112,8 @@ class SignInStateNotifier extends _$SignInStateNotifier with NotifierStateGuard 
     );
   }
 
-  Future<void> sendSignInEmail(String email, AuthMode mode) {
-    return guard(
+  void sendSignInEmail(String email, AuthMode mode) {
+    guard(
       SignInState.busy(),
       () async {
         final continueUri = "https://$appDomain/auth-action?internalMode=${mode.name}";
@@ -125,8 +125,8 @@ class SignInStateNotifier extends _$SignInStateNotifier with NotifierStateGuard 
     );
   }
 
-  Future<void> sendPasswordResetLink(String email) {
-    return guard(
+  void sendPasswordResetLink(String email) {
+    guard(
       SignInState.busy(),
       () async {
         await ref.read(authRepositoryProvider)
@@ -147,15 +147,15 @@ class SignInStateNotifier extends _$SignInStateNotifier with NotifierStateGuard 
     );
   }
 
-  Future<void> completeCurrentSignIn() {
-    return guard(
+  void completeCurrentSignIn() {
+    guard(
       SignInState.busy(),
       () async => await _completeSignIn(),
     );
   }
 
-  Future<void> reAuth() {
-    return guard(
+  void reAuth() {
+    guard(
       SignInState.busy(),
       () async {
         final user = ref.read(firebaseUserProvider).requireValue;

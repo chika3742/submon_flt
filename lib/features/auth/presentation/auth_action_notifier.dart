@@ -44,7 +44,7 @@ class AuthActionNotifier extends _$AuthActionNotifier
     return AuthActionState.failed(error);
   }
 
-  Future<void> _handleUri(Uri url) async {
+  void _handleUri(Uri url) {
     final authUrl = resolveAuthActionUrl(url);
     if (authUrl == null) return;
 
@@ -61,7 +61,7 @@ class AuthActionNotifier extends _$AuthActionNotifier
           return;
         }
 
-        await guard(
+        guard(
           const AuthActionState.processing(),
               () async {
             await ref.read(authRepositoryProvider).checkActionCode(oobCode);

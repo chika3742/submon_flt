@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:flutter/foundation.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
@@ -6,13 +8,15 @@ mixin NotifierStateGuard<StateT, ValueT> on AnyNotifier<StateT, ValueT> {
   StateT getErrorState(Object error, StackTrace st);
 
   @protected
-  Future<void> guard(StateT initLoading, Future<StateT> Function() action) async {
-    state = initLoading;
-    try {
-      state = await action();
-    } catch (e, st) {
-      state = getErrorState(e, st);
-    }
+  void guard(StateT initLoading, Future<StateT> Function() action) {
+    unawaited(() async {
+      state = initLoading;
+      try {
+        state = await action();
+      } catch (e, st) {
+        state = getErrorState(e, st);
+      }
+    }());
   }
 
   @protected
