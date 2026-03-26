@@ -3,8 +3,7 @@ import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_dotenv/flutter_dotenv.dart";
-import "package:google_sign_in/google_sign_in.dart";
-import "package:googleapis/tasks/v1.dart" as tasks;
+
 import "../browser.dart";
 import "../main.dart";
 import "../pages/submission_create_page.dart";
@@ -73,14 +72,6 @@ void handleFirebaseError(FirebaseException e, StackTrace stackTrace,
       showSnackBar(context, "$message(${e.code})",
           duration: const Duration(seconds: 20));
   }
-}
-
-Future<bool> canAccessTasks() async {
-  final authorization =
-      await GoogleSignIn.instance.authorizationClient.authorizationForScopes(
-    [tasks.TasksApi.tasksScope],
-  );
-  return authorization != null;
 }
 
 void createNewSubmissionForTimetable(

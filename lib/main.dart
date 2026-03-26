@@ -24,6 +24,8 @@ import "events.dart";
 import "features/auth/presentation/auth_action_notifier.dart";
 import "features/auth/presentation/auth_messages.dart";
 import "features/auth/presentation/email_link_auth_notifier.dart";
+import "features/google_tasks/models/tasks_operation_exception.dart";
+import "features/submission/presentation/submission_save_state_notifier.dart";
 import "link_handler/link_handler.dart";
 import "pages/done_submissions_page.dart";
 import "pages/email_registration_page.dart";
@@ -156,6 +158,18 @@ class _ApplicationState extends ConsumerState<Application> {
       _handleAuthActionState(globalContext!, next);
     });
 
+    ref.listen(submissionSaveStateProvider, (_, next) {
+      switch (next.value) {
+        case SubmissionSaveStateFailed(:final error):
+          final message = error is TasksOperationException
+              ? error.toString()
+              : "保存に失敗しました。";
+          showSnackBar(globalContext!, message);
+        case _:
+          break;
+      }
+    });
+
     final textTheme = const TextTheme(
       bodySmall: TextStyle(
         height: 1.2,
@@ -252,7 +266,7 @@ class _ApplicationState extends ConsumerState<Application> {
                 (context) => SubmissionEditPage(args.submissionId), settings);
           case CreateSubmissionPage.routeName:
             final args = settings.arguments as CreateSubmissionPageArguments;
-            return generatePageRoute<int>(
+            return generatePageRoute<void>(
                 (context) => CreateSubmissionPage(
                     initialTitle: args.initialTitle,
                     initialDeadline: args.initialDeadline),

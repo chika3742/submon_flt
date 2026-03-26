@@ -2,6 +2,7 @@ import "package:animated_reorderable_list/animated_reorderable_list.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
+import "../../features/submission/use_cases/delete_submission_use_case.dart";
 import "../../isar_db/isar_submission.dart";
 import "../../main.dart";
 import "../../providers/submission_providers.dart";
@@ -83,8 +84,8 @@ class SubmissionList extends ConsumerWidget {
     Submission submission,
   ) async {
     try {
-      final repo = ref.read(submissionRepositoryProvider);
-      final restore = await repo.deleteItem(submission.id!);
+      final deleteSubmission = ref.read(deleteSubmissionUseCaseProvider);
+      final restore = await deleteSubmission.execute(submission.id!);
 
       if (!context.mounted) return;
       showSnackBar(context, "削除しました",

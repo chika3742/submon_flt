@@ -4,13 +4,11 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:intl/intl.dart";
 
 import "../../core/pref_key.dart";
+import "../../features/google_tasks/repositories/tasks_auth_notifier.dart";
+import "../../features/submission/presentation/submission_save_state_notifier.dart";
 import "../../isar_db/isar_submission.dart";
-import "../../main.dart";
 import "../../providers/submission_providers.dart";
 import "../../ui_components/tappable_card.dart";
-import "../../utils/google_tasks.dart";
-import "../../utils/ui.dart";
-import "../../utils/utils.dart";
 import "../color_picker_dialog.dart";
 
 class SubmissionEditor extends ConsumerStatefulWidget {
@@ -31,7 +29,6 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
   final _detailsController = TextEditingController();
   bool _addTime = false;
   bool _writeGoogleTasks = false;
-  bool? _googleTasksAvailable;
   Submission _submission = Submission();
 
   @override
@@ -55,17 +52,15 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
       _submission.due = widget.initialDeadline!;
     }
 
-    canAccessTasks().then((value) {
-      setState(() {
-        _googleTasksAvailable = value;
-      });
-    });
-
     _writeGoogleTasks = ref.readPref(PrefKey.isWriteToGoogleTasksByDefault);
   }
 
   @override
   Widget build(BuildContext context) {
+    final authClientSnapshot = ref.watch(tasksAuthProvider);
+    final googleTasksAvailabilityLoading = authClientSnapshot is AsyncLoading;
+    final googleTasksAvailable = authClientSnapshot.value != null;
+
     return Stack(
       children: [
         Scrollbar(
@@ -175,40 +170,40 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
                     children: [
                       Switch(
                         value: _writeGoogleTasks,
-                        onChanged: _googleTasksAvailable == true
-                            ? (value) {
-                                setState(() {
-                                  _writeGoogleTasks = value;
-                                });
-                              }
-                            : null,
+                        onChanged: googleTasksAvailable ? (value) {
+                          setState(() {
+                            _writeGoogleTasks = value;
+                          });
+                        } : null,
                       ),
                       GestureDetector(
-                        onTap: _googleTasksAvailable == true
-                            ? () {
-                                setState(() {
-                                  _writeGoogleTasks = !_writeGoogleTasks;
-                                });
-                              }
-                            : null,
+                        onTap: googleTasksAvailable ? () {
+                          setState(() {
+                            _writeGoogleTasks = !_writeGoogleTasks;
+                          });
+                        } : null,
                         child: Opacity(
-                          opacity: _googleTasksAvailable == true ? 1 : 0.6,
+                          opacity: switch (googleTasksAvailable) {
+                            true => 1.0,
+                            false => 0.7,
+                          },
                           child: Text(
                             "Google Tasksに提出物を同期",
                             style: TextStyle(
-                              color: _googleTasksAvailable == true
-                                  ? null
-                                  : Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .color!
-                                      .withValues(alpha: 0.7),
+                              color: switch (googleTasksAvailable) {
+                                true => null,
+                                false => Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .color!
+                                    .withValues(alpha: 0.7),
+                              },
                             ),
                           ),
                         ),
                       ),
                       const SizedBox(width: 8),
-                      if (_googleTasksAvailable == null)
+                      if (googleTasksAvailabilityLoading)
                         const SizedBox(
                           height: 25,
                           width: 25,
@@ -300,31 +295,15 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
     _submission
       ..title = _titleController.text
       ..details = _detailsController.text;
-    final repo = ref.read(submissionRepositoryProvider);
-    if (widget.submissionId == null) {
-      _submission.id = await repo.create(_submission);
-    } else {
-      await repo.update(_submission);
-    }
 
-    if (_writeGoogleTasks && _googleTasksAvailable == true) {
-      try {
-        await ref.read(submissionRepositoryProvider).addToGoogleTasks(_submission);
-      } on GoogleTasksException catch (e) {
-        if (mounted) showSnackBar(context, e.toString());
-      } catch (e, st) {
-        recordErrorToCrashlytics(e, st);
-        if (mounted) showSnackBar(context, "Google Tasksへの追加に失敗しました。");
-      }
-    }
+    final isNew = widget.submissionId == null;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final bodyLargeStyle = Theme.of(context).textTheme.bodyLarge;
 
-    // If created new
-    if (widget.submissionId == null) {
-      final globalContext = Application.globalKey.currentContext!;
-
-      // submission tips banner
+    if (isNew) {
+      // submission tips banner (sync, before pop)
       if (!ref.readPref(PrefKey.isSubmissionTipsDisplayed)) {
-        ScaffoldMessenger.of(globalContext).showMaterialBanner(MaterialBanner(
+        scaffoldMessenger.showMaterialBanner(MaterialBanner(
           content: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Text.rich(
@@ -343,59 +322,61 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
                     text: "長押し", style: TextStyle(color: Colors.redAccent)),
                 TextSpan(text: "で、提出物の共有やその他のメニューが表示されます。"),
               ]),
-              style: Theme.of(globalContext).textTheme.bodyLarge,
+              style: bodyLargeStyle,
             ),
           ),
           actions: [
             TextButton(
               child: const Text("閉じる"),
-              onPressed: () {
-                hideMaterialBanner(globalContext);
-              },
+              onPressed: () => scaffoldMessenger.hideCurrentMaterialBanner(),
             ),
           ],
         ));
-
         ref.updatePref(PrefKey.isSubmissionTipsDisplayed, true);
       }
 
-      // google tasks default tips banner
+      // Google Tasks default tips banner (sync, before pop)
       if (!ref.readPref(PrefKey.isWriteToGoogleTasksTipsDisplayed) &&
           _writeGoogleTasks) {
-        showMaterialBanner(
-          globalContext,
+        scaffoldMessenger.showMaterialBanner(MaterialBanner(
           content: Text.rich(
             const TextSpan(children: [
               TextSpan(
                   text:
-                  "今後、「Google Tasksに提出物を同期」をデフォルトにしますか？\n(この設定は「カスタマイズ設定」から変更できます)"),
+                      "今後、「Google Tasksに提出物を同期」をデフォルトにしますか？\n(この設定は「カスタマイズ設定」から変更できます)"),
             ]),
-            style: Theme.of(globalContext).textTheme.bodyLarge,
+            style: bodyLargeStyle,
           ),
           actions: [
             TextButton(
               child: const Text("しない"),
-              onPressed: () {
-                hideMaterialBanner(globalContext);
-              },
+              onPressed: () => scaffoldMessenger.hideCurrentMaterialBanner(),
             ),
             TextButton(
               child: const Text("する"),
               onPressed: () {
-                hideMaterialBanner(globalContext);
+                scaffoldMessenger.hideCurrentMaterialBanner();
                 ref.updatePref(PrefKey.isWriteToGoogleTasksByDefault, true);
               },
             ),
           ],
-        );
-
+        ));
         ref.updatePref(PrefKey.isWriteToGoogleTasksTipsDisplayed, true);
       }
 
       FirebaseAnalytics.instance.logEvent(name: "create_submission");
     }
 
-    if (mounted) Navigator.of(context, rootNavigator: true).maybePop(_submission.id);
+    // Pop before save completes
+    if (context.mounted) {
+      Navigator.of(context, rootNavigator: true).maybePop();
+    }
+
+    // Fire-and-forget save
+    ref.read(submissionSaveStateProvider.notifier).save(
+          _submission,
+          writeGoogleTasks: _writeGoogleTasks,
+        );
   }
 
 
