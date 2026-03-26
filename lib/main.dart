@@ -142,18 +142,18 @@ class _ApplicationState extends ConsumerState<Application> {
   Widget build(BuildContext context) {
     ref.listen(linkEventsProvider, (_, next) {
       if (next case AsyncData(:final value)) {
-        handleLink(context, ref, value.value, onSwitchTab: (tabName) {
+        handleLink(globalContext!, ref, value.value, onSwitchTab: (tabName) {
           eventBus.fire(SwitchBottomNav(tabName));
         });
       }
     });
 
     ref.listen(emailLinkAuthProvider, (_, next) {
-      _handleEmailLinkAuthState(context, next);
+      _handleEmailLinkAuthState(globalContext!, next);
     });
 
     ref.listen(authActionProvider, (_, next) {
-      _handleAuthActionState(context, next);
+      _handleAuthActionState(globalContext!, next);
     });
 
     final textTheme = const TextTheme(
