@@ -1,17 +1,18 @@
 import "package:animations/animations.dart";
-import "package:firebase_analytics/firebase_analytics.dart";
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:intl/intl.dart";
 
-import "../../firebase/analytics.dart";
 import "../../isar_db/isar_submission.dart";
 import "../../main.dart";
 import "../../pages/submission_detail_page.dart";
+import "../../providers/core_providers.dart";
+import "../../utils/analytics.dart";
 import "../../utils/ui.dart";
 import "formatted_date_remaining.dart";
 import "submission_list_item_bottom_sheet.dart";
 
-class SubmissionListItem extends StatefulWidget {
+class SubmissionListItem extends ConsumerStatefulWidget {
   const SubmissionListItem(
     this.item, {
     super.key,
@@ -26,7 +27,7 @@ class SubmissionListItem extends StatefulWidget {
   SubmissionListItemState createState() => SubmissionListItemState();
 }
 
-class SubmissionListItemState extends State<SubmissionListItem> {
+class SubmissionListItemState extends ConsumerState<SubmissionListItem> {
   var _weekView = true;
   var _dismissed = false;
 
@@ -65,7 +66,7 @@ class SubmissionListItemState extends State<SubmissionListItem> {
         });
         if (direction == DismissDirection.startToEnd) {
           widget.onDone?.call(false);
-          AnalyticsHelper.logMarkedAsDone(item.done, "swipe");
+          logMarkedAsDone(ref.read(analyticsProvider), done: item.done, method: "swipe");
         } else if (direction == DismissDirection.endToStart) {
           widget.onDelete?.call(false);
         }
@@ -205,8 +206,10 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                 ),
                 onTap: () {
                   callback();
-                  FirebaseAnalytics.instance
-                      .logSelectItem(itemListName: "submission_list");
+                  ref.read(analyticsProvider)
+                      .logEvent(name: "select_item", parameters: {
+                    "item_list_name": "submission_list",
+                  });
                 },
                 onLongPress: () {
                   showRoundedBottomSheet(

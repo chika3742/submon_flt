@@ -42,10 +42,12 @@ Uri? resolveAuthActionUrl(Uri url) {
 
 /// Creates a submission share link with the given data.
 ///
-/// Returns the document ID of the created link.
-Future<String> createSubmissionShareLink(Map<String, dynamic> data) async {
-  final createShareLink = FirebaseFunctions.instanceFor(region: "asia-northeast1")
-      .httpsCallable("createShareLink");
+/// Returns the URL of the created link.
+Future<String> createSubmissionShareLink(
+  Map<String, dynamic> data, {
+  required FirebaseFunctions functions,
+}) async {
+  final createShareLink = functions.httpsCallable("createShareLink");
   final request = {
     ...data,
     "appChannel": kReleaseMode ? "prod" : "dev",
@@ -54,16 +56,14 @@ Future<String> createSubmissionShareLink(Map<String, dynamic> data) async {
   return result.data["url"];
 }
 
-/// Creates a submission share link with the given data.
-///
-/// Returns the document ID of the created link.
-String createSubmissionLink(int submissionId) {
+/// Creates a submission link for the given submission ID.
+String createSubmissionLink(int submissionId, {required String uid}) {
   final uri = Uri(
     scheme: "https",
     host: appDomain,
     path: "/submissions/$submissionId",
     queryParameters: {
-      "uid": FirebaseAuth.instance.currentUser!.uid,
+      "uid": uid,
     },
   );
   return uri.toString();

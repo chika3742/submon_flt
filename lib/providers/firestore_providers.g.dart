@@ -59,7 +59,7 @@ final class UserDocProvider extends $FunctionalProvider<
   }
 }
 
-String _$userDocHash() => r'639bcd558f0743b7ce8227afaa73e8e9631abc74';
+String _$userDocHash() => r'9942d575aeb5465ad71962a1a36ea35a144250f1';
 
 /// Firestore 上のユーザー設定 (UserConfig) を管理する StreamNotifier。
 ///
@@ -99,7 +99,7 @@ final class FirestoreUserConfigNotifierProvider
 }
 
 String _$firestoreUserConfigNotifierHash() =>
-    r'7f360b49c61b6ea6a5560b1cc3a2a599ef7950f1';
+    r'4324fcf0b2b671a0dbca41211feb82a88f603e8b';
 
 /// Firestore 上のユーザー設定 (UserConfig) を管理する StreamNotifier。
 ///
@@ -198,7 +198,7 @@ final class FirestoreCollectionNotifierProvider
 }
 
 String _$firestoreCollectionNotifierHash() =>
-    r'a2141d746a7d7941a114b74c9adf0dd67ae04887';
+    r'2b2c2a4a3820e1114f986c88e9bd7eb3962f8b2a';
 
 /// Firestore コレクションへの CRUD をラップし、
 /// 書き込み時にタイムスタンプを自動更新する Notifier。

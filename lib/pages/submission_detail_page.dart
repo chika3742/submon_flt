@@ -11,11 +11,11 @@ import "../components/submissions/formatted_date_remaining.dart";
 import "../isar_db/isar_digestive.dart";
 import "../isar_db/isar_submission.dart";
 import "../main.dart";
+import "../providers/core_providers.dart";
 import "../providers/digestive_providers.dart";
 import "../providers/submission_providers.dart";
 import "../utils/ad_unit_ids.dart";
 import "../utils/ui.dart";
-import "../utils/utils.dart";
 import "submission_edit_page.dart";
 
 class SubmissionDetailPage extends ConsumerStatefulWidget {
@@ -45,7 +45,7 @@ class _SubmissionDetailPageState extends ConsumerState<SubmissionDetailPage> {
   void initState() {
     super.initState();
 
-    if (!screenShotMode && isAdEnabled) {
+    if (!screenShotMode && ref.read(isAdEnabledProvider)) {
       _bannerAd = BannerAd(
         adUnitId: AdUnits.submissionDetailBanner!,
         size: AdSize.banner,

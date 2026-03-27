@@ -16,7 +16,8 @@ DigestiveRepository digestiveRepository(Ref ref) {
   final firestore =
       ref.watch(firestoreCollectionProvider("digestive").notifier);
   final userConfig = ref.watch(firestoreUserConfigProvider.notifier);
-  return DigestiveRepository(isar, firestore, userConfig);
+  final crashlytics = ref.watch(crashlyticsProvider);
+  return DigestiveRepository(isar, firestore, crashlytics, userConfig);
 }
 
 @riverpod

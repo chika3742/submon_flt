@@ -1,5 +1,4 @@
 import "package:cloud_firestore/cloud_firestore.dart";
-import "package:cloud_functions/cloud_functions.dart";
 import "package:flutter/material.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
@@ -7,6 +6,7 @@ import "../core/pref_key.dart";
 import "../user_config.dart";
 import "../utils/batch_operation.dart";
 import "core_providers.dart";
+import "functions_service.dart";
 
 part "firestore_providers.g.dart";
 
@@ -16,7 +16,7 @@ part "firestore_providers.g.dart";
 DocumentReference<Map<String, dynamic>>? userDoc(Ref ref) {
   final user = ref.watch(firebaseUserProvider).value;
   if (user == null) return null;
-  return FirebaseFirestore.instance.collection("users").doc(user.uid);
+  return ref.watch(firestoreProvider).collection("users").doc(user.uid);
 }
 
 abstract interface class FirestoreUserConfigUpdater {
@@ -157,9 +157,7 @@ class FirestoreUserConfigNotifier extends _$FirestoreUserConfigNotifier
   /// ユーザーを初期化する (Cloud Functions 経由)。
   @override
   Future<void> initializeUser() async {
-    await FirebaseFunctions.instanceFor(region: "asia-northeast1")
-        .httpsCallable("createUser")
-        .call();
+    await ref.read(functionsServiceProvider).createUser();
     await _userDoc!.set({"schemaVersion": schemaVersion});
     ref.invalidateSelf();
   }
@@ -230,7 +228,7 @@ class FirestoreCollectionNotifier extends _$FirestoreCollectionNotifier {
           ),
         )
         .toList();
-    await BatchOperation.commit(operations);
+    await BatchOperation.commit(operations, firestore: ref.read(firestoreProvider));
     await _updateTimestamp();
   }
 

@@ -1,4 +1,3 @@
-import "package:firebase_analytics/firebase_analytics.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:intl/intl.dart";
@@ -7,6 +6,7 @@ import "../../core/pref_key.dart";
 import "../../features/google_tasks/repositories/tasks_auth_notifier.dart";
 import "../../features/submission/presentation/submission_save_state_notifier.dart";
 import "../../isar_db/isar_submission.dart";
+import "../../providers/core_providers.dart";
 import "../../providers/submission_providers.dart";
 import "../../ui_components/tappable_card.dart";
 import "../color_picker_dialog.dart";
@@ -367,7 +367,7 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
         ref.updatePref(PrefKey.isWriteToGoogleTasksTipsDisplayed, true);
       }
 
-      FirebaseAnalytics.instance.logEvent(name: "create_submission");
+      ref.read(analyticsProvider).logEvent(name: "create_submission");
     }
 
     // Pop before save completes

@@ -1,16 +1,15 @@
 import "dart:io";
 
-import "package:firebase_analytics/firebase_analytics.dart";
-import "package:firebase_auth/firebase_auth.dart";
-import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../browser.dart";
 import "../core/pref_key.dart";
+import "../features/auth/repositories/auth_repository.dart";
 import "../features/auth/use_cases/common.dart";
 import "../main.dart";
+import "../providers/core_providers.dart";
 import "../providers/firestore_providers.dart";
 import "../utils/ui.dart";
 import "home_page.dart";
@@ -87,7 +86,9 @@ class WelcomePage extends ConsumerWidget {
                             showLoadingModal(context);
 
                             try {
-                              await FirebaseAuth.instance.signInAnonymously();
+                              await ref
+                                  .read(authRepositoryProvider)
+                                  .signInAnonymously();
                               await ref
                                   .read(firestoreUserConfigProvider.notifier)
                                   .initializeUser();
@@ -100,7 +101,9 @@ class WelcomePage extends ConsumerWidget {
                             } catch (e, stack) {
                               Navigator.pop(globalContext!);
                               showSnackBar(context, "エラーが発生しました");
-                              FirebaseCrashlytics.instance.recordError(e, stack);
+                              ref
+                                  .read(crashlyticsProvider)
+                                  .recordError(e, stack);
                             }
                           },
                         );
@@ -153,7 +156,8 @@ class WelcomePage extends ConsumerWidget {
                         value: disableStatistics,
                         activeColor: Colors.red,
                         onChanged: (value) {
-                          FirebaseAnalytics.instance
+                          ref
+                              .read(analyticsProvider)
                               .setAnalyticsCollectionEnabled(!value!);
                           ref.updatePref(PrefKey.isAnalyticsEnabled, !value);
                         },

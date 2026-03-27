@@ -51,4 +51,4 @@ final class SaveSubmissionUseCaseProvider extends $FunctionalProvider<
 }
 
 String _$saveSubmissionUseCaseHash() =>
-    r'8dc26ecf66d46bde5839fe47ff1cb342fee6eb8b';
+    r'18f818c20e18356089b3c5fd4a43a5708f210b40';

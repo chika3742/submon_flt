@@ -71,7 +71,7 @@ final class SubmissionShareLinkProvider extends $FunctionalProvider<
 }
 
 String _$submissionShareLinkHash() =>
-    r'e7ff5a7dd6eae44d0bff90b83991b18b8be8a0fb';
+    r'4642cba4b9ade65947e1a309f31667ed54b0e6df';
 
 /// 共有リンクから提出物データを取得する。
 

@@ -1,20 +1,21 @@
 import "package:cloud_firestore/cloud_firestore.dart";
+import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:flutter/material.dart";
 import "package:isar_community/isar.dart";
 
 import "../isar_db/isar_timetable.dart";
 import "../providers/firestore_providers.dart";
-import "../utils/utils.dart";
 
 /// Timetable (セル) のリポジトリ。
 ///
 /// Firestore 上では `timetable/{tableId}` ドキュメント内の `cells` マップに
 /// ネストして保存されるため、[SyncedRepository] は使わず独自に同期する。
 class TimetableRepository {
-  TimetableRepository(this.isar, this.firestore);
+  TimetableRepository(this.isar, this.firestore, this.crashlytics);
 
   final Isar isar;
   final FirestoreCollectionNotifier firestore;
+  final FirebaseCrashlytics crashlytics;
 
   IsarCollection<Timetable> get collection => isar.timetables;
 
@@ -123,7 +124,7 @@ class TimetableRepository {
   void _wrapFirestoreUpdate(Future<void> future) {
     future.catchError((e, st) {
       debugPrint("Firestore sync error: $e");
-      recordErrorToCrashlytics(e, st);
+      crashlytics.recordError(e, st);
     });
   }
 }

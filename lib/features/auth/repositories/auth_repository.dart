@@ -55,6 +55,8 @@ abstract interface class AuthRepository {
 
   Future<void> signIn(AuthCredential credential);
 
+  Future<void> signInAnonymously();
+
   Future<void> reauthenticate(AuthCredential credential);
 
   Future<void> linkWithCredential(AuthCredential credential);
@@ -179,6 +181,16 @@ class AuthRepositoryImpl extends AuthRepository {
   Future<void> signIn(AuthCredential credential) async {
     try {
       await _auth.signInWithCredential(credential);
+    } on FirebaseAuthException catch (e, st) {
+      _recordErrorIfUnexpected(e, st);
+      throw AuthException(AuthErrorCode.fromFirebaseAuthErrorCode(e.code));
+    }
+  }
+
+  @override
+  Future<void> signInAnonymously() async {
+    try {
+      await _auth.signInAnonymously();
     } on FirebaseAuthException catch (e, st) {
       _recordErrorIfUnexpected(e, st);
       throw AuthException(AuthErrorCode.fromFirebaseAuthErrorCode(e.code));

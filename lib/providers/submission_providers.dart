@@ -12,9 +12,11 @@ part "submission_providers.g.dart";
 SubmissionRepository submissionRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
   final firestore = ref.watch(firestoreCollectionProvider("submission").notifier);
+  final crashlytics = ref.watch(crashlyticsProvider);
   return SubmissionRepository(
     isar,
     firestore,
+    crashlytics,
   );
 }
 

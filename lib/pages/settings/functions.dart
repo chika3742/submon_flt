@@ -2,8 +2,10 @@ import "dart:async";
 
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
+import "../../browser.dart";
 import "../../components/dropdown_time_picker_bottom_sheet.dart";
 import "../../features/auth/use_cases/common.dart";
 import "../../features/auth/use_cases/sign_out_use_case.dart";
@@ -54,8 +56,26 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
         _reminderTime = config?.reminderNotificationTime;
       });
     } on FirebaseException catch (e, stackTrace) {
-      handleFirebaseError(
-          e, stackTrace, context, "リマインダー設定の取得に失敗しました。");
+      ref.read(crashlyticsProvider).recordError(e, stackTrace);
+      if (!context.mounted) return;
+      switch (e.code) {
+        case "permission-denied":
+          showFirestoreReadFailedDialog(
+            context,
+            "リマインダー設定の取得に失敗しました。",
+            onSignOut: () async {
+              await ref.read(signOutUseCaseProvider).execute();
+              if (mounted) backToWelcomePage(context);
+            },
+            onShowAnnouncements: () {
+              Browser.openAnnouncements();
+              SystemChannels.platform.invokeMethod("SystemNavigator.pop");
+            },
+          );
+        default:
+          showSnackBar(context, "リマインダー設定の取得に失敗しました。(${e.code})",
+              duration: const Duration(seconds: 20));
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -100,7 +120,7 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
                   showSnackBar(
                       globalContext!, "通知の表示が許可されていません。本体設定から許可してください。");
                 } else {
-                  if (!mounted) return;
+                  if (!context.mounted) return;
 
                   // show time picker for reminder time
                   final result = await showRoundedBottomSheet<TimeOfDay>(
@@ -296,10 +316,10 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
       } else {
         showSnackBar(context, "アカウント状態の取得に失敗しました (Code: ${e.code})");
       }
-      handleAuthError(e, stack, context);
+      ref.read(crashlyticsProvider).recordError(e, stack);
     } catch (e, stack) {
       showSnackBar(context, "エラーが発生しました");
-      recordErrorToCrashlytics(e, stack);
+      ref.read(crashlyticsProvider).recordError(e, stack);
     }
   }
 

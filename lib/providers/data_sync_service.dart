@@ -243,7 +243,7 @@ class DataSyncService extends _$DataSyncService with NotifierStateGuard {
         ));
       }
 
-      await BatchOperation.commit(operations);
+      await BatchOperation.commit(operations, firestore: ref.read(firestoreProvider));
       oldVersion++;
     }
 

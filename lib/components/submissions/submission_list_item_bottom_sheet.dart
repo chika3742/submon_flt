@@ -1,18 +1,17 @@
-import "package:firebase_analytics/firebase_analytics.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:share_plus/share_plus.dart";
 
-import "../../firebase/analytics.dart";
 import "../../isar_db/isar_digestive.dart";
 import "../../isar_db/isar_submission.dart";
 import "../../main.dart";
 import "../../pages/submission_edit_page.dart";
+import "../../providers/core_providers.dart";
 import "../../providers/digestive_providers.dart";
+import "../../providers/functions_service.dart";
 import "../../providers/submission_providers.dart";
-import "../../utils/app_links.dart";
+import "../../utils/analytics.dart";
 import "../../utils/ui.dart";
-import "../../utils/utils.dart";
 import "../digestive_edit_bottom_sheet.dart";
 
 class SubmissionListItemBottomSheet extends ConsumerWidget {
@@ -34,7 +33,7 @@ class SubmissionListItemBottomSheet extends ConsumerWidget {
           title: const Text("共有"),
           onTap: () {
             _handleContextMenuAction(_ContextMenuAction.share, ref);
-            FirebaseAnalytics.instance.logShare(
+            ref.read(analyticsProvider).logShare(
               contentType: "submission",
               itemId: item.id.toString(),
               method: "longPressMenu",
@@ -89,11 +88,9 @@ class SubmissionListItemBottomSheet extends ConsumerWidget {
             return;
           }
 
-          final link = await createSubmissionShareLink({
-            "title": submission.title,
-            "due": submission.due.toUtc().toIso8601String(),
-            if (submission.details.isNotEmpty) "details": submission.details,
-          });
+          final link = await ref.read(functionsServiceProvider).createShareLink(
+            FunctionsService.submissionToShareLinkData(submission),
+          );
           await SharePlus.instance.share(ShareParams(
             text: "提出物「${submission.title}」が共有されました。Submonで開いてみよう！\n"
                 "$link"
@@ -101,7 +98,7 @@ class SubmissionListItemBottomSheet extends ConsumerWidget {
           showSnackBar(globalContext!, "共有リンクの有効期間は7日間です。");
         } catch (error, stackTrace) {
           showSnackBar(globalContext!, "エラーが発生しました。");
-          recordErrorToCrashlytics(error, stackTrace);
+          ref.read(crashlyticsProvider).recordError(error, stackTrace);
         } finally {
           Navigator.of(globalContext!, rootNavigator: true).pop();
         }
@@ -127,7 +124,7 @@ class SubmissionListItemBottomSheet extends ConsumerWidget {
         break;
       case _ContextMenuAction.makeDone:
         onDone?.call(true);
-        AnalyticsHelper.logMarkedAsDone(item.done, "longPressMenu");
+        logMarkedAsDone(ref.read(analyticsProvider), done: item.done, method: "longPressMenu");
         break;
       case _ContextMenuAction.delete:
         onDelete?.call(true);

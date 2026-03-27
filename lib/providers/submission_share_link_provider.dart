@@ -1,6 +1,8 @@
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
+import "core_providers.dart";
+
 part "submission_share_link_provider.g.dart";
 
 class SubmissionShareData {
@@ -27,7 +29,7 @@ class SubmissionShareData {
 @riverpod
 Future<SubmissionShareData?> submissionShareLink(Ref ref, String id) async {
   final snapshot =
-      await FirebaseFirestore.instance.doc("submissionShares/$id").get();
+      await ref.watch(firestoreProvider).doc("submissionShares/$id").get();
   if (!snapshot.exists) return null;
   return SubmissionShareData.fromMap(snapshot.data()!);
 }

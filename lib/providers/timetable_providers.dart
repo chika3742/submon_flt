@@ -20,7 +20,8 @@ TimetableRepository timetableRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
   final firestore =
       ref.watch(firestoreCollectionProvider("timetable").notifier);
-  return TimetableRepository(isar, firestore);
+  final crashlytics = ref.watch(crashlyticsProvider);
+  return TimetableRepository(isar, firestore, crashlytics);
 }
 
 @riverpod
@@ -28,7 +29,8 @@ TimetableTableRepository timetableTableRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
   final firestore =
       ref.watch(firestoreCollectionProvider("timetable").notifier);
-  return TimetableTableRepository(isar, firestore);
+  final crashlytics = ref.watch(crashlyticsProvider);
+  return TimetableTableRepository(isar, firestore, crashlytics);
 }
 
 @riverpod
@@ -36,7 +38,8 @@ TimetableClassTimeRepository timetableClassTimeRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
   final firestore =
       ref.watch(firestoreCollectionProvider("timetableClassTime").notifier);
-  return TimetableClassTimeRepository(isar, firestore);
+  final crashlytics = ref.watch(crashlyticsProvider);
+  return TimetableClassTimeRepository(isar, firestore, crashlytics);
 }
 
 // --- Data streams ---

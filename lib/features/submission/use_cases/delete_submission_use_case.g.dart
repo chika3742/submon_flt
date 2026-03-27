@@ -51,4 +51,4 @@ final class DeleteSubmissionUseCaseProvider extends $FunctionalProvider<
 }
 
 String _$deleteSubmissionUseCaseHash() =>
-    r'4a195f5228299cf1055a9a28538fa47df48eb12c';
+    r'70cc4436530f2c2977661ef9660973919bc04d6f';

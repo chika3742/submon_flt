@@ -1,6 +1,8 @@
+import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_analytics/firebase_analytics.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:firebase_crashlytics/firebase_crashlytics.dart";
+import "package:flutter_dotenv/flutter_dotenv.dart";
 import "package:google_sign_in/google_sign_in.dart";
 import "package:isar_community/isar.dart";
 import "package:path_provider/path_provider.dart";
@@ -93,6 +95,15 @@ FirebaseCrashlytics crashlytics(Ref ref) => FirebaseCrashlytics.instance;
 
 @Riverpod(keepAlive: true)
 FirebaseAnalytics analytics(Ref ref) => FirebaseAnalytics.instance;
+
+@Riverpod(keepAlive: true)
+FirebaseFirestore firestore(Ref ref) => FirebaseFirestore.instance;
+
+@riverpod
+bool isAdEnabled(Ref ref) {
+  return ref.watch(firebaseUserProvider).value?.email !=
+      dotenv.get("ADMIN_EMAIL");
+}
 
 @Riverpod(keepAlive: true)
 AppleSignInAndroid appleSignInAndroid(Ref ref) => AppleSignInAndroid(

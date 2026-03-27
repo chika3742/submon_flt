@@ -16,11 +16,14 @@ class BatchOperation {
     return "${doc.path}: ${type.name}:$data";
   }
 
-  static Future<void> commit(List<BatchOperation> operations) async {
+  static Future<void> commit(
+    List<BatchOperation> operations, {
+    required FirebaseFirestore firestore,
+  }) async {
     final chunks = operations.partition(500);
 
     for (var chunk in chunks) {
-      final batch = FirebaseFirestore.instance.batch();
+      final batch = firestore.batch();
       for (var operation in chunk) {
         switch (operation.type) {
           case BatchOperationType.set:

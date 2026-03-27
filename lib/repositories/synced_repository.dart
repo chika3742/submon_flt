@@ -1,9 +1,9 @@
 import "package:cloud_firestore/cloud_firestore.dart";
+import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:flutter/material.dart";
 import "package:isar_community/isar.dart";
 
 import "../providers/firestore_providers.dart";
-import "../utils/utils.dart";
 
 /// Isar ↔ Firestore 同期を自動化する Repository 基底クラス。
 ///
@@ -11,10 +11,11 @@ import "../utils/utils.dart";
 /// [put] / [delete] を呼ぶだけで Firestore 側も自動的に同期される。
 /// Firestore 同期なしでローカルに書き込む場合は [putAllLocalOnly] を使う。
 abstract class SyncedRepository<T> {
-  SyncedRepository(this.isar, this.firestore);
+  SyncedRepository(this.isar, this.firestore, this.crashlytics);
 
   final Isar isar;
   final FirestoreCollectionNotifier firestore;
+  final FirebaseCrashlytics crashlytics;
 
   IsarCollection<T> get collection;
 
@@ -87,7 +88,7 @@ abstract class SyncedRepository<T> {
   void _wrapFirestoreUpdate(Future<void> future) {
     future.catchError((e, st) {
       debugPrint("Firestore sync error: $e");
-      recordErrorToCrashlytics(e, st);
+      crashlytics.recordError(e, st);
     }).then((_) {
       onFirestoreUpdated();
     });

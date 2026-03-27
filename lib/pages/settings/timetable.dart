@@ -1,13 +1,17 @@
 import "package:collection/collection.dart";
 import "package:firebase_core/firebase_core.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
+import "../../browser.dart";
 import "../../components/dropdown_time_picker_bottom_sheet.dart";
 import "../../core/pref_key.dart";
+import "../../features/auth/use_cases/sign_out_use_case.dart";
 import "../../isar_db/isar_timetable_class_time.dart";
 import "../../isar_db/isar_timetable_table.dart";
 import "../../main.dart";
+import "../../providers/core_providers.dart";
 import "../../providers/firestore_providers.dart";
 import "../../providers/timetable_providers.dart";
 import "../../src/pigeons.g.dart";
@@ -47,8 +51,26 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
         _timetableNotificationTime = config?.timetableNotificationTime;
       });
     } on FirebaseException catch (e, stackTrace) {
-      handleFirebaseError(
-          e, stackTrace, context, "時間割通知設定の取得に失敗しました。");
+      ref.read(crashlyticsProvider).recordError(e, stackTrace);
+      if (!context.mounted) return;
+      switch (e.code) {
+        case "permission-denied":
+          showFirestoreReadFailedDialog(
+            context,
+            "時間割通知設定の取得に失敗しました。",
+            onSignOut: () async {
+              await ref.read(signOutUseCaseProvider).execute();
+              if (context.mounted) backToWelcomePage(context);
+            },
+            onShowAnnouncements: () {
+              Browser.openAnnouncements();
+              SystemChannels.platform.invokeMethod("SystemNavigator.pop");
+            },
+          );
+        default:
+          showSnackBar(context, "時間割通知設定の取得に失敗しました。(${e.code})",
+              duration: const Duration(seconds: 20));
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -414,7 +436,7 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
             showSnackBar(globalContext!, "時間割表名を変更しました");
           } catch (e, st) {
             showSnackBar(globalContext!, "エラーが発生しました。");
-            recordErrorToCrashlytics(e, st);
+            ref.read(crashlyticsProvider).recordError(e, st);
           }
         },
       ),

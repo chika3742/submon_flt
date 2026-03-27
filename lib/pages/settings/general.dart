@@ -1,10 +1,10 @@
-import "package:firebase_analytics/firebase_analytics.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:package_info_plus/package_info_plus.dart";
 
 import "../../browser.dart";
 import "../../core/pref_key.dart";
+import "../../providers/core_providers.dart";
 import "../../ui_components/settings_ui.dart";
 
 class GeneralSettingsPage extends ConsumerStatefulWidget {
@@ -56,7 +56,8 @@ class _GeneralSettingsPageState extends ConsumerState<GeneralSettingsPage> {
               value: analyticsEnabled,
               onChanged: (value) {
                 ref.updatePref(PrefKey.isAnalyticsEnabled, value);
-                FirebaseAnalytics.instance
+                ref
+                    .read(analyticsProvider)
                     .setAnalyticsCollectionEnabled(value);
               },
             ),

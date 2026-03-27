@@ -5,7 +5,7 @@ import "synced_repository.dart";
 
 class TimetableClassTimeRepository
     extends SyncedRepository<TimetableClassTime> {
-  TimetableClassTimeRepository(super.isar, super.firestore);
+  TimetableClassTimeRepository(super.isar, super.firestore, super.crashlytics);
 
   @override
   IsarCollection<TimetableClassTime> get collection =>

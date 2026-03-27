@@ -2,9 +2,7 @@ import "dart:async";
 import "dart:io";
 
 import "package:animations/animations.dart";
-import "package:firebase_analytics/firebase_analytics.dart";
-import "package:firebase_auth/firebase_auth.dart";
-import "package:firebase_crashlytics/firebase_crashlytics.dart";
+import "package:firebase_core/firebase_core.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -15,6 +13,7 @@ import "../components/digestive_edit_bottom_sheet.dart";
 import "../core/pref_key.dart";
 import "../events.dart";
 import "../fade_through_page_route.dart";
+import "../features/auth/use_cases/sign_out_use_case.dart";
 import "../isar_db/isar_digestive.dart";
 import "../main.dart";
 import "../providers/core_providers.dart";
@@ -111,7 +110,7 @@ class HomePageState extends ConsumerState<HomePage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (!screenShotMode && isAdEnabled) {
+      if (!screenShotMode && ref.read(isAdEnabledProvider)) {
         AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
                 MediaQuery.of(context).size.width.truncate())
             .then((adSize) async {
@@ -375,31 +374,51 @@ class HomePageState extends ConsumerState<HomePage> {
       tabIndex = index;
     });
     _navigatorKey.currentState?.pushReplacementNamed(path);
-    FirebaseAnalytics.instance
-        .logScreenView(screenName: "/tab/$path");
+    ref.read(analyticsProvider).logScreenView(screenName: "/tab/$path");
   }
 
   void _handleSyncError(Object error, StackTrace stackTrace) {
+    final crashlytics = ref.read(crashlyticsProvider);
+
     switch (error) {
       case final FirebaseException e:
-        handleFirebaseError(e, stackTrace, context, "データの取得に失敗しました。");
+        crashlytics.recordError(e, stackTrace);
+        if (!mounted) return;
+        switch (e.code) {
+          case "permission-denied":
+            showFirestoreReadFailedDialog(
+              context,
+              "データの取得に失敗しました。",
+              onSignOut: () async {
+                await ref.read(signOutUseCaseProvider).execute();
+                if (context.mounted) backToWelcomePage(context);
+              },
+              onShowAnnouncements: () {
+                Browser.openAnnouncements();
+                SystemChannels.platform.invokeMethod("SystemNavigator.pop");
+              },
+            );
+          default:
+            showSnackBar(context, "データの取得に失敗しました。(${e.code})",
+                duration: const Duration(seconds: 20));
+        }
       case final SchemaVersionMismatchException e:
-        FirebaseCrashlytics.instance.recordError(e, stackTrace);
+        crashlytics.recordError(e, stackTrace);
         debugPrint(e.toString());
         if (!mounted) return;
         showSimpleDialog(
             context, "エラー", "Submonを最新版にアップデートしてください。\n\n(${e.toString()})",
             allowCancel: false,
             showCancel: true,
-            cancelText: "ログアウト", onCancelPressed: () {
-          FirebaseAuth.instance.signOut();
-          backToWelcomePage(context);
+            cancelText: "ログアウト", onCancelPressed: () async {
+          await ref.read(signOutUseCaseProvider).execute();
+          if (mounted) backToWelcomePage(context);
         }, onOKPressed: () {
           Browser.openStoreListing();
           SystemChannels.platform.invokeMethod("SystemNavigator.pop");
         });
       default:
-        FirebaseCrashlytics.instance.recordError(error, stackTrace);
+        crashlytics.recordError(error, stackTrace);
         if (!mounted) return;
         showSnackBar(context, "エラーが発生しました");
     }

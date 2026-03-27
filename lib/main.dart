@@ -3,7 +3,6 @@ import "dart:ui";
 
 import "package:animations/animations.dart";
 import "package:firebase_analytics/firebase_analytics.dart";
-import "package:firebase_auth/firebase_auth.dart";
 import "package:firebase_core/firebase_core.dart";
 import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:flutter/cupertino.dart";
@@ -220,7 +219,7 @@ class _ApplicationState extends ConsumerState<Application> {
       debugShowCheckedModeBanner: !screenShotMode,
       navigatorKey: Application.globalKey,
       navigatorObservers: [
-        FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance)
+        FirebaseAnalyticsObserver(analytics: ref.watch(analyticsProvider))
       ],
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
@@ -245,7 +244,7 @@ class _ApplicationState extends ConsumerState<Application> {
         GlobalCupertinoLocalizations.delegate,
       ],
       initialRoute:
-          FirebaseAuth.instance.currentUser == null && screenShotMode == false
+          ref.watch(firebaseAuthProvider).currentUser == null && screenShotMode == false
               ? WelcomePage.routeName
               : HomePage.routeName,
       onGenerateRoute: (settings) {

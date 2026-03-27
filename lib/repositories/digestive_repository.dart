@@ -6,7 +6,7 @@ import "../utils/types.dart";
 import "synced_repository.dart";
 
 class DigestiveRepository extends SyncedRepository<Digestive> {
-  DigestiveRepository(super.isar, super.firestore, this._userConfig);
+  DigestiveRepository(super.isar, super.firestore, super.crashlytics, this._userConfig);
 
   final FirestoreUserConfigNotifier _userConfig;
 
