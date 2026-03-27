@@ -31,6 +31,10 @@ class DeleteSubmissionUseCase {
     final submission = await _repo.get(id);
     if (submission == null) throw ArgumentError("Submission not fount for id: $id");
 
+    final digestivesToRestore = await _digestiveRepo.deleteBySubmissionId(id);
+
+    await _repo.delete(id);
+
     if (submission.googleTasksTaskId case final googleTasksTaskId?) {
       if (_tasksRepo == null) {
         log(
@@ -38,13 +42,9 @@ class DeleteSubmissionUseCase {
           name: "DeleteSubmissionUseCase",
         );
       } else {
-        _tasksRepo.deleteTask(googleTasksTaskId);
+        await _tasksRepo.deleteTask(googleTasksTaskId);
       }
     }
-
-    final digestivesToRestore = await _digestiveRepo.deleteBySubmissionId(id);
-
-    await _repo.delete(id);
 
     return () async {
       await _repo.create(submission);
