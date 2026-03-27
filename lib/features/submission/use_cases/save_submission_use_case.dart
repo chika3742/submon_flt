@@ -1,7 +1,7 @@
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../../../isar_db/isar_submission.dart";
-import "../../../providers/core_providers.dart";
+import "../../../providers/firebase_providers.dart";
 import "../../../providers/submission_providers.dart";
 import "../../../repositories/submission_repository.dart";
 import "../../google_tasks/services/tasks_service.dart";

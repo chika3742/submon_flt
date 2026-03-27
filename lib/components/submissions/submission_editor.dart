@@ -6,7 +6,7 @@ import "../../core/pref_key.dart";
 import "../../features/google_tasks/repositories/tasks_auth_notifier.dart";
 import "../../features/submission/presentation/submission_save_state_notifier.dart";
 import "../../isar_db/isar_submission.dart";
-import "../../providers/core_providers.dart";
+import "../../providers/firebase_providers.dart";
 import "../../providers/submission_providers.dart";
 import "../../ui_components/tappable_card.dart";
 import "../color_picker_dialog.dart";

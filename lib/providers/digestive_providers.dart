@@ -6,6 +6,7 @@ import "../isar_db/isar_submission.dart";
 import "../pages/home_tabs/tab_digestive_list.dart";
 import "../repositories/digestive_repository.dart";
 import "core_providers.dart";
+import "firebase_providers.dart";
 import "firestore_providers.dart";
 
 part "digestive_providers.g.dart";

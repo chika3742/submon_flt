@@ -19,6 +19,7 @@ import "../main.dart";
 import "../providers/core_providers.dart";
 import "../providers/data_sync_service.dart";
 import "../providers/digestive_providers.dart";
+import "../providers/firebase_providers.dart";
 import "../src/pigeons.g.dart";
 import "../ui_components/hidable_progress_indicator.dart";
 import "../utils/ad_unit_ids.dart";

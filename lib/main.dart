@@ -47,7 +47,9 @@ import "pages/timetable_edit_page.dart";
 import "pages/timetable_table_view_page.dart";
 import "pages/welcome_page.dart";
 import "providers/core_providers.dart";
+import "providers/firebase_providers.dart";
 import "providers/link_events_provider.dart";
+import "providers/pref_provider.dart";
 import "utils/ui.dart";
 
 const screenShotMode = bool.fromEnvironment("SCREENSHOT_MODE");

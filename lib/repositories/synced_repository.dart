@@ -92,6 +92,7 @@ abstract class SyncedRepository<T> {
     unawaited(() async {
       try {
         await future;
+        throw Exception();
         onFirestoreUpdated();
       } catch (e) {
         crashlytics.recordError(e, null, reason: "Firestore update failed");

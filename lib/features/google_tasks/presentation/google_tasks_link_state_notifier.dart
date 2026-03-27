@@ -4,7 +4,7 @@ import "package:freezed_annotation/freezed_annotation.dart";
 import "package:googleapis/oauth2/v2.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
-import "../../../providers/core_providers.dart";
+import "../../../providers/firebase_providers.dart";
 import "../../../utils/notifier_state_guard.dart";
 import "../models/tasks_auth_exception.dart";
 import "../repositories/tasks_auth_notifier.dart";

@@ -10,7 +10,7 @@ import "../../components/dropdown_time_picker_bottom_sheet.dart";
 import "../../features/auth/use_cases/common.dart";
 import "../../features/auth/use_cases/sign_out_use_case.dart";
 import "../../main.dart";
-import "../../providers/core_providers.dart";
+import "../../providers/firebase_providers.dart";
 import "../../providers/firestore_providers.dart";
 import "../../src/pigeons.g.dart";
 import "../../ui_components/settings_ui.dart";

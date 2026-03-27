@@ -13,6 +13,7 @@ import "../user_config.dart";
 import "../utils/batch_operation.dart";
 import "../utils/notifier_state_guard.dart";
 import "core_providers.dart";
+import "firebase_providers.dart";
 import "firestore_providers.dart";
 
 part "data_sync_service.g.dart";

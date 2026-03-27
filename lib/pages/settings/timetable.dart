@@ -11,7 +11,7 @@ import "../../features/auth/use_cases/sign_out_use_case.dart";
 import "../../isar_db/isar_timetable_class_time.dart";
 import "../../isar_db/isar_timetable_table.dart";
 import "../../main.dart";
-import "../../providers/core_providers.dart";
+import "../../providers/firebase_providers.dart";
 import "../../providers/firestore_providers.dart";
 import "../../providers/timetable_providers.dart";
 import "../../src/pigeons.g.dart";

@@ -6,6 +6,7 @@ import "../core/pref_key.dart";
 import "../user_config.dart";
 import "../utils/batch_operation.dart";
 import "core_providers.dart";
+import "firebase_providers.dart";
 import "functions_service.dart";
 
 part "firestore_providers.g.dart";

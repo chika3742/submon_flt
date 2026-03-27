@@ -4,6 +4,7 @@ import "package:riverpod_annotation/riverpod_annotation.dart";
 import "../isar_db/isar_submission.dart";
 import "../repositories/submission_repository.dart";
 import "core_providers.dart";
+import "firebase_providers.dart";
 import "firestore_providers.dart";
 
 part "submission_providers.g.dart";

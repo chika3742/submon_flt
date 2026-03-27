@@ -4,7 +4,7 @@ import "package:package_info_plus/package_info_plus.dart";
 
 import "../../browser.dart";
 import "../../core/pref_key.dart";
-import "../../providers/core_providers.dart";
+import "../../providers/firebase_providers.dart";
 import "../../ui_components/settings_ui.dart";
 
 class GeneralSettingsPage extends ConsumerStatefulWidget {

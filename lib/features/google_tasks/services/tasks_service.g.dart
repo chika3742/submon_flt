@@ -48,4 +48,4 @@ final class TasksServiceProvider
   }
 }
 
-String _$tasksServiceHash() => r'635b61314eb4d574ea336489692d5dcfd2d669da';
+String _$tasksServiceHash() => r'2f74b5fe155edc0437fadbb08c70ec3c0456666e';

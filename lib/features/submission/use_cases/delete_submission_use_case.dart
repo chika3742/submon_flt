@@ -2,8 +2,8 @@ import "dart:developer";
 
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
-import "../../../providers/core_providers.dart";
 import "../../../providers/digestive_providers.dart";
+import "../../../providers/firebase_providers.dart";
 import "../../../providers/submission_providers.dart";
 import "../../../repositories/digestive_repository.dart";
 import "../../../repositories/submission_repository.dart";

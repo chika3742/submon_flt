@@ -9,7 +9,7 @@ import "../core/pref_key.dart";
 import "../features/auth/repositories/auth_repository.dart";
 import "../features/auth/use_cases/common.dart";
 import "../main.dart";
-import "../providers/core_providers.dart";
+import "../providers/firebase_providers.dart";
 import "../providers/firestore_providers.dart";
 import "../utils/ui.dart";
 import "home_page.dart";

@@ -7,6 +7,7 @@ import "package:googleapis_auth/googleapis_auth.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../../../providers/core_providers.dart";
+import "../../../providers/firebase_providers.dart";
 import "../models/tasks_auth_exception.dart";
 
 part "tasks_auth_notifier.g.dart";

@@ -3,7 +3,7 @@ import "package:freezed_annotation/freezed_annotation.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../../../core/pref_key.dart";
-import "../../../providers/core_providers.dart";
+import "../../../providers/firebase_providers.dart";
 import "../../../utils/app_links.dart";
 import "../../../utils/notifier_state_guard.dart";
 import "../models/auth_exception.dart";

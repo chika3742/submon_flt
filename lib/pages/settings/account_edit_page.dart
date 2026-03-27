@@ -6,7 +6,7 @@ import "../../features/auth/models/auth_exception.dart";
 import "../../features/auth/presentation/auth_messages.dart";
 import "../../features/auth/repositories/auth_repository.dart";
 import "../../features/auth/use_cases/common.dart";
-import "../../providers/core_providers.dart";
+import "../../providers/firebase_providers.dart";
 import "../../utils/ui.dart";
 import "../sign_in_page.dart";
 

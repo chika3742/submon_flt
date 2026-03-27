@@ -2,7 +2,7 @@ import "package:firebase_auth/firebase_auth.dart" hide AuthProvider;
 import "package:freezed_annotation/freezed_annotation.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
-import "../../../providers/core_providers.dart";
+import "../../../providers/firebase_providers.dart";
 import "../../../utils/notifier_state_guard.dart";
 import "../repositories/auth_repository.dart";
 import "../use_cases/link_social_use_case.dart";

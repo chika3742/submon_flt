@@ -9,6 +9,7 @@ import "../repositories/timetable_class_time_repository.dart";
 import "../repositories/timetable_repository.dart";
 import "../repositories/timetable_table_repository.dart";
 import "core_providers.dart";
+import "firebase_providers.dart";
 import "firestore_providers.dart";
 
 part "timetable_providers.g.dart";

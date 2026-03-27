@@ -1,6 +1,6 @@
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
-import "../providers/core_providers.dart";
+import "../providers/pref_provider.dart";
 
 enum PrefKey<T extends Object?> {
   /// 現在選択中の時間割テーブル ID。-1 はメインテーブルを示す。

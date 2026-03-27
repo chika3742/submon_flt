@@ -6,7 +6,7 @@ import "package:intl/intl.dart";
 import "../../isar_db/isar_submission.dart";
 import "../../main.dart";
 import "../../pages/submission_detail_page.dart";
-import "../../providers/core_providers.dart";
+import "../../providers/firebase_providers.dart";
 import "../../utils/analytics.dart";
 import "../../utils/ui.dart";
 import "formatted_date_remaining.dart";
