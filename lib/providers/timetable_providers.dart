@@ -10,6 +10,7 @@ import "../repositories/timetable_repository.dart";
 import "../repositories/timetable_table_repository.dart";
 import "core_providers.dart";
 import "firebase_providers.dart";
+import "firestore_error_notifier.dart";
 import "firestore_providers.dart";
 
 part "timetable_providers.g.dart";
@@ -22,7 +23,12 @@ TimetableRepository timetableRepository(Ref ref) {
   final firestore =
       ref.watch(firestoreCollectionProvider("timetable").notifier);
   final crashlytics = ref.watch(crashlyticsProvider);
-  return TimetableRepository(isar, firestore, crashlytics);
+  return TimetableRepository(
+    isar,
+    firestore,
+    crashlytics,
+    ref.watch(firestoreErrorProvider.notifier),
+  );
 }
 
 @riverpod
@@ -31,7 +37,12 @@ TimetableTableRepository timetableTableRepository(Ref ref) {
   final firestore =
       ref.watch(firestoreCollectionProvider("timetable").notifier);
   final crashlytics = ref.watch(crashlyticsProvider);
-  return TimetableTableRepository(isar, firestore, crashlytics);
+  return TimetableTableRepository(
+    isar,
+    firestore,
+    crashlytics,
+    ref.watch(firestoreErrorProvider.notifier),
+  );
 }
 
 @riverpod
@@ -40,7 +51,12 @@ TimetableClassTimeRepository timetableClassTimeRepository(Ref ref) {
   final firestore =
       ref.watch(firestoreCollectionProvider("timetableClassTime").notifier);
   final crashlytics = ref.watch(crashlyticsProvider);
-  return TimetableClassTimeRepository(isar, firestore, crashlytics);
+  return TimetableClassTimeRepository(
+    isar,
+    firestore,
+    crashlytics,
+    ref.watch(firestoreErrorProvider.notifier),
+  );
 }
 
 // --- Data streams ---

@@ -51,7 +51,7 @@ final class TimetableRepositoryProvider extends $FunctionalProvider<
 }
 
 String _$timetableRepositoryHash() =>
-    r'74ee7022ec0bd79820377957e988295414476467';
+    r'235a2f12fbf7b9db3a9df4ce84819cba0d5bd199';
 
 @ProviderFor(timetableTableRepository)
 final timetableTableRepositoryProvider = TimetableTableRepositoryProvider._();
@@ -95,7 +95,7 @@ final class TimetableTableRepositoryProvider extends $FunctionalProvider<
 }
 
 String _$timetableTableRepositoryHash() =>
-    r'bbf6289b28e8ee3ab76a9de45d15ae0d72e02041';
+    r'2e038104e2affac03348968334500b1370a7e891';
 
 @ProviderFor(timetableClassTimeRepository)
 final timetableClassTimeRepositoryProvider =
@@ -140,7 +140,7 @@ final class TimetableClassTimeRepositoryProvider extends $FunctionalProvider<
 }
 
 String _$timetableClassTimeRepositoryHash() =>
-    r'6914a6d3e258fca66fd68288c6522509d660cd2f';
+    r'df05b8bfdeca853742f0751119cd6b0d84e8b2d2';
 
 @ProviderFor(timetableTables)
 final timetableTablesProvider = TimetableTablesProvider._();

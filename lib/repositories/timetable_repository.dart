@@ -1,9 +1,9 @@
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_crashlytics/firebase_crashlytics.dart";
-import "package:flutter/material.dart";
 import "package:isar_community/isar.dart";
 
 import "../isar_db/isar_timetable.dart";
+import "../providers/firestore_error_notifier.dart";
 import "../providers/firestore_providers.dart";
 
 /// Timetable (セル) のリポジトリ。
@@ -11,11 +11,17 @@ import "../providers/firestore_providers.dart";
 /// Firestore 上では `timetable/{tableId}` ドキュメント内の `cells` マップに
 /// ネストして保存されるため、[SyncedRepository] は使わず独自に同期する。
 class TimetableRepository {
-  TimetableRepository(this.isar, this.firestore, this.crashlytics);
+  TimetableRepository(
+    this.isar,
+    this._firestore,
+    this._crashlytics,
+    this._errorNotifier,
+  );
 
   final Isar isar;
-  final FirestoreCollectionNotifier firestore;
-  final FirebaseCrashlytics crashlytics;
+  final FirestoreCollectionNotifier _firestore;
+  final FirebaseCrashlytics _crashlytics;
+  final FirestoreErrorNotifierAddable _errorNotifier;
 
   IsarCollection<Timetable> get collection => isar.timetables;
 
@@ -66,7 +72,7 @@ class TimetableRepository {
       () => collection.filter().tableIdEqualTo(tableId).deleteAll(),
     );
     _wrapFirestoreUpdate(
-      firestore.set(
+      _firestore.set(
         tableId.toString(),
         {"cells": FieldValue.delete()},
         SetOptions(merge: true),
@@ -97,7 +103,7 @@ class TimetableRepository {
 
   void _syncSetCell(Timetable data) {
     _wrapFirestoreUpdate(
-      firestore.set(
+      _firestore.set(
         data.tableId.toString(),
         {
           "cells": {data.cellId.toString(): data.toMap()},
@@ -110,7 +116,7 @@ class TimetableRepository {
   /// [tableId]s in cells are ignored.
   void _syncSetAllCells(String tableId, List<Timetable> data) {
     _wrapFirestoreUpdate(
-      firestore.set(
+      _firestore.set(
         tableId,
         {
           "cells": {
@@ -124,7 +130,7 @@ class TimetableRepository {
 
   void _syncDeleteCell(int tableId, int cellId) {
     _wrapFirestoreUpdate(
-      firestore.set(
+      _firestore.set(
         tableId.toString(),
         {
           "cells": {cellId.toString(): FieldValue.delete()},
@@ -136,8 +142,8 @@ class TimetableRepository {
 
   void _wrapFirestoreUpdate(Future<void> future) {
     future.catchError((e, st) {
-      debugPrint("Firestore sync error: $e");
-      crashlytics.recordError(e, st);
+      _crashlytics.recordError(e, st);
+      _errorNotifier.add(e);
     });
   }
 }

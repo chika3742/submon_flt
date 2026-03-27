@@ -48,8 +48,10 @@ import "pages/timetable_table_view_page.dart";
 import "pages/welcome_page.dart";
 import "providers/core_providers.dart";
 import "providers/firebase_providers.dart";
+import "providers/firestore_error_notifier.dart";
 import "providers/link_events_provider.dart";
 import "providers/pref_provider.dart";
+import "utils/distinguish.dart";
 import "utils/ui.dart";
 
 const screenShotMode = bool.fromEnvironment("SCREENSHOT_MODE");
@@ -174,6 +176,12 @@ class _ApplicationState extends ConsumerState<Application> {
     ref.listen(firebaseUserProvider, (prev, next) {
       if (prev?.value != null && next.value == null) {
         backToWelcomePage(globalContext!);
+      }
+    });
+
+    ref.listen(firestoreErrorProvider, (_, next) {
+      if (next case AsyncData(value: Distinguish(value: final _))) {
+        showSnackBar(globalContext!, "データの保存に失敗しました。サーバーにデータが反映されていない可能性があります。");
       }
     });
 

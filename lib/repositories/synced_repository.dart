@@ -5,6 +5,7 @@ import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:flutter/material.dart";
 import "package:isar_community/isar.dart";
 
+import "../providers/firestore_error_notifier.dart";
 import "../providers/firestore_providers.dart";
 
 /// Isar ↔ Firestore 同期を自動化する Repository 基底クラス。
@@ -13,11 +14,12 @@ import "../providers/firestore_providers.dart";
 /// [put] / [delete] を呼ぶだけで Firestore 側も自動的に同期される。
 /// Firestore 同期なしでローカルに書き込む場合は [putAllLocalOnly] を使う。
 abstract class SyncedRepository<T> {
-  SyncedRepository(this.isar, this.firestore, this.crashlytics);
+  SyncedRepository(this.isar, this._firestore, this._crashlytics, this._errorNotifier);
 
   final Isar isar;
-  final FirestoreCollectionNotifier firestore;
-  final FirebaseCrashlytics crashlytics;
+  final FirestoreCollectionNotifier _firestore;
+  final FirebaseCrashlytics _crashlytics;
+  final FirestoreErrorNotifierAddable _errorNotifier;
 
   IsarCollection<T> get collection;
 
@@ -64,7 +66,7 @@ abstract class SyncedRepository<T> {
 
   void _syncSet(T data, int id) {
     _wrapFirestoreUpdate(
-      firestore.set(
+      _firestore.set(
         id.toString(),
         toFirestoreMap(data),
         SetOptions(merge: true),
@@ -78,13 +80,13 @@ abstract class SyncedRepository<T> {
         ids[i].toString(): toFirestoreMap(list[i]),
     };
     _wrapFirestoreUpdate(
-      firestore.batchSet(entries, SetOptions(merge: true)),
+      _firestore.batchSet(entries, SetOptions(merge: true)),
     );
   }
 
   void _syncDelete(int id) {
     _wrapFirestoreUpdate(
-      firestore.delete(id.toString()),
+      _firestore.delete(id.toString()),
     );
   }
 
@@ -92,11 +94,10 @@ abstract class SyncedRepository<T> {
     unawaited(() async {
       try {
         await future;
-        throw Exception();
         onFirestoreUpdated();
-      } catch (e) {
-        crashlytics.recordError(e, null, reason: "Firestore update failed");
-        rethrow;
+      } catch (e, st) {
+        _crashlytics.recordError(e, st, reason: "Firestore update failed");
+        _errorNotifier.add(e);
       }
     }());
   }

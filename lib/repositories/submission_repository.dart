@@ -7,8 +7,9 @@ import "synced_repository.dart";
 class SubmissionRepository extends SyncedRepository<Submission> {
   SubmissionRepository(
     super.isar,
-    super.firestore,
-    super.crashlytics,
+    super._firestore,
+    super._crashlytics,
+    super._errorNotifier,
   );
 
   @override

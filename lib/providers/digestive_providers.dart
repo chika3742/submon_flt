@@ -7,6 +7,7 @@ import "../pages/home_tabs/tab_digestive_list.dart";
 import "../repositories/digestive_repository.dart";
 import "core_providers.dart";
 import "firebase_providers.dart";
+import "firestore_error_notifier.dart";
 import "firestore_providers.dart";
 
 part "digestive_providers.g.dart";
@@ -18,7 +19,13 @@ DigestiveRepository digestiveRepository(Ref ref) {
       ref.watch(firestoreCollectionProvider("digestive").notifier);
   final userConfig = ref.watch(firestoreUserConfigProvider.notifier);
   final crashlytics = ref.watch(crashlyticsProvider);
-  return DigestiveRepository(isar, firestore, crashlytics, userConfig);
+  return DigestiveRepository(
+    isar,
+    firestore,
+    crashlytics,
+    ref.watch(firestoreErrorProvider.notifier),
+    userConfig,
+  );
 }
 
 @riverpod
