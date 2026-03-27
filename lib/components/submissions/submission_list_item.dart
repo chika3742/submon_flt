@@ -2,16 +2,14 @@ import "package:animations/animations.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:intl/intl.dart";
-import "package:share_plus/share_plus.dart";
 
+import "../../features/submission/presentation/create_submission_share_link_state_notifier.dart";
 import "../../isar_db/isar_digestive.dart";
 import "../../isar_db/isar_submission.dart";
 import "../../pages/submission_detail_page.dart";
 import "../../pages/submission_edit_page.dart";
 import "../../providers/digestive_providers.dart";
 import "../../providers/firebase_providers.dart";
-import "../../providers/functions_service.dart";
-import "../../providers/submission_providers.dart";
 import "../../utils/analytics.dart";
 import "../../utils/ui.dart";
 import "../../utils/utils.dart";
@@ -223,7 +221,7 @@ class SubmissionListItemState extends ConsumerState<SubmissionListItem> {
                     context: context,
                     item: item,
                   );
-                  if (action == null || !context.mounted) return;
+                  if (action == null) return;
                   await _handleContextMenuAction(action, item);
                 },
               ),
@@ -259,6 +257,8 @@ class SubmissionListItemState extends ConsumerState<SubmissionListItem> {
     SubmissionContextMenuAction action,
     Submission item,
   ) async {
+    if (!mounted) return;
+
     switch (action) {
       case SubmissionContextMenuAction.share:
         ref.read(analyticsProvider).logShare(
@@ -266,34 +266,7 @@ class SubmissionListItemState extends ConsumerState<SubmissionListItem> {
           itemId: item.id.toString(),
           method: "longPressMenu",
         );
-        showLoadingModal(context);
-        try {
-          final repo = ref.read(submissionRepositoryProvider);
-          final submission = await repo.get(item.id!);
-          if (!mounted) return;
-          if (submission == null) {
-            closeLoadingModal(context);
-            showSnackBar(context, "提出物が見つかりません。");
-            return;
-          }
-
-          final link =
-              await ref.read(functionsServiceProvider).createShareLink(
-                    FunctionsService.submissionToShareLinkData(submission),
-                  );
-          await SharePlus.instance.share(ShareParams(
-            text: "提出物「${submission.title}」が共有されました。Submonで開いてみよう！\n"
-                "$link",
-          ));
-          if (!mounted) return;
-          closeLoadingModal(context);
-          showSnackBar(context, "共有リンクの有効期間は7日間です。");
-        } catch (error, stackTrace) {
-          ref.read(crashlyticsProvider).recordError(error, stackTrace);
-          if (!mounted) return;
-          closeLoadingModal(context);
-          showSnackBar(context, "エラーが発生しました。");
-        }
+        ref.read(createSubmissionShareLinkStateProvider.notifier).execute(item);
 
       case SubmissionContextMenuAction.addDigestive:
         final data = await showRoundedBottomSheet<Digestive>(

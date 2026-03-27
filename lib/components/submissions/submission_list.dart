@@ -1,7 +1,10 @@
 import "package:animated_reorderable_list/animated_reorderable_list.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:share_plus/share_plus.dart";
 
+import "../../core/extensions/async_value_ui.dart";
+import "../../features/submission/presentation/create_submission_share_link_state_notifier.dart";
 import "../../features/submission/use_cases/delete_submission_use_case.dart";
 import "../../isar_db/isar_submission.dart";
 import "../../providers/firebase_providers.dart";
@@ -28,6 +31,18 @@ class _SubmissionListState extends ConsumerState<SubmissionList> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(createSubmissionShareLinkStateProvider, (_, next) async {
+      next.showLoadingModalDuringLoading(context);
+      next.showSnackBarOnError(context, "共有リンクの作成に失敗しました");
+      if (next case AsyncData(value: (:final url, :final title))) {
+        await SharePlus.instance.share(ShareParams(
+          text: "提出物「$title」が共有されました。Submonで開いてみよう！\n"
+              "$url",
+        ));
+        if (context.mounted) showSnackBar(context, "共有リンクの有効期間は7日間です。");
+      }
+    });
+
     final asyncItems = widget.done
         ? ref.watch(doneSubmissionsProvider)
         : ref.watch(undoneSubmissionsProvider);
