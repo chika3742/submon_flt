@@ -2,14 +2,14 @@ import "package:googleapis/tasks/v1.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../models/tasks_operation_exception.dart";
-import "tasks_auth_notifier.dart";
+import "../repositories/tasks_auth_notifier.dart";
 
-part "tasks_repository.g.dart";
+part "tasks_service.g.dart";
 
-abstract interface class TasksRepository {
+abstract interface class TasksService {
   final TasksApi _api;
 
-  const TasksRepository(this._api);
+  const TasksService(this._api);
 
   Future<String> addTask(Task task);
 
@@ -19,13 +19,13 @@ abstract interface class TasksRepository {
 }
 
 @Riverpod(keepAlive: true)
-TasksRepository? tasksRepository(Ref ref) {
+TasksService? tasksService(Ref ref) {
   final authClient = ref.watch(tasksAuthProvider).value;
   if (authClient == null) return null;
   return TasksRepositoryImpl(TasksApi(authClient));
 }
 
-class TasksRepositoryImpl extends TasksRepository {
+class TasksRepositoryImpl extends TasksService {
   const TasksRepositoryImpl(super.api);
 
   Future<TaskList> taskList() async {

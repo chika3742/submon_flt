@@ -8,7 +8,7 @@ import "../../../providers/submission_providers.dart";
 import "../../../repositories/digestive_repository.dart";
 import "../../../repositories/submission_repository.dart";
 import "../../../utils/types.dart";
-import "../../google_tasks/repositories/tasks_repository.dart";
+import "../../google_tasks/services/tasks_service.dart";
 import "common.dart";
 
 part "delete_submission_use_case.g.dart";
@@ -24,7 +24,7 @@ class DeleteSubmissionUseCase {
 
   final SubmissionRepository _repo;
   final DigestiveRepository _digestiveRepo;
-  final TasksRepository? _tasksRepo;
+  final TasksService? _tasksRepo;
   final String _uid;
 
   Future<Restorable> execute(int id) async {
@@ -63,7 +63,7 @@ DeleteSubmissionUseCase deleteSubmissionUseCase(Ref ref) {
   return DeleteSubmissionUseCase(
     ref.watch(submissionRepositoryProvider),
     ref.watch(digestiveRepositoryProvider),
-    ref.watch(tasksRepositoryProvider),
+    ref.watch(tasksServiceProvider),
     ref.watch(firebaseUserProvider).requireValue!.uid,
   );
 }

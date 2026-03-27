@@ -4,7 +4,7 @@ import "../../../isar_db/isar_submission.dart";
 import "../../../providers/core_providers.dart";
 import "../../../providers/submission_providers.dart";
 import "../../../repositories/submission_repository.dart";
-import "../../google_tasks/repositories/tasks_repository.dart";
+import "../../google_tasks/services/tasks_service.dart";
 import "common.dart";
 
 part "save_submission_use_case.g.dart";
@@ -14,7 +14,7 @@ class SaveSubmissionUseCase {
   const SaveSubmissionUseCase(this._repo, this._tasksRepo, this._uid);
 
   final SubmissionRepository _repo;
-  final TasksRepository? _tasksRepo;
+  final TasksService? _tasksRepo;
   final String _uid;
 
   Future<void> execute(
@@ -43,7 +43,7 @@ class SaveSubmissionUseCase {
 SaveSubmissionUseCase saveSubmissionUseCase(Ref ref) {
   return SaveSubmissionUseCase(
     ref.watch(submissionRepositoryProvider),
-    ref.watch(tasksRepositoryProvider),
+    ref.watch(tasksServiceProvider),
     ref.watch(firebaseUserProvider).requireValue!.uid,
   );
 }

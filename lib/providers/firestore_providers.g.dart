@@ -99,7 +99,7 @@ final class FirestoreUserConfigNotifierProvider
 }
 
 String _$firestoreUserConfigNotifierHash() =>
-    r'4324fcf0b2b671a0dbca41211feb82a88f603e8b';
+    r'204be631d4ca2b26bb077a7d515857e8dc93566b';
 
 /// Firestore 上のユーザー設定 (UserConfig) を管理する StreamNotifier。
 ///
