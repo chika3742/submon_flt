@@ -268,15 +268,13 @@ class EmailSignInPageState extends ConsumerState<EmailSignInPage>
               }
             }),
           ]);
-    } else if (methods.first ==
-        EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {
+    } else if (methods.any((m) => m == EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD)) {
       _transitionToStep(_EmailSignInStep.password);
-    } else if (methods.first ==
-        EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD) {
+    } else if (methods.any((m) => m == EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD)) {
       sendSignInEmail();
     } else {
       showSimpleDialog(globalContext!, "エラー",
-          "このアカウントは既にGoogleログインを利用して作成されています。\n前の画面に戻り、「Google でログイン」からログインしてください。",
+          "このアカウントはメールアドレスを使用してサインインできません。\n前の画面に戻り、「Google でサインイン」もしくは「Apple でサインイン」からサインインしてください。",
           onOKPressed: () {});
     }
   }
