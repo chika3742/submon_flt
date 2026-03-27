@@ -53,7 +53,6 @@ class EmailLinkAuthNotifier extends _$EmailLinkAuthNotifier
   @override
   @protected
   EmailLinkAuthState getErrorState(Object error, StackTrace st) {
-    ref.read(crashlyticsProvider).recordError(error, st);
     return EmailLinkAuthState.failed(error);
   }
 
