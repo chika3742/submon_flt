@@ -245,6 +245,7 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
         );
       },
     );
+    if (!mounted) return;
     if (dateResult != null) {
       if (_addTime) {
         final timeResult = await showDialog(

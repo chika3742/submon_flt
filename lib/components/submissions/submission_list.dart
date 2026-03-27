@@ -4,11 +4,11 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../features/submission/use_cases/delete_submission_use_case.dart";
 import "../../isar_db/isar_submission.dart";
-import "../../main.dart";
 import "../../providers/firebase_providers.dart";
 import "../../providers/submission_providers.dart";
 import "../../sample_data.dart";
 import "../../utils/ui.dart";
+import "../../utils/utils.dart";
 import "submission_list_item.dart";
 
 class SubmissionList extends ConsumerStatefulWidget {

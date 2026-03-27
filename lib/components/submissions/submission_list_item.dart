@@ -2,13 +2,20 @@ import "package:animations/animations.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:intl/intl.dart";
+import "package:share_plus/share_plus.dart";
 
+import "../../isar_db/isar_digestive.dart";
 import "../../isar_db/isar_submission.dart";
-import "../../main.dart";
 import "../../pages/submission_detail_page.dart";
+import "../../pages/submission_edit_page.dart";
+import "../../providers/digestive_providers.dart";
 import "../../providers/firebase_providers.dart";
+import "../../providers/functions_service.dart";
+import "../../providers/submission_providers.dart";
 import "../../utils/analytics.dart";
 import "../../utils/ui.dart";
+import "../../utils/utils.dart";
+import "../digestive_edit_bottom_sheet.dart";
 import "formatted_date_remaining.dart";
 import "submission_list_item_bottom_sheet.dart";
 
@@ -211,16 +218,13 @@ class SubmissionListItemState extends ConsumerState<SubmissionListItem> {
                     "item_list_name": "submission_list",
                   });
                 },
-                onLongPress: () {
-                  showRoundedBottomSheet(
+                onLongPress: () async {
+                  final action = await showSubmissionListItemBottomSheet(
                     context: context,
-                    useRootNavigator: true,
-                    child: SubmissionListItemBottomSheet(
-                      item: item,
-                      onDone: widget.onDone,
-                      onDelete: widget.onDelete,
-                    ),
+                    item: item,
                   );
+                  if (action == null || !context.mounted) return;
+                  await _handleContextMenuAction(action, item);
                 },
               ),
             );
@@ -248,6 +252,78 @@ class SubmissionListItemState extends ConsumerState<SubmissionListItem> {
       }
     } else {
       return Theme.of(context).textTheme.headlineMedium!.color!;
+    }
+  }
+
+  Future<void> _handleContextMenuAction(
+    SubmissionContextMenuAction action,
+    Submission item,
+  ) async {
+    switch (action) {
+      case SubmissionContextMenuAction.share:
+        ref.read(analyticsProvider).logShare(
+          contentType: "submission",
+          itemId: item.id.toString(),
+          method: "longPressMenu",
+        );
+        showLoadingModal(context);
+        try {
+          final repo = ref.read(submissionRepositoryProvider);
+          final submission = await repo.get(item.id!);
+          if (!mounted) return;
+          if (submission == null) {
+            closeLoadingModal(context);
+            showSnackBar(context, "提出物が見つかりません。");
+            return;
+          }
+
+          final link =
+              await ref.read(functionsServiceProvider).createShareLink(
+                    FunctionsService.submissionToShareLinkData(submission),
+                  );
+          await SharePlus.instance.share(ShareParams(
+            text: "提出物「${submission.title}」が共有されました。Submonで開いてみよう！\n"
+                "$link",
+          ));
+          if (!mounted) return;
+          closeLoadingModal(context);
+          showSnackBar(context, "共有リンクの有効期間は7日間です。");
+        } catch (error, stackTrace) {
+          ref.read(crashlyticsProvider).recordError(error, stackTrace);
+          if (!mounted) return;
+          closeLoadingModal(context);
+          showSnackBar(context, "エラーが発生しました。");
+        }
+
+      case SubmissionContextMenuAction.addDigestive:
+        final data = await showRoundedBottomSheet<Digestive>(
+          context: context,
+          useRootNavigator: true,
+          title: "Digestive 新規作成",
+          child: DigestiveEditBottomSheet(submissionId: item.id),
+        );
+        if (!mounted || data == null) return;
+        final repo = ref.read(digestiveRepositoryProvider);
+        await repo.create(data);
+        if (!mounted) return;
+        showSnackBar(context, "作成しました");
+
+      case SubmissionContextMenuAction.edit:
+        Navigator.of(context, rootNavigator: true).pushNamed(
+          SubmissionEditPage.routeName,
+          arguments: SubmissionEditPageArguments(item.id!),
+        );
+
+      case SubmissionContextMenuAction.makeDone:
+        widget.onDone?.call(true);
+        logMarkedAsDone(
+          ref.read(analyticsProvider),
+          done: item.done,
+          method: "longPressMenu",
+        );
+
+      case SubmissionContextMenuAction.delete:
+        widget.onDelete?.call(true);
     }
   }
 }

@@ -7,7 +7,6 @@ import "package:flutter/material.dart";
 
 import "../../isar_db/isar_timetable.dart";
 import "../../isar_db/isar_timetable_class_time.dart";
-import "../../main.dart";
 import "../../pages/timetable_cell_edit_page.dart";
 import "../../sample_data.dart";
 import "../../utils/ui.dart";

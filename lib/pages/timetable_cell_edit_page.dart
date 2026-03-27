@@ -177,7 +177,7 @@ class _TimetableCellEditPageState extends ConsumerState<TimetableCellEditPage> {
       await repo.update(data);
     }
 
-    if (!context.mounted) return;
+    if (!mounted) return;
     Navigator.pop(context, data);
   }
 }

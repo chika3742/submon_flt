@@ -53,11 +53,7 @@ import "providers/link_events_provider.dart";
 import "providers/pref_provider.dart";
 import "utils/distinguish.dart";
 import "utils/ui.dart";
-
-const screenShotMode = bool.fromEnvironment("SCREENSHOT_MODE");
-
-@Deprecated("Use BuildContext from widget tree instead")
-BuildContext? get globalContext => Application.globalKey.currentContext;
+import "utils/utils.dart";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -128,13 +124,15 @@ class _EagerInitialization extends ConsumerWidget {
 class Application extends ConsumerStatefulWidget {
   const Application({super.key});
 
-  static var globalKey = GlobalKey<NavigatorState>();
-
   @override
   ConsumerState<Application> createState() => _ApplicationState();
 }
 
 class _ApplicationState extends ConsumerState<Application> {
+  final _navigatorKey = GlobalKey<NavigatorState>();
+
+  BuildContext get _navContext => _navigatorKey.currentContext!;
+
   @override
   void initState() {
     super.initState();
@@ -147,18 +145,18 @@ class _ApplicationState extends ConsumerState<Application> {
   Widget build(BuildContext context) {
     ref.listen(linkEventsProvider, (_, next) {
       if (next case AsyncData(:final value)) {
-        handleLink(globalContext!, ref, value.value, onSwitchTab: (tabName) {
+        handleLink(_navContext, ref, value.value, onSwitchTab: (tabName) {
           eventBus.fire(SwitchBottomNav(tabName));
         });
       }
     });
 
     ref.listen(emailLinkAuthProvider, (_, next) {
-      _handleEmailLinkAuthState(globalContext!, next);
+      _handleEmailLinkAuthState(_navContext, next);
     });
 
     ref.listen(authActionProvider, (_, next) {
-      _handleAuthActionState(globalContext!, next);
+      _handleAuthActionState(_navContext, next);
     });
 
     ref.listen(submissionSaveStateProvider, (_, next) {
@@ -167,7 +165,7 @@ class _ApplicationState extends ConsumerState<Application> {
           final message = error is TasksOperationException
               ? error.toString()
               : "保存に失敗しました。";
-          showSnackBar(globalContext!, message);
+          showSnackBar(_navContext, message);
         case _:
           break;
       }
@@ -175,13 +173,13 @@ class _ApplicationState extends ConsumerState<Application> {
 
     ref.listen(firebaseUserProvider, (prev, next) {
       if (prev?.value != null && next.value == null) {
-        backToWelcomePage(globalContext!);
+        backToWelcomePage(_navContext);
       }
     });
 
     ref.listen(firestoreErrorProvider, (_, next) {
       if (next case AsyncData(value: Distinguish(value: final _))) {
-        showSnackBar(globalContext!, "データの保存に失敗しました。サーバーにデータが反映されていない可能性があります。");
+        showSnackBar(_navContext, "データの保存に失敗しました。サーバーにデータが反映されていない可能性があります。");
       }
     });
 
@@ -233,7 +231,7 @@ class _ApplicationState extends ConsumerState<Application> {
     return MaterialApp(
       title: "Submon",
       debugShowCheckedModeBanner: !screenShotMode,
-      navigatorKey: Application.globalKey,
+      navigatorKey: _navigatorKey,
       navigatorObservers: [
         FirebaseAnalyticsObserver(analytics: ref.watch(analyticsProvider))
       ],
