@@ -17,7 +17,7 @@ enum AuthErrorCode {
   wrongPassword("パスワードが間違っています。", isCommonError: true),
   networkRequestFailed("通信に失敗しました。ネットワーク接続を確認してください。", isCommonError: true),
   userTokenExpired("トークンの有効期限が切れました。サインアウトしてから再度サインインしてください。"),
-  invalidActionCode("URLの有効期限が切れたか、無効なURLです。もう一度お試しください。"),
+  invalidActionCode("URLの有効期限が切れたか、無効なURLです。もう一度お試しください。", isCommonError: true),
   emailAlreadyInUse("このメールアドレスは既に使用されています。", isCommonError: true),
   credentialAlreadyInUse("このアカウントはすでに別のユーザーに紐づけられています。", isCommonError: true),
   userMismatch("現在サインイン中のユーザーと異なるアカウントです。", isCommonError: true),
