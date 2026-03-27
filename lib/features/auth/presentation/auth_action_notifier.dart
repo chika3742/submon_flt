@@ -63,7 +63,7 @@ class AuthActionNotifier extends _$AuthActionNotifier
 
         guard(
           const AuthActionState.processing(),
-              () async {
+          () async {
             await ref.read(authRepositoryProvider).checkActionCode(oobCode);
             await ref.read(signOutUseCaseProvider).execute();
             await launchUrl(authUrl, mode: LaunchMode.externalApplication);

@@ -70,18 +70,6 @@ class EmailSignInPageState extends ConsumerState<EmailSignInPage>
         Navigator.pop(context, true);
       }
 
-      if (next is SignInStateSignInLinkSent) {
-        showSimpleDialog(
-            context,
-            "完了",
-            "入力されたアドレスにメールを送信しました。受信したメールのリンクをタップしてログインしてください。\n\n"
-                "※メールは「submon.app」ドメインから送信されます。迷惑メールに振り分けられていないかご確認ください。",
-            onOKPressed: () {
-          Navigator.pop(context);
-          Navigator.pop(context);
-        }, allowCancel: false);
-      }
-
       if (next is SignInStatePasswordResetLinkSent) {
         showSimpleDialog(
             context,

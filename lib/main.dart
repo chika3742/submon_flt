@@ -375,6 +375,10 @@ class _ApplicationState extends ConsumerState<Application> {
     BuildContext context,
     EmailLinkAuthState state,
   ) {
+    if (state is! AuthActionStateProcessing) {
+      closeLoadingModal(context);
+    }
+
     switch (state) {
       case EmailLinkAuthStateSignInSucceeded(:final result):
         showSnackBar(context, signInSuccessMessage(result));
@@ -395,9 +399,9 @@ class _ApplicationState extends ConsumerState<Application> {
           authErrorMessage(error),
           duration: Duration(seconds: 20),
         );
-      case EmailLinkAuthStateIdle():
       case EmailLinkAuthStateProcessing():
-        break;
+        showLoadingModal(context);
+      case EmailLinkAuthStateIdle():
     }
   }
 
@@ -406,20 +410,20 @@ class _ApplicationState extends ConsumerState<Application> {
     AuthActionState state,
   ) {
     if (state is! AuthActionStateProcessing) {
-      closeLoadingModal(globalContext!);
+      closeLoadingModal(context);
     }
 
     switch (state) {
       case AuthActionStateSignedOut():
-        backToWelcomePage(globalContext!);
+        backToWelcomePage(context);
       case AuthActionStateFailed(:final error):
         showSnackBar(
-          globalContext!,
+          context,
           authErrorMessage(error),
           duration: Duration(seconds: 20),
         );
       case AuthActionStateProcessing():
-        showLoadingModal(globalContext!);
+        showLoadingModal(context);
       case AuthActionStateIdle():
     }
   }

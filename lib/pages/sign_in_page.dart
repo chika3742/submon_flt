@@ -190,8 +190,14 @@ class _SignInPageState extends ConsumerState<SignInPage> {
           showCancel: true,
         );
       case SignInStateSignInLinkSent():
-        showSnackBar(context, "送信しました");
-        Navigator.pop(context);
+        await showSimpleDialog(
+          context,
+          "完了",
+          "入力されたアドレスにメールを送信しました。受信したメールのリンクをタップしてログインしてください。\n\n"
+              "※メールは「submon.app」ドメインから送信されます。迷惑メールに振り分けられていないかご確認ください。",
+          allowCancel: false,
+        );
+        if (context.mounted) Navigator.pop(context);
       case SignInStateFailed(:final error):
         showSnackBar(
           context,
