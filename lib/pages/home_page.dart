@@ -391,7 +391,6 @@ class HomePageState extends ConsumerState<HomePage> {
               "データの取得に失敗しました。",
               onSignOut: () async {
                 await ref.read(signOutUseCaseProvider).execute();
-                if (context.mounted) backToWelcomePage(context);
               },
               onShowAnnouncements: () {
                 Browser.openAnnouncements();
@@ -412,7 +411,6 @@ class HomePageState extends ConsumerState<HomePage> {
             showCancel: true,
             cancelText: "ログアウト", onCancelPressed: () async {
           await ref.read(signOutUseCaseProvider).execute();
-          if (mounted) backToWelcomePage(context);
         }, onOKPressed: () {
           Browser.openStoreListing();
           SystemChannels.platform.invokeMethod("SystemNavigator.pop");

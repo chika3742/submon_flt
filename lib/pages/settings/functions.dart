@@ -17,7 +17,6 @@ import "../../ui_components/settings_ui.dart";
 import "../../utils/ui.dart";
 import "../../utils/utils.dart";
 import "../sign_in_page.dart";
-import "../welcome_page.dart";
 import "account_edit_page.dart";
 import "account_link_page.dart";
 import "google_tasks.dart";
@@ -65,7 +64,6 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
             "リマインダー設定の取得に失敗しました。",
             onSignOut: () async {
               await ref.read(signOutUseCaseProvider).execute();
-              if (mounted) backToWelcomePage(context);
             },
             onShowAnnouncements: () {
               Browser.openAnnouncements();
@@ -167,11 +165,6 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
                     await ref.read(signOutUseCaseProvider).execute();
                     if (context.mounted) {
                       showSnackBar(context, "ログアウトしました");
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        WelcomePage.routeName,
-                        (_) => false,
-                      );
                     }
                   },
                   showCancel: true,

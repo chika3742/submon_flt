@@ -6,7 +6,6 @@ import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_slidable/flutter_slidable.dart";
 
-import "../pages/home_page.dart";
 import "../pages/welcome_page.dart";
 import "../ui_components/platform_dialog.dart";
 
@@ -247,8 +246,7 @@ void showSelectSheet(
 
 void backToWelcomePage(BuildContext context) {
   final navigatorState = Navigator.of(context, rootNavigator: true);
-  navigatorState.popUntil(ModalRoute.withName(HomePage.routeName));
-  navigatorState.pushReplacementNamed(WelcomePage.routeName);
+  navigatorState.pushNamedAndRemoveUntil(WelcomePage.routeName, (_) => false);
 }
 
 class SelectSheetAction {

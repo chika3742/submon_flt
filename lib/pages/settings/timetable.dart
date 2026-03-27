@@ -60,7 +60,6 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
             "時間割通知設定の取得に失敗しました。",
             onSignOut: () async {
               await ref.read(signOutUseCaseProvider).execute();
-              if (context.mounted) backToWelcomePage(context);
             },
             onShowAnnouncements: () {
               Browser.openAnnouncements();

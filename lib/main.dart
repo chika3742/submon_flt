@@ -169,6 +169,12 @@ class _ApplicationState extends ConsumerState<Application> {
       }
     });
 
+    ref.listen(firebaseUserProvider, (prev, next) {
+      if (prev?.value != null && next.value == null) {
+        backToWelcomePage(globalContext!);
+      }
+    });
+
     final textTheme = const TextTheme(
       bodySmall: TextStyle(
         height: 1.2,
