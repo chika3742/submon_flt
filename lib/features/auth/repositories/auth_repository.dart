@@ -8,13 +8,13 @@ import "package:riverpod_annotation/riverpod_annotation.dart";
 import "package:sign_in_with_apple/sign_in_with_apple.dart";
 
 import "../../../apple_web_auth_options.dart";
-import "apple_sign_in_android.dart";
 import "../../../providers/core_providers.dart";
 import "../../../utils/app_links.dart";
 import "../models/auth_exception.dart";
+import "apple_sign_in_android.dart";
 
-part "auth_repository.g.dart";
 part "auth_repository.freezed.dart";
+part "auth_repository.g.dart";
 
 @riverpod
 AuthRepository authRepository(Ref ref) {
