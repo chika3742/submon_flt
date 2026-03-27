@@ -18,7 +18,7 @@ class TimetableTableRepository extends SyncedRepository<TimetableTable> {
   Future<int> create(TimetableTable data) => put(data);
 
   /// 既存データを更新。
-  Future<void> update(TimetableTable data) async {
-    await put(data);
-  }
+  Future<void> update(TimetableTable data) => put(data);
+
+  Future<void> remove(int id) => delete(id);
 }

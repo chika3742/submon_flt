@@ -368,7 +368,7 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
                       onPressed: () {
                         final classTimeRepo =
                             ref.read(timetableClassTimeRepositoryProvider);
-                        classTimeRepo.delete(item.period);
+                        classTimeRepo.remove(item.period);
                       },
                     )
                   : null,
@@ -448,7 +448,7 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
         showCancel: true, onOKPressed: () {
       final tableRepo = ref.read(timetableTableRepositoryProvider);
       final timetableRepo = ref.read(timetableRepositoryProvider);
-      tableRepo.delete(table.id!);
+      tableRepo.remove(table.id!);
       timetableRepo.clearTableLocalOnly(table.id!);
 
       final currentTableId =

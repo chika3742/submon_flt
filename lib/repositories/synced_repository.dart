@@ -48,6 +48,7 @@ abstract class SyncedRepository<T> {
     return ids;
   }
 
+  @protected
   Future<void> delete(int id) async {
     await isar.writeTxn(() => collection.delete(id));
     _syncDelete(id);

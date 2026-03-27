@@ -20,7 +20,7 @@ class TimetableClassTimeRepository
   Future<int> create(TimetableClassTime data) => put(data);
 
   /// 既存データを更新。
-  Future<void> update(TimetableClassTime data) async {
-    await put(data);
-  }
+  Future<void> update(TimetableClassTime data) => put(data);
+
+  Future<void> remove(int id) => delete(id);
 }

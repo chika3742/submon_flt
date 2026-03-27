@@ -26,9 +26,9 @@ class SubmissionRepository extends SyncedRepository<Submission> {
   Future<int> create(Submission data) => put(data);
 
   /// 既存データを更新。
-  Future<void> update(Submission data) async {
-    await put(data);
-  }
+  Future<void> update(Submission data) => put(data);
+
+  Future<void> remove(int id) => delete(id);
 
   Future<void> invertDone(Submission data) {
     return put(data..done = !data.done);

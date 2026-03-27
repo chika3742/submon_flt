@@ -33,7 +33,7 @@ class DeleteSubmissionUseCase {
 
     final digestivesToRestore = await _digestiveRepo.deleteBySubmissionId(id);
 
-    await _repo.delete(id);
+    await _repo.remove(id);
 
     if (submission.googleTasksTaskId case final googleTasksTaskId?) {
       if (_tasksRepo == null) {
