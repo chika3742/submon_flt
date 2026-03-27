@@ -1,114 +1,90 @@
-import "dart:async";
-
 import "package:flutter/material.dart";
-import "package:shared_preferences/shared_preferences.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
+
 import "../../components/timetable/timetable_day_list.dart";
-import "../../db/shared_prefs.dart";
-import "../../events.dart";
+import "../../core/pref_key.dart";
+import "../../providers/timetable_providers.dart";
 
-import "../../isar_db/isar_timetable.dart";
-import "../../isar_db/isar_timetable_class_time.dart";
-import "../../isar_db/isar_timetable_table.dart";
-
-class TabTimetable2 extends StatefulWidget {
+class TabTimetable2 extends ConsumerStatefulWidget {
   const TabTimetable2({super.key});
 
   @override
-  State<TabTimetable2> createState() => _TabTimetable2State();
+  ConsumerState<TabTimetable2> createState() => _TabTimetable2State();
 }
 
-class _TabTimetable2State extends State<TabTimetable2> {
-  StreamSubscription? _listener;
+class _TabTimetable2State extends ConsumerState<TabTimetable2> {
   late final PageController _controller;
-  List<Timetable>? _items;
-  List<TimetableTable>? _tables;
-  List<TimetableClassTime>? _classTimes;
-  SharedPrefs? prefs;
+  var _initialized = false;
 
   @override
   void initState() {
-    initSharedPrefs();
-
-    _listener = eventBus.on<TimetableListChanged>().listen((event) {
-      initTable();
-    });
-
     super.initState();
+    _initPageController();
   }
 
   @override
   void dispose() {
-    _listener?.cancel();
+    _controller.dispose();
     super.dispose();
   }
 
-  Future<void> initSharedPrefs() async {
-    prefs ??= SharedPrefs(await SharedPreferences.getInstance());
-
-    initPagePos();
-  }
-
-  void initPagePos() {
+  void _initPageController() {
+    final showSaturday =
+        ref.readPref(PrefKey.timetableShowSaturday);
     var page = DateTime.now().weekday - 1;
-    if (!prefs!.timetableShowSaturday && page == 5) {
+    if (!showSaturday && page == 5) {
       page = 0;
     }
     if (page == 6) {
       page = 0;
     }
     _controller = PageController(initialPage: page);
-
-    initTable();
-  }
-
-  Future<void> initTable() async {
-    await TimetableProvider().use((provider) async {
-      _items = await provider.getCurrentTable();
-    });
-    await TimetableClassTimeProvider().use((provider) async {
-      _classTimes = await provider.getAll();
-    });
-    await TimetableTableProvider().use((provider) async {
-      _tables = await provider.getAll();
-    });
-
-    final sharedPrefs = SharedPrefs(await SharedPreferences.getInstance());
-    if (!_tables!.any((element) => element.id == sharedPrefs.intCurrentTimetableId)) {
-      sharedPrefs.intCurrentTimetableId = -1;
-    }
-
-    setState(() {});
+    _initialized = true;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_items == null || prefs == null) return Container();
+    if (!_initialized) return Container();
+
+    final showSaturday = ref.watchPref(PrefKey.timetableShowSaturday);
+    final tableId = ref.watchPref(PrefKey.intCurrentTimetableId);
+    final cellsAsync = ref.watch(timetableCellsProvider(tableId));
+    final classTimesAsync = ref.watch(classTimesProvider);
+    final tablesAsync = ref.watch(timetableTablesProvider);
+
+    final items = cellsAsync.value;
+    final classTimes = classTimesAsync.value;
+    final tables = tablesAsync.value;
+
+    if (items == null || classTimes == null) return Container();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Flexible(
           child: PageView.builder(
-            itemCount: prefs!.timetableShowSaturday ? 6 : 5,
+            itemCount: showSaturday ? 6 : 5,
             controller: _controller,
             itemBuilder: (context, index) {
-              final items = _items!
+              final dayItems = items
                   .where((element) => element.cellId % 6 == index)
                   .toList();
               return TimetableDayList(
                 weekday: index,
-                prefs: prefs!,
-                items: items,
-                classTimeItems: _classTimes!,
+                showTimeMarker: ref.watchPref(PrefKey.timetableShowTimeMarker),
+                showClassTime: ref.watchPref(PrefKey.timetableShowClassTime),
+                periodCount: ref.watchPref(PrefKey.timetablePeriodCountToDisplay),
+                items: dayItems,
+                classTimeItems: classTimes,
               );
             },
           ),
         ),
-        if (_tables != null)
+        if (tables != null)
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: DropdownButtonFormField<int>(
-              initialValue: prefs!.intCurrentTimetableId,
+              initialValue: tableId,
               decoration: const InputDecoration(
                 label: Text("時間割選択"),
                 border: OutlineInputBorder(),
@@ -118,18 +94,15 @@ class _TabTimetable2State extends State<TabTimetable2> {
                   value: -1,
                   child: Text("メイン"),
                 ),
-                ..._tables!.map((e) {
+                ...tables.map((e) {
                   return DropdownMenuItem(
                     value: e.id,
                     child: Text(e.title),
                   );
-                })
+                }),
               ],
               onChanged: (e) {
-                setState(() {
-                  prefs!.intCurrentTimetableId = e!;
-                });
-                initTable();
+                ref.updatePref(PrefKey.intCurrentTimetableId, e!);
               },
             ),
           ),

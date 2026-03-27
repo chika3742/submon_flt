@@ -2,11 +2,16 @@ import "dart:async";
 
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
-import "../../auth/sign_in_handler.dart";
+import "../../browser.dart";
 import "../../components/dropdown_time_picker_bottom_sheet.dart";
-import "../../db/firestore_provider.dart";
+import "../../features/auth/use_cases/common.dart";
+import "../../features/auth/use_cases/sign_out_use_case.dart";
 import "../../main.dart";
+import "../../providers/firebase_providers.dart";
+import "../../providers/firestore_providers.dart";
 import "../../src/pigeons.g.dart";
 import "../../ui_components/settings_ui.dart";
 import "../../utils/ui.dart";
@@ -17,16 +22,17 @@ import "account_link_page.dart";
 import "google_tasks.dart";
 import "timetable.dart";
 
-class FunctionsSettingsPage extends StatefulWidget {
+class FunctionsSettingsPage extends ConsumerStatefulWidget {
   const FunctionsSettingsPage({super.key});
 
   static const routeName = "/settings/functions";
 
   @override
-  State<FunctionsSettingsPage> createState() => _FunctionsSettingsPageState();
+  ConsumerState<FunctionsSettingsPage> createState() =>
+      _FunctionsSettingsPageState();
 }
 
-class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
+class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
   bool _pwEnabled = true;
   TimeOfDay? _reminderTime;
   bool _loadingReminderTime = true;
@@ -37,18 +43,44 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
   @override
   void initState() {
     super.initState();
+    // TODO: hooksを使ってbuild関数内で完結できるようにする
+    _initReminderTime();
+  }
 
-    FirestoreProvider.config.then((value) {
+  Future<void> _initReminderTime() async {
+    try {
+      final config = await ref.read(firestoreUserConfigProvider.future);
+      if (!mounted) return;
       setState(() {
-        _reminderTime = value!.reminderNotificationTime;
+        _reminderTime = config?.reminderNotificationTime;
       });
-    }).onError<FirebaseException>((error, stackTrace) {
-      handleFirebaseError(error, stackTrace, context, "リマインダー設定の取得に失敗しました。");
-    }).whenComplete(() {
-      setState(() {
-        _loadingReminderTime = false;
-      });
-    });
+    } on FirebaseException catch (e, stackTrace) {
+      ref.read(crashlyticsProvider).recordError(e, stackTrace);
+      if (!context.mounted) return;
+      switch (e.code) {
+        case "permission-denied":
+          showFirestoreReadFailedDialog(
+            context,
+            "リマインダー設定の取得に失敗しました。",
+            onSignOut: () async {
+              await ref.read(signOutUseCaseProvider).execute();
+            },
+            onShowAnnouncements: () {
+              Browser.openAnnouncements();
+              SystemChannels.platform.invokeMethod("SystemNavigator.pop");
+            },
+          );
+        default:
+          showSnackBar(context, "リマインダー設定の取得に失敗しました。(${e.code})",
+              duration: const Duration(seconds: 20));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _loadingReminderTime = false;
+        });
+      }
+    }
   }
 
   @override
@@ -60,8 +92,8 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = FirebaseAuth.instance;
-    final displayName = auth.currentUser?.displayName;
+    final user = ref.watch(firebaseUserProvider).value;
+    final displayName = user?.displayName;
 
     return SettingsListView(
       categories: [
@@ -86,7 +118,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                   showSnackBar(
                       globalContext!, "通知の表示が許可されていません。本体設定から許可してください。");
                 } else {
-                  if (!mounted) return;
+                  if (!context.mounted) return;
 
                   // show time picker for reminder time
                   final result = await showRoundedBottomSheet<TimeOfDay>(
@@ -97,15 +129,14 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                     ),
                   );
 
-                  print(result);
-
                   if (result != null) {
                     setState(() {
                       _loadingReminderTime = true;
                     });
                     try {
-                      await FirestoreProvider.setReminderNotificationTime(
-                          result);
+                      await ref
+                          .read(firestoreUserConfigProvider.notifier)
+                          .setReminderNotificationTime(result);
                       setState(() {
                         _reminderTime = result;
                       });
@@ -122,23 +153,30 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
           ],
         ),
         SettingsCategory(title: "アカウント", tiles: [
-          if (auth.currentUser != null && !auth.currentUser!.isAnonymous)
+          if (user != null && !user.isAnonymous)
             SettingsTile(
               title: "ログアウト",
-              onTap: () async {
-                showSimpleDialog(context, "確認", "ログアウトしますか？",
-                    onOKPressed: () async {
-                  await SignInHandler.signOut();
-                  showSnackBar(globalContext!, "ログアウトしました");
-                }, showCancel: true);
+              onTap: () {
+                showSimpleDialog(
+                  context,
+                  "ログアウト",
+                  "ログアウトしますか？",
+                  onOKPressed: () async {
+                    await ref.read(signOutUseCaseProvider).execute();
+                    if (context.mounted) {
+                      showSnackBar(context, "ログアウトしました");
+                    }
+                  },
+                  showCancel: true,
+                );
               },
             ),
-          if (auth.currentUser != null &&
-              auth.currentUser!.email != "" &&
-              !auth.currentUser!.isAnonymous)
+          if (user != null &&
+              user.email != "" &&
+              !user.isAnonymous)
             SettingsTile(
               title: emailChangeable() ? "メールアドレスの変更" : "メールアドレス",
-              subtitle: auth.currentUser!.email,
+              subtitle: user.email,
               onTap: emailChangeable()
                   ? () async {
                       await Navigator.pushNamed(
@@ -147,7 +185,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                     }
                   : null,
             ),
-          if (auth.currentUser != null && passwordChangeable() && _pwEnabled)
+          if (user != null && passwordChangeable() && _pwEnabled)
             SettingsTile(
               title: "パスワードの変更",
               onTap: () {
@@ -160,7 +198,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                 await Navigator.pushNamed(context, AccountLinkPage.routeName);
                 setState(() {});
               }),
-          if (auth.currentUser != null)
+          if (user != null)
             SettingsTile(
               title: "ユーザー名の変更",
               subtitle: displayName != null && displayName.isNotEmpty
@@ -172,23 +210,23 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
                 setState(() {});
               },
             ),
-          if (auth.currentUser != null && auth.currentUser!.isAnonymous)
+          if (user != null && user.isAnonymous)
             SettingsTile(
               title: "アカウントをアップグレード",
               subtitle: "お試しアカウントを通常アカウントにアップグレードできます。",
               onTap: () async {
                 final result = await Navigator.pushNamed(
                     context, SignInPage.routeName,
-                    arguments: const SignInPageArguments(SignInMode.upgrade));
+                    arguments: const SignInPageArguments(AuthMode.upgrade));
                 if (result == true) {
                   setState(() {});
                   showSnackBar(globalContext!, "アカウントがアップグレードされました！");
                 }
               },
             ),
-          if (auth.currentUser != null)
+          if (user != null)
             SettingsTile(
-              title: auth.currentUser!.isAnonymous
+              title: user.isAnonymous
                   ? "ログアウト(アカウントの削除)"
                   : "アカウントの削除",
               titleTextStyle: const TextStyle(color: Colors.red),
@@ -237,7 +275,9 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
             _reminderTime = null;
           });
           // NotificationMethodChannel.unregisterReminder();
-          FirestoreProvider.setReminderNotificationTime(null);
+          ref
+              .read(firestoreUserConfigProvider.notifier)
+              .setReminderNotificationTime(null);
         },
       );
     }
@@ -246,10 +286,10 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
   }
 
   Future<void> _changePassword() async {
-    final auth = FirebaseAuth.instance;
+    final user = ref.read(firebaseUserProvider).requireValue!;
     showLoadingModal(context);
     try {
-      final providerData = auth.currentUser!.providerData;
+      final providerData = user.providerData;
       if (providerData.isEmpty) throw FirebaseAuthException(code: "user-not-found");
       Navigator.pop(globalContext!);
       if (providerData.first.providerId == EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {
@@ -269,10 +309,10 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
       } else {
         showSnackBar(context, "アカウント状態の取得に失敗しました (Code: ${e.code})");
       }
-      handleAuthError(e, stack, context);
+      ref.read(crashlyticsProvider).recordError(e, stack);
     } catch (e, stack) {
       showSnackBar(context, "エラーが発生しました");
-      recordErrorToCrashlytics(e, stack);
+      ref.read(crashlyticsProvider).recordError(e, stack);
     }
   }
 
@@ -281,13 +321,13 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
       EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD,
       EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD
     ];
-    final currentUser = FirebaseAuth.instance.currentUser!;
-    return !currentUser.isAnonymous &&
-        providers.contains(currentUser.providerData.firstOrNull?.providerId);
+    final currentUser = ref.read(firebaseUserProvider).requireValue!;
+    return !currentUser.isAnonymous
+        && currentUser.providerData.any((p) => providers.contains(p.providerId));
   }
 
   bool passwordChangeable() {
-    final currentUser = FirebaseAuth.instance.currentUser!;
+    final currentUser = ref.read(firebaseUserProvider).requireValue!;
     return !currentUser.isAnonymous &&
         currentUser.providerData.firstOrNull?.providerId ==
             EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD;

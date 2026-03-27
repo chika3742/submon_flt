@@ -1,18 +1,13 @@
 import "package:flutter/material.dart";
-import "../events.dart";
+
 import "home_tabs/tab_timetable.dart";
 import "timetable_edit_page.dart";
 
-class TimetableTableViewPage extends StatefulWidget {
+class TimetableTableViewPage extends StatelessWidget {
   const TimetableTableViewPage({super.key});
 
   static const routeName = "/timetable/table-view";
 
-  @override
-  State<TimetableTableViewPage> createState() => _TimetableTableViewPageState();
-}
-
-class _TimetableTableViewPageState extends State<TimetableTableViewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,9 +19,8 @@ class _TimetableTableViewPageState extends State<TimetableTableViewPage> {
             icon: const Icon(Icons.edit),
             onPressed: () async {
               await Navigator.pushNamed(context, TimetableEditPage.routeName);
-              eventBus.fire(TimetableListChanged());
             },
-          )
+          ),
         ],
       ),
       body: const TabTimetable(),

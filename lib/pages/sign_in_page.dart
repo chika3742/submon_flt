@@ -1,65 +1,79 @@
-import "dart:async";
 import "dart:io";
 
 import "package:firebase_auth/firebase_auth.dart" hide AuthProvider;
-import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_svg/flutter_svg.dart";
 
-import "../auth/sign_in_handler.dart";
 import "../browser.dart";
-import "../main.dart";
+import "../features/auth/presentation/auth_messages.dart";
+import "../features/auth/presentation/sign_in_state_notifier.dart";
+import "../features/auth/repositories/auth_repository.dart";
+import "../features/auth/use_cases/common.dart";
 import "../ui_components/hidable_progress_indicator.dart";
-import "../utils/app_links.dart";
 import "../utils/ui.dart";
-import "../utils/utils.dart";
 import "email_sign_in_page.dart";
+import "home_page.dart";
 
-class SignInPage extends StatefulWidget {
-  const SignInPage({super.key,
-      required this.initialCred,
-      required this.mode,
-      this.continueUri});
+class SignInPage extends ConsumerStatefulWidget {
+  const SignInPage({
+    super.key,
+    required this.initialCred,
+    required this.mode,
+    this.continueUri,
+  });
 
   static const routeName = "/sign-in";
 
   final UserCredential? initialCred;
-  final SignInMode mode;
+  final AuthMode mode;
   final Uri? continueUri;
 
   @override
-  State<SignInPage> createState() => _SignInPageState();
+  ConsumerState<SignInPage> createState() => _SignInPageState();
 }
 
 class SignInPageArguments {
   final UserCredential? initialCred;
-  final SignInMode mode;
+  final AuthMode mode;
   final Uri? continueUri;
 
   const SignInPageArguments(this.mode, {this.initialCred, this.continueUri});
 }
 
-class _SignInPageState extends State<SignInPage> {
-  var loading = false;
-
+class _SignInPageState extends ConsumerState<SignInPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.mode == SignInMode.reauthenticate) {
-      reAuth();
+    if (widget.mode == AuthMode.reauthenticate) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(signInStateProvider.notifier).reAuth();
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(signInStateProvider);
+
+    ref.listen(signInStateProvider, (_, next) {
+      _handleStateChange(next, context);
+    });
+
+    final title = switch (widget.mode) {
+      AuthMode.signIn => "ログイン / 新規登録",
+      AuthMode.upgrade => "アカウントをアップグレード",
+      AuthMode.reauthenticate => "再認証",
+    };
+
     return Scaffold(
         appBar: AppBar(
-          title: const Text("ログイン / 新規登録"),
+          title: Text(title),
         ),
         body: SafeArea(
           child: Stack(
             children: [
-              HidableLinearProgressIndicator(show: loading),
+              HidableLinearProgressIndicator(show: state is AuthBusyState),
               Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
@@ -98,9 +112,14 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                         label: const Text("メールアドレスでサインイン",
                             style: TextStyle(color: Colors.white)),
-                        onPressed: (!loading && widget.mode != SignInMode.reauthenticate)
+                        onPressed: state is! AuthBusyState
                             ? () {
-                                signInWithProvider(AuthProvider.email);
+                                Navigator.pushNamed(
+                                  context,
+                                  EmailSignInPage.routeName,
+                                  arguments:
+                                      EmailSignInPageArguments(widget.mode),
+                                );
                               }
                             : null,
                       ),
@@ -109,17 +128,17 @@ class _SignInPageState extends State<SignInPage> {
                     if (Platform.isIOS || Platform.isMacOS)
                       Column(
                         children: [
-                          _buildAppleSignInButton(),
+                          _buildAppleSignInButton(state),
                           const SizedBox(height: 16),
-                          _buildGoogleSignInButton(),
+                          _buildGoogleSignInButton(state),
                         ],
                       )
                     else
                       Column(
                         children: [
-                          _buildGoogleSignInButton(),
+                          _buildGoogleSignInButton(state),
                           const SizedBox(height: 16),
-                          _buildAppleSignInButton(),
+                          _buildAppleSignInButton(state),
                         ],
                       ),
                     const SizedBox(height: 24),
@@ -131,7 +150,68 @@ class _SignInPageState extends State<SignInPage> {
         ));
   }
 
-  Widget _buildAppleSignInButton() {
+  Future<void> _handleStateChange(SignInState next, BuildContext context) async {
+    switch (next) {
+      case SignInStateSignInSucceeded(:final completionResult):
+        showSnackBar(context, signInSuccessMessage(completionResult));
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          HomePage.routeName,
+          (route) => false,
+        );
+      case SignInStateUpgradeSucceeded():
+        showSnackBar(context, "アカウントをアップグレードしました。");
+        Navigator.of(context).pop(true);
+      case SignInStateReAuthSucceeded():
+        Navigator.of(context).pop(true);
+      case SignInStateReAuthCanceled():
+        Navigator.of(context).pop(false);
+      case SignInStateWaitingForPasswordSignIn():
+        final result = await Navigator.pushNamed(
+          context,
+          EmailSignInPage.routeName,
+          arguments: const EmailSignInPageArguments(AuthMode.reauthenticate),
+        );
+        if (result != true) {
+          ref.read(signInStateProvider.notifier).cancel();
+          if (context.mounted) Navigator.pop(context);
+        }
+      case SignInStateWaitingForEmailLinkDialog():
+        showSimpleDialog(
+          context,
+          "追加認証",
+          "セキュリティのため、再度ログインする必要があります。送信されたメールにあるURLをタップし、ログインしてください。",
+          onOKPressed: () {
+            ref.read(signInStateProvider.notifier)
+                .confirmEmailLinkReAuth(widget.continueUri.toString());
+          },
+          onCancelPressed: () {
+            Navigator.pop(context);
+          },
+          showCancel: true,
+        );
+      case SignInStateSignInLinkSent():
+        await showSimpleDialog(
+          context,
+          "完了",
+          "入力されたアドレスにメールを送信しました。受信したメールのリンクをタップしてログインしてください。\n\n"
+              "※メールは「submon.app」ドメインから送信されます。迷惑メールに振り分けられていないかご確認ください。",
+          allowCancel: false,
+        );
+        if (context.mounted) Navigator.pop(context);
+      case SignInStateFailed(:final error):
+        showSnackBar(
+          context,
+          authErrorMessage(error),
+          duration: Duration(seconds: 20),
+        );
+      case SignInStateIdle():
+      case SignInStateBusy():
+      case SignInStatePasswordResetLinkSent(): // handled in email sign-in page
+        break;
+    }
+  }
+
+  Widget _buildAppleSignInButton(SignInState state) {
     return SizedBox(
       width: 250,
       height: 50,
@@ -142,16 +222,17 @@ class _SignInPageState extends State<SignInPage> {
         ),
         style: ElevatedButton.styleFrom(backgroundColor: Colors.blueGrey),
         label: const Text("Appleでサインイン", style: TextStyle(color: Colors.white)),
-        onPressed: !loading && widget.mode != SignInMode.reauthenticate
+        onPressed: state is! AuthBusyState
             ? () {
-                signInWithProvider(AuthProvider.apple);
+                ref.read(signInStateProvider.notifier)
+                    .signInWithProvider(AuthProvider.apple, mode: widget.mode);
               }
             : null,
       ),
     );
   }
 
-  Widget _buildGoogleSignInButton() {
+  Widget _buildGoogleSignInButton(SignInState state) {
     return SizedBox(
       width: 250,
       height: 50,
@@ -162,125 +243,13 @@ class _SignInPageState extends State<SignInPage> {
         style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
         label:
             const Text("Googleでサインイン", style: TextStyle(color: Colors.black)),
-        onPressed: !loading && widget.mode != SignInMode.reauthenticate
+        onPressed: state is! AuthBusyState
             ? () {
-                signInWithProvider(AuthProvider.google);
+                ref.read(signInStateProvider.notifier)
+                    .signInWithProvider(AuthProvider.google, mode: widget.mode);
               }
             : null,
       ),
     );
-  }
-
-  Future<UserCredential?> signInWithProvider(AuthProvider provider) async {
-    setState(() {
-      loading = true;
-    });
-
-    try {
-      final signInHandler = SignInHandler(widget.mode);
-      final result = await signInHandler.signIn(provider, context: context);
-
-      await signInHandler.handleSignInResult(result);
-
-      return result.credential;
-    } on FirebaseAuthException catch (e, stack) {
-      if (widget.mode != SignInMode.reauthenticate) {
-        handleCredentialError(e, stack);
-        return null;
-      } else {
-        rethrow;
-      }
-    } catch (e, stack) {
-      FirebaseCrashlytics.instance.recordError(e, stack);
-      showSnackBar(context, "エラーが発生しました。($e)");
-      return null;
-    } finally {
-      setState(() {
-        loading = false;
-      });
-    }
-  }
-
-  void handleCredentialError(FirebaseAuthException e, StackTrace stack) {
-    switch (e.code) {
-      case "account-exists-with-different-credential":
-        showSnackBar(context, "このアカウントに紐付けられたメールアドレスのユーザーが既に存在します。");
-        break;
-      case "invalid-credential":
-        print(e.message);
-        showSnackBar(context, "エラー: 資格情報が無効です");
-        break;
-      default:
-        handleAuthError(e, stack, context);
-    }
-  }
-
-  void reAuth() {
-    Future(() async {
-      final auth = FirebaseAuth.instance;
-
-      final currentUser = auth.currentUser!;
-      final providerId = currentUser.providerData.first.providerId;
-
-      if (providerId == EmailAuthProvider.PROVIDER_ID) {
-        showLoadingModal(context);
-
-        // TODO: remove fetching sign in method
-        final methods = await auth.fetchSignInMethodsForEmail(currentUser.email!);
-
-        Navigator.pop(globalContext!); // Close Loading modal
-
-        if (methods.first == EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {
-          final result = await Navigator.pushNamed(globalContext!, EmailSignInPage.routeName,
-              arguments: const EmailSignInPageArguments(SignInMode.reauthenticate));
-          Navigator.pop(globalContext!, result != null);
-        } else if (methods.first ==
-            EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD) {
-          showSimpleDialog(
-            globalContext!,
-            "追加認証",
-            "セキュリティのため、再度ログインする必要があります。送信されたメールにあるURLをタップし、ログインしてください。",
-            onOKPressed: () async {
-              showLoadingModal(context);
-              try {
-                await auth.sendSignInLinkToEmail(
-                    email: currentUser.email!,
-                    actionCodeSettings: actionCodeSettings(widget.continueUri.toString()));
-                if (mounted) showSnackBar(context, "送信しました");
-              } catch (e, stack) {
-                showSnackBar(context, "エラーが発生しました");
-                recordErrorToCrashlytics(e, stack);
-              }
-              Navigator.pop(context); // Close Loading modal
-              Navigator.pop(context); // Close sign in page
-            },
-            onCancelPressed: () {
-              Navigator.pop(context); // Close sign in page
-            },
-            showCancel: true,
-          );
-        }
-      } else {
-        try {
-          UserCredential? result;
-          if (providerId == GoogleAuthProvider.PROVIDER_ID) {
-            result = await signInWithProvider(AuthProvider.google);
-          } else if (providerId == "apple.com") {
-            result = await signInWithProvider(AuthProvider.apple);
-          }
-
-          Navigator.pop(globalContext!, result != null && result.user != null);
-        } on FirebaseAuthException catch (e, stack) {
-          switch (e.code) {
-            case "user-mismatch":
-              showSnackBar(context, "ユーザーがログインされているものと一致しません");
-              break;
-            default:
-              handleAuthError(e, stack, context);
-          }
-          Navigator.pop(context);
-        }
-      }
-    });
   }
 }

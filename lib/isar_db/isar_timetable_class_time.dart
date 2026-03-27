@@ -1,9 +1,7 @@
 import "package:flutter/material.dart";
 import "package:isar_community/isar.dart";
-import "../db/firestore_provider.dart";
-import "isar_provider.dart";
 
-part "../generated/isar_db/isar_timetable_class_time.g.dart";
+part "isar_timetable_class_time.g.dart";
 
 @Collection()
 class TimetableClassTime {
@@ -59,26 +57,5 @@ class TimetableClassTime {
   }) {
     startTime = start;
     endTime = end;
-  }
-}
-
-class TimetableClassTimeProvider extends IsarProvider<TimetableClassTime> {
-  @override
-  Future<void> deleteFirestore(int id) {
-    return FirestoreProvider.timetableClassTime.delete(id.toString());
-  }
-
-  @override
-  Future<void> setFirestore(TimetableClassTime data, int id) {
-    return FirestoreProvider.timetableClassTime
-        .set(data.period.toString(), data.toMap());
-  }
-
-  @override
-  Future<void> use(
-      Future<void> Function(TimetableClassTimeProvider provider)
-          callback) async {
-    await open();
-    await callback(this);
   }
 }

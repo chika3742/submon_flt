@@ -1,105 +1,49 @@
-import "dart:async";
-
+import "package:animated_reorderable_list/animated_reorderable_list.dart";
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
-import "../../db/shared_prefs.dart";
-import "../../events.dart";
+import "../../features/submission/use_cases/delete_submission_use_case.dart";
 import "../../isar_db/isar_submission.dart";
 import "../../main.dart";
+import "../../providers/firebase_providers.dart";
+import "../../providers/submission_providers.dart";
 import "../../sample_data.dart";
 import "../../utils/ui.dart";
-import "../../utils/utils.dart";
 import "submission_list_item.dart";
 
-class SubmissionList extends StatefulWidget {
+class SubmissionList extends ConsumerStatefulWidget {
   const SubmissionList({super.key, this.done = false});
 
   final bool done;
 
   @override
-  SubmissionListState createState() => SubmissionListState();
+  ConsumerState<SubmissionList> createState() => _SubmissionListState();
 }
 
-class SubmissionListState extends State<SubmissionList> {
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey();
-  List<Submission>? items;
-
-  StreamSubscription? _stream1;
-  StreamSubscription? _stream2;
-
-  SharedPrefs? _prefs;
-
-  final _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-
-    SubmissionProvider().use((provider) async {
-      if (screenShotMode) {
-        items = SampleData.submissions;
-      } else if (!widget.done) {
-        items = await provider.getUndoneSubmissions();
-      } else {
-        items = await provider.getDoneSubmissions();
-      }
-
-      setState(() {
-        items?.asMap().forEach((index, element) async {
-          _listKey.currentState?.insertItem(index, duration: const Duration());
-        });
-      });
-    });
-
-    _stream1 = eventBus.on<BottomNavDoubleClickEvent>().listen((event) {
-      if (event.index == 0) {
-        _scrollController.animateTo(0,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOutQuint);
-      }
-    });
-
-    _stream2 = eventBus.on<SubmissionInserted>().listen((event) {
-      Future.delayed(const Duration(milliseconds: 50), () {
-        SubmissionProvider().use((provider) async {
-          final data = await provider.get(event.id);
-
-          if (data != null) {
-            setState(() {
-              items!.add(data);
-            });
-            _listKey.currentState?.insertItem(items!.length - 1);
-            await Future.delayed(const Duration(milliseconds: 300));
-            _scrollController.animateTo(
-                _scrollController.position.maxScrollExtent,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOutQuint);
-          }
-        });
-      });
-    });
-
-    SharedPrefs.use((prefs) {
-      _listKey.currentState?.setState(() {
-        _prefs = prefs;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _stream1?.cancel();
-    _stream2?.cancel();
-  }
+class _SubmissionListState extends ConsumerState<SubmissionList> {
+  // Stores a stable UniqueKey per item.id. Cleared on every transition so
+  // the re-entering item always gets a fresh key, avoiding
+  // _MotionBuilderItemGlobalKey conflicts during exit animations.
+  final _itemKeys = <int, Key>{};
 
   @override
   Widget build(BuildContext context) {
+    final asyncItems = widget.done
+        ? ref.watch(doneSubmissionsProvider)
+        : ref.watch(undoneSubmissionsProvider);
+
+    final items = screenShotMode
+        ? SampleData.submissions
+        : switch (asyncItems) {
+            AsyncData(:final value) => value,
+            _ => null,
+          };
+
     return Stack(
       children: [
         if (items != null)
           AnimatedOpacity(
-            opacity: items!.isNotEmpty ? 0 : 0.7,
+            opacity: items.isNotEmpty ? 0 : 0.7,
             duration: const Duration(milliseconds: 200),
             child: const Center(
               child: Padding(
@@ -108,118 +52,69 @@ class SubmissionListState extends State<SubmissionList> {
               ),
             ),
           ),
-        Scrollbar(
-          controller: _scrollController,
-          child: AnimatedList(
-            key: _listKey,
-            controller: _scrollController,
-            itemBuilder: (context, pos, anim) {
-              return _buildSubmissionItem(anim, pos);
+        if (items != null)
+          AnimatedListView(
+            items: items,
+            isSameItem: (a, b) => a.id == b.id,
+            itemBuilder: (context, index) {
+              final item = items[index];
+              return SubmissionListItem(
+                item,
+                key: _itemKeys.putIfAbsent(item.id!, UniqueKey.new),
+                onDelete: (_) => _delete(context, item),
+                onDone: (_) => _checkDone(context, item),
+              );
             },
+            enterTransition: [SlideInUp(curve: Curves.easeOutQuint)],
+            exitTransition: [SlideInUp(curve: Curves.easeInQuint)],
+            insertDuration: const Duration(milliseconds: 300),
+            removeDuration: const Duration(milliseconds: 300),
           ),
-        ),
       ],
     );
   }
 
-  Widget _buildSubmissionItem(Animation anim, int pos) {
-    return SizeTransition(
-      sizeFactor: anim.drive(Tween(begin: 0.0, end: 1.0)
-          .chain(CurveTween(curve: Curves.easeOutQuint))),
-      child: SubmissionListItem(items![pos], key: ObjectKey(items![pos].id),
-          onDelete: (animated) {
-        delete(pos, animated);
-      }, onDone: (animated) {
-        checkDone(pos, animated);
-      }, prefs: _prefs),
-    );
-  }
-
-  Widget _buildRemovedSubmissionItem(Animation anim, Submission item) {
-    return SizeTransition(
-      sizeFactor: anim.drive(Tween(begin: 0.0, end: 1.0)
-          .chain(CurveTween(curve: Curves.easeOutQuint.flipped))),
-      child: SubmissionListItem(item, key: ObjectKey(item.id), prefs: _prefs),
-    );
-  }
-
-  void checkDone(int index, bool animated) {
-    final item = items![index];
-    setState(() {
-      _listKey.currentState?.removeItem(index,
-          (context, animation) => _buildRemovedSubmissionItem(animation, item),
-          duration: Duration(milliseconds: animated ? 300 : 0));
-      items!.removeWhere((element) => element.id == item.id);
-    });
-
-    SubmissionProvider().use((provider) {
-      return provider.writeTransaction(() async {
-        await provider.invertDone(item);
-      });
-    });
+  void _checkDone(BuildContext context, Submission item) {
+    final repo = ref.read(submissionRepositoryProvider);
+    repo.invertDone(item);
 
     showSnackBar(context, !widget.done ? "完了にしました" : "完了を外しました",
         action: SnackBarAction(
           label: "元に戻す",
           textColor: Colors.pinkAccent,
           onPressed: () {
-            SubmissionProvider().use((provider) {
-              return provider.writeTransaction(() async {
-                provider.invertDone(item);
-              });
-            });
-            try {
-              setState(() {
-                final actualIndex =
-                    items!.length <= index ? items!.length : index;
-                items!.insert(actualIndex, item);
-                _listKey.currentState?.insertItem(actualIndex);
-              });
-            } catch (e, st) {
-              recordErrorToCrashlytics(e, st);
-            }
+            if (!mounted) return;
+            // Reset key before re-entry so the new widget gets a fresh
+            // UniqueKey, avoiding _MotionBuilderItemGlobalKey conflicts
+            // with any still-running exit animation.
+            setState(() => _itemKeys.remove(item.id));
+            repo.invertDone(item);
           },
         ));
   }
 
-  Future<void> delete(int index, bool animated) async {
-    final submission = items![index];
-
-    Future<void> Function() restore = () async {};
-
-    SubmissionProvider().use((provider) async {
-      SubmissionProvider.deleteFromGoogleTasks(submission.googleTasksTaskId);
-      restore = await provider.deleteItem(submission.id!);
-    });
-
+  Future<void> _delete(
+    BuildContext context,
+    Submission submission,
+  ) async {
     try {
-      setState(() {
-        items!.removeAt(index);
-        _listKey.currentState?.removeItem(
-            index,
-            (context, animation) =>
-                _buildRemovedSubmissionItem(animation, submission),
-            duration: Duration(milliseconds: animated ? 300 : 0));
-      });
+      final deleteSubmission = ref.read(deleteSubmissionUseCaseProvider);
+      final restore = await deleteSubmission.execute(submission.id!);
 
-      showSnackBar(globalContext!, "削除しました",
+      if (!context.mounted) return;
+      showSnackBar(context, "削除しました",
           action: SnackBarAction(
             label: "元に戻す",
             textColor: Colors.pinkAccent,
             onPressed: () async {
+              if (!mounted) return;
+              setState(() => _itemKeys.remove(submission.id));
               await restore();
-
-              setState(() {
-                final actualIndex =
-                    items!.length <= index ? items!.length : index;
-                items!.insert(actualIndex, submission);
-                _listKey.currentState?.insertItem(actualIndex);
-              });
             },
           ));
     } catch (e, st) {
-      recordErrorToCrashlytics(e, st);
-      showSnackBar(context, "エラーが発生しました");
+      ref.read(crashlyticsProvider).recordError(e, st);
+      if (context.mounted) showSnackBar(context, "エラーが発生しました");
     }
   }
 }

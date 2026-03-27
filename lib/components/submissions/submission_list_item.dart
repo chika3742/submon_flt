@@ -1,45 +1,45 @@
-import "dart:async";
-
 import "package:animations/animations.dart";
-import "package:firebase_analytics/firebase_analytics.dart";
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:intl/intl.dart";
 
-import "../../db/shared_prefs.dart";
-import "../../firebase/analytics.dart";
 import "../../isar_db/isar_submission.dart";
 import "../../main.dart";
 import "../../pages/submission_detail_page.dart";
+import "../../providers/firebase_providers.dart";
+import "../../utils/analytics.dart";
 import "../../utils/ui.dart";
 import "formatted_date_remaining.dart";
 import "submission_list_item_bottom_sheet.dart";
 
-class SubmissionListItem extends StatefulWidget {
-  const SubmissionListItem(this.item,
-      {super.key, this.onDone, this.onDelete, this.prefs});
+class SubmissionListItem extends ConsumerStatefulWidget {
+  const SubmissionListItem(
+    this.item, {
+    super.key,
+    this.onDone,
+    this.onDelete,
+  });
   final Submission item;
   final void Function(bool animated)? onDone;
   final void Function(bool animated)? onDelete;
-  final SharedPrefs? prefs;
 
   @override
   SubmissionListItemState createState() => SubmissionListItemState();
 }
 
-class SubmissionListItemState extends State<SubmissionListItem> {
+class SubmissionListItemState extends ConsumerState<SubmissionListItem> {
   var _weekView = true;
-  late Submission _item;
-
-  @override
-  void initState() {
-    super.initState();
-    _item = widget.item;
-  }
+  var _dismissed = false;
 
   @override
   Widget build(BuildContext context) {
+    if (_dismissed) {
+      return const SizedBox.shrink();
+    }
+
+    final item = widget.item;
     return Dismissible(
-      key: ObjectKey(_item.id),
+      key: ObjectKey(item.id),
       secondaryBackground: Container(
         color: Colors.redAccent,
         child: const Align(
@@ -61,9 +61,12 @@ class SubmissionListItemState extends State<SubmissionListItem> {
         ),
       ),
       onDismissed: (direction) async {
+        setState(() {
+          _dismissed = true;
+        });
         if (direction == DismissDirection.startToEnd) {
           widget.onDone?.call(false);
-          AnalyticsHelper.logMarkedAsDone(widget.item.done, "swipe");
+          logMarkedAsDone(ref.read(analyticsProvider), done: item.done, method: "swipe");
         } else if (direction == DismissDirection.endToStart) {
           widget.onDelete?.call(false);
         }
@@ -81,9 +84,9 @@ class SubmissionListItemState extends State<SubmissionListItem> {
           closedShape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(8))),
           closedBuilder: (context, callback) {
-            final overdue = widget.item.due.isBefore(DateTime.now());
+            final overdue = item.due.isBefore(DateTime.now());
             return Material(
-              color: _item.getColor().withValues(alpha: 0.2),
+              color: item.getColor().withValues(alpha: 0.2),
               child: InkWell(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,11 +124,11 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                                         },
                                         borderRadius: BorderRadius.circular(4),
                                         child: FormattedDateRemaining(
-                                            _item.due
+                                            item.due
                                                 .difference(DateTime.now()),
                                             weekView: _weekView),
                                       ),
-                                      if (_item.important)
+                                      if (item.important)
                                         const Padding(
                                           padding: EdgeInsets.only(left: 8.0),
                                           child: Icon(Icons.star,
@@ -146,20 +149,20 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                             TextSpan(
                                 children: [
                                   TextSpan(
-                                      text: "${_item.due.month}/",
+                                      text: "${item.due.month}/",
                                       style: const TextStyle(fontSize: 20)),
                                   TextSpan(
-                                      text: "${_item.due.day}",
+                                      text: "${item.due.day}",
                                       style: const TextStyle(fontSize: 28)),
                                   TextSpan(
                                       text:
-                                          " (${getWeekdayString(_item.due.weekday - 1)})",
+                                          " (${getWeekdayString(item.due.weekday - 1)})",
                                       style: const TextStyle(fontSize: 20)),
-                                  if (_item.due.hour != 23 ||
-                                      _item.due.minute != 59)
+                                  if (item.due.hour != 23 ||
+                                      item.due.minute != 59)
                                     TextSpan(
                                       text:
-                                          " ${DateFormat("HH:mm").format(_item.due)}",
+                                          " ${DateFormat("HH:mm").format(item.due)}",
                                       style: const TextStyle(fontSize: 20),
                                     )
                                 ],
@@ -167,7 +170,7 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                                     letterSpacing: 2,
                                     fontWeight:
                                         overdue ? FontWeight.bold : null,
-                                    color: getDueTextColor())),
+                                    color: _getDueTextColor())),
                           ),
                         )
                       ],
@@ -180,7 +183,7 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                             padding: const EdgeInsets.only(
                                 left: 8, bottom: 8, right: 8),
                             child: Text(
-                              _item.title,
+                              item.title,
                               style: const TextStyle(
                                   fontSize: 22, fontWeight: FontWeight.bold),
                               softWrap: false,
@@ -189,7 +192,7 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                           ),
                         ),
                         IconButton(
-                          icon: Icon(widget.item.done
+                          icon: Icon(item.done
                               ? Icons.done_outline
                               : Icons.done),
                           splashRadius: 22,
@@ -203,15 +206,17 @@ class SubmissionListItemState extends State<SubmissionListItem> {
                 ),
                 onTap: () {
                   callback();
-                  FirebaseAnalytics.instance
-                      .logSelectItem(itemListName: "submission_list");
+                  ref.read(analyticsProvider)
+                      .logEvent(name: "select_item", parameters: {
+                    "item_list_name": "submission_list",
+                  });
                 },
                 onLongPress: () {
                   showRoundedBottomSheet(
                     context: context,
                     useRootNavigator: true,
                     child: SubmissionListItemBottomSheet(
-                      item: widget.item,
+                      item: item,
                       onDone: widget.onDone,
                       onDelete: widget.onDelete,
                     ),
@@ -221,32 +226,20 @@ class SubmissionListItemState extends State<SubmissionListItem> {
             );
           },
           onClosed: (result) async {
-            if (!screenShotMode) {
-              if (result == SubmissionDetailPagePopAction.delete) {
-                await Future.delayed(const Duration(milliseconds: 300));
-                widget.onDelete?.call(true);
-                return;
-              }
-
-              SubmissionProvider().use((provider) async {
-                await provider.get(_item.id!).then((obj) {
-                  if (obj != null) {
-                    setState(() {
-                      _item = obj;
-                    });
-                  }
-                });
-              });
+            if (!screenShotMode &&
+                result == SubmissionDetailPagePopAction.delete) {
+              await Future.delayed(const Duration(milliseconds: 300));
+              widget.onDelete?.call(true);
             }
           },
-          openBuilder: (context, cb) => SubmissionDetailPage(widget.item.id!),
+          openBuilder: (context, cb) => SubmissionDetailPage(item.id!),
           transitionDuration: const Duration(milliseconds: 300),
         ),
       ),
     );
   }
 
-  Color getDueTextColor() {
+  Color _getDueTextColor() {
     if (widget.item.due.isBefore(DateTime.now())) {
       if (Theme.of(context).brightness == Brightness.light) {
         return Colors.redAccent;
@@ -256,16 +249,5 @@ class SubmissionListItemState extends State<SubmissionListItem> {
     } else {
       return Theme.of(context).textTheme.headlineMedium!.color!;
     }
-  }
-
-  void toggleImportant() {
-    setState(() {
-      _item.important = !_item.important;
-    });
-    SubmissionProvider().use((provider) {
-      return provider.writeTransaction(() async {
-        await provider.put(_item);
-      });
-    });
   }
 }

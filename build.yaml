@@ -1,7 +1,8 @@
 targets:
   $default:
     builders:
-      source_gen|combining_builder:
+      freezed:
         options:
-          build_extensions:
-            '^lib/{{}}.dart': 'lib/generated/{{}}.g.dart'
+          copy_with: false
+          map: false
+          when: false

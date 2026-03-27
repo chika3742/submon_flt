@@ -1,42 +1,30 @@
 import "dart:io";
 
-import "package:firebase_analytics/firebase_analytics.dart";
-import "package:firebase_auth/firebase_auth.dart";
-import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
-import "../auth/sign_in_handler.dart";
 import "../browser.dart";
-import "../db/firestore_provider.dart";
-import "../db/shared_prefs.dart";
+import "../core/pref_key.dart";
+import "../features/auth/repositories/auth_repository.dart";
+import "../features/auth/use_cases/common.dart";
 import "../main.dart";
+import "../providers/firebase_providers.dart";
+import "../providers/firestore_providers.dart";
 import "../utils/ui.dart";
 import "home_page.dart";
 import "sign_in_page.dart";
 
-class WelcomePage extends StatefulWidget {
+class WelcomePage extends ConsumerWidget {
   const WelcomePage({super.key});
 
   static const routeName = "welcome";
 
   @override
-  State<WelcomePage> createState() => _WelcomePageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final disableStatistics = !ref.watchPref(PrefKey.isAnalyticsEnabled);
 
-class _WelcomePageState extends State<WelcomePage> {
-  var _disableStatistics = false;
-  final _scaffoldKey = GlobalKey();
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
         title: const Text("ようこそ"),
       ),
@@ -65,8 +53,8 @@ class _WelcomePageState extends State<WelcomePage> {
                         final result = await Navigator.pushNamed(
                             context, SignInPage.routeName,
                             arguments:
-                                const SignInPageArguments(SignInMode.normal));
-                        if (result == true && mounted) {
+                                const SignInPageArguments(AuthMode.signIn));
+                        if (result == true && context.mounted) {
                           Navigator.pushReplacementNamed(
                               context, HomePage.routeName);
                         }
@@ -98,8 +86,12 @@ class _WelcomePageState extends State<WelcomePage> {
                             showLoadingModal(context);
 
                             try {
-                              await FirebaseAuth.instance.signInAnonymously();
-                              await FirestoreProvider.initializeUser();
+                              await ref
+                                  .read(authRepositoryProvider)
+                                  .signInAnonymously();
+                              await ref
+                                  .read(firestoreUserConfigProvider.notifier)
+                                  .initializeUser();
 
                               Navigator.pop(globalContext!);
                               Navigator.pushReplacementNamed(
@@ -109,7 +101,9 @@ class _WelcomePageState extends State<WelcomePage> {
                             } catch (e, stack) {
                               Navigator.pop(globalContext!);
                               showSnackBar(context, "エラーが発生しました");
-                              FirebaseCrashlytics.instance.recordError(e, stack);
+                              ref
+                                  .read(crashlyticsProvider)
+                                  .recordError(e, stack);
                             }
                           },
                         );
@@ -159,17 +153,13 @@ class _WelcomePageState extends State<WelcomePage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Checkbox(
-                        value: _disableStatistics,
+                        value: disableStatistics,
                         activeColor: Colors.red,
                         onChanged: (value) {
-                          FirebaseAnalytics.instance
+                          ref
+                              .read(analyticsProvider)
                               .setAnalyticsCollectionEnabled(!value!);
-                          SharedPrefs.use((prefs) {
-                            prefs.isAnalyticsEnabled = !value;
-                          });
-                          setState(() {
-                            _disableStatistics = value;
-                          });
+                          ref.updatePref(PrefKey.isAnalyticsEnabled, !value);
                         },
                       ),
                       Flexible(

@@ -1,39 +1,21 @@
-import "dart:async";
-
 import "package:flutter/material.dart";
-import "../components/timetable/timetable.dart";
-import "../events.dart";
-import "../isar_db/isar_timetable.dart" as db;
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
-class TimetableEditPage extends StatefulWidget {
+import "../components/timetable/timetable.dart";
+import "../core/pref_key.dart";
+import "../providers/timetable_providers.dart";
+
+class TimetableEditPage extends ConsumerWidget {
   const TimetableEditPage({super.key});
 
   static const routeName = "/timetable/edit";
 
   @override
-  State<TimetableEditPage> createState() => _TimetableEditPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tableId = ref.watchPref(PrefKey.intCurrentTimetableId);
+    final undoRedoState = ref.watch(undoRedoProvider(tableId));
+    final useCase = ref.read(timetableEditUseCaseProvider(tableId));
 
-class _TimetableEditPageState extends State<TimetableEditPage> {
-  final _tableKey = GlobalKey<TimetableState>();
-  StreamSubscription? _listener;
-
-  @override
-  void initState() {
-    super.initState();
-    _listener = eventBus.on<UndoRedoUpdatedEvent>().listen((event) {
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _listener?.cancel();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("時間割表編集"),
@@ -41,76 +23,42 @@ class _TimetableEditPageState extends State<TimetableEditPage> {
           IconButton(
             icon: const Icon(Icons.delete),
             splashRadius: 24,
-            onPressed: () {
-              setState(() {
-                db.TimetableProvider.redoList.clear();
-                db.TimetableProvider.undoList
-                    .insert(0, Map.from(_tableKey.currentState!.table));
-              });
-              _tableKey.currentState?.setState(() {
-                _tableKey.currentState?.table.clear();
-              });
-              db.TimetableProvider().use((provider) async {
-                provider.writeTransaction(() async {
-                  await provider.clearCurrentTable();
-                });
-              });
+            onPressed: () async {
+              await useCase.clearTable();
             },
           ),
           IconButton(
             icon: const Icon(Icons.undo),
             splashRadius: 24,
-            onPressed: db.TimetableProvider.undoList.isNotEmpty ? undo : null,
+            onPressed: undoRedoState.undoStack.isNotEmpty
+                ? () async {
+                    await useCase.undo();
+                  }
+                : null,
           ),
           IconButton(
             icon: const Icon(Icons.redo),
             splashRadius: 24,
-            onPressed: db.TimetableProvider.redoList.isNotEmpty ? redo : null,
+            onPressed: undoRedoState.redoStack.isNotEmpty
+                ? () async {
+                    await useCase.redo();
+                  }
+                : null,
           ),
         ],
       ),
-      body: Column(
+      body: const Column(
         children: [
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(16.0),
             child: Text("編集したい位置をタップしてください。"),
           ),
           Timetable(
-            key: _tableKey,
             edit: true,
           ),
         ],
       ),
     );
-  }
-
-  void undo() {
-    setState(() {
-      db.TimetableProvider.redoList
-          .insert(0, Map.from(_tableKey.currentState!.table));
-      _tableKey.currentState?.table = db.TimetableProvider.undoList[0];
-      db.TimetableProvider.undoList.removeAt(0);
-    });
-    updateLocalDb();
-  }
-
-  void redo() {
-    setState(() {
-      db.TimetableProvider.undoList
-          .insert(0, Map.from(_tableKey.currentState!.table));
-      _tableKey.currentState?.table = db.TimetableProvider.redoList[0];
-      db.TimetableProvider.redoList.removeAt(0);
-    });
-    updateLocalDb();
-  }
-
-  void updateLocalDb() {
-    db.TimetableProvider().use((provider) async {
-      provider.writeTransaction(() async {
-        await provider
-            .putAllLocalOnly(_tableKey.currentState!.table.values.toList());
-      });
-    });
   }
 }
 

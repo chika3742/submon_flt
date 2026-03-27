@@ -1,174 +1,161 @@
-import "package:cloud_firestore/cloud_firestore.dart";
-import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:intl/intl.dart";
 
-import "../events.dart";
-import "../isar_db/isar_digestive.dart";
 import "../isar_db/isar_submission.dart";
-import "../main.dart";
 import "../pages/focus_timer_page.dart";
 import "../pages/submission_create_page.dart";
 import "../pages/submission_detail_page.dart";
+import "../providers/digestive_providers.dart";
+import "../providers/firebase_providers.dart";
+import "../providers/submission_providers.dart";
+import "../providers/submission_share_link_provider.dart";
 import "../utils/ui.dart";
 
-class OpenLinkHandler {
-  OpenLinkHandler._();
-
-  static void handle(Uri url) {
-    if (FirebaseAuth.instance.currentUser == null) {
-      showSnackBar(globalContext!, "ログインする必要があります");
-      return;
-    }
-
-    switch (url.path.split("/")[1]) {
-      case "submission":
-        final id = url.queryParameters["id"];
-        final uid = url.queryParameters["uid"];
-
-        // Insufficient parameter
-        if (id == null || int.tryParse(id) == null) {
-          showSnackBar(globalContext!, "不正なパラメーターです。");
-          return;
-        }
-        // UID provided and mismatch
-        if (uid != null && uid != FirebaseAuth.instance.currentUser?.uid) {
-          showSnackBar(globalContext!, "このアカウントで作成された提出物ではありません。");
-          return;
-        }
-        _openSubmissionDetailPage(int.parse(id));
-        break;
-      case "submissions":
-        final uid = url.queryParameters["uid"];
-
-        // Insufficient parameter
-        if (url.pathSegments.length < 2 || int.tryParse(url.pathSegments[1]) == null) {
-          showSnackBar(globalContext!, "不正なパラメーターです。");
-          return;
-        }
-        final id = url.pathSegments[1];
-        // UID provided and mismatch
-        if (uid != null && uid != FirebaseAuth.instance.currentUser?.uid) {
-          showSnackBar(globalContext!, "このアカウントで作成された提出物ではありません。");
-          return;
-        }
-        _openSubmissionDetailPage(int.parse(id));
-        break;
-      case "share":
-        // v2 sharing link
-        if (url.pathSegments.length < 2) {
-          showSnackBar(globalContext!, "不正なパラメーターです。");
-          return;
-        }
-
-        _fetchSubmissionShareLink(url.pathSegments[1]).then((data) {
-          if (data == null) {
-            return; // Error message already shown in _fetchSubmissionShareLink
-          }
-
-          _showSubmissionSharingDialog(
-            title: data.title,
-            due: data.due,
-            detail: data.details,
-          );
-        }).catchError((e) {
-          showSnackBar(globalContext!, "共有リンクの取得に失敗しました。");
-          debugPrint("Error fetching submission share link: $e");
-        });
-
-        break;
-      case "create-submission":
-        _openCreateSubmissionPage();
-        break;
-      case "focus-timer":
-        _openFocusTimer(url);
-        break;
-      case "tab":
-        _setDefaultTab(url);
-        break;
-    }
+void handleOpenLink(
+  BuildContext context,
+  WidgetRef ref,
+  Uri url, {
+  required void Function(String tabName) onSwitchTab,
+}) {
+  final currentUser = ref.read(firebaseUserProvider).value;
+  if (currentUser == null) {
+    showSnackBar(context, "ログインする必要があります");
+    return;
   }
 
-  static void _openSubmissionDetailPage(int id) {
-    Navigator.pushNamed(globalContext!, SubmissionDetailPage.routeName,
-        arguments: SubmissionDetailPageArguments(id));
-  }
+  switch (url.path.split("/")[1]) {
+    case "submission":
+      final id = url.queryParameters["id"];
+      final uid = url.queryParameters["uid"];
 
-  static Future<({String title, DateTime due, String? details})?> _fetchSubmissionShareLink(String id) async {
-    showLoadingModal(globalContext!);
-    final getResult = await FirebaseFirestore.instance
-        .doc("submissionShares/$id")
-        .get();
-    Navigator.pop(globalContext!); // Close loading modal
-    if (!getResult.exists) {
-      showSnackBar(globalContext!, "共有リンクの有効期限が切れているか、間違っています。");
-      return null;
-    }
-
-    final data = getResult.data()!;
-    return (
-      title: data["title"] as String,
-      due: (data["due"] as Timestamp).toDate(),
-      details: data["details"] as String?,
-    );
-  }
-
-  static void _showSubmissionSharingDialog({required String title, required DateTime due, String? detail, int? color}) {
-    showSimpleDialog(
-      globalContext!,
-      "提出物のシェア",
-      "以下の内容で登録します。よろしいですか？\n\n"
-          "タイトル: $title\n"
-          "期限: ${DateFormat().format(due.toLocal())}\n"
-          "${detail != null ? "詳細: $detail" : ""}",
-      showCancel: true,
-      onOKPressed: () {
-        int id = 0;
-
-        SubmissionProvider().use((provider) {
-          return provider.writeTransaction(() {
-            return provider
-                .put(Submission.from(
-              title: title,
-              due: due.toLocal(),
-              details: detail ?? "",
-              color: color ?? Colors.white.toARGB32(),
-            ))
-                .then((id_) {
-              id = id_;
-            });
-          });
-        }).then((value) {
-          eventBus.fire(SubmissionInserted(id));
-          showSnackBar(globalContext!, "作成しました。");
-        });
-      },
-    );
-  }
-
-  static void _openCreateSubmissionPage() {
-    Navigator.pushNamed(globalContext!, CreateSubmissionPage.routeName,
-            arguments: CreateSubmissionPageArguments())
-        .then((insertedId) {
-      if (insertedId != null) {
-        eventBus.fire(SubmissionInserted(insertedId as int));
+      if (id == null || int.tryParse(id) == null) {
+        showSnackBar(context, "不正なパラメーターです。");
+        return;
       }
-    });
-  }
-
-  static void _openFocusTimer(Uri url) {
-    DigestiveProvider().use((provider) async {
-      final digestive =
-          await provider.get(int.parse(url.queryParameters["digestiveId"]!));
-      if (digestive != null) {
-        FocusTimerPage.openFocusTimer(globalContext!, digestive);
-      } else {
-        showSnackBar(globalContext!, "このDigestiveはすでに削除されています");
+      if (uid != null && uid != currentUser.uid) {
+        showSnackBar(context, "このアカウントで作成された提出物ではありません。");
+        return;
       }
-    });
-  }
+      _openSubmissionDetailPage(context, int.parse(id));
+      break;
+    case "submissions":
+      final uid = url.queryParameters["uid"];
 
-  static void _setDefaultTab(Uri url) {
-    eventBus.fire(SwitchBottomNav(url.path.split("/")[2]));
+      if (url.pathSegments.length < 2 ||
+          int.tryParse(url.pathSegments[1]) == null) {
+        showSnackBar(context, "不正なパラメーターです。");
+        return;
+      }
+      final id = url.pathSegments[1];
+      if (uid != null && uid != currentUser.uid) {
+        showSnackBar(context, "このアカウントで作成された提出物ではありません。");
+        return;
+      }
+      _openSubmissionDetailPage(context, int.parse(id));
+      break;
+    case "share":
+      if (url.pathSegments.length < 2) {
+        showSnackBar(context, "不正なパラメーターです。");
+        return;
+      }
+
+      showLoadingModal(context);
+      ref
+          .read(submissionShareLinkProvider(url.pathSegments[1]).future)
+          .then((data) {
+        if (!context.mounted) return;
+        Navigator.pop(context);
+        if (data == null) {
+          showSnackBar(context, "共有リンクの有効期限が切れているか、間違っています。");
+          return;
+        }
+        _showSubmissionSharingDialog(
+          context,
+          ref,
+          title: data.title,
+          due: data.due,
+          detail: data.details,
+        );
+      }).catchError((e) {
+        if (context.mounted) {
+          Navigator.pop(context);
+          showSnackBar(context, "共有リンクの取得に失敗しました。");
+        }
+        debugPrint("Error fetching submission share link: $e");
+      });
+
+      break;
+    case "create-submission":
+      _openCreateSubmissionPage(context);
+      break;
+    case "focus-timer":
+      _openFocusTimer(context, ref, url);
+      break;
+    case "tab":
+      if (url.pathSegments.length >= 2) {
+        onSwitchTab(url.pathSegments[1]);
+      }
+      break;
   }
+}
+
+void _openSubmissionDetailPage(BuildContext context, int id) {
+  Navigator.pushNamed(context, SubmissionDetailPage.routeName,
+      arguments: SubmissionDetailPageArguments(id));
+}
+
+void _showSubmissionSharingDialog(
+  BuildContext context,
+  WidgetRef ref, {
+  required String title,
+  required DateTime due,
+  String? detail,
+  int? color,
+}) {
+  showSimpleDialog(
+    context,
+    "提出物のシェア",
+    "以下の内容で登録します。よろしいですか？\n\n"
+        "タイトル: $title\n"
+        "期限: ${DateFormat().format(due.toLocal())}\n"
+        "${detail != null ? "詳細: $detail" : ""}",
+    showCancel: true,
+    onOKPressed: () {
+      if (!ref.context.mounted) return;
+      ref
+          .read(submissionRepositoryProvider)
+          .create(Submission.from(
+            title: title,
+            due: due.toLocal(),
+            details: detail ?? "",
+            color: color ?? Colors.white.toARGB32(),
+          ))
+          .then((_) {
+        if (context.mounted) {
+          showSnackBar(context, "作成しました。");
+        }
+      });
+    },
+  );
+}
+
+void _openCreateSubmissionPage(BuildContext context) {
+  Navigator.pushNamed(
+    context,
+    CreateSubmissionPage.routeName,
+    arguments: CreateSubmissionPageArguments(),
+  );
+}
+
+void _openFocusTimer(BuildContext context, WidgetRef ref, Uri url) {
+  final digestiveId = int.parse(url.queryParameters["digestiveId"]!);
+  ref.read(digestiveRepositoryProvider).get(digestiveId).then((digestive) {
+    if (!context.mounted) return;
+    if (digestive != null) {
+      FocusTimerPage.openFocusTimer(context, digestive);
+    } else {
+      showSnackBar(context, "このDigestiveはすでに削除されています");
+    }
+  });
 }

@@ -19,7 +19,7 @@ fvm flutter test
 # Run a single test file
 fvm flutter test test/widget_test.dart
 
-# Code generation (Isar schemas → lib/generated/)
+# Code generation (freezed, riverpod_generator, Isar schemas)
 fvm dart run build_runner build --delete-conflicting-outputs
 
 # Regenerate Pigeon platform channel code
@@ -28,27 +28,68 @@ fvm dart run build_runner build --delete-conflicting-outputs
 
 ## Architecture
 
-### Data Layer: Offline-First with Dual Databases
+### State Management: Riverpod
 
-Local data lives in **Isar** (community edition); the server source-of-truth is **Cloud Firestore**. The sync flow:
+State management uses **Riverpod** with `riverpod_generator` and `riverpod_lint`. All new providers use `@riverpod` or `@Riverpod(keepAlive: true)` annotations. Widgets are `ConsumerWidget` or `ConsumerStatefulWidget`.
 
-- **Read**: On app launch, `FirestoreProvider.fetchData()` compares timestamps and pulls changes into Isar.
-- **Write**: `IsarProvider.put(data)` writes locally first, then syncs to Firestore and updates the server timestamp.
-- **Delete**: Removes from Isar, then deletes the Firestore document.
+Key provider files live in `lib/providers/`:
+- `core_providers.dart` — Isar, SharedPrefs, FirebaseAuth, GoogleSignIn, Crashlytics, Analytics
+- `firestore_providers.dart` — Firestore collection/user references
+- `submission_providers.dart`, `digestive_providers.dart`, `timetable_providers.dart` — Repository providers + data stream watchers
+- `data_sync_service.dart` — Firestore → Isar sync on app launch
+- `link_events_provider.dart` — Deep link event stream
+
+**SharedPreferences** are accessed via `PrefNotifier<T>` with `PrefKey` enum (`lib/core/pref_key.dart`). Use `ref.watchPref(PrefKey.xxx)` / `ref.readPref(PrefKey.xxx)` / `ref.updatePref(PrefKey.xxx, value)`.
+
+### Data Layer: Offline-First with Isar + Firestore
+
+Local data lives in **Isar** (community edition); the server source-of-truth is **Cloud Firestore**.
+
+**Repository pattern** (`lib/repositories/`):
+- `SyncedRepository<T>` is the abstract base class that auto-syncs writes to Firestore.
+- `SubmissionRepository`, `DigestiveRepository` extend `SyncedRepository<T>`.
+- `TimetableRepository`, `TimetableTableRepository`, `TimetableClassTimeRepository` use custom sync patterns.
+- Repository's `put()` / `delete()` are `@protected`. External callers use purpose-specific public methods (e.g., `create`, `update`, `markDone`). Always separate create vs update methods.
+
+**Sync flow** (via `DataSyncService`):
+- On app launch, `DataSyncService` compares Firestore timestamps and pulls changes into Isar.
+- Writes go to Isar first, then sync to Firestore automatically via `SyncedRepository`.
 
 Firestore path: `users/{uid}/submission/{id}`, `users/{uid}/digestive/{id}`, etc.
 
-### Providers (lib/isar_db/)
+**Isar models** are defined in `lib/isar_db/` (model classes only — no provider logic). Each file contains the `@Collection()` annotated class with `toMap()` / `fromMap()` for Firestore serialization.
 
-`IsarProvider<T>` is the abstract base for all data providers (`SubmissionProvider`, `DigestiveProvider`, `TimetableProvider`, etc.). Each provider exposes `open()`, `use()`, `put()`, `delete()`, `getAll()`, and handles Firestore sync internally.
+### Auth: Clean Architecture (`lib/features/auth/`)
+
+```
+lib/features/auth/
+├── models/
+│   ├── auth_exception.dart          ← AuthErrorCode enum (userFriendlyMessage)
+│   └── auth_continue_destination.dart ← freezed: Email link → route mapping
+├── repositories/
+│   └── auth_repository.dart         ← Firebase Auth wrapper (interface + impl)
+├── use_cases/
+│   ├── common.dart                  ← AuthMode enum (signIn/reauthenticate/upgrade)
+│   ├── social_auth_use_case.dart    ← Google/Apple credential → auth
+│   ├── sign_out_use_case.dart       ← Token cleanup → signOut → widget update
+│   ├── complete_sign_in_use_case.dart ← Post-login setup (Isar, notifications, user doc)
+│   └── email_link_auth_use_case.dart  ← Email link auth flow
+└── presentation/
+    ├── sign_in_state_notifier.dart   ← freezed sealed SignInState + NotifierStateGuard
+    ├── email_link_auth_notifier.dart ← keepAlive, listens to deep links
+    ├── auth_action_notifier.dart     ← keepAlive, verifyAndChangeEmail handler
+    ├── account_link_notifier.dart    ← Account linking state
+    └── auth_messages.dart            ← Shared message utility (signInSuccessMessage, authErrorMessage)
+```
+
+**Key patterns:**
+- **No BuildContext in Notifiers** — UI navigation/display logic stays in widgets or `main.dart`.
+- **NotifierStateGuard mixin** — Standardized error handling in async Notifier methods.
+- **freezed sealed classes** — Used for auth state machines (e.g., `SignInState`, `EmailLinkAuthState`).
 
 ### Navigation
 
 Named routes with `MaterialApp.onGenerateRoute`. Pages define `static const routeName`. Platform-adaptive transitions (Cupertino on iOS, Material on Android) via `generatePageRoute<T>()`.
-
-### State Management
-
-No framework (no Riverpod, GetX, Provider package, or Bloc). State is managed with `StatefulWidget` + manual callbacks and Firestore listeners.
 
 ### Platform Channels (Pigeon)
 
@@ -74,19 +115,42 @@ Auth (Google, Apple, Email), Firestore, Cloud Functions (region: `asia-northeast
 - **No `async void`** (`avoid_void_async`) — use `Future<void>`
 - **Trailing commas** enforced by `better_require_trailing_commas` plugin
 - **Newline at EOF** (`eol_at_end_of_file`)
+- **`riverpod_lint`** enabled for Riverpod best practices
+
+### Analyzer Plugins (`analysis_server_plugin`)
+
+This project uses the **new** analyzer plugin system (requires Dart ≥ 3.10 / Flutter ≥ 3.38). Plugins are declared in a **top-level `plugins` section** in `analysis_options.yaml` — _not_ under `analyzer:`. Plugin packages do **not** need to be added to `pubspec.yaml` dependencies; the analysis server resolves them independently.
+
+```yaml
+# analysis_options.yaml
+plugins:
+  better_require_trailing_commas: ^3.0.0
+  riverpod_lint: ^3.1.3
+```
+
+To enable/disable specific lint rules within a plugin, use the `diagnostics:` key under the plugin entry:
+
+```yaml
+plugins:
+  my_plugin:
+    path: /path/to/my_plugin
+    diagnostics:
+      rule_1: true
+      rule_2: false
+```
 
 ### Generated code
 
-- Isar schemas output to `lib/generated/` (configured in `build.yaml`). These `*.g.dart` files are excluded from analysis.
+- `*.g.dart` files are generated by `build_runner` (freezed, riverpod_generator, Isar schemas). Excluded from analysis via `analyzer.exclude: - lib/**.g.dart`.
 - Pigeon outputs to `lib/src/pigeons.g.dart` + native platform files.
 - Never edit generated files directly.
 
 ### Isar Model Pattern
 
-All Isar models follow this structure:
+All Isar models live in `lib/isar_db/` and follow this structure:
 
 ```dart
-part "generated/isar_db/isar_example.g.dart";
+part "isar_example.g.dart";
 
 @Collection()
 class Example {
@@ -101,6 +165,12 @@ class Example {
 ### Environment
 
 App config is loaded from `.env` via `flutter_dotenv`. The `.env` file is listed in `pubspec.yaml` assets but not committed to git. For tests, an empty `.env` file suffices.
+
+## Known Technical Debt
+
+- **`globalContext`**: Deprecated but still used in ~6 files. Should be replaced with widget tree `context`.
+- **`EventBus`**: 1 active usage (`SwitchBottomNav`). Will be replaced when `go_router` is introduced.
+- **Some pages remain `StatefulWidget`** without Riverpod — incremental migration ongoing.
 
 ## CI/CD
 

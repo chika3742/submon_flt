@@ -1,11 +1,6 @@
-import "package:cloud_firestore/cloud_firestore.dart";
 import "package:isar_community/isar.dart";
-import "package:shared_preferences/shared_preferences.dart";
-import "../db/firestore_provider.dart";
-import "../db/shared_prefs.dart";
-import "isar_provider.dart";
 
-part "../generated/isar_db/isar_timetable.g.dart";
+part "isar_timetable.g.dart";
 
 @Collection()
 class Timetable {
@@ -41,83 +36,5 @@ class Timetable {
       "teacher": teacher,
       "note": note,
     };
-  }
-}
-
-class TimetableProvider extends IsarProvider<Timetable> {
-  late int currentTableId;
-
-  static List<Map<int, Timetable>> undoList = [];
-  static List<Map<int, Timetable>> redoList = [];
-
-  Future<List<Timetable>> getCurrentTable() async {
-    return await getTableByTableId(currentTableId);
-  }
-
-  Future<List<Timetable>> getTableByTableId(int tableId) async {
-    return await this.collection.filter().tableIdEqualTo(tableId).findAll();
-  }
-
-  Future<void> putToCurrentTable(Timetable data) async {
-    await put(data..tableId = currentTableId);
-  }
-
-  Future<void> deleteFromCurrentTable(int cellId) async {
-    final data = await this.collection
-        .filter()
-        .cellIdEqualTo(cellId)
-        .and()
-        .tableIdEqualTo(currentTableId)
-        .findFirst();
-    if (data != null) {
-      await this.collection.delete(data.id!);
-    }
-    deleteFirestoreByCellId(cellId);
-  }
-
-  Future<void> deleteAllInTableLocalOnly(int tableId) async {
-    final data = await this.collection.filter().tableIdEqualTo(tableId).findAll();
-    await this.collection.deleteAll(data.map((e) => e.id!).toList());
-  }
-
-  Future<void> clearCurrentTable() {
-    FirestoreProvider.timetable.set(currentTableId.toString(),
-        {"cells": FieldValue.delete()}, SetOptions(merge: true));
-    return this.collection.clear();
-  }
-
-  Future<void> deleteFirestoreByCellId(int cellId) async {
-    await FirestoreProvider.timetable.set(
-        currentTableId.toString(),
-        {
-          "cells": {cellId.toString(): FieldValue.delete()},
-        },
-        SetOptions(merge: true));
-  }
-
-  @override
-  Future<void> deleteFirestore(int id) async {
-    // do nothing
-  }
-
-  @override
-  Future<void> setFirestore(Timetable data, int id) async {
-    await FirestoreProvider.timetable.set(
-        data.tableId.toString(),
-        {
-          "cells": {
-            data.cellId.toString(): data.toMap(),
-          },
-        },
-        SetOptions(merge: true));
-  }
-
-  @override
-  Future<void> use(
-      Future<void> Function(TimetableProvider provider) callback) async {
-    currentTableId = SharedPrefs(await SharedPreferences.getInstance())
-        .intCurrentTimetableId;
-    await open();
-    await callback(this);
   }
 }

@@ -1,50 +1,28 @@
-import "dart:async";
-
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:intl/intl.dart";
-import "../events.dart";
-import "../isar_db/isar_digestive.dart";
-import "../main.dart";
-import "../pages/focus_timer_page.dart";
-import "../pages/home_tabs/tab_digestive_list.dart";
-import "../utils/ui.dart";
 
+import "../isar_db/isar_digestive.dart";
+import "../pages/focus_timer_page.dart";
+import "../providers/digestive_providers.dart";
+import "../utils/ui.dart";
 import "digestive_edit_bottom_sheet.dart";
 
 
-class DigestiveDetailCard extends StatefulWidget {
+class DigestiveDetailCard extends ConsumerStatefulWidget {
   const DigestiveDetailCard({
     super.key,
     required this.digestive,
-    required this.parentList,
-    this.onChanged,
   });
 
   final Digestive digestive;
-  final List<Digestive> parentList;
-  final void Function()? onChanged;
 
   @override
-  DigestiveDetailCardState createState() => DigestiveDetailCardState();
+  ConsumerState<DigestiveDetailCard> createState() =>
+      _DigestiveDetailCardState();
 }
 
-class DigestiveDetailCardState extends State<DigestiveDetailCard> {
-  StreamSubscription? listener;
-
-  @override
-  void initState() {
-    super.initState();
-
-    listener = eventBus.on<OnDigestiveDoneChanged>().listen((event) {
-      if (event.digestiveId == widget.digestive.id) {
-        setState(() {
-          widget.digestive.done = event.done;
-        });
-        widget.onChanged?.call();
-      }
-    });
-  }
-
+class _DigestiveDetailCardState extends ConsumerState<DigestiveDetailCard> {
   @override
   Widget build(BuildContext context) {
     final digestive = widget.digestive;
@@ -166,14 +144,11 @@ class DigestiveDetailCardState extends State<DigestiveDetailCard> {
                         onSelected: (value) {
                           switch (value) {
                             case 0:
-                              edit();
-                              break;
+                              _edit();
                             case 1:
-                              delete();
-                              break;
+                              _delete();
                             case 2:
-                              done(widget.digestive, !digestive.done);
-                              break;
+                              _markDone(!digestive.done);
                           }
                         },
                       ),
@@ -181,7 +156,7 @@ class DigestiveDetailCardState extends State<DigestiveDetailCard> {
                         icon: const Icon(Icons.timer),
                         splashRadius: 24,
                         padding: EdgeInsets.zero,
-                        onPressed: openTimerPage,
+                        onPressed: _openTimerPage,
                       ),
                     ],
                   ),
@@ -209,35 +184,20 @@ class DigestiveDetailCardState extends State<DigestiveDetailCard> {
     );
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    listener?.cancel();
-  }
-
-  static Future<void> done(Digestive digestive, bool done) async {
-    await DigestiveProvider().use((provider) async {
-      provider.writeTransaction(() async {
-        await provider.put(digestive..done = done);
-      });
-    });
-    eventBus.fire(OnDigestiveDoneChanged(digestive.id!, done));
-    showSnackBar(
-        Application.globalKey.currentContext!, done ? "完了しました" : "完了マークを外しました",
+  Future<void> _markDone(bool done) async {
+    final repo = ref.read(digestiveRepositoryProvider);
+    await repo.markDone(widget.digestive, done: done);
+    if (!mounted) return;
+    showSnackBar(context, done ? "完了しました" : "完了マークを外しました",
         action: SnackBarAction(
           label: "元に戻す",
           onPressed: () {
-            DigestiveProvider().use((provider) async {
-              provider.writeTransaction(() async {
-                await provider.put(digestive..done = !done);
-                eventBus.fire(OnDigestiveDoneChanged(digestive.id!, !done));
-              });
-            });
+            repo.markDone(widget.digestive, done: !done);
           },
         ));
   }
 
-  Future<void> edit() async {
+  Future<void> _edit() async {
     final data = await showRoundedBottomSheet<Digestive>(
       context: context,
       useRootNavigator: true,
@@ -248,62 +208,37 @@ class DigestiveDetailCardState extends State<DigestiveDetailCard> {
       ),
     );
     if (data != null) {
-      await DigestiveProvider().use((provider) async {
-        provider.writeTransaction(() async {
-          await provider.put(data);
-        });
-      });
-
-      final index = widget.parentList
-          .indexWhere((element) => element.id == widget.digestive.id);
-      if (widget.parentList is List<DigestiveWithSubmission>) {
-        widget.parentList[index] = DigestiveWithSubmission.fromObject(data,
-            (widget.parentList[index] as DigestiveWithSubmission).submission);
-      } else {
-        widget.parentList[index] = data;
-      }
-
-      widget.onChanged?.call();
-      showSnackBar(Application.globalKey.currentContext!, "編集しました");
+      final repo = ref.read(digestiveRepositoryProvider);
+      await repo.update(data);
+      if (!mounted) return;
+      showSnackBar(context, "編集しました");
     }
   }
 
-  Future<void> delete() async {
-    await DigestiveProvider().use((provider) async {
-      provider.writeTransaction(() async {
-        await provider.delete(widget.digestive.id!);
-      });
-    });
-    var removedIndex = widget.parentList.indexOf(widget.digestive);
-    final removed = widget.parentList.removeAt(removedIndex);
-    widget.onChanged?.call();
-
-    showSnackBar(Application.globalKey.currentContext!, "削除しました",
+  Future<void> _delete() async {
+    final repo = ref.read(digestiveRepositoryProvider);
+    final restore = await repo.deleteItem(widget.digestive.id!);
+    if (!mounted) return;
+    showSnackBar(context, "削除しました",
         action: SnackBarAction(
           label: "元に戻す",
           onPressed: () {
-            DigestiveProvider().use((provider) async {
-              provider.writeTransaction(() async {
-                await provider.put(widget.digestive);
-              });
-            });
-
-            if (removedIndex > widget.parentList.length) {
-              removedIndex = widget.parentList.length;
-            }
-            widget.parentList.insert(removedIndex, removed);
-            widget.onChanged?.call();
+            restore();
           },
         ));
   }
 
-  Future<void> openTimerPage([bool force = false]) async {
+  Future<void> _openTimerPage([bool force = false]) async {
     if (widget.digestive.done && !force) {
-      showSnackBar(context, "このDigestiveは既に完了しています。", action: SnackBarAction(label: "それでも続ける", onPressed: () {
-        openTimerPage(true);
-      }));
+      showSnackBar(context, "このDigestiveは既に完了しています。",
+          action: SnackBarAction(
+            label: "それでも続ける",
+            onPressed: () {
+              _openTimerPage(true);
+            },
+          ));
     } else {
-      FocusTimerPage.openFocusTimer(context, widget.digestive);
+      await FocusTimerPage.openFocusTimer(context, widget.digestive);
     }
   }
 }

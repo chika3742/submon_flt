@@ -1,11 +1,11 @@
-import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
-import "../main.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
+import "../features/auth/presentation/auth_messages.dart";
+import "../features/auth/repositories/auth_repository.dart";
 import "../utils/ui.dart";
-import "../utils/utils.dart";
 
-class EmailRegistrationPage extends StatefulWidget {
+class EmailRegistrationPage extends ConsumerStatefulWidget {
   const EmailRegistrationPage({super.key, required this.email});
 
   static const routeName = "/sign-in/email/register";
@@ -13,7 +13,8 @@ class EmailRegistrationPage extends StatefulWidget {
   final String email;
 
   @override
-  State<EmailRegistrationPage> createState() => _EmailRegistrationPageState();
+  ConsumerState<EmailRegistrationPage> createState() =>
+      _EmailRegistrationPageState();
 }
 
 class EmailRegistrationPageArguments {
@@ -22,11 +23,11 @@ class EmailRegistrationPageArguments {
   EmailRegistrationPageArguments({required this.email});
 }
 
-class _EmailRegistrationPageState extends State<EmailRegistrationPage> {
+class _EmailRegistrationPageState
+    extends ConsumerState<EmailRegistrationPage> {
+  final _formKey = GlobalKey<FormState>();
   final _pwController = TextEditingController();
-  String? _pwError;
   final _pwReenterController = TextEditingController();
-  String? _pwReenterError;
 
   bool _loading = false;
 
@@ -41,30 +42,47 @@ class _EmailRegistrationPageState extends State<EmailRegistrationPage> {
           if (_loading) const LinearProgressIndicator(),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(children: [
-              Text("メールアドレス: ${widget.email}"),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _pwController,
-                obscureText: true,
-                enabled: !_loading,
-                decoration: InputDecoration(
-                  label: const Text("パスワード"),
-                  errorText: _pwError,
-                  border: const OutlineInputBorder(),
+            child: Form(
+              key: _formKey,
+              child: Column(children: [
+                Text("メールアドレス: ${widget.email}"),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _pwController,
+                  obscureText: true,
+                  enabled: !_loading,
+                  decoration: const InputDecoration(
+                    label: Text("パスワード"),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "入力してください";
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _pwReenterController,
-                obscureText: true,
-                enabled: !_loading,
-                decoration: InputDecoration(
-                    label: const Text("パスワード(再入力)"),
-                    errorText: _pwReenterError,
-                    border: const OutlineInputBorder()),
-              ),
-            ]),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _pwReenterController,
+                  obscureText: true,
+                  enabled: !_loading,
+                  decoration: const InputDecoration(
+                    label: Text("パスワード(再入力)"),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "入力してください";
+                    }
+                    if (value != _pwController.text) {
+                      return "パスワードが一致しません";
+                    }
+                    return null;
+                  },
+                ),
+              ]),
+            ),
           ),
           Align(
             alignment: Alignment.bottomRight,
@@ -73,7 +91,7 @@ class _EmailRegistrationPageState extends State<EmailRegistrationPage> {
               child: FloatingActionButton.extended(
                 label: const Text("登録"),
                 icon: const Icon(Icons.how_to_reg),
-                onPressed: register,
+                onPressed: _register,
               ),
             ),
           ),
@@ -82,48 +100,25 @@ class _EmailRegistrationPageState extends State<EmailRegistrationPage> {
     );
   }
 
-  Future<void> register() async {
-    setState(() {
-      if (_pwController.text.isEmpty) {
-        _pwError = "入力してください";
-      } else {
-        _pwError = null;
-      }
-      if (_pwReenterController.text.isEmpty) {
-        _pwReenterError = "入力してください";
-        return;
-      } else {
-        _pwReenterError = null;
-      }
-      if (_pwReenterController.text != _pwController.text) {
-        _pwReenterError = "パスワードが一致しません";
-      } else {
-        _pwReenterError = null;
-      }
-    });
-    if (_pwError != null || _pwReenterError != null) return;
+  Future<void> _register() async {
+    if (!_formKey.currentState!.validate()) return;
 
     setState(() {
       _loading = true;
     });
     try {
-      final result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: widget.email, password: _pwController.text);
+      await ref
+          .read(authRepositoryProvider)
+          .createUserWithEmailAndPassword(widget.email, _pwController.text);
 
-      showSnackBar(globalContext!, "アカウントを作成しました");
-      Navigator.pop(globalContext!, result);
-    } on FirebaseAuthException catch (e, stack) {
+      if (!mounted) return;
+      Navigator.pop(context, true);
+    } catch (e) {
       setState(() {
         _loading = false;
       });
-      switch (e.code) {
-        case "auth/invalid-password":
-          showSnackBar(context, "パスワードが短すぎます。最低6文字で指定してください。");
-          break;
-        default:
-          handleAuthError(e, stack, context);
-          break;
-      }
+      if (!mounted) return;
+      showSnackBar(context, authErrorMessage(e));
     }
   }
 }

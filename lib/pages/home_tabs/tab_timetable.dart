@@ -1,43 +1,24 @@
-import "dart:async";
-
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
+
 import "../../components/timetable/timetable.dart";
-import "../../db/shared_prefs.dart";
-import "../../events.dart";
-import "../../isar_db/isar_timetable.dart" as db;
-import "../../isar_db/isar_timetable_table.dart";
-import "../../main.dart";
+import "../../core/pref_key.dart";
+import "../../providers/timetable_providers.dart";
 import "../../utils/ui.dart";
 
-class TabTimetable extends StatefulWidget {
+class TabTimetable extends ConsumerWidget {
   const TabTimetable({super.key});
 
   @override
-  State<StatefulWidget> createState() => TabTimetableState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tables = ref.watch(timetableTablesProvider).value ?? [];
+    final currentTableId = ref.watchPref(PrefKey.intCurrentTimetableId);
 
-class TabTimetableState extends State<TabTimetable> {
-  var loading = false;
-  List<TimetableTable> tables = [];
-  SharedPrefs? prefs;
-
-  Map<int, db.Timetable>? table;
-  var bannerKey = GlobalKey();
-  var tableKey = GlobalKey<TimetableState>();
-  StreamSubscription? listener;
-
-  @override
-  void initState() {
-    super.initState();
-    getTableList();
-
-    SharedPrefs.use((prefs) {
-      setState(() {
-        this.prefs = prefs;
-      });
-
-      if (prefs.isTimetableInsertedOnce && !prefs.isTimetableTipsDisplayed) {
-        final context = Application.globalKey.currentContext!;
+    // テーブルTipsの表示 (初回のみ)
+    if (ref.watchPref(PrefKey.isTimetableInsertedOnce) &&
+        !ref.watchPref(PrefKey.isTimetableTipsDisplayed)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.updatePref(PrefKey.isTimetableTipsDisplayed, true);
         showMaterialBanner(
           context,
           content: const Text("科目を長押しで、その科目の提出物を作成できます。"),
@@ -47,79 +28,45 @@ class TabTimetableState extends State<TabTimetable> {
               onPressed: () {
                 hideMaterialBanner(context);
               },
-            )
+            ),
           ],
         );
+      });
+    }
 
-        prefs.isTimetableTipsDisplayed = true;
-      }
-    });
-
-    listener = eventBus.on<TimetableListChanged>().listen((event) {
-      tableKey.currentState?.getTable();
-    });
-  }
-
-  void getTableList() {
-    TimetableTableProvider().use((provider) async {
-      tables = await provider.getAll();
-      if (prefs != null &&
-          tables
-              .every((element) => element.id != prefs!.intCurrentTimetableId)) {
-        prefs!.intCurrentTimetableId = -1;
-      }
-      setState(() {});
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (prefs == null) {
-      return Container();
-    } else {
-      return Stack(
-        children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 4.0, horizontal: 32),
-                child: SizedBox(
-                  child: DropdownButton<int>(
-                    value: prefs!.intCurrentTimetableId,
-                    enableFeedback: true,
-                    items: [
-                      const DropdownMenuItem(
-                        value: -1,
-                        child: Text("メイン"),
-                      ),
-                      ...tables.map((e) => DropdownMenuItem(
-                            value: e.id,
-                            child: Text(e.title),
-                          )),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        prefs!.intCurrentTimetableId = value!;
-                      });
-                      tableKey.currentState?.getTable();
-                    },
-                  ),
+    return Stack(
+      children: [
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 4.0, horizontal: 32),
+              child: SizedBox(
+                child: DropdownButton<int>(
+                  value: currentTableId,
+                  enableFeedback: true,
+                  items: [
+                    const DropdownMenuItem(
+                      value: -1,
+                      child: Text("メイン"),
+                    ),
+                    ...tables.map((e) => DropdownMenuItem(
+                          value: e.id,
+                          child: Text(e.title),
+                        )),
+                  ],
+                  onChanged: (value) {
+                    ref.updatePref(PrefKey.intCurrentTimetableId, value!);
+                  },
                 ),
               ),
-              Timetable(
-                key: tableKey,
-              ),
-            ],
-          ),
-        ],
-      );
-    }
-  }
-
-  void updateUI() {
-    setState(() {});
+            ),
+            const Timetable(),
+          ],
+        ),
+      ],
+    );
   }
 }

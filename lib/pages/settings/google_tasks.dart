@@ -1,39 +1,35 @@
 import "package:flutter/material.dart";
-import "../../main.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
+import "../../features/google_tasks/models/tasks_auth_exception.dart";
+import "../../features/google_tasks/presentation/google_tasks_link_state_notifier.dart";
 import "../../utils/ui.dart";
-import "../../utils/utils.dart";
 
-class GoogleTasksSettingsPage extends StatefulWidget {
+class GoogleTasksSettingsPage extends ConsumerWidget {
   const GoogleTasksSettingsPage({super.key});
 
   static const routeName = "/settings/functions/google-tasks";
 
   @override
-  State<GoogleTasksSettingsPage> createState() =>
-      _GoogleTasksSettingsPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final processState = ref.watch(googleTasksLinkProcessStateProvider);
+    final linkState = ref.watch(connectedGoogleTasksUserProvider);
 
-class _GoogleTasksSettingsPageState extends State<GoogleTasksSettingsPage> {
-  bool? googleTasksAvailable;
-
-  @override
-  void initState() {
-    super.initState();
-
-    Future(() {
-      showLoadingModal(context);
-
-      canAccessTasks().then((value) {
-        Navigator.pop(context);
-        setState(() {
-          googleTasksAvailable = value;
-        });
-      });
+    ref.listen(googleTasksLinkProcessStateProvider, (_, next) {
+      switch (next) {
+        case GoogleTasksLinkProcessStateConnected():
+          showSnackBar(context, "Google Tasksとの連携に成功しました。");
+        case GoogleTasksLinkProcessStateDisconnected():
+          showSnackBar(context, "Google Tasksとの連携を解除しました。");
+        case GoogleTasksLinkProcessStateFailed(:final TasksAuthException e):
+          showSnackBar(context, e.code.userFriendlyMessage);
+        case GoogleTasksLinkProcessStateFailed():
+          showSnackBar(context, "Google Tasksとの連携に失敗しました");
+        case GoogleTasksLinkProcessStateIdle():
+        case GoogleTasksLinkProcessStateLoading():
+          // do nothing
+      }
     });
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return SizedBox.expand(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -45,9 +41,11 @@ class _GoogleTasksSettingsPageState extends State<GoogleTasksSettingsPage> {
                 TextSpan(children: [
                   const TextSpan(text: "連携状態: "),
                   TextSpan(
-                      text: googleTasksAvailable == true
-                          ? "連携済み (${googleSignIn.currentUser?.email})"
-                          : "未連携",
+                      text: switch (linkState) {
+                        AsyncLoading() => "読み込み中...",
+                        AsyncData(:final value?) => "連携中 (${value.email})",
+                        _ => "未連携",
+                      },
                       style: const TextStyle(fontWeight: FontWeight.bold)),
                 ]),
                 style: const TextStyle(fontSize: 18),
@@ -58,8 +56,9 @@ class _GoogleTasksSettingsPageState extends State<GoogleTasksSettingsPage> {
                 "データの利用方法等についてはプライバシーポリシーをご覧ください。",
                 style: Theme.of(context).textTheme.bodyLarge),
             const SizedBox(height: 16),
-            if (googleTasksAvailable != true)
-              Column(
+            switch ((processState, linkState)) {
+              (GoogleTasksLinkProcessStateLoading(), _) || (_, AsyncLoading()) => const CircularProgressIndicator(),
+              (_, AsyncData(value: null)) => Column(
                 children: [
                   const Text("以下のボタンをタップで連携します。"),
                   const SizedBox(height: 8),
@@ -73,54 +72,27 @@ class _GoogleTasksSettingsPageState extends State<GoogleTasksSettingsPage> {
                       padding: EdgeInsets.zero,
                       child: InkWell(
                         onTap: () async {
-                          dynamic result;
-                          if (googleSignIn.currentUser != null) {
-                            result = await googleSignIn.requestScopes(scopes);
-                          } else {
-                            final r = await googleSignIn.signIn();
-                            if (r == null) return;
-                            result = await googleSignIn.requestScopes(scopes);
-                          }
-
-                          if (result == true) {
-                            showSnackBar(context, "Google Tasksと連携しました。");
-                            setState(() {
-                              googleTasksAvailable = true;
-                            });
-                          }
-                        },
-                      ),
+                            ref.read(googleTasksLinkProcessStateProvider.notifier)
+                                .connect();
+                          },
+                        ),
                     ),
                   ),
                 ],
-              )
-            else
-              Column(
+              ),
+              _ => Column(
                 children: [
                   OutlinedButton(
                     child: const Text("連携を解除する"),
                     onPressed: () async {
-                      try {
-                        showLoadingModal(context);
-
-                        await googleSignIn.disconnect();
-
-                        setState(() {
-                          googleTasksAvailable = false;
-                        });
-                        showSnackBar(context, "連携を解除しました。");
-                      } catch (e, stack) {
-                        showSnackBar(context, "エラーが発生しました。");
-                        recordErrorToCrashlytics(e, stack);
-                      } finally {
-                        Navigator.pop(context);
-                      }
+                      ref.read(googleTasksLinkProcessStateProvider.notifier).disconnect();
                     },
                   ),
                   const SizedBox(height: 16),
                   const Text("※SubmonにGoogleログインを利用している場合、ログイン時に自動的に連携されます。"),
                 ],
               ),
+            },
           ],
         ),
       ),

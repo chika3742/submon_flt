@@ -5,7 +5,6 @@ import "package:animations/animations.dart";
 import "package:collection/collection.dart";
 import "package:flutter/material.dart";
 
-import "../../db/shared_prefs.dart";
 import "../../isar_db/isar_timetable.dart";
 import "../../isar_db/isar_timetable_class_time.dart";
 import "../../main.dart";
@@ -18,14 +17,18 @@ class TimetableDayList extends StatefulWidget {
   const TimetableDayList({
     super.key,
     required this.weekday,
-    required this.prefs,
+    required this.showTimeMarker,
+    required this.showClassTime,
+    required this.periodCount,
     required this.items,
     required this.classTimeItems,
   });
 
   final int weekday;
+  final bool showTimeMarker;
+  final bool showClassTime;
+  final int periodCount;
   final List<Timetable> items;
-  final SharedPrefs prefs;
   final List<TimetableClassTime> classTimeItems;
 
   @override
@@ -53,7 +56,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
   }
 
   void setMarkerPos() {
-    if (!widget.prefs.timetableShowTimeMarker) {
+    if (!widget.showTimeMarker) {
       return;
     }
     Future(() {
@@ -121,7 +124,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
                 const SizedBox(height: 16),
               ],
             ),
-            if (widget.prefs.timetableShowTimeMarker)
+            if (widget.showTimeMarker)
               Visibility(
                 visible: DateTime.now().weekday - 1 == widget.weekday &&
                     _markerPos != null,
@@ -184,7 +187,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
         ),
       ];
     } else {
-      for (var index = 0; index < widget.prefs.timetablePeriodCountToDisplay; index++) {
+      for (var index = 0; index < widget.periodCount; index++) {
         list.add(const SizedBox(height: 8));
         list.add(_buildTimetableCell(
             index,
@@ -222,7 +225,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
                   style: const TextStyle(
                       fontSize: 24, fontWeight: FontWeight.bold)),
             ),
-            if (widget.prefs.timetableShowClassTime)
+            if (widget.showClassTime)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                 child: Column(
