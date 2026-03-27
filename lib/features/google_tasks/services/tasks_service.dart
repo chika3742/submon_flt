@@ -22,11 +22,11 @@ abstract interface class TasksService {
 TasksService? tasksService(Ref ref) {
   final authClient = ref.watch(tasksAuthProvider).value;
   if (authClient == null) return null;
-  return TasksRepositoryImpl(TasksApi(authClient));
+  return TaskServiceImpl(TasksApi(authClient));
 }
 
-class TasksRepositoryImpl extends TasksService {
-  const TasksRepositoryImpl(super.api);
+class TaskServiceImpl extends TasksService {
+  const TaskServiceImpl(super._api);
 
   Future<TaskList> taskList() async {
     final taskLists = await _api.tasklists.list(maxResults: 1);
