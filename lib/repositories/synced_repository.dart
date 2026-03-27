@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:flutter/material.dart";
@@ -86,11 +88,14 @@ abstract class SyncedRepository<T> {
   }
 
   void _wrapFirestoreUpdate(Future<void> future) {
-    future.catchError((e, st) {
-      debugPrint("Firestore sync error: $e");
-      crashlytics.recordError(e, st);
-    }).then((_) {
-      onFirestoreUpdated();
-    });
+    unawaited(() async {
+      try {
+        await future;
+        onFirestoreUpdated();
+      } catch (e) {
+        crashlytics.recordError(e, null, reason: "Firestore update failed");
+        rethrow;
+      }
+    }());
   }
 }
