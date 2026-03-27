@@ -90,9 +90,7 @@ class TimetableRepository {
       await collection.filter().tableIdEqualTo(tableId).deleteAll();
       await collection.putAll(items);
     });
-    for (final item in items) {
-      _syncSetCell(item);
-    }
+    _syncSetAllCells(tableId.toString(), items);
   }
 
   // --- Firestore sync (private) ---
@@ -103,6 +101,21 @@ class TimetableRepository {
         data.tableId.toString(),
         {
           "cells": {data.cellId.toString(): data.toMap()},
+        },
+        SetOptions(merge: true),
+      ),
+    );
+  }
+
+  /// [tableId]s in cells are ignored.
+  void _syncSetAllCells(String tableId, List<Timetable> data) {
+    _wrapFirestoreUpdate(
+      firestore.set(
+        tableId,
+        {
+          "cells": {
+            for (final item in data) item.cellId.toString(): item.toMap(),
+          },
         },
         SetOptions(merge: true),
       ),
