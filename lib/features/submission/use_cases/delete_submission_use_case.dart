@@ -29,7 +29,7 @@ class DeleteSubmissionUseCase {
 
   Future<Restorable> execute(int id) async {
     final submission = await _repo.get(id);
-    if (submission == null) throw ArgumentError("Submission not fount for id: $id");
+    if (submission == null) throw ArgumentError("Submission not found for id: $id");
 
     final digestivesToRestore = await _digestiveRepo.deleteBySubmissionId(id);
 
