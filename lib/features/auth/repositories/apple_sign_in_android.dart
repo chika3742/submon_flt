@@ -4,9 +4,10 @@ import "dart:convert";
 import "package:crypto/crypto.dart";
 import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:sign_in_with_apple/sign_in_with_apple.dart";
-import "../apple_web_auth_options.dart";
-import "../features/auth/models/auth_exception.dart";
-import "../src/pigeons.g.dart";
+
+import "../../../apple_web_auth_options.dart";
+import "../../../src/pigeons.g.dart";
+import "../models/auth_exception.dart";
 
 class AppleSignInAndroid {
   final BrowserApi _browserApi;

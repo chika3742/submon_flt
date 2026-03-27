@@ -9,7 +9,7 @@ import "package:path_provider/path_provider.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
-import "../auth/apple_sign_in.dart";
+import "../features/auth/repositories/apple_sign_in_android.dart";
 import "../core/pref_key.dart";
 import "../isar_db/isar_digestive.dart";
 import "../isar_db/isar_memorization_card_group.dart";
