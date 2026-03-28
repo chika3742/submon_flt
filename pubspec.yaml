@@ -80,7 +80,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: 6.0.0
   isar_community_generator: any
-  pigeon: ^22.7.3
+  pigeon: 26.3.3
   build_runner: any
   riverpod_generator: ^4.0.0+1
   freezed: ^3.2.3
