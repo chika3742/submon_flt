@@ -15,7 +15,6 @@ import "../events.dart";
 import "../fade_through_page_route.dart";
 import "../features/auth/use_cases/sign_out_use_case.dart";
 import "../isar_db/isar_digestive.dart";
-import "../main.dart";
 import "../providers/core_providers.dart";
 import "../providers/data_sync_service.dart";
 import "../providers/digestive_providers.dart";

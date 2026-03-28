@@ -65,7 +65,7 @@ void handleOpenLink(
           .read(submissionShareLinkProvider(url.pathSegments[1]).future)
           .then((data) {
         if (!context.mounted) return;
-        Navigator.pop(context);
+        closeLoadingModal(context);
         if (data == null) {
           showSnackBar(context, "共有リンクの有効期限が切れているか、間違っています。");
           return;
@@ -79,7 +79,7 @@ void handleOpenLink(
         );
       }).catchError((e) {
         if (context.mounted) {
-          Navigator.pop(context);
+          closeLoadingModal(context);
           showSnackBar(context, "共有リンクの取得に失敗しました。");
         }
         debugPrint("Error fetching submission share link: $e");

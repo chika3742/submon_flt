@@ -5,10 +5,10 @@ import "package:intl/intl.dart";
 import "../../components/digestive_detail_card.dart";
 import "../../isar_db/isar_digestive.dart";
 import "../../isar_db/isar_submission.dart";
-import "../../main.dart";
 import "../../providers/digestive_providers.dart";
 import "../../sample_data.dart";
 import "../../utils/ui.dart";
+import "../../utils/utils.dart";
 import "../submission_detail_page.dart";
 
 class TabDigestiveList extends ConsumerWidget {

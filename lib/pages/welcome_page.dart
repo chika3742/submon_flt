@@ -8,7 +8,6 @@ import "../browser.dart";
 import "../core/pref_key.dart";
 import "../features/auth/repositories/auth_repository.dart";
 import "../features/auth/use_cases/common.dart";
-import "../main.dart";
 import "../providers/firebase_providers.dart";
 import "../providers/firestore_providers.dart";
 import "../utils/ui.dart";
@@ -93,17 +92,20 @@ class WelcomePage extends ConsumerWidget {
                                   .read(firestoreUserConfigProvider.notifier)
                                   .initializeUser();
 
-                              Navigator.pop(globalContext!);
-                              Navigator.pushReplacementNamed(
-                                  globalContext!, HomePage.routeName);
-
-                              showSnackBar(globalContext!, "お試しモードでスタートしました！");
+                              if (!context.mounted) return;
+                              closeLoadingModal(context);
+                              showSnackBar(context, "お試しモードでスタートしました！");
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                HomePage.routeName,
+                                (route) => false,
+                              );
                             } catch (e, stack) {
-                              Navigator.pop(globalContext!);
-                              showSnackBar(context, "エラーが発生しました");
                               ref
                                   .read(crashlyticsProvider)
                                   .recordError(e, stack);
+                              if (!context.mounted) return;
+                              closeLoadingModal(context);
+                              showSnackBar(context, "エラーが発生しました");
                             }
                           },
                         );

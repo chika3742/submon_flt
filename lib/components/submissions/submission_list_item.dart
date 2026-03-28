@@ -3,12 +3,17 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:intl/intl.dart";
 
+import "../../features/submission/presentation/create_submission_share_link_state_notifier.dart";
+import "../../isar_db/isar_digestive.dart";
 import "../../isar_db/isar_submission.dart";
-import "../../main.dart";
 import "../../pages/submission_detail_page.dart";
+import "../../pages/submission_edit_page.dart";
+import "../../providers/digestive_providers.dart";
 import "../../providers/firebase_providers.dart";
 import "../../utils/analytics.dart";
 import "../../utils/ui.dart";
+import "../../utils/utils.dart";
+import "../digestive_edit_bottom_sheet.dart";
 import "formatted_date_remaining.dart";
 import "submission_list_item_bottom_sheet.dart";
 
@@ -211,16 +216,13 @@ class SubmissionListItemState extends ConsumerState<SubmissionListItem> {
                     "item_list_name": "submission_list",
                   });
                 },
-                onLongPress: () {
-                  showRoundedBottomSheet(
+                onLongPress: () async {
+                  final action = await showSubmissionListItemBottomSheet(
                     context: context,
-                    useRootNavigator: true,
-                    child: SubmissionListItemBottomSheet(
-                      item: item,
-                      onDone: widget.onDone,
-                      onDelete: widget.onDelete,
-                    ),
+                    item: item,
                   );
+                  if (action == null) return;
+                  await _handleContextMenuAction(action, item);
                 },
               ),
             );
@@ -248,6 +250,53 @@ class SubmissionListItemState extends ConsumerState<SubmissionListItem> {
       }
     } else {
       return Theme.of(context).textTheme.headlineMedium!.color!;
+    }
+  }
+
+  Future<void> _handleContextMenuAction(
+    SubmissionContextMenuAction action,
+    Submission item,
+  ) async {
+    if (!mounted) return;
+
+    switch (action) {
+      case SubmissionContextMenuAction.share:
+        ref.read(analyticsProvider).logShare(
+          contentType: "submission",
+          itemId: item.id.toString(),
+          method: "longPressMenu",
+        );
+        ref.read(createSubmissionShareLinkStateProvider.notifier).execute(item);
+
+      case SubmissionContextMenuAction.addDigestive:
+        final data = await showRoundedBottomSheet<Digestive>(
+          context: context,
+          useRootNavigator: true,
+          title: "Digestive 新規作成",
+          child: DigestiveEditBottomSheet(submissionId: item.id),
+        );
+        if (!mounted || data == null) return;
+        final repo = ref.read(digestiveRepositoryProvider);
+        await repo.create(data);
+        if (!mounted) return;
+        showSnackBar(context, "作成しました");
+
+      case SubmissionContextMenuAction.edit:
+        Navigator.of(context, rootNavigator: true).pushNamed(
+          SubmissionEditPage.routeName,
+          arguments: SubmissionEditPageArguments(item.id!),
+        );
+
+      case SubmissionContextMenuAction.makeDone:
+        widget.onDone?.call(true);
+        logMarkedAsDone(
+          ref.read(analyticsProvider),
+          done: item.done,
+          method: "longPressMenu",
+        );
+
+      case SubmissionContextMenuAction.delete:
+        widget.onDelete?.call(true);
     }
   }
 }

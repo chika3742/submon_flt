@@ -10,12 +10,12 @@ import "../components/digestive_edit_bottom_sheet.dart";
 import "../components/submissions/formatted_date_remaining.dart";
 import "../isar_db/isar_digestive.dart";
 import "../isar_db/isar_submission.dart";
-import "../main.dart";
 import "../providers/digestive_providers.dart";
 import "../providers/firebase_providers.dart";
 import "../providers/submission_providers.dart";
 import "../utils/ad_unit_ids.dart";
 import "../utils/ui.dart";
+import "../utils/utils.dart";
 import "submission_edit_page.dart";
 
 class SubmissionDetailPage extends ConsumerStatefulWidget {

@@ -10,7 +10,6 @@ import "../../core/pref_key.dart";
 import "../../features/auth/use_cases/sign_out_use_case.dart";
 import "../../isar_db/isar_timetable_class_time.dart";
 import "../../isar_db/isar_timetable_table.dart";
-import "../../main.dart";
 import "../../providers/firebase_providers.dart";
 import "../../providers/firestore_providers.dart";
 import "../../providers/timetable_providers.dart";
@@ -155,6 +154,7 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
                                 .setTimetableNotificationId(
                                     _timetableNotificationId!)
                                 .onError((error, stackTrace) {
+                              if (!context.mounted) return;
                               showSnackBar(context, "エラーが発生しました。");
                             }).whenComplete(() {
                               setState(() {
@@ -191,8 +191,9 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
                         ref.read(timetableTableRepositoryProvider);
                     await tableRepo
                         .create(TimetableTable.from(title: text));
-                    Navigator.pop(globalContext!);
-                    showSnackBar(globalContext!, "時間割表を追加しました");
+                    if (!context.mounted) return;
+                    Navigator.pop(context);
+                    showSnackBar(context, "時間割表を追加しました");
                   },
                 ),
               );
@@ -214,12 +215,12 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
               onTap: () async {
                 final requestPermissionResult =
                     await MessagingApi().requestNotificationPermission();
+                if (!context.mounted) return;
                 if (requestPermissionResult?.value !=
                     NotificationPermissionState.granted) {
                   showSnackBar(
-                      globalContext!, "通知の表示が許可されていません。本体設定から許可してください。");
+                      context, "通知の表示が許可されていません。本体設定から許可してください。");
                 } else {
-                  if (!mounted) return;
 
                   final result = await showRoundedBottomSheet<TimeOfDay>(
                     context: context,
@@ -241,7 +242,8 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
                           .setTimetableNotificationTime(
                               _timetableNotificationTime);
                     } catch (e) {
-                      showSnackBar(globalContext!, "設定に失敗しました");
+                      if (!context.mounted) return;
+                      showSnackBar(context, "設定に失敗しました");
                     }
                     setState(() {
                       _loadingTimetableNotification = false;
@@ -326,7 +328,7 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
                   helpText: "始業時刻を設定 (1/2)",
                 );
 
-                if (start == null) return;
+                if (!context.mounted || start == null) return;
 
                 final end = await showTimePicker(
                   context: context,
@@ -334,10 +336,10 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
                   helpText: "終業時刻を設定 (2/2)",
                 );
 
-                if (end == null) return;
+                if (!context.mounted || end == null) return;
 
                 if (start.toMinutes() >= end.toMinutes()) {
-                  showSnackBar(globalContext!, "終業時刻が始業時刻よりも前か同じになっています");
+                  showSnackBar(context, "終業時刻が始業時刻よりも前か同じになっています");
                   return;
                 }
 
@@ -351,7 +353,7 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
                           ((element.period < e && x < b) ||
                               (element.period > e && y > a)));
                 })) {
-                  showSnackBar(globalContext!, "他の設定時刻との関係が正しくありません");
+                  showSnackBar(context, "他の設定時刻との関係が正しくありません");
                   return;
                 }
 
@@ -417,7 +419,8 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
       );
     }
 
-    showSnackBar(globalContext!, "コピーしました");
+    if (!mounted) return;
+    showSnackBar(context, "コピーしました");
   }
 
   Future<void> _changeTimetableName(TimetableTable table) async {
@@ -431,10 +434,10 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
           final tableRepo = ref.read(timetableTableRepositoryProvider);
           try {
             tableRepo.update(TimetableTable.from(id: table.id, title: text));
-            Navigator.pop(globalContext!);
-            showSnackBar(globalContext!, "時間割表名を変更しました");
+            Navigator.pop(context);
+            showSnackBar(context, "時間割表名を変更しました");
           } catch (e, st) {
-            showSnackBar(globalContext!, "エラーが発生しました。");
+            showSnackBar(context, "エラーが発生しました。");
             ref.read(crashlyticsProvider).recordError(e, st);
           }
         },

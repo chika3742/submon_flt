@@ -4,7 +4,6 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../features/auth/presentation/sign_in_state_notifier.dart";
 import "../features/auth/use_cases/common.dart";
-import "../main.dart";
 import "../providers/firebase_providers.dart";
 import "../utils/ui.dart";
 import "email_registration_page.dart";
@@ -273,7 +272,7 @@ class EmailSignInPageState extends ConsumerState<EmailSignInPage>
     } else if (methods.any((m) => m == EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD)) {
       sendSignInEmail();
     } else {
-      showSimpleDialog(globalContext!, "エラー",
+      showSimpleDialog(context, "エラー",
           "このアカウントはメールアドレスを使用してサインインできません。\n前の画面に戻り、「Google でサインイン」もしくは「Apple でサインイン」からサインインしてください。",
           onOKPressed: () {});
     }

@@ -85,9 +85,9 @@ class DigestiveRepository extends SyncedRepository<Digestive> {
 
   void _syncNotification(Digestive data) {
     if (data.done) {
-      _userConfig.removeDigestiveNotification(data.id);
+      _userConfig.removeDigestiveNotification(data.id!);
     } else if (data.startAt.isAfter(DateTime.now())) {
-      _userConfig.addDigestiveNotification(data.id);
+      _userConfig.addDigestiveNotification(data.id!);
     }
   }
 }

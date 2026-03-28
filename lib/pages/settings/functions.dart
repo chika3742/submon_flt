@@ -9,7 +9,6 @@ import "../../browser.dart";
 import "../../components/dropdown_time_picker_bottom_sheet.dart";
 import "../../features/auth/use_cases/common.dart";
 import "../../features/auth/use_cases/sign_out_use_case.dart";
-import "../../main.dart";
 import "../../providers/firebase_providers.dart";
 import "../../providers/firestore_providers.dart";
 import "../../src/pigeons.g.dart";
@@ -113,12 +112,12 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
                 // check permission
                 final requestPermissionResult =
                     await MessagingApi().requestNotificationPermission();
+                if (!context.mounted) return;
                 if (requestPermissionResult?.value !=
                     NotificationPermissionState.granted) {
                   showSnackBar(
-                      globalContext!, "通知の表示が許可されていません。本体設定から許可してください。");
+                      context, "通知の表示が許可されていません。本体設定から許可してください。");
                 } else {
-                  if (!context.mounted) return;
 
                   // show time picker for reminder time
                   final result = await showRoundedBottomSheet<TimeOfDay>(
@@ -141,7 +140,8 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
                         _reminderTime = result;
                       });
                     } catch (e) {
-                      showSnackBar(globalContext!, "設定に失敗しました");
+                      if (!context.mounted) return;
+                      showSnackBar(context, "設定に失敗しました");
                     }
                     setState(() {
                       _loadingReminderTime = false;
@@ -218,9 +218,9 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
                 final result = await Navigator.pushNamed(
                     context, SignInPage.routeName,
                     arguments: const SignInPageArguments(AuthMode.upgrade));
-                if (result == true) {
+                if (result == true && context.mounted) {
                   setState(() {});
-                  showSnackBar(globalContext!, "アカウントがアップグレードされました！");
+                  showSnackBar(context, "アカウントがアップグレードされました！");
                 }
               },
             ),
@@ -291,28 +291,29 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
     try {
       final providerData = user.providerData;
       if (providerData.isEmpty) throw FirebaseAuthException(code: "user-not-found");
-      Navigator.pop(globalContext!);
+      closeLoadingModal(context);
       if (providerData.first.providerId == EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {
         await Navigator.pushNamed(
-            globalContext!, AccountEditPage.changePasswordRouteName);
+            context, AccountEditPage.changePasswordRouteName);
         setState(() {});
       } else {
         setState(() {
           _pwEnabled = false;
         });
-        showSnackBar(globalContext!, "パスワードレス アカウントでパスワードの変更はできません");
+        showSnackBar(context, "パスワードレス アカウントでパスワードの変更はできません");
       }
     } on FirebaseAuthException catch (e, stack) {
-      Navigator.pop(context);
+      ref.read(crashlyticsProvider).recordError(e, stack);
+      if (!mounted) return;
+      closeLoadingModal(context);
       if (e.code == "user-not-found") {
         showSnackBar(context, "ユーザーが見つかりません。再度ログインしてください。");
       } else {
         showSnackBar(context, "アカウント状態の取得に失敗しました (Code: ${e.code})");
       }
-      ref.read(crashlyticsProvider).recordError(e, stack);
     } catch (e, stack) {
-      showSnackBar(context, "エラーが発生しました");
       ref.read(crashlyticsProvider).recordError(e, stack);
+      if (mounted) showSnackBar(context, "エラーが発生しました");
     }
   }
 

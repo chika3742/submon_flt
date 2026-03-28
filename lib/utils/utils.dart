@@ -3,6 +3,8 @@ import "package:flutter/material.dart";
 import "../pages/submission_create_page.dart";
 import "ui.dart";
 
+const screenShotMode = bool.fromEnvironment("SCREENSHOT_MODE");
+
 int getTimetableCellId(int period, int weekday) {
   return period * 6 + weekday;
 }
