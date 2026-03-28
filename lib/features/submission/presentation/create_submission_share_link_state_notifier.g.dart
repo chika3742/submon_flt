@@ -42,7 +42,7 @@ final class CreateSubmissionShareLinkStateNotifierProvider
 }
 
 String _$createSubmissionShareLinkStateNotifierHash() =>
-    r'6ea8ae96c16b2ae53280b0d3ca6bfe2967b73ada';
+    r'0b00df54db1b80e53abbb505a39789c5dcd46c02';
 
 abstract class _$CreateSubmissionShareLinkStateNotifier extends $AsyncNotifier<
     ({

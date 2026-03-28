@@ -12,6 +12,7 @@ include: package:flutter_lints/flutter.yaml
 analyzer:
   exclude:
     - lib/**.g.dart
+    - lib/**.freezed.dart
 
 plugins:
   better_require_trailing_commas: ^3.0.0
