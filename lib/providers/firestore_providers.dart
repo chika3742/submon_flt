@@ -71,7 +71,6 @@ class FirestoreUserConfigNotifier extends _$FirestoreUserConfigNotifier
     await _userDoc?.set({
       "notificationTokens": FieldValue.arrayUnion([token]),
     }, SetOptions(merge: true));
-    ref.invalidateSelf();
   }
 
   @override
@@ -79,7 +78,6 @@ class FirestoreUserConfigNotifier extends _$FirestoreUserConfigNotifier
     await _userDoc?.set({
       "notificationTokens": FieldValue.arrayRemove([token]),
     }, SetOptions(merge: true));
-    ref.invalidateSelf();
   }
 
   Future<void> setReminderNotificationTime(TimeOfDay? time) async {
@@ -109,24 +107,20 @@ class FirestoreUserConfigNotifier extends _$FirestoreUserConfigNotifier
     ref.invalidateSelf();
   }
 
-  Future<void> addDigestiveNotification(int? id) async {
-    if (id == null) return;
+  Future<void> addDigestiveNotification(int id) async {
     await _userDoc?.set({
       "digestiveNotifications": FieldValue.arrayUnion(
         [_userDoc!.collection("digestive").doc(id.toString())],
       ),
     }, SetOptions(merge: true));
-    ref.invalidateSelf();
   }
 
-  Future<void> removeDigestiveNotification(int? id) async {
-    if (id == null) return;
+  Future<void> removeDigestiveNotification(int id) async {
     await _userDoc?.set({
       "digestiveNotifications": FieldValue.arrayRemove(
         [_userDoc!.collection("digestive").doc(id.toString())],
       ),
     }, SetOptions(merge: true));
-    ref.invalidateSelf();
   }
 
   Future<void> setDigestiveNotificationTimeBefore(int value) async {
