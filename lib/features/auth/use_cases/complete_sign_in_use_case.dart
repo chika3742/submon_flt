@@ -58,8 +58,8 @@ class CompleteSignInUseCase {
     if (_userDoc != null) {
       try {
         final snapshot = await _userDoc.withConverter<UserConfig>(
-          fromFirestore: UserConfig.fromFirestore,
-          toFirestore: (config, options) => config.toFirestore(),
+          fromFirestore: (s, _) => UserConfig.fromJson(s.data()!),
+          toFirestore: (obj, _) => obj.toJson(),
         ).get();
         userConfig = snapshot.data();
       } on FirebaseException catch (e) {
