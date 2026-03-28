@@ -63,7 +63,6 @@ class FirestoreUserConfigNotifier extends _$FirestoreUserConfigNotifier
       {"lastAppOpened": FieldValue.serverTimestamp()},
       SetOptions(merge: true),
     );
-    ref.invalidateSelf();
   }
 
   @override

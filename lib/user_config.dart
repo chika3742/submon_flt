@@ -6,7 +6,6 @@ import "utils/value.dart";
 class UserConfig {
   int? schemaVersion;
   Timestamp? lastChanged;
-  Timestamp? lastAppOpened;
   TimeOfDay? reminderNotificationTime;
   TimeOfDay? timetableNotificationTime;
   int? timetableNotificationId;
@@ -25,7 +24,6 @@ class UserConfig {
   UserConfig({
     this.schemaVersion,
     this.lastChanged,
-    this.lastAppOpened,
     this.reminderNotificationTime,
     this.timetableNotificationTime,
     this.timetableNotificationId,
@@ -54,7 +52,6 @@ class UserConfig {
     return UserConfig(
       schemaVersion: schemaVersion ?? this.schemaVersion,
       lastChanged: lastChanged ?? this.lastChanged,
-      lastAppOpened: lastAppOpened ?? this.lastAppOpened,
       reminderNotificationTime: reminderNotificationTime != null
           ? reminderNotificationTime.value
           : this.reminderNotificationTime,
@@ -82,7 +79,6 @@ class UserConfig {
     return UserConfig(
       schemaVersion: data?["schemaVersion"],
       lastChanged: data?["lastChanged"],
-      lastAppOpened: data?["lastAppOpened"],
       reminderNotificationTime: () {
         final spilt = (data?["reminderNotificationTime"] as String?)?.split(":");
         return spilt != null ? TimeOfDay(hour: int.parse(spilt[0]), minute: int.parse(spilt[1])) : null;
