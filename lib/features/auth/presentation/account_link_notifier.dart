@@ -2,6 +2,7 @@ import "package:firebase_auth/firebase_auth.dart" hide AuthProvider;
 import "package:freezed_annotation/freezed_annotation.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
+import "../../../core/failure.dart";
 import "../../../providers/firebase_providers.dart";
 import "../../../utils/notifier_state_guard.dart";
 import "../repositories/auth_repository.dart";
@@ -50,7 +51,11 @@ sealed class AccountLinkState with _$AccountLinkState {
   const factory AccountLinkState.unlinkSucceeded() =
       AccountLinkUnlinkSucceeded;
 
-  const factory AccountLinkState.failed(Object error) = AccountLinkFailed;
+  @Implements<ErrorState>()
+  const factory AccountLinkState.failed(
+    Object error,
+    StackTrace errorStackTrace,
+  ) = AccountLinkFailed;
 }
 
 @riverpod
@@ -62,8 +67,7 @@ class AccountLinkNotifier extends _$AccountLinkNotifier
   @override
   @protected
   AccountLinkState getErrorState(Object error, StackTrace st) {
-    ref.read(crashlyticsProvider).recordError(error, st);
-    return AccountLinkState.failed(error);
+    return AccountLinkState.failed(error, st);
   }
 
   void link(AuthProvider provider) {

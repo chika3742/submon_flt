@@ -121,26 +121,30 @@ class GoogleTasksLinkProcessStateLoading
 
 /// @nodoc
 
-class GoogleTasksLinkProcessStateFailed implements GoogleTasksLinkProcessState {
-  const GoogleTasksLinkProcessStateFailed(this.e);
+class GoogleTasksLinkProcessStateFailed
+    implements GoogleTasksLinkProcessState, ErrorState {
+  const GoogleTasksLinkProcessStateFailed(this.error, this.errorStackTrace);
 
-  final Object e;
+  final Object error;
+  final StackTrace errorStackTrace;
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is GoogleTasksLinkProcessStateFailed &&
-            const DeepCollectionEquality().equals(other.e, e));
+            const DeepCollectionEquality().equals(other.error, error) &&
+            (identical(other.errorStackTrace, errorStackTrace) ||
+                other.errorStackTrace == errorStackTrace));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(e));
+  int get hashCode => Object.hash(
+      runtimeType, const DeepCollectionEquality().hash(error), errorStackTrace);
 
   @override
   String toString() {
-    return 'GoogleTasksLinkProcessState.failed(e: $e)';
+    return 'GoogleTasksLinkProcessState.failed(error: $error, errorStackTrace: $errorStackTrace)';
   }
 }
 

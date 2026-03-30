@@ -18,13 +18,14 @@ import "package:intl/intl.dart";
 import "package:package_info_plus/package_info_plus.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
+import "core/crashlytics_observer.dart";
+import "core/failure.dart";
 import "core/pref_key.dart";
 import "events.dart";
 import "features/auth/presentation/auth_action_notifier.dart";
 import "features/auth/presentation/auth_messages.dart";
 import "features/auth/presentation/email_link_auth_notifier.dart";
 import "features/google_tasks/models/tasks_operation_exception.dart";
-import "features/submission/presentation/submission_save_state_notifier.dart";
 import "link_handler/link_handler.dart";
 import "pages/done_submissions_page.dart";
 import "pages/email_registration_page.dart";
@@ -46,12 +47,11 @@ import "pages/submission_edit_page.dart";
 import "pages/timetable_edit_page.dart";
 import "pages/timetable_table_view_page.dart";
 import "pages/welcome_page.dart";
+import "providers/background_tasks_notifier.dart";
 import "providers/core_providers.dart";
 import "providers/firebase_providers.dart";
-import "providers/firestore_error_notifier.dart";
 import "providers/link_events_provider.dart";
 import "providers/pref_provider.dart";
-import "utils/distinguish.dart";
 import "utils/ui.dart";
 import "utils/utils.dart";
 
@@ -97,6 +97,7 @@ void main() async {
 
   runApp(
     ProviderScope(
+      observers: [CrashlyticsObserver(FirebaseCrashlytics.instance)],
       overrides: [
         sharedPrefsServiceProvider.overrideWithValue(prefs),
       ],
@@ -159,27 +160,20 @@ class _ApplicationState extends ConsumerState<Application> {
       _handleAuthActionState(_navContext, next);
     });
 
-    ref.listen(submissionSaveStateProvider, (_, next) {
-      switch (next.value) {
-        case SubmissionSaveStateFailed(:final error):
-          final message = error is TasksOperationException
-              ? error.toString()
-              : "保存に失敗しました。";
-          showSnackBar(_navContext, message);
-        case _:
-          break;
+    ref.listen(backgroundTasksProvider, (_, next) {
+      if (next case ErrorState(:final error)) {
+        final message = switch (error) {
+          Failure(:final userFriendlyMessage) => userFriendlyMessage,
+          TasksOperationException() => error.toString(),
+          _ => "データの保存に失敗しました。サーバーにデータが反映されていない可能性があります。",
+        };
+        showSnackBar(_navContext, message);
       }
     });
 
     ref.listen(firebaseUserProvider, (prev, next) {
       if (prev?.value != null && next.value == null) {
         backToWelcomePage(_navContext);
-      }
-    });
-
-    ref.listen(firestoreErrorProvider, (_, next) {
-      if (next case AsyncData(value: Distinguish(value: final _))) {
-        showSnackBar(_navContext, "データの保存に失敗しました。サーバーにデータが反映されていない可能性があります。");
       }
     });
 

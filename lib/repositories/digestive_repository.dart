@@ -9,8 +9,7 @@ class DigestiveRepository extends SyncedRepository<Digestive> {
   DigestiveRepository(
     super.isar,
     super._firestore,
-    super._crashlytics,
-    super._errorNotifier,
+    super._errorReporter,
     this._userConfig,
   );
 

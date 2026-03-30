@@ -8,8 +8,7 @@ class TimetableClassTimeRepository
   TimetableClassTimeRepository(
     super.isar,
     super._firestore,
-    super._crashlytics,
-    super._errorNotifier,
+    super._errorReporter,
   );
 
   @override

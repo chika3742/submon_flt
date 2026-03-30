@@ -32,3 +32,27 @@ mixin NotifierStateGuard<StateT, ValueT> on AnyNotifier<StateT, ValueT> {
     }
   }
 }
+
+mixin NotifierStateGuardAsync<ValueT> on AnyNotifier<AsyncValue<ValueT>, ValueT> {
+  @protected
+  void guard(Future<ValueT> Function() action) {
+    unawaited(guardAwaited(action));
+  }
+
+  @protected
+  Future<void> guardAwaited(Future<ValueT> Function() action) async {
+    // ignore: invalid_use_of_internal_member
+    state = AsyncValue<ValueT>.loading().copyWithPrevious(state);
+    try {
+      state = AsyncValue.data(await action());
+    } catch (e, st) {
+      // ignore: invalid_use_of_internal_member
+      state = AsyncValue<ValueT>.error(e, st).copyWithPrevious(state);
+      onError(e, st);
+    }
+  }
+
+  /// A callback that is called when an error occurs in [guard].
+  @protected
+  void onError(Object error, StackTrace st) {}
+}

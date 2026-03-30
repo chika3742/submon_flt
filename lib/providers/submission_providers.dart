@@ -3,9 +3,8 @@ import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../isar_db/isar_submission.dart";
 import "../repositories/submission_repository.dart";
+import "background_tasks_notifier.dart";
 import "core_providers.dart";
-import "firebase_providers.dart";
-import "firestore_error_notifier.dart";
 import "firestore_providers.dart";
 
 part "submission_providers.g.dart";
@@ -13,13 +12,12 @@ part "submission_providers.g.dart";
 @Riverpod(keepAlive: true)
 SubmissionRepository submissionRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
-  final firestore = ref.watch(firestoreCollectionProvider("submission").notifier);
-  final crashlytics = ref.watch(crashlyticsProvider);
+  final firestore =
+      ref.watch(firestoreCollectionProvider("submission").notifier);
   return SubmissionRepository(
     isar,
     firestore,
-    crashlytics,
-    ref.watch(firestoreErrorProvider.notifier),
+    ref.watch(backgroundTasksProvider.notifier),
   );
 }
 
