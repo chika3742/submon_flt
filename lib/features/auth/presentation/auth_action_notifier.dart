@@ -2,7 +2,7 @@ import "package:freezed_annotation/freezed_annotation.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 import "package:url_launcher/url_launcher.dart";
 
-import "../../../providers/firebase_providers.dart";
+import "../../../core/failure.dart";
 import "../../../providers/link_events_provider.dart";
 import "../../../utils/app_links.dart";
 import "../../../utils/notifier_state_guard.dart";
@@ -21,7 +21,11 @@ sealed class AuthActionState with _$AuthActionState {
 
   const factory AuthActionState.signedOut() = AuthActionStateSignedOut;
 
-  const factory AuthActionState.failed(Object error) = AuthActionStateFailed;
+  @Implements<ErrorState>()
+  const factory AuthActionState.failed(
+    Object error,
+    StackTrace errorStackTrace,
+  ) = AuthActionStateFailed;
 }
 
 @Riverpod(keepAlive: true)
@@ -40,8 +44,7 @@ class AuthActionNotifier extends _$AuthActionNotifier
   @override
   @protected
   AuthActionState getErrorState(Object error, StackTrace st) {
-    ref.read(crashlyticsProvider).recordError(error, st);
-    return AuthActionState.failed(error);
+    return AuthActionState.failed(error, st);
   }
 
   void _handleUri(Uri url) {
@@ -53,17 +56,14 @@ class AuthActionNotifier extends _$AuthActionNotifier
       case "recoverEmail":
         launchUrl(authUrl, mode: LaunchMode.externalApplication);
       case "verifyAndChangeEmail":
-        final oobCode = authUrl.queryParameters["oobCode"];
-        if (oobCode == null) {
-          state = AuthActionState.failed(
-            AuthException(AuthErrorCode.invalidActionCode),
-          );
-          return;
-        }
-
         guard(
           const AuthActionState.processing(),
           () async {
+            final oobCode = authUrl.queryParameters["oobCode"];
+            if (oobCode == null) {
+              throw AuthException(AuthErrorCode.invalidActionCode);
+            }
+
             await ref.read(authRepositoryProvider).checkActionCode(oobCode);
             await ref.read(signOutUseCaseProvider).execute();
             await launchUrl(authUrl, mode: LaunchMode.externalApplication);

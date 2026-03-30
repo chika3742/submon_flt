@@ -5,6 +5,8 @@ import "package:riverpod_annotation/riverpod_annotation.dart";
 import "../core/pref_key.dart";
 import "../user_config.dart";
 import "../utils/batch_operation.dart";
+import "../utils/notifier_state_guard.dart";
+import "background_tasks_notifier.dart";
 import "core_providers.dart";
 import "firebase_providers.dart";
 import "functions_service.dart";
@@ -32,128 +34,169 @@ abstract interface class FirestoreUserConfigUpdater {
 /// 各メソッドでの書き込みが自動的に state に反映される。
 @Riverpod(keepAlive: true)
 class FirestoreUserConfigNotifier extends _$FirestoreUserConfigNotifier
-    implements FirestoreUserConfigUpdater {
+    with NotifierStateGuardAsync
+    implements FirestoreUserConfigUpdater  {
   DocumentReference<Map<String, dynamic>>? get _userDoc =>
       ref.read(userDocProvider);
 
   @override
   Future<UserConfig?> build() async {
     final doc = ref.watch(userDocProvider)?.withConverter<UserConfig>(
-      fromFirestore: UserConfig.fromFirestore,
-      toFirestore: (config, options) => config.toFirestore(),
+      fromFirestore: (s, _) => UserConfig.fromJson(s.data()!),
+      toFirestore: (obj, _) => obj.toJson(),
     );
     if (doc == null) return null;
     return (await doc.get()).data();
   }
 
+  @override
+  void onError(Object error, StackTrace st) {
+    ref.read(backgroundTasksProvider.notifier).report(error, st);
+  }
+
   /// タイムスタンプを更新する (PrefKey + Firestore)。
   Future<void> updateTimestamp() async {
-    final timestamp = Timestamp.now();
-    ref.updatePref(
-      PrefKey.firestoreLastChanged,
-      timestamp.toDate().microsecondsSinceEpoch,
-    );
-    await _userDoc?.set({"lastChanged": timestamp}, SetOptions(merge: true));
-    ref.invalidateSelf();
+    return guardAwaited(() async {
+      final timestamp = Timestamp.now();
+      ref.updatePref(
+        PrefKey.firestoreLastChanged,
+        timestamp.toDate().microsecondsSinceEpoch,
+      );
+      await _userDoc!.set({"lastChanged": timestamp}, SetOptions(merge: true));
+      return state.value?.copyWith(lastChanged: timestamp);
+    });
   }
 
   /// 最終アプリ起動日時をサーバータイムスタンプで記録する。
-  Future<void> setLastAppOpened() async {
-    await _userDoc?.set(
-      {"lastAppOpened": FieldValue.serverTimestamp()},
-      SetOptions(merge: true),
-    );
+  Future<void> setLastAppOpened() {
+    return guardAwaited(() async {
+      await _userDoc?.set(
+        {"lastAppOpened": FieldValue.serverTimestamp()},
+        SetOptions(merge: true),
+      );
+      return state.value;
+    });
   }
 
   @override
-  Future<void> saveNotificationToken(String token) async {
-    await _userDoc?.set({
-      "notificationTokens": FieldValue.arrayUnion([token]),
-    }, SetOptions(merge: true));
+  Future<void> saveNotificationToken(String token) {
+    return guardAwaited(() async {
+      await _userDoc?.set({
+        "notificationTokens": FieldValue.arrayUnion([token]),
+      }, SetOptions(merge: true));
+      return state.value;
+    });
   }
 
   @override
-  Future<void> removeNotificationToken(String token) async {
-    await _userDoc?.set({
-      "notificationTokens": FieldValue.arrayRemove([token]),
-    }, SetOptions(merge: true));
+  Future<void> removeNotificationToken(String token) {
+    return guardAwaited(() async {
+      await _userDoc?.set({
+        "notificationTokens": FieldValue.arrayRemove([token]),
+      }, SetOptions(merge: true));
+      return state.value;
+    });
   }
 
-  Future<void> setReminderNotificationTime(TimeOfDay? time) async {
-    String? timeString;
-    if (time != null) {
-      timeString = "${time.hour}:${time.minute}";
-    }
-    await _userDoc?.set(
-      {"reminderNotificationTime": timeString},
-      SetOptions(merge: true),
-    );
-    ref.invalidateSelf();
+  Future<void> setReminderNotificationTime(TimeOfDay? time) {
+    return guardAwaited(() async {
+      await _userDoc?.set(
+        {"reminderNotificationTime": time != null ? "${time.hour}:${time.minute}" : null},
+        SetOptions(merge: true),
+      );
+      return state.value?.copyWith(reminderNotificationTime: time);
+    });
   }
 
-  Future<void> setTimetableNotificationTime(TimeOfDay? time) async {
-    await _userDoc?.set({
-      "timetableNotificationTime":
-          time != null ? "${time.hour}:${time.minute}" : null,
-    }, SetOptions(merge: true));
-    ref.invalidateSelf();
+  Future<void> setTimetableNotificationTime(TimeOfDay? time) {
+    return guardAwaited(() async {
+      await _userDoc?.set({
+        "timetableNotificationTime":
+            time != null ? "${time.hour}:${time.minute}" : null,
+      }, SetOptions(merge: true));
+      return state.value?.copyWith(timetableNotificationTime: time);
+    });
   }
 
-  Future<void> setTimetableNotificationId(int id) async {
-    await _userDoc?.set({
-      "timetableNotificationId": id,
-    }, SetOptions(merge: true));
-    ref.invalidateSelf();
+  Future<void> setTimetableNotificationId(int id) {
+    return guardAwaited(() async {
+      await _userDoc?.set({
+        "timetableNotificationId": id,
+      }, SetOptions(merge: true));
+      return state.value?.copyWith(timetableNotificationId: id);
+    });
   }
 
-  Future<void> addDigestiveNotification(int id) async {
-    await _userDoc?.set({
-      "digestiveNotifications": FieldValue.arrayUnion(
-        [_userDoc!.collection("digestive").doc(id.toString())],
-      ),
-    }, SetOptions(merge: true));
+  Future<void> addDigestiveNotification(int id) {
+    return guardAwaited(() async {
+      await _userDoc?.set({
+        "digestiveNotifications": FieldValue.arrayUnion(
+          [_userDoc!.collection("digestive").doc(id.toString())],
+        ),
+      }, SetOptions(merge: true));
+      return state.value;
+    });
   }
 
-  Future<void> removeDigestiveNotification(int id) async {
-    await _userDoc?.set({
-      "digestiveNotifications": FieldValue.arrayRemove(
-        [_userDoc!.collection("digestive").doc(id.toString())],
-      ),
-    }, SetOptions(merge: true));
+  Future<void> removeDigestiveNotification(int id) {
+    return guardAwaited(() async {
+      await _userDoc?.set({
+        "digestiveNotifications": FieldValue.arrayRemove(
+          [_userDoc!.collection("digestive").doc(id.toString())],
+        ),
+      }, SetOptions(merge: true));
+      return state.value;
+    });
   }
 
-  Future<void> setDigestiveNotificationTimeBefore(int value) async {
-    await _userDoc?.set(
-      {"digestiveNotificationTimeBefore": value},
-      SetOptions(merge: true),
-    );
-    ref.invalidateSelf();
+  Future<void> setDigestiveNotificationTimeBefore(int value) {
+    return guardAwaited(() async {
+      await _userDoc?.set(
+        {"digestiveNotificationTimeBefore": value},
+        SetOptions(merge: true),
+      );
+      return state.value?.copyWith(digestiveNotificationTimeBefore: value);
+    });
   }
 
-  Future<void> setTimetableShowSaturday(bool value) async {
-    final doc = _userDoc;
-    if (doc == null) {
-      throw StateError("Cannot update timetable config: user is not signed in");
-    }
-    await doc.update({UserConfig.pathTimetableShowSaturday: value});
-    ref.invalidateSelf();
+  Future<void> setTimetableShowSaturday(bool value) {
+    return guardAwaited(() async {
+      final doc = _userDoc;
+      if (doc == null) {
+        throw StateError("Cannot update timetable config: user is not signed in");
+      }
+      await doc.update({UserConfig.pathTimetableShowSaturday: value});
+      final current = state.value;
+      return current?.copyWith(
+        timetable: (current.timetable ?? const TimetableConfig())
+            .copyWith(showSaturday: value),
+      );
+    });
   }
 
-  Future<void> setTimetablePeriodCountToDisplay(int value) async {
-    final doc = _userDoc;
-    if (doc == null) {
-      throw StateError("Cannot update timetable config: user is not signed in");
-    }
-    await doc.update({UserConfig.pathTimetablePeriodCountToDisplay: value});
-    ref.invalidateSelf();
+  Future<void> setTimetablePeriodCountToDisplay(int value) {
+    return guardAwaited(() async {
+      final doc = _userDoc;
+      if (doc == null) {
+        throw StateError("Cannot update timetable config: user is not signed in");
+      }
+      await doc.update({UserConfig.pathTimetablePeriodCountToDisplay: value});
+      final current = state.value;
+      return current?.copyWith(
+        timetable: (current.timetable ?? const TimetableConfig())
+            .copyWith(periodCountToDisplay: value),
+      );
+    });
   }
 
   /// ユーザーを初期化する (Cloud Functions 経由)。
   @override
-  Future<void> initializeUser() async {
-    await ref.read(functionsServiceProvider).createUser();
-    await _userDoc!.set({"schemaVersion": schemaVersion});
-    ref.invalidateSelf();
+  Future<void> initializeUser() {
+    return guardAwaited(() async {
+      await ref.read(functionsServiceProvider).createUser();
+      await _userDoc!.set({"schemaVersion": schemaVersion});
+      return state.value?.copyWith(schemaVersion: schemaVersion);
+    });
   }
 }
 
@@ -241,4 +284,8 @@ bool hasRemoteChanges(UserConfig? config, int? localTimestampMicros) {
   if (config == null || config.lastChanged == null || localTimestampMicros == null) return true;
   return config.lastChanged!.toDate().microsecondsSinceEpoch >
       localTimestampMicros;
+}
+
+class FirestorePermissionDeniedException implements Exception {
+  const FirestorePermissionDeniedException();
 }

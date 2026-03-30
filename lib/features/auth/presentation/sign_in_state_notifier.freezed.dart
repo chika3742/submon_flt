@@ -71,26 +71,29 @@ class SignInStateBusy with AuthBusyState implements SignInState {
 
 /// @nodoc
 
-class SignInStateFailed implements SignInState {
-  const SignInStateFailed(this.error);
+class SignInStateFailed implements SignInState, ErrorState {
+  const SignInStateFailed(this.error, this.errorStackTrace);
 
   final Object error;
+  final StackTrace errorStackTrace;
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is SignInStateFailed &&
-            const DeepCollectionEquality().equals(other.error, error));
+            const DeepCollectionEquality().equals(other.error, error) &&
+            (identical(other.errorStackTrace, errorStackTrace) ||
+                other.errorStackTrace == errorStackTrace));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(error));
+  int get hashCode => Object.hash(
+      runtimeType, const DeepCollectionEquality().hash(error), errorStackTrace);
 
   @override
   String toString() {
-    return 'SignInState.failed(error: $error)';
+    return 'SignInState.failed(error: $error, errorStackTrace: $errorStackTrace)';
   }
 }
 

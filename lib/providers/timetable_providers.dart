@@ -8,9 +8,8 @@ import "../isar_db/isar_timetable_table.dart";
 import "../repositories/timetable_class_time_repository.dart";
 import "../repositories/timetable_repository.dart";
 import "../repositories/timetable_table_repository.dart";
+import "background_tasks_notifier.dart";
 import "core_providers.dart";
-import "firebase_providers.dart";
-import "firestore_error_notifier.dart";
 import "firestore_providers.dart";
 
 part "timetable_providers.g.dart";
@@ -22,12 +21,10 @@ TimetableRepository timetableRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
   final firestore =
       ref.watch(firestoreCollectionProvider("timetable").notifier);
-  final crashlytics = ref.watch(crashlyticsProvider);
   return TimetableRepository(
     isar,
     firestore,
-    crashlytics,
-    ref.watch(firestoreErrorProvider.notifier),
+    ref.watch(backgroundTasksProvider.notifier),
   );
 }
 
@@ -36,12 +33,10 @@ TimetableTableRepository timetableTableRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
   final firestore =
       ref.watch(firestoreCollectionProvider("timetable").notifier);
-  final crashlytics = ref.watch(crashlyticsProvider);
   return TimetableTableRepository(
     isar,
     firestore,
-    crashlytics,
-    ref.watch(firestoreErrorProvider.notifier),
+    ref.watch(backgroundTasksProvider.notifier),
   );
 }
 
@@ -50,12 +45,10 @@ TimetableClassTimeRepository timetableClassTimeRepository(Ref ref) {
   final isar = ref.watch(isarProvider).requireValue;
   final firestore =
       ref.watch(firestoreCollectionProvider("timetableClassTime").notifier);
-  final crashlytics = ref.watch(crashlyticsProvider);
   return TimetableClassTimeRepository(
     isar,
     firestore,
-    crashlytics,
-    ref.watch(firestoreErrorProvider.notifier),
+    ref.watch(backgroundTasksProvider.notifier),
   );
 }
 

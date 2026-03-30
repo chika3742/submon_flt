@@ -7,8 +7,7 @@ class TimetableTableRepository extends SyncedRepository<TimetableTable> {
   TimetableTableRepository(
     super.isar,
     super._firestore,
-    super._crashlytics,
-    super._errorNotifier,
+    super._errorReporter,
   );
 
   @override

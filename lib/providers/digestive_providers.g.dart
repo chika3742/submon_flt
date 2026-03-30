@@ -51,7 +51,7 @@ final class DigestiveRepositoryProvider extends $FunctionalProvider<
 }
 
 String _$digestiveRepositoryHash() =>
-    r'604e2cb352ace88bf6d9ce92424572315c36b584';
+    r'64b385766fbf9bdb65477149a060c359f588a52b';
 
 @ProviderFor(undoneDigestives)
 final undoneDigestivesProvider = UndoneDigestivesProvider._();

@@ -183,26 +183,29 @@ class AccountLinkUnlinkSucceeded implements AccountLinkState {
 
 /// @nodoc
 
-class AccountLinkFailed implements AccountLinkState {
-  const AccountLinkFailed(this.error);
+class AccountLinkFailed implements AccountLinkState, ErrorState {
+  const AccountLinkFailed(this.error, this.errorStackTrace);
 
   final Object error;
+  final StackTrace errorStackTrace;
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is AccountLinkFailed &&
-            const DeepCollectionEquality().equals(other.error, error));
+            const DeepCollectionEquality().equals(other.error, error) &&
+            (identical(other.errorStackTrace, errorStackTrace) ||
+                other.errorStackTrace == errorStackTrace));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(error));
+  int get hashCode => Object.hash(
+      runtimeType, const DeepCollectionEquality().hash(error), errorStackTrace);
 
   @override
   String toString() {
-    return 'AccountLinkState.failed(error: $error)';
+    return 'AccountLinkState.failed(error: $error, errorStackTrace: $errorStackTrace)';
   }
 }
 

@@ -44,7 +44,7 @@ final class ConnectedGoogleTasksUserProvider extends $FunctionalProvider<
 }
 
 String _$connectedGoogleTasksUserHash() =>
-    r'd38e3c6fa0330b6f1231e2fd50e4b0a2ee2912f0';
+    r'9458be38d21f9fd2f2cb2f71a5e10024090511aa';
 
 @ProviderFor(GoogleTasksLinkProcessStateNotifier)
 final googleTasksLinkProcessStateProvider =
@@ -83,7 +83,7 @@ final class GoogleTasksLinkProcessStateNotifierProvider
 }
 
 String _$googleTasksLinkProcessStateNotifierHash() =>
-    r'82f119400b25b172f673368d7a0261b7464082ba';
+    r'4621bce588fbe90df5ec2e4b8eada4f2e812b7e2';
 
 abstract class _$GoogleTasksLinkProcessStateNotifier
     extends $Notifier<GoogleTasksLinkProcessState> {

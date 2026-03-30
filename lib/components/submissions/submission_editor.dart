@@ -4,8 +4,9 @@ import "package:intl/intl.dart";
 
 import "../../core/pref_key.dart";
 import "../../features/google_tasks/repositories/tasks_auth_notifier.dart";
-import "../../features/submission/presentation/submission_save_state_notifier.dart";
+import "../../features/submission/use_cases/save_submission_use_case.dart";
 import "../../isar_db/isar_submission.dart";
+import "../../providers/background_tasks_notifier.dart";
 import "../../providers/firebase_providers.dart";
 import "../../providers/submission_providers.dart";
 import "../../ui_components/tappable_card.dart";
@@ -377,9 +378,9 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
     }
 
     // Fire-and-forget save
-    ref.read(submissionSaveStateProvider.notifier).save(
-          _submission,
-          writeGoogleTasks: _writeGoogleTasks,
-        );
+    final useCase = ref.read(saveSubmissionUseCaseProvider);
+    ref.read(backgroundTasksProvider.notifier).run(() async {
+      await useCase.execute(_submission, writeGoogleTasks: _writeGoogleTasks);
+    });
   }
 }

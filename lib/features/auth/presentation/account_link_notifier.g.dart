@@ -86,7 +86,7 @@ final class AccountLinkNotifierProvider
 }
 
 String _$accountLinkNotifierHash() =>
-    r'e637ecb60b71e66f94daeac72569d142f222d76a';
+    r'4eefa7c9dcbf73ecae94dc3116cdc340ed00540f';
 
 abstract class _$AccountLinkNotifier extends $Notifier<AccountLinkState> {
   AccountLinkState build();

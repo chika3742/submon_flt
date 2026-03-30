@@ -2,6 +2,7 @@ import "package:firebase_auth/firebase_auth.dart" hide AuthProvider;
 import "package:freezed_annotation/freezed_annotation.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
+import "../../../core/failure.dart";
 import "../../../core/pref_key.dart";
 import "../../../providers/firebase_providers.dart";
 import "../../../utils/app_links.dart";
@@ -24,7 +25,11 @@ sealed class SignInState with _$SignInState {
   @With<AuthBusyState>()
   const factory SignInState.busy() = SignInStateBusy;
 
-  const factory SignInState.failed(Object error) = SignInStateFailed;
+  @Implements<ErrorState>()
+  const factory SignInState.failed(
+    Object error,
+    StackTrace errorStackTrace,
+  ) = SignInStateFailed;
 
   const factory SignInState.signInSucceeded(
     CompleteSignInResult completionResult,
@@ -57,7 +62,7 @@ class SignInStateNotifier extends _$SignInStateNotifier with NotifierStateGuard 
   @override
   @protected
   SignInState getErrorState(Object error, StackTrace st) {
-    return SignInState.failed(error);
+    return SignInState.failed(error, st);
   }
 
   void signInWithProvider(
@@ -166,9 +171,7 @@ class SignInStateNotifier extends _$SignInStateNotifier with NotifierStateGuard 
         // check the provider of the current user
         final providerId = user.providerData.firstOrNull?.providerId;
         if (providerId == null) {
-          final error = AuthException(AuthErrorCode.noLinkedProvider);
-          ref.read(crashlyticsProvider).recordError(error, StackTrace.current);
-          throw error;
+          throw AuthException(AuthErrorCode.noLinkedProvider);
         }
 
         // handle email sign-in

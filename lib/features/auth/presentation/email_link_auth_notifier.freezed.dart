@@ -142,26 +142,29 @@ class EmailLinkAuthStateUpgradeSucceeded implements EmailLinkAuthState {
 
 /// @nodoc
 
-class EmailLinkAuthStateFailed implements EmailLinkAuthState {
-  const EmailLinkAuthStateFailed(this.error);
+class EmailLinkAuthStateFailed implements EmailLinkAuthState, ErrorState {
+  const EmailLinkAuthStateFailed(this.error, this.errorStackTrace);
 
   final Object error;
+  final StackTrace errorStackTrace;
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is EmailLinkAuthStateFailed &&
-            const DeepCollectionEquality().equals(other.error, error));
+            const DeepCollectionEquality().equals(other.error, error) &&
+            (identical(other.errorStackTrace, errorStackTrace) ||
+                other.errorStackTrace == errorStackTrace));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(error));
+  int get hashCode => Object.hash(
+      runtimeType, const DeepCollectionEquality().hash(error), errorStackTrace);
 
   @override
   String toString() {
-    return 'EmailLinkAuthState.failed(error: $error)';
+    return 'EmailLinkAuthState.failed(error: $error, errorStackTrace: $errorStackTrace)';
   }
 }
 

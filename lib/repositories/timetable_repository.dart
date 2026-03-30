@@ -1,9 +1,8 @@
 import "package:cloud_firestore/cloud_firestore.dart";
-import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:isar_community/isar.dart";
 
 import "../isar_db/isar_timetable.dart";
-import "../providers/firestore_error_notifier.dart";
+import "../providers/background_tasks_notifier.dart";
 import "../providers/firestore_providers.dart";
 
 /// Timetable (セル) のリポジトリ。
@@ -14,14 +13,12 @@ class TimetableRepository {
   TimetableRepository(
     this.isar,
     this._firestore,
-    this._crashlytics,
-    this._errorNotifier,
+    this._errorReporter,
   );
 
   final Isar isar;
   final FirestoreCollectionNotifier _firestore;
-  final FirebaseCrashlytics _crashlytics;
-  final FirestoreErrorNotifierAddable _errorNotifier;
+  final BackgroundErrorReporter _errorReporter;
 
   IsarCollection<Timetable> get collection => isar.timetables;
 
@@ -142,8 +139,7 @@ class TimetableRepository {
 
   void _wrapFirestoreUpdate(Future<void> future) {
     future.catchError((e, st) {
-      _crashlytics.recordError(e, st);
-      _errorNotifier.add(e);
+      _errorReporter.report(e, st);
     });
   }
 }

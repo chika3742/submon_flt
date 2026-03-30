@@ -22,19 +22,13 @@ part "data_sync_service.g.dart";
 ///
 /// 旧 `FirestoreProvider.fetchData` / `checkMigration` / `_migrate` を置き換える。
 @Riverpod(keepAlive: true)
-class DataSyncService extends _$DataSyncService with NotifierStateGuard {
+class DataSyncService extends _$DataSyncService with NotifierStateGuardAsync {
   @override
   Future<void> build() async {}
-
-  @override
-  AsyncValue<void> getErrorState(Object error, StackTrace st) {
-    return AsyncValue.error(error, st);
-  }
 
   /// Firestore からデータを取得し、ローカル (Isar) を全件更新する。
   void fetchData({bool force = false}) {
     guard(
-      AsyncValue.loading(),
       () => _doFetchData(force: force),
     );
   }

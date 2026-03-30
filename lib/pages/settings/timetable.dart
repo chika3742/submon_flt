@@ -1,13 +1,9 @@
 import "package:collection/collection.dart";
-import "package:firebase_core/firebase_core.dart";
 import "package:flutter/material.dart";
-import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
-import "../../browser.dart";
 import "../../components/dropdown_time_picker_bottom_sheet.dart";
 import "../../core/pref_key.dart";
-import "../../features/auth/use_cases/sign_out_use_case.dart";
 import "../../isar_db/isar_timetable_class_time.dart";
 import "../../isar_db/isar_timetable_table.dart";
 import "../../providers/firebase_providers.dart";
@@ -30,64 +26,18 @@ class TimetableSettingsPage extends ConsumerStatefulWidget {
 }
 
 class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
-  int? _timetableNotificationId;
-  TimeOfDay? _timetableNotificationTime;
-  bool _loadingTimetableNotification = true;
-
-  @override
-  void initState() {
-    super.initState();
-    // TODO: hooksを使ってbuild関数内で完結できるようにする
-    _initTimetableNotification();
-  }
-
-  Future<void> _initTimetableNotification() async {
-    try {
-      final config = await ref.read(firestoreUserConfigProvider.future);
-      if (!mounted) return;
-      setState(() {
-        _timetableNotificationId = config?.timetableNotificationId;
-        _timetableNotificationTime = config?.timetableNotificationTime;
-      });
-    } on FirebaseException catch (e, stackTrace) {
-      ref.read(crashlyticsProvider).recordError(e, stackTrace);
-      if (!context.mounted) return;
-      switch (e.code) {
-        case "permission-denied":
-          showFirestoreReadFailedDialog(
-            context,
-            "時間割通知設定の取得に失敗しました。",
-            onSignOut: () async {
-              await ref.read(signOutUseCaseProvider).execute();
-            },
-            onShowAnnouncements: () {
-              Browser.openAnnouncements();
-              SystemChannels.platform.invokeMethod("SystemNavigator.pop");
-            },
-          );
-        default:
-          showSnackBar(context, "時間割通知設定の取得に失敗しました。(${e.code})",
-              duration: const Duration(seconds: 20));
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _loadingTimetableNotification = false;
-        });
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final configLoading = ref.watch(firestoreUserConfigProvider
+        .select((s) => s is AsyncLoading));
     final periodCount = ref.watchPref(PrefKey.timetablePeriodCountToDisplay);
     final tablesAsync = ref.watch(timetableTablesProvider);
     final classTimesAsync = ref.watch(classTimesProvider);
+
+    final timetableNotificationId = ref.watch(firestoreUserConfigProvider
+        .select((s) => s.value?.timetableNotificationId));
+    final timetableNotificationTime = ref.watch(firestoreUserConfigProvider
+        .select((s) => s.value?.timetableNotificationTime));
 
     final tables = [
       TimetableTable.from(id: -1, title: "メイン"),
@@ -104,16 +54,17 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (e.id == _timetableNotificationId)
+                    if (e.id == timetableNotificationId)
                       const Icon(Icons.notifications),
                     PopupMenuButton<_PopupMenuAction>(
                       icon: const Icon(Icons.more_vert),
                       itemBuilder: (context) => [
                         PopupMenuItem(
-                          enabled: e.id != _timetableNotificationId,
+                          enabled: e.id != timetableNotificationId,
                           value: _PopupMenuAction.setNotification,
                           child: ListTile(
-                            enabled: e.id != _timetableNotificationId,
+                            enabled: timetableNotificationId != null
+                                && e.id != timetableNotificationId,
                             title: const Text("この時間割を通知"),
                             leading: const Icon(Icons.notifications),
                           ),
@@ -145,32 +96,15 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
                       onSelected: (value) {
                         switch (value) {
                           case _PopupMenuAction.setNotification:
-                            setState(() {
-                              _timetableNotificationId = e.id;
-                              _loadingTimetableNotification = true;
-                            });
                             ref
                                 .read(firestoreUserConfigProvider.notifier)
-                                .setTimetableNotificationId(
-                                    _timetableNotificationId!)
-                                .onError((error, stackTrace) {
-                              if (!context.mounted) return;
-                              showSnackBar(context, "エラーが発生しました。");
-                            }).whenComplete(() {
-                              setState(() {
-                                _loadingTimetableNotification = false;
-                              });
-                            });
-                            break;
+                                .setTimetableNotificationId(e.id!);
                           case _PopupMenuAction.copy:
                             _copyTimetable(e);
-                            break;
                           case _PopupMenuAction.edit:
                             _changeTimetableName(e);
-                            break;
                           case _PopupMenuAction.delete:
                             _deleteTimetable(e);
-                            break;
                         }
                       },
                     ),
@@ -206,12 +140,19 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
           ),
           SettingsTile(
               title: "通知時刻",
-              subtitle: getUnsetOrString(
-                  _timetableNotificationTime?.format(context),
-                  _loadingTimetableNotification),
-              enabled: !_loadingTimetableNotification,
+              subtitle: timetableNotificationTime?.format(context) ?? "未設定",
+              enabled: !configLoading,
               leading: const Icon(Icons.schedule),
-              trailing: _buildReminderNotificationTimeTrailingIcon(),
+              trailing: timetableNotificationTime != null
+                  ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        ref
+                            .read(firestoreUserConfigProvider.notifier)
+                            .setTimetableNotificationTime(null);
+                      },
+                    )
+                  : null,
               onTap: () async {
                 final requestPermissionResult =
                     await MessagingApi().requestNotificationPermission();
@@ -226,35 +167,25 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
                     context: context,
                     title: "時間割通知の時刻を設定",
                     child: DropdownTimePickerBottomSheet(
-                      initialTime: _timetableNotificationTime,
+                      initialTime: timetableNotificationTime,
                     ),
                   );
                   if (result != null) {
-                    setState(() {
-                      _loadingTimetableNotification = true;
-                    });
                     try {
-                      setState(() {
-                        _timetableNotificationTime = result;
-                      });
                       await ref
                           .read(firestoreUserConfigProvider.notifier)
-                          .setTimetableNotificationTime(
-                              _timetableNotificationTime);
+                          .setTimetableNotificationTime(result);
                     } catch (e) {
                       if (!context.mounted) return;
                       showSnackBar(context, "設定に失敗しました");
                     }
-                    setState(() {
-                      _loadingTimetableNotification = false;
-                    });
                   }
                 }
               }),
           SettingsTile(
             title: "通知する時間割表",
             subtitle:
-                "${tables.firstWhereOrNull((e) => e.id == _timetableNotificationId)?.title ?? "未選択"} (上の一覧から選択してください)",
+                "${tables.firstWhereOrNull((e) => e.id == timetableNotificationId)?.title ?? "未選択"} (上の一覧から選択してください)",
             leading: const Icon(Icons.table_chart_outlined),
           ),
         ]),
@@ -378,26 +309,6 @@ class _TimetableSettingsPageState extends ConsumerState<TimetableSettingsPage> {
           }).toList(),
         ),
       ],
-    );
-  }
-
-  Widget? _buildReminderNotificationTimeTrailingIcon() {
-    if (_loadingTimetableNotification) {
-      return const CircularProgressIndicator();
-    }
-    if (_timetableNotificationTime == null) {
-      return null;
-    }
-    return IconButton(
-      icon: const Icon(Icons.clear),
-      onPressed: () {
-        setState(() {
-          _timetableNotificationTime = null;
-        });
-        ref
-            .read(firestoreUserConfigProvider.notifier)
-            .setTimetableNotificationTime(_timetableNotificationTime);
-      },
     );
   }
 

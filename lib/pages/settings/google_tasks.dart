@@ -20,8 +20,8 @@ class GoogleTasksSettingsPage extends ConsumerWidget {
           showSnackBar(context, "Google Tasksとの連携に成功しました。");
         case GoogleTasksLinkProcessStateDisconnected():
           showSnackBar(context, "Google Tasksとの連携を解除しました。");
-        case GoogleTasksLinkProcessStateFailed(:final TasksAuthException e):
-          showSnackBar(context, e.code.userFriendlyMessage);
+        case GoogleTasksLinkProcessStateFailed(:final TasksAuthException error):
+          showSnackBar(context, error.code.userFriendlyMessage);
         case GoogleTasksLinkProcessStateFailed():
           showSnackBar(context, "Google Tasksとの連携に失敗しました");
         case GoogleTasksLinkProcessStateIdle():

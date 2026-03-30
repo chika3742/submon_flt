@@ -1,6 +1,7 @@
 import "package:freezed_annotation/freezed_annotation.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
+import "../../../core/failure.dart";
 import "../../../core/pref_key.dart";
 import "../../../providers/firebase_providers.dart";
 import "../../../providers/link_events_provider.dart";
@@ -33,8 +34,11 @@ sealed class EmailLinkAuthState with _$EmailLinkAuthState {
   const factory EmailLinkAuthState.upgradeSucceeded() =
       EmailLinkAuthStateUpgradeSucceeded;
 
-  const factory EmailLinkAuthState.failed(Object error) =
-      EmailLinkAuthStateFailed;
+  @Implements<ErrorState>()
+  const factory EmailLinkAuthState.failed(
+    Object error,
+    StackTrace errorStackTrace,
+  ) = EmailLinkAuthStateFailed;
 }
 
 @Riverpod(keepAlive: true)
@@ -53,7 +57,7 @@ class EmailLinkAuthNotifier extends _$EmailLinkAuthNotifier
   @override
   @protected
   EmailLinkAuthState getErrorState(Object error, StackTrace st) {
-    return EmailLinkAuthState.failed(error);
+    return EmailLinkAuthState.failed(error, st);
   }
 
   void _handleUri(Uri url) {
@@ -65,38 +69,32 @@ class EmailLinkAuthNotifier extends _$EmailLinkAuthNotifier
       return;
     }
 
-    final email = ref.readPref(PrefKey.emailForUrlLogin);
-    if (email == null) {
-      state = EmailLinkAuthState.failed(
-        AuthException(AuthErrorCode.noSavedAuthEmail),
-      );
-      return;
-    }
-
-    final continueUrlStr = authUrl.queryParameters["continueUrl"];
-    final continueUri =
-        continueUrlStr != null ? Uri.parse(continueUrlStr) : null;
-
-    final AuthMode mode;
-    if (continueUri == null || continueUri.path == "/auth-action") {
-      final modeName = continueUri?.queryParameters["internalMode"];
-      mode = modeName != null
-          ? AuthMode.values.firstWhere((e) => e.name == modeName)
-          : AuthMode.signIn;
-    } else {
-      mode = AuthMode.reauthenticate;
-    }
-
-    if (mode == AuthMode.reauthenticate && continueUri == null) {
-      state = EmailLinkAuthState.failed(
-        AuthException(AuthErrorCode.missingContinueUrl),
-      );
-      return;
-    }
-
     guard(
       const EmailLinkAuthState.processing(),
       () async {
+        final email = ref.readPref(PrefKey.emailForUrlLogin);
+        if (email == null) {
+          throw AuthException(AuthErrorCode.noSavedAuthEmail);
+        }
+
+        final continueUrlStr = authUrl.queryParameters["continueUrl"];
+        final continueUri =
+            continueUrlStr != null ? Uri.parse(continueUrlStr) : null;
+
+        final AuthMode mode;
+        if (continueUri == null || continueUri.path == "/auth-action") {
+          final modeName = continueUri?.queryParameters["internalMode"];
+          mode = modeName != null
+              ? AuthMode.values.firstWhere((e) => e.name == modeName)
+              : AuthMode.signIn;
+        } else {
+          mode = AuthMode.reauthenticate;
+        }
+
+        if (mode == AuthMode.reauthenticate && continueUri == null) {
+          throw AuthException(AuthErrorCode.missingContinueUrl);
+        }
+
         await ref
             .read(emailLinkAuthUseCaseProvider)
             .execute(mode, email, authUrl.toString());

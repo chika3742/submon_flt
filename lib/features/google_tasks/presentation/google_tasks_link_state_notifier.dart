@@ -4,7 +4,7 @@ import "package:freezed_annotation/freezed_annotation.dart";
 import "package:googleapis/oauth2/v2.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
-import "../../../providers/firebase_providers.dart";
+import "../../../core/failure.dart";
 import "../../../utils/notifier_state_guard.dart";
 import "../models/tasks_auth_exception.dart";
 import "../repositories/tasks_auth_notifier.dart";
@@ -21,7 +21,7 @@ sealed class GoogleTasksUser with _$GoogleTasksUser {
 
 @riverpod
 Future<GoogleTasksUser?> connectedGoogleTasksUser(Ref ref) async {
-  final client = ref.watch(tasksAuthProvider).value;
+  final client = await ref.watch(tasksAuthProvider.future);
   if (client == null) return null;
 
   try {
@@ -29,8 +29,7 @@ Future<GoogleTasksUser?> connectedGoogleTasksUser(Ref ref) async {
         .get($fields: "email");
 
     return GoogleTasksUser(email: userInfo.email ?? "Unknown");
-  } catch (e, st) {
-    await ref.watch(crashlyticsProvider).recordError(e, st);
+  } catch (e) {
     throw TasksAuthException(TasksAuthErrorCode.failedToFetchUserEmail);
   }
 }
@@ -41,7 +40,11 @@ sealed class GoogleTasksLinkProcessState with _$GoogleTasksLinkProcessState {
 
   const factory GoogleTasksLinkProcessState.loading() = GoogleTasksLinkProcessStateLoading;
 
-  const factory GoogleTasksLinkProcessState.failed(Object e) = GoogleTasksLinkProcessStateFailed;
+  @Implements<ErrorState>()
+  const factory GoogleTasksLinkProcessState.failed(
+    Object error,
+    StackTrace errorStackTrace,
+  ) = GoogleTasksLinkProcessStateFailed;
 
   const factory GoogleTasksLinkProcessState.connected() = GoogleTasksLinkProcessStateConnected;
 
@@ -56,7 +59,7 @@ class GoogleTasksLinkProcessStateNotifier extends _$GoogleTasksLinkProcessStateN
 
   @override
   GoogleTasksLinkProcessState getErrorState(Object error, StackTrace st) {
-    return GoogleTasksLinkProcessState.failed(error);
+    return GoogleTasksLinkProcessState.failed(error, st);
   }
 
   void connect() {

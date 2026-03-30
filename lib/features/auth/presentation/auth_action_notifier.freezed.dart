@@ -92,26 +92,29 @@ class AuthActionStateSignedOut implements AuthActionState {
 
 /// @nodoc
 
-class AuthActionStateFailed implements AuthActionState {
-  const AuthActionStateFailed(this.error);
+class AuthActionStateFailed implements AuthActionState, ErrorState {
+  const AuthActionStateFailed(this.error, this.errorStackTrace);
 
   final Object error;
+  final StackTrace errorStackTrace;
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is AuthActionStateFailed &&
-            const DeepCollectionEquality().equals(other.error, error));
+            const DeepCollectionEquality().equals(other.error, error) &&
+            (identical(other.errorStackTrace, errorStackTrace) ||
+                other.errorStackTrace == errorStackTrace));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(error));
+  int get hashCode => Object.hash(
+      runtimeType, const DeepCollectionEquality().hash(error), errorStackTrace);
 
   @override
   String toString() {
-    return 'AuthActionState.failed(error: $error)';
+    return 'AuthActionState.failed(error: $error, errorStackTrace: $errorStackTrace)';
   }
 }
 

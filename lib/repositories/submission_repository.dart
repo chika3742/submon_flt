@@ -8,8 +8,7 @@ class SubmissionRepository extends SyncedRepository<Submission> {
   SubmissionRepository(
     super.isar,
     super._firestore,
-    super._crashlytics,
-    super._errorNotifier,
+    super._errorReporter,
   );
 
   @override
