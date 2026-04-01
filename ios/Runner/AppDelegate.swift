@@ -8,11 +8,12 @@ import FirebaseAuth
 import FirebaseAppCheck
 import WidgetKit
 
-@available(iOS 13.0, *)
 @main
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
     
-    var viewController: FlutterViewController?
+    static var shared: AppDelegate {
+        UIApplication.shared.delegate as! AppDelegate
+    }
     
     var uriEventApi: UriEventApi?
     var fcmTokenRefreshEventApi: FcmTokenRefreshEventApi?
@@ -37,8 +38,16 @@ import WidgetKit
         
         initNotificationCategories()
         
-        viewController = window?.rootViewController as? FlutterViewController
-        let binaryMessenger = viewController!.binaryMessenger
+        // Firebase Cloud Messaging
+        Messaging.messaging().delegate = self
+        UNUserNotificationCenter.current().delegate = self
+        application.registerForRemoteNotifications()
+
+        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+    
+    func didInitializeImplicitFlutterEngine(_ engineBridge: any FlutterImplicitEngineBridge) {
+        let binaryMessenger = engineBridge.applicationRegistrar.messenger()
         
         // Event Channels
         uriEventApi = UriEventApi(binaryMessenger: binaryMessenger)
@@ -48,32 +57,21 @@ import WidgetKit
         
         // Pigeon APIs
         MessagingApiSetup.setUp(binaryMessenger: binaryMessenger, api: MessagingApiImplementation(appDelegate: self))
-        BrowserApiSetup.setUp(binaryMessenger: binaryMessenger, api: BrowserApiImplementation(viewController: viewController!))
+        BrowserApiSetup.setUp(binaryMessenger: binaryMessenger, api: BrowserApiImplementation())
         GeneralApiSetup.setUp(binaryMessenger: binaryMessenger, api: GeneralApiImplementation())
         
-        // Firebase Cloud Messaging
-        Messaging.messaging().delegate = self
-        UNUserNotificationCenter.current().delegate = self
-        application.registerForRemoteNotifications()
-        
-        GeneratedPluginRegistrant.register(with: self)
-
-        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+        // Register plugins
+        GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
     }
     
-    override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        uriEventApi?.onUri(uri: url.absoluteString)
-
-        return true
-    }
-    
-    override func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([any UIUserActivityRestoring]?) -> Void) -> Bool {
-        guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
-              let incomingUrl = userActivity.webpageURL else {
-            return false
-        }
-        uriEventApi?.onUri(uri: incomingUrl.absoluteString)
-        return true
+    override func application(
+        _ application: UIApplication,
+        configurationForConnecting connectingSceneSession: UISceneSession,
+        options: UIScene.ConnectionOptions
+    ) -> UISceneConfiguration {
+        let config = UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+        config.delegateClass = SceneDelegate.self
+        return config
     }
     
     override func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
@@ -86,31 +84,27 @@ import WidgetKit
         switch response.notification.request.content.categoryIdentifier {
         case "reminder":
             if response.actionIdentifier == "openCreateSubmission" {
-                openUrl(path: "/create-submission")
+                openAppPath(path: "/create-submission")
             }
             break;
             
         case "digestive":
             if response.actionIdentifier == "openFocusTimer" {
-                openUrl(path: "/focus-timer?digestiveId=\(userInfo["digestiveId"] ?? "-1")")
+                openAppPath(path: "/focus-timer?digestiveId=\(userInfo["digestiveId"] ?? "-1")")
             } else {
                 if (userInfo["submissionId"] as? String? != "-1") {
-                    openUrl(path: "/submission?id=\(userInfo["submissionId"] ?? "-1")")
+                    openAppPath(path: "/submission?id=\(userInfo["submissionId"] ?? "-1")")
                 } else {
-                    openUrl(path: "/tab/digestive")
+                    openAppPath(path: "/tab/digestive")
                 }
             }
             
         case "timetable":
-            openUrl(path: "/tab/timetable")
+            openAppPath(path: "/tab/timetable")
             
         default: break
         }
         completionHandler()
-    }
-    
-    private func openUrl(path: String) {
-        UIApplication.shared.open(URL(string: "submon://\(path)")!, options: [:], completionHandler: nil)
     }
     
     func initNotificationCategories() {
@@ -144,28 +138,6 @@ extension AppDelegate : MessagingDelegate {
     }
 }
 
-extension AppDelegate {
-    func handleShortcutItem(_ item: UIApplicationShortcutItem) -> Bool {
-        switch item.type {
-        case "CreateSubmissionAction":
-            openUrl(path: "/create-submission")
-            break
-            
-        case "DigestiveTabAction":
-            openUrl(path: "/tab/digestive")
-            break
-            
-        case "TimetableTabAction":
-            openUrl(path: "/tab/timetable")
-            break
-            
-        default: return false
-        }
-        
-        return true
-    }
-    
-    override func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
-        completionHandler(handleShortcutItem(shortcutItem))
-    }
+func openAppPath(path: String) {
+    UIApplication.shared.open(URL(string: "submon://\(path)")!, options: [:], completionHandler: nil)
 }
