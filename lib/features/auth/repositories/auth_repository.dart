@@ -17,7 +17,7 @@ import "apple_sign_in_android.dart";
 part "auth_repository.freezed.dart";
 part "auth_repository.g.dart";
 
-@riverpod
+@Riverpod(keepAlive: true)
 AuthRepository authRepository(Ref ref) {
   return AuthRepositoryImpl(
     ref.watch(firebaseAuthProvider),

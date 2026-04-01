@@ -11,68 +11,96 @@ part of 'auth_repository.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
-
 /// @nodoc
 mixin _$FetchCredentialResult {
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is FetchCredentialResult);
-  }
 
-  @override
-  int get hashCode => runtimeType.hashCode;
 
-  @override
-  String toString() {
-    return 'FetchCredentialResult()';
-  }
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FetchCredentialResult);
 }
 
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'FetchCredentialResult()';
+}
+
+
+}
+
+
+
+
+
 /// @nodoc
+
 
 class FetchCredentialResultSuccess implements FetchCredentialResult {
   const FetchCredentialResultSuccess({required this.credential});
+  
 
-  final OAuthCredential credential;
+ final  OAuthCredential credential;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is FetchCredentialResultSuccess &&
-            (identical(other.credential, credential) ||
-                other.credential == credential));
-  }
 
-  @override
-  int get hashCode => Object.hash(runtimeType, credential);
 
-  @override
-  String toString() {
-    return 'FetchCredentialResult.success(credential: $credential)';
-  }
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FetchCredentialResultSuccess&&(identical(other.credential, credential) || other.credential == credential));
 }
+
+
+@override
+int get hashCode => Object.hash(runtimeType,credential);
+
+@override
+String toString() {
+  return 'FetchCredentialResult.success(credential: $credential)';
+}
+
+
+}
+
+
+
 
 /// @nodoc
 
+
 class FetchCredentialResultCanceled implements FetchCredentialResult {
   const FetchCredentialResultCanceled();
+  
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is FetchCredentialResultCanceled);
-  }
 
-  @override
-  int get hashCode => runtimeType.hashCode;
 
-  @override
-  String toString() {
-    return 'FetchCredentialResult.canceled()';
-  }
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FetchCredentialResultCanceled);
 }
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'FetchCredentialResult.canceled()';
+}
+
+
+}
+
+
+
 
 // dart format on

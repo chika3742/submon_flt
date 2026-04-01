@@ -12,20 +12,24 @@ part of 'save_submission_use_case.dart';
 @ProviderFor(saveSubmissionUseCase)
 final saveSubmissionUseCaseProvider = SaveSubmissionUseCaseProvider._();
 
-final class SaveSubmissionUseCaseProvider extends $FunctionalProvider<
-    SaveSubmissionUseCase,
-    SaveSubmissionUseCase,
-    SaveSubmissionUseCase> with $Provider<SaveSubmissionUseCase> {
+final class SaveSubmissionUseCaseProvider
+    extends
+        $FunctionalProvider<
+          SaveSubmissionUseCase,
+          SaveSubmissionUseCase,
+          SaveSubmissionUseCase
+        >
+    with $Provider<SaveSubmissionUseCase> {
   SaveSubmissionUseCaseProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'saveSubmissionUseCaseProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'saveSubmissionUseCaseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$saveSubmissionUseCaseHash();
@@ -33,8 +37,8 @@ final class SaveSubmissionUseCaseProvider extends $FunctionalProvider<
   @$internal
   @override
   $ProviderElement<SaveSubmissionUseCase> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   SaveSubmissionUseCase create(Ref ref) {

@@ -38,6 +38,7 @@ jobs:
       asc_issuer_id: ${{ secrets.ASC_ISSUER_ID }}
       asc_key_base64: ${{ secrets.ASC_KEY_BASE64 }}
       dotenv_base64: ${{ secrets.DOTENV_BASE64 }}
+      info_plist_config_base64: ${{ secrets.INFO_PLIST_CONFIG_BASE64 }}
 
   deploy-play-store:
     name: Deploy to Play Store

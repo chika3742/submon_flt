@@ -15,24 +15,27 @@ final submissionShareLinkProvider = SubmissionShareLinkFamily._();
 
 /// 共有リンクから提出物データを取得する。
 
-final class SubmissionShareLinkProvider extends $FunctionalProvider<
-        AsyncValue<SubmissionShareData?>,
-        SubmissionShareData?,
-        FutureOr<SubmissionShareData?>>
+final class SubmissionShareLinkProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<SubmissionShareData?>,
+          SubmissionShareData?,
+          FutureOr<SubmissionShareData?>
+        >
     with
         $FutureModifier<SubmissionShareData?>,
         $FutureProvider<SubmissionShareData?> {
   /// 共有リンクから提出物データを取得する。
-  SubmissionShareLinkProvider._(
-      {required SubmissionShareLinkFamily super.from,
-      required String super.argument})
-      : super(
-          retry: null,
-          name: r'submissionShareLinkProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+  SubmissionShareLinkProvider._({
+    required SubmissionShareLinkFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'submissionShareLinkProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$submissionShareLinkHash();
@@ -47,16 +50,13 @@ final class SubmissionShareLinkProvider extends $FunctionalProvider<
   @$internal
   @override
   $FutureProviderElement<SubmissionShareData?> $createElement(
-          $ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
   FutureOr<SubmissionShareData?> create(Ref ref) {
     final argument = this.argument as String;
-    return submissionShareLink(
-      ref,
-      argument,
-    );
+    return submissionShareLink(ref, argument);
   }
 
   @override
@@ -78,19 +78,17 @@ String _$submissionShareLinkHash() =>
 final class SubmissionShareLinkFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<SubmissionShareData?>, String> {
   SubmissionShareLinkFamily._()
-      : super(
-          retry: null,
-          name: r'submissionShareLinkProvider',
-          dependencies: null,
-          $allTransitiveDependencies: null,
-          isAutoDispose: true,
-        );
+    : super(
+        retry: null,
+        name: r'submissionShareLinkProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
 
   /// 共有リンクから提出物データを取得する。
 
-  SubmissionShareLinkProvider call(
-    String id,
-  ) =>
+  SubmissionShareLinkProvider call(String id) =>
       SubmissionShareLinkProvider._(argument: id, from: this);
 
   @override

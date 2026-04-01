@@ -12,20 +12,24 @@ part of 'account_link_notifier.dart';
 @ProviderFor(linkedProviderInfo)
 final linkedProviderInfoProvider = LinkedProviderInfoProvider._();
 
-final class LinkedProviderInfoProvider extends $FunctionalProvider<
-    LinkedProviderInfo,
-    LinkedProviderInfo,
-    LinkedProviderInfo> with $Provider<LinkedProviderInfo> {
+final class LinkedProviderInfoProvider
+    extends
+        $FunctionalProvider<
+          LinkedProviderInfo,
+          LinkedProviderInfo,
+          LinkedProviderInfo
+        >
+    with $Provider<LinkedProviderInfo> {
   LinkedProviderInfoProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'linkedProviderInfoProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'linkedProviderInfoProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$linkedProviderInfoHash();
@@ -33,8 +37,8 @@ final class LinkedProviderInfoProvider extends $FunctionalProvider<
   @$internal
   @override
   $ProviderElement<LinkedProviderInfo> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   LinkedProviderInfo create(Ref ref) {
@@ -59,15 +63,15 @@ final accountLinkProvider = AccountLinkNotifierProvider._();
 final class AccountLinkNotifierProvider
     extends $NotifierProvider<AccountLinkNotifier, AccountLinkState> {
   AccountLinkNotifierProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'accountLinkProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'accountLinkProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$accountLinkNotifierHash();
@@ -94,11 +98,14 @@ abstract class _$AccountLinkNotifier extends $Notifier<AccountLinkState> {
   @override
   void runBuild() {
     final ref = this.ref as $Ref<AccountLinkState, AccountLinkState>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<AccountLinkState, AccountLinkState>,
-        AccountLinkState,
-        Object?,
-        Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AccountLinkState, AccountLinkState>,
+              AccountLinkState,
+              Object?,
+              Object?
+            >;
     element.handleCreate(ref, build);
   }
 }

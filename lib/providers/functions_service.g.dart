@@ -12,20 +12,24 @@ part of 'functions_service.dart';
 @ProviderFor(functionsService)
 final functionsServiceProvider = FunctionsServiceProvider._();
 
-final class FunctionsServiceProvider extends $FunctionalProvider<
-    FunctionsService,
-    FunctionsService,
-    FunctionsService> with $Provider<FunctionsService> {
+final class FunctionsServiceProvider
+    extends
+        $FunctionalProvider<
+          FunctionsService,
+          FunctionsService,
+          FunctionsService
+        >
+    with $Provider<FunctionsService> {
   FunctionsServiceProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'functionsServiceProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'functionsServiceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$functionsServiceHash();

@@ -135,7 +135,7 @@ class _DigestiveEditBottomSheetState extends State<DigestiveEditBottomSheet> {
                             });
                           }
                         },
-                      )
+                      ),
                     ],
                   ),
                 ],

@@ -87,7 +87,7 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
                                         "ja_JP")
                                     .format(_submission.due),
                                 style: const TextStyle(
-                                    fontSize: 17, fontWeight: FontWeight.bold))
+                                    fontSize: 17, fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),
@@ -229,7 +229,7 @@ class SubmissionEditorState extends ConsumerState<SubmissionEditor> {
               onPressed: save,
             ),
           ),
-        )
+        ),
       ],
     );
   }

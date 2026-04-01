@@ -285,7 +285,7 @@ class _TimetableDayListState extends State<TimetableDayList> {
                   createNewSubmissionForTimetable(
                       context, widget.weekday, data.subject);
                 },
-              )
+              ),
           ],
         );
       },

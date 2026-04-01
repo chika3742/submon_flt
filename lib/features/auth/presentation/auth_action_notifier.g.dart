@@ -15,15 +15,15 @@ final authActionProvider = AuthActionNotifierProvider._();
 final class AuthActionNotifierProvider
     extends $NotifierProvider<AuthActionNotifier, AuthActionState> {
   AuthActionNotifierProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'authActionProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'authActionProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$authActionNotifierHash();
@@ -50,11 +50,14 @@ abstract class _$AuthActionNotifier extends $Notifier<AuthActionState> {
   @override
   void runBuild() {
     final ref = this.ref as $Ref<AuthActionState, AuthActionState>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<AuthActionState, AuthActionState>,
-        AuthActionState,
-        Object?,
-        Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AuthActionState, AuthActionState>,
+              AuthActionState,
+              Object?,
+              Object?
+            >;
     element.handleCreate(ref, build);
   }
 }

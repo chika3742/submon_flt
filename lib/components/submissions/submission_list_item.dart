@@ -138,7 +138,7 @@ class SubmissionListItemState extends ConsumerState<SubmissionListItem> {
                                           padding: EdgeInsets.only(left: 8.0),
                                           child: Icon(Icons.star,
                                               color: Colors.orange),
-                                        )
+                                        ),
                                     ],
                                   ),
                                 ),
@@ -169,7 +169,7 @@ class SubmissionListItemState extends ConsumerState<SubmissionListItem> {
                                       text:
                                           " ${DateFormat("HH:mm").format(item.due)}",
                                       style: const TextStyle(fontSize: 20),
-                                    )
+                                    ),
                                 ],
                                 style: TextStyle(
                                     letterSpacing: 2,
@@ -177,7 +177,7 @@ class SubmissionListItemState extends ConsumerState<SubmissionListItem> {
                                         overdue ? FontWeight.bold : null,
                                     color: _getDueTextColor())),
                           ),
-                        )
+                        ),
                       ],
                     ),
                     Row(
@@ -204,9 +204,9 @@ class SubmissionListItemState extends ConsumerState<SubmissionListItem> {
                           onPressed: () {
                             widget.onDone?.call(true);
                           },
-                        )
+                        ),
                       ],
-                    )
+                    ),
                   ],
                 ),
                 onTap: () {

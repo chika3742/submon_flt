@@ -19,23 +19,27 @@ final sharedPrefsServiceProvider = SharedPrefsServiceProvider._();
 /// ProviderScope の overrides で実体を注入する。
 /// 外部からは [prefProvider] を通じてアクセスすること。
 
-final class SharedPrefsServiceProvider extends $FunctionalProvider<
-    SharedPreferencesWithCache,
-    SharedPreferencesWithCache,
-    SharedPreferencesWithCache> with $Provider<SharedPreferencesWithCache> {
+final class SharedPrefsServiceProvider
+    extends
+        $FunctionalProvider<
+          SharedPreferencesWithCache,
+          SharedPreferencesWithCache,
+          SharedPreferencesWithCache
+        >
+    with $Provider<SharedPreferencesWithCache> {
   /// main() で初期化済みの [SharedPreferencesWithCache] を受け取る同期 Provider。
   /// ProviderScope の overrides で実体を注入する。
   /// 外部からは [prefProvider] を通じてアクセスすること。
   SharedPrefsServiceProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'sharedPrefsServiceProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'sharedPrefsServiceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$sharedPrefsServiceHash();
@@ -43,8 +47,8 @@ final class SharedPrefsServiceProvider extends $FunctionalProvider<
   @$internal
   @override
   $ProviderElement<SharedPreferencesWithCache> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   SharedPreferencesWithCache create(Ref ref) {
@@ -68,16 +72,16 @@ final prefProvider = PrefNotifierFamily._();
 
 final class PrefNotifierProvider<T extends Object?>
     extends $NotifierProvider<PrefNotifier<T>, T> {
-  PrefNotifierProvider._(
-      {required PrefNotifierFamily super.from,
-      required PrefKey<T> super.argument})
-      : super(
-          retry: null,
-          name: r'prefProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+  PrefNotifierProvider._({
+    required PrefNotifierFamily super.from,
+    required PrefKey<T> super.argument,
+  }) : super(
+         retry: null,
+         name: r'prefProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$prefNotifierHash();
@@ -122,17 +126,15 @@ String _$prefNotifierHash() => r'902ec897aced9f954fd7e46e69220bd6f1af73de';
 
 final class PrefNotifierFamily extends $Family {
   PrefNotifierFamily._()
-      : super(
-          retry: null,
-          name: r'prefProvider',
-          dependencies: null,
-          $allTransitiveDependencies: null,
-          isAutoDispose: true,
-        );
+    : super(
+        retry: null,
+        name: r'prefProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
 
-  PrefNotifierProvider<T> call<T extends Object?>(
-    PrefKey<T> key,
-  ) =>
+  PrefNotifierProvider<T> call<T extends Object?>(PrefKey<T> key) =>
       PrefNotifierProvider<T>._(argument: key, from: this);
 
   @override
@@ -141,49 +143,45 @@ final class PrefNotifierFamily extends $Family {
   /// {@macro riverpod.override_with}
   Override overrideWith(PrefNotifier<T> Function<T extends Object?>() create) =>
       $FamilyOverride(
-          from: this,
-          createElement: (pointer) {
-            final provider = pointer.origin as PrefNotifierProvider;
-            return provider._captureGenerics(<T extends Object?>() {
-              provider as PrefNotifierProvider<T>;
-              return provider.$view(create: create<T>).$createElement(pointer);
-            });
+        from: this,
+        createElement: (pointer) {
+          final provider = pointer.origin as PrefNotifierProvider;
+          return provider._captureGenerics(<T extends Object?>() {
+            provider as PrefNotifierProvider<T>;
+            return provider.$view(create: create<T>).$createElement(pointer);
           });
+        },
+      );
 
   /// {@macro riverpod.override_with_build}
   Override overrideWithBuild(
-          T Function<T extends Object?>(Ref ref, PrefNotifier<T> notifier)
-              build) =>
-      $FamilyOverride(
-          from: this,
-          createElement: (pointer) {
-            final provider = pointer.origin as PrefNotifierProvider;
-            return provider._captureGenerics(<T extends Object?>() {
-              provider as PrefNotifierProvider<T>;
-              return provider
-                  .$view(runNotifierBuildOverride: build<T>)
-                  .$createElement(pointer);
-            });
-          });
+    T Function<T extends Object?>(Ref ref, PrefNotifier<T> notifier) build,
+  ) => $FamilyOverride(
+    from: this,
+    createElement: (pointer) {
+      final provider = pointer.origin as PrefNotifierProvider;
+      return provider._captureGenerics(<T extends Object?>() {
+        provider as PrefNotifierProvider<T>;
+        return provider
+            .$view(runNotifierBuildOverride: build<T>)
+            .$createElement(pointer);
+      });
+    },
+  );
 }
 
 abstract class _$PrefNotifier<T extends Object?> extends $Notifier<T> {
   late final _$args = ref.$arg as PrefKey<T>;
   PrefKey<T> get key => _$args;
 
-  T build(
-    PrefKey<T> key,
-  );
+  T build(PrefKey<T> key);
   @$mustCallSuper
   @override
   void runBuild() {
     final ref = this.ref as $Ref<T, T>;
-    final element = ref.element
-        as $ClassProviderElement<AnyNotifier<T, T>, T, Object?, Object?>;
-    element.handleCreate(
-        ref,
-        () => build(
-              _$args,
-            ));
+    final element =
+        ref.element
+            as $ClassProviderElement<AnyNotifier<T, T>, T, Object?, Object?>;
+    element.handleCreate(ref, () => build(_$args));
   }
 }

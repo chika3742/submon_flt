@@ -15,15 +15,15 @@ final signInStateProvider = SignInStateNotifierProvider._();
 final class SignInStateNotifierProvider
     extends $NotifierProvider<SignInStateNotifier, SignInState> {
   SignInStateNotifierProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'signInStateProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'signInStateProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$signInStateNotifierHash();
@@ -50,8 +50,14 @@ abstract class _$SignInStateNotifier extends $Notifier<SignInState> {
   @override
   void runBuild() {
     final ref = this.ref as $Ref<SignInState, SignInState>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<SignInState, SignInState>, SignInState, Object?, Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<SignInState, SignInState>,
+              SignInState,
+              Object?,
+              Object?
+            >;
     element.handleCreate(ref, build);
   }
 }

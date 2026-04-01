@@ -34,3 +34,6 @@ Runner/GeneratedPluginRegistrant.*
 !default.perspectivev3
 
 **/GoogleService-Info.plist
+
+Runner/InfoPlist.xcconfig
+Runner/InfoPlist-Release.xcconfig

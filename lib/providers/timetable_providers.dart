@@ -113,12 +113,9 @@ abstract interface class UndoRedoHandler<T> {
 @Riverpod(keepAlive: true)
 class UndoRedo extends _$UndoRedo
     implements UndoRedoHandler<TimetableSnapshot> {
-  void Function()? cancelKeepAlive;
-
   @override
   ({List<TimetableSnapshot> undoStack, List<TimetableSnapshot> redoStack})
       build(int tableId) {
-    cancelKeepAlive = ref.keepAlive().close;
     return (undoStack: [], redoStack: []);
   }
 

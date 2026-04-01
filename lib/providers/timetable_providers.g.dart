@@ -12,20 +12,24 @@ part of 'timetable_providers.dart';
 @ProviderFor(timetableRepository)
 final timetableRepositoryProvider = TimetableRepositoryProvider._();
 
-final class TimetableRepositoryProvider extends $FunctionalProvider<
-    TimetableRepository,
-    TimetableRepository,
-    TimetableRepository> with $Provider<TimetableRepository> {
+final class TimetableRepositoryProvider
+    extends
+        $FunctionalProvider<
+          TimetableRepository,
+          TimetableRepository,
+          TimetableRepository
+        >
+    with $Provider<TimetableRepository> {
   TimetableRepositoryProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'timetableRepositoryProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'timetableRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$timetableRepositoryHash();
@@ -33,8 +37,8 @@ final class TimetableRepositoryProvider extends $FunctionalProvider<
   @$internal
   @override
   $ProviderElement<TimetableRepository> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   TimetableRepository create(Ref ref) {
@@ -56,20 +60,24 @@ String _$timetableRepositoryHash() =>
 @ProviderFor(timetableTableRepository)
 final timetableTableRepositoryProvider = TimetableTableRepositoryProvider._();
 
-final class TimetableTableRepositoryProvider extends $FunctionalProvider<
-    TimetableTableRepository,
-    TimetableTableRepository,
-    TimetableTableRepository> with $Provider<TimetableTableRepository> {
+final class TimetableTableRepositoryProvider
+    extends
+        $FunctionalProvider<
+          TimetableTableRepository,
+          TimetableTableRepository,
+          TimetableTableRepository
+        >
+    with $Provider<TimetableTableRepository> {
   TimetableTableRepositoryProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'timetableTableRepositoryProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'timetableTableRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$timetableTableRepositoryHash();
@@ -77,8 +85,8 @@ final class TimetableTableRepositoryProvider extends $FunctionalProvider<
   @$internal
   @override
   $ProviderElement<TimetableTableRepository> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   TimetableTableRepository create(Ref ref) {
@@ -101,20 +109,24 @@ String _$timetableTableRepositoryHash() =>
 final timetableClassTimeRepositoryProvider =
     TimetableClassTimeRepositoryProvider._();
 
-final class TimetableClassTimeRepositoryProvider extends $FunctionalProvider<
-    TimetableClassTimeRepository,
-    TimetableClassTimeRepository,
-    TimetableClassTimeRepository> with $Provider<TimetableClassTimeRepository> {
+final class TimetableClassTimeRepositoryProvider
+    extends
+        $FunctionalProvider<
+          TimetableClassTimeRepository,
+          TimetableClassTimeRepository,
+          TimetableClassTimeRepository
+        >
+    with $Provider<TimetableClassTimeRepository> {
   TimetableClassTimeRepositoryProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'timetableClassTimeRepositoryProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'timetableClassTimeRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$timetableClassTimeRepositoryHash();
@@ -122,8 +134,8 @@ final class TimetableClassTimeRepositoryProvider extends $FunctionalProvider<
   @$internal
   @override
   $ProviderElement<TimetableClassTimeRepository> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   TimetableClassTimeRepository create(Ref ref) {
@@ -145,23 +157,26 @@ String _$timetableClassTimeRepositoryHash() =>
 @ProviderFor(timetableTables)
 final timetableTablesProvider = TimetableTablesProvider._();
 
-final class TimetableTablesProvider extends $FunctionalProvider<
-        AsyncValue<List<TimetableTable>>,
-        List<TimetableTable>,
-        Stream<List<TimetableTable>>>
+final class TimetableTablesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<TimetableTable>>,
+          List<TimetableTable>,
+          Stream<List<TimetableTable>>
+        >
     with
         $FutureModifier<List<TimetableTable>>,
         $StreamProvider<List<TimetableTable>> {
   TimetableTablesProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'timetableTablesProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'timetableTablesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$timetableTablesHash();
@@ -169,8 +184,8 @@ final class TimetableTablesProvider extends $FunctionalProvider<
   @$internal
   @override
   $StreamProviderElement<List<TimetableTable>> $createElement(
-          $ProviderPointer pointer) =>
-      $StreamProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
 
   @override
   Stream<List<TimetableTable>> create(Ref ref) {
@@ -183,23 +198,26 @@ String _$timetableTablesHash() => r'd72ef3c8f70e19e5a6e04d9c07677f4bcfa66655';
 @ProviderFor(classTimes)
 final classTimesProvider = ClassTimesProvider._();
 
-final class ClassTimesProvider extends $FunctionalProvider<
-        AsyncValue<List<TimetableClassTime>>,
-        List<TimetableClassTime>,
-        Stream<List<TimetableClassTime>>>
+final class ClassTimesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<TimetableClassTime>>,
+          List<TimetableClassTime>,
+          Stream<List<TimetableClassTime>>
+        >
     with
         $FutureModifier<List<TimetableClassTime>>,
         $StreamProvider<List<TimetableClassTime>> {
   ClassTimesProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'classTimesProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'classTimesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$classTimesHash();
@@ -207,8 +225,8 @@ final class ClassTimesProvider extends $FunctionalProvider<
   @$internal
   @override
   $StreamProviderElement<List<TimetableClassTime>> $createElement(
-          $ProviderPointer pointer) =>
-      $StreamProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
 
   @override
   Stream<List<TimetableClassTime>> create(Ref ref) {
@@ -225,19 +243,25 @@ final timetableCellsProvider = TimetableCellsFamily._();
 
 /// 指定テーブルのセル一覧。
 
-final class TimetableCellsProvider extends $FunctionalProvider<
-        AsyncValue<List<Timetable>>, List<Timetable>, Stream<List<Timetable>>>
+final class TimetableCellsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Timetable>>,
+          List<Timetable>,
+          Stream<List<Timetable>>
+        >
     with $FutureModifier<List<Timetable>>, $StreamProvider<List<Timetable>> {
   /// 指定テーブルのセル一覧。
-  TimetableCellsProvider._(
-      {required TimetableCellsFamily super.from, required int super.argument})
-      : super(
-          retry: null,
-          name: r'timetableCellsProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+  TimetableCellsProvider._({
+    required TimetableCellsFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'timetableCellsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$timetableCellsHash();
@@ -252,16 +276,13 @@ final class TimetableCellsProvider extends $FunctionalProvider<
   @$internal
   @override
   $StreamProviderElement<List<Timetable>> $createElement(
-          $ProviderPointer pointer) =>
-      $StreamProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
 
   @override
   Stream<List<Timetable>> create(Ref ref) {
     final argument = this.argument as int;
-    return timetableCells(
-      ref,
-      argument,
-    );
+    return timetableCells(ref, argument);
   }
 
   @override
@@ -282,19 +303,17 @@ String _$timetableCellsHash() => r'a70e530ce5bfa360bc21870e806dbfd0d2ca043b';
 final class TimetableCellsFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Timetable>>, int> {
   TimetableCellsFamily._()
-      : super(
-          retry: null,
-          name: r'timetableCellsProvider',
-          dependencies: null,
-          $allTransitiveDependencies: null,
-          isAutoDispose: true,
-        );
+    : super(
+        retry: null,
+        name: r'timetableCellsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
 
   /// 指定テーブルのセル一覧。
 
-  TimetableCellsProvider call(
-    int tableId,
-  ) =>
+  TimetableCellsProvider call(int tableId) =>
       TimetableCellsProvider._(argument: tableId, from: this);
 
   @override
@@ -310,22 +329,26 @@ final currentTimetableProvider = CurrentTimetableProvider._();
 /// 現在選択中のテーブルのセル一覧 (cellId → Timetable)。
 /// [timetableCellsProvider] に依存し、Map に変換する。
 
-final class CurrentTimetableProvider extends $FunctionalProvider<
-    TimetableSnapshot,
-    TimetableSnapshot,
-    TimetableSnapshot> with $Provider<TimetableSnapshot> {
+final class CurrentTimetableProvider
+    extends
+        $FunctionalProvider<
+          TimetableSnapshot,
+          TimetableSnapshot,
+          TimetableSnapshot
+        >
+    with $Provider<TimetableSnapshot> {
   /// 現在選択中のテーブルのセル一覧 (cellId → Timetable)。
   /// [timetableCellsProvider] に依存し、Map に変換する。
   CurrentTimetableProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'currentTimetableProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'currentTimetableProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$currentTimetableHash();
@@ -333,8 +356,8 @@ final class CurrentTimetableProvider extends $FunctionalProvider<
   @$internal
   @override
   $ProviderElement<TimetableSnapshot> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   TimetableSnapshot create(Ref ref) {
@@ -358,22 +381,26 @@ String _$currentTimetableHash() => r'e7b54ec9c3173662bb0a5019381f5c09855437ea';
 final undoRedoProvider = UndoRedoFamily._();
 
 /// tableId ごとの Undo/Redo スタック。
-final class UndoRedoProvider extends $NotifierProvider<
-    UndoRedo,
-    ({
-      List<TimetableSnapshot> redoStack,
-      List<TimetableSnapshot> undoStack,
-    })> {
+final class UndoRedoProvider
+    extends
+        $NotifierProvider<
+          UndoRedo,
+          ({
+            List<TimetableSnapshot> redoStack,
+            List<TimetableSnapshot> undoStack,
+          })
+        > {
   /// tableId ごとの Undo/Redo スタック。
-  UndoRedoProvider._(
-      {required UndoRedoFamily super.from, required int super.argument})
-      : super(
-          retry: null,
-          name: r'undoRedoProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+  UndoRedoProvider._({
+    required UndoRedoFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'undoRedoProvider',
+         isAutoDispose: false,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$undoRedoHash();
@@ -391,17 +418,18 @@ final class UndoRedoProvider extends $NotifierProvider<
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(
-      ({
-        List<TimetableSnapshot> redoStack,
-        List<TimetableSnapshot> undoStack,
-      }) value) {
+    ({List<TimetableSnapshot> redoStack, List<TimetableSnapshot> undoStack})
+    value,
+  ) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<
-          ({
-            List<TimetableSnapshot> redoStack,
-            List<TimetableSnapshot> undoStack,
-          })>(value),
+      providerOverride:
+          $SyncValueProvider<
+            ({
+              List<TimetableSnapshot> redoStack,
+              List<TimetableSnapshot> undoStack,
+            })
+          >(value),
     );
   }
 
@@ -416,41 +444,40 @@ final class UndoRedoProvider extends $NotifierProvider<
   }
 }
 
-String _$undoRedoHash() => r'55a4934a1dce573dac62c3d8b82d3838fed0b373';
+String _$undoRedoHash() => r'f49f1f45ec946abcf2766b49236131b91c1adf0a';
 
 /// tableId ごとの Undo/Redo スタック。
 
 final class UndoRedoFamily extends $Family
     with
         $ClassFamilyOverride<
-            UndoRedo,
-            ({
-              List<TimetableSnapshot> redoStack,
-              List<TimetableSnapshot> undoStack,
-            }),
-            ({
-              List<TimetableSnapshot> redoStack,
-              List<TimetableSnapshot> undoStack,
-            }),
-            ({
-              List<TimetableSnapshot> redoStack,
-              List<TimetableSnapshot> undoStack,
-            }),
-            int> {
+          UndoRedo,
+          ({
+            List<TimetableSnapshot> redoStack,
+            List<TimetableSnapshot> undoStack,
+          }),
+          ({
+            List<TimetableSnapshot> redoStack,
+            List<TimetableSnapshot> undoStack,
+          }),
+          ({
+            List<TimetableSnapshot> redoStack,
+            List<TimetableSnapshot> undoStack,
+          }),
+          int
+        > {
   UndoRedoFamily._()
-      : super(
-          retry: null,
-          name: r'undoRedoProvider',
-          dependencies: null,
-          $allTransitiveDependencies: null,
-          isAutoDispose: false,
-        );
+    : super(
+        retry: null,
+        name: r'undoRedoProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: false,
+      );
 
   /// tableId ごとの Undo/Redo スタック。
 
-  UndoRedoProvider call(
-    int tableId,
-  ) =>
+  UndoRedoProvider call(int tableId) =>
       UndoRedoProvider._(argument: tableId, from: this);
 
   @override
@@ -459,53 +486,55 @@ final class UndoRedoFamily extends $Family
 
 /// tableId ごとの Undo/Redo スタック。
 
-abstract class _$UndoRedo extends $Notifier<
-    ({
-      List<TimetableSnapshot> redoStack,
-      List<TimetableSnapshot> undoStack,
-    })> {
+abstract class _$UndoRedo
+    extends
+        $Notifier<
+          ({
+            List<TimetableSnapshot> redoStack,
+            List<TimetableSnapshot> undoStack,
+          })
+        > {
   late final _$args = ref.$arg as int;
   int get tableId => _$args;
 
-  ({
-    List<TimetableSnapshot> redoStack,
-    List<TimetableSnapshot> undoStack,
-  }) build(
-    int tableId,
-  );
+  ({List<TimetableSnapshot> redoStack, List<TimetableSnapshot> undoStack})
+  build(int tableId);
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<
-        ({
-          List<TimetableSnapshot> redoStack,
-          List<TimetableSnapshot> undoStack,
-        }),
-        ({
-          List<TimetableSnapshot> redoStack,
-          List<TimetableSnapshot> undoStack,
-        })>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<
-            ({
-              List<TimetableSnapshot> redoStack,
-              List<TimetableSnapshot> undoStack,
-            }),
-            ({
-              List<TimetableSnapshot> redoStack,
-              List<TimetableSnapshot> undoStack,
-            })>,
-        ({
-          List<TimetableSnapshot> redoStack,
-          List<TimetableSnapshot> undoStack,
-        }),
-        Object?,
-        Object?>;
-    element.handleCreate(
-        ref,
-        () => build(
-              _$args,
-            ));
+    final ref =
+        this.ref
+            as $Ref<
+              ({
+                List<TimetableSnapshot> redoStack,
+                List<TimetableSnapshot> undoStack,
+              }),
+              ({
+                List<TimetableSnapshot> redoStack,
+                List<TimetableSnapshot> undoStack,
+              })
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                ({
+                  List<TimetableSnapshot> redoStack,
+                  List<TimetableSnapshot> undoStack,
+                }),
+                ({
+                  List<TimetableSnapshot> redoStack,
+                  List<TimetableSnapshot> undoStack,
+                })
+              >,
+              ({
+                List<TimetableSnapshot> redoStack,
+                List<TimetableSnapshot> undoStack,
+              }),
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, () => build(_$args));
   }
 }
 
@@ -516,21 +545,25 @@ final timetableEditUseCaseProvider = TimetableEditUseCaseFamily._();
 
 /// tableId スコープの UseCase プロバイダー。
 
-final class TimetableEditUseCaseProvider extends $FunctionalProvider<
-    TimetableEditUseCase,
-    TimetableEditUseCase,
-    TimetableEditUseCase> with $Provider<TimetableEditUseCase> {
+final class TimetableEditUseCaseProvider
+    extends
+        $FunctionalProvider<
+          TimetableEditUseCase,
+          TimetableEditUseCase,
+          TimetableEditUseCase
+        >
+    with $Provider<TimetableEditUseCase> {
   /// tableId スコープの UseCase プロバイダー。
-  TimetableEditUseCaseProvider._(
-      {required TimetableEditUseCaseFamily super.from,
-      required int super.argument})
-      : super(
-          retry: null,
-          name: r'timetableEditUseCaseProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+  TimetableEditUseCaseProvider._({
+    required TimetableEditUseCaseFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'timetableEditUseCaseProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$timetableEditUseCaseHash();
@@ -545,16 +578,13 @@ final class TimetableEditUseCaseProvider extends $FunctionalProvider<
   @$internal
   @override
   $ProviderElement<TimetableEditUseCase> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   TimetableEditUseCase create(Ref ref) {
     final argument = this.argument as int;
-    return timetableEditUseCase(
-      ref,
-      argument,
-    );
+    return timetableEditUseCase(ref, argument);
   }
 
   /// {@macro riverpod.override_with_value}
@@ -584,19 +614,17 @@ String _$timetableEditUseCaseHash() =>
 final class TimetableEditUseCaseFamily extends $Family
     with $FunctionalFamilyOverride<TimetableEditUseCase, int> {
   TimetableEditUseCaseFamily._()
-      : super(
-          retry: null,
-          name: r'timetableEditUseCaseProvider',
-          dependencies: null,
-          $allTransitiveDependencies: null,
-          isAutoDispose: true,
-        );
+    : super(
+        retry: null,
+        name: r'timetableEditUseCaseProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
 
   /// tableId スコープの UseCase プロバイダー。
 
-  TimetableEditUseCaseProvider call(
-    int tableId,
-  ) =>
+  TimetableEditUseCaseProvider call(int tableId) =>
       TimetableEditUseCaseProvider._(argument: tableId, from: this);
 
   @override

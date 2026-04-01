@@ -158,7 +158,7 @@ class EmailSignInPageState extends ConsumerState<EmailSignInPage>
                             OutlinedButton(
                               onPressed: onPWForgot,
                               child: const Text("パスワードを忘れた場合"),
-                            )
+                            ),
                           ],
                         ),
                       ),

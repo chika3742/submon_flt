@@ -18,12 +18,9 @@ const MemorizationCardGroupSchema = CollectionSchema(
   name: r'MemorizationCardGroup',
   id: -3584954084259191415,
   properties: {
-    r'title': PropertySchema(
-      id: 0,
-      name: r'title',
-      type: IsarType.string,
-    )
+    r'title': PropertySchema(id: 0, name: r'title', type: IsarType.string),
   },
+
   estimateSize: _memorizationCardGroupEstimateSize,
   serialize: _memorizationCardGroupSerialize,
   deserialize: _memorizationCardGroupDeserialize,
@@ -32,10 +29,11 @@ const MemorizationCardGroupSchema = CollectionSchema(
   indexes: {},
   links: {},
   embeddedSchemas: {},
+
   getId: _memorizationCardGroupGetId,
   getLinks: _memorizationCardGroupGetLinks,
   attach: _memorizationCardGroupAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _memorizationCardGroupEstimateSize(
@@ -88,39 +86,45 @@ Id _memorizationCardGroupGetId(MemorizationCardGroup object) {
 }
 
 List<IsarLinkBase<dynamic>> _memorizationCardGroupGetLinks(
-    MemorizationCardGroup object) {
+  MemorizationCardGroup object,
+) {
   return [];
 }
 
 void _memorizationCardGroupAttach(
-    IsarCollection<dynamic> col, Id id, MemorizationCardGroup object) {
+  IsarCollection<dynamic> col,
+  Id id,
+  MemorizationCardGroup object,
+) {
   object.id = id;
 }
 
 extension MemorizationCardGroupQueryWhereSort
     on QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QWhere> {
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhere>
-      anyId() {
+  anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
 }
 
-extension MemorizationCardGroupQueryWhere on QueryBuilder<MemorizationCardGroup,
-    MemorizationCardGroup, QWhereClause> {
+extension MemorizationCardGroupQueryWhere
+    on
+        QueryBuilder<
+          MemorizationCardGroup,
+          MemorizationCardGroup,
+          QWhereClause
+        > {
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhereClause>
-      idEqualTo(Id id) {
+  idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
     });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhereClause>
-      idNotEqualTo(Id id) {
+  idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -143,7 +147,7 @@ extension MemorizationCardGroupQueryWhere on QueryBuilder<MemorizationCardGroup,
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhereClause>
-      idGreaterThan(Id id, {bool include = false}) {
+  idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -152,7 +156,7 @@ extension MemorizationCardGroupQueryWhere on QueryBuilder<MemorizationCardGroup,
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhereClause>
-      idLessThan(Id id, {bool include = false}) {
+  idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -161,147 +165,196 @@ extension MemorizationCardGroupQueryWhere on QueryBuilder<MemorizationCardGroup,
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterWhereClause>
-      idBetween(
+  idBetween(
     Id lowerId,
     Id upperId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
 
-extension MemorizationCardGroupQueryFilter on QueryBuilder<
-    MemorizationCardGroup, MemorizationCardGroup, QFilterCondition> {
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
-      QAfterFilterCondition> idIsNull() {
+extension MemorizationCardGroupQueryFilter
+    on
+        QueryBuilder<
+          MemorizationCardGroup,
+          MemorizationCardGroup,
+          QFilterCondition
+        > {
+  QueryBuilder<
+    MemorizationCardGroup,
+    MemorizationCardGroup,
+    QAfterFilterCondition
+  >
+  idIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'id',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'id'),
+      );
     });
   }
 
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
-      QAfterFilterCondition> idIsNotNull() {
+  QueryBuilder<
+    MemorizationCardGroup,
+    MemorizationCardGroup,
+    QAfterFilterCondition
+  >
+  idIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'id',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'id'),
+      );
     });
   }
 
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
-      QAfterFilterCondition> idEqualTo(Id? value) {
+  QueryBuilder<
+    MemorizationCardGroup,
+    MemorizationCardGroup,
+    QAfterFilterCondition
+  >
+  idEqualTo(Id? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
     });
   }
 
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
-      QAfterFilterCondition> idGreaterThan(
-    Id? value, {
-    bool include = false,
-  }) {
+  QueryBuilder<
+    MemorizationCardGroup,
+    MemorizationCardGroup,
+    QAfterFilterCondition
+  >
+  idGreaterThan(Id? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
-      QAfterFilterCondition> idLessThan(
-    Id? value, {
-    bool include = false,
-  }) {
+  QueryBuilder<
+    MemorizationCardGroup,
+    MemorizationCardGroup,
+    QAfterFilterCondition
+  >
+  idLessThan(Id? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
-      QAfterFilterCondition> idBetween(
+  QueryBuilder<
+    MemorizationCardGroup,
+    MemorizationCardGroup,
+    QAfterFilterCondition
+  >
+  idBetween(
     Id? lower,
     Id? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
-      QAfterFilterCondition> titleEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<
+    MemorizationCardGroup,
+    MemorizationCardGroup,
+    QAfterFilterCondition
+  >
+  titleEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'title',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
-      QAfterFilterCondition> titleGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
-      QAfterFilterCondition> titleLessThan(
+  QueryBuilder<
+    MemorizationCardGroup,
+    MemorizationCardGroup,
+    QAfterFilterCondition
+  >
+  titleGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'title',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
-      QAfterFilterCondition> titleBetween(
+  QueryBuilder<
+    MemorizationCardGroup,
+    MemorizationCardGroup,
+    QAfterFilterCondition
+  >
+  titleLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'title',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    MemorizationCardGroup,
+    MemorizationCardGroup,
+    QAfterFilterCondition
+  >
+  titleBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -309,107 +362,141 @@ extension MemorizationCardGroupQueryFilter on QueryBuilder<
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'title',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'title',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
-      QAfterFilterCondition> titleStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<
+    MemorizationCardGroup,
+    MemorizationCardGroup,
+    QAfterFilterCondition
+  >
+  titleStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'title',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
-      QAfterFilterCondition> titleEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<
+    MemorizationCardGroup,
+    MemorizationCardGroup,
+    QAfterFilterCondition
+  >
+  titleEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'title',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
-          QAfterFilterCondition>
-      titleContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<
+    MemorizationCardGroup,
+    MemorizationCardGroup,
+    QAfterFilterCondition
+  >
+  titleContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'title',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
-          QAfterFilterCondition>
-      titleMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<
+    MemorizationCardGroup,
+    MemorizationCardGroup,
+    QAfterFilterCondition
+  >
+  titleMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'title',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'title',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
-      QAfterFilterCondition> titleIsEmpty() {
+  QueryBuilder<
+    MemorizationCardGroup,
+    MemorizationCardGroup,
+    QAfterFilterCondition
+  >
+  titleIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'title',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'title', value: ''),
+      );
     });
   }
 
-  QueryBuilder<MemorizationCardGroup, MemorizationCardGroup,
-      QAfterFilterCondition> titleIsNotEmpty() {
+  QueryBuilder<
+    MemorizationCardGroup,
+    MemorizationCardGroup,
+    QAfterFilterCondition
+  >
+  titleIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'title',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'title', value: ''),
+      );
     });
   }
 }
 
-extension MemorizationCardGroupQueryObject on QueryBuilder<
-    MemorizationCardGroup, MemorizationCardGroup, QFilterCondition> {}
+extension MemorizationCardGroupQueryObject
+    on
+        QueryBuilder<
+          MemorizationCardGroup,
+          MemorizationCardGroup,
+          QFilterCondition
+        > {}
 
-extension MemorizationCardGroupQueryLinks on QueryBuilder<MemorizationCardGroup,
-    MemorizationCardGroup, QFilterCondition> {}
+extension MemorizationCardGroupQueryLinks
+    on
+        QueryBuilder<
+          MemorizationCardGroup,
+          MemorizationCardGroup,
+          QFilterCondition
+        > {}
 
 extension MemorizationCardGroupQuerySortBy
     on QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QSortBy> {
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
-      sortByTitle() {
+  sortByTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.asc);
     });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
-      sortByTitleDesc() {
+  sortByTitleDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.desc);
     });
@@ -419,28 +506,28 @@ extension MemorizationCardGroupQuerySortBy
 extension MemorizationCardGroupQuerySortThenBy
     on QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QSortThenBy> {
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
-      thenById() {
+  thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
-      thenByIdDesc() {
+  thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
-      thenByTitle() {
+  thenByTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.asc);
     });
   }
 
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QAfterSortBy>
-      thenByTitleDesc() {
+  thenByTitleDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.desc);
     });
@@ -450,15 +537,20 @@ extension MemorizationCardGroupQuerySortThenBy
 extension MemorizationCardGroupQueryWhereDistinct
     on QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QDistinct> {
   QueryBuilder<MemorizationCardGroup, MemorizationCardGroup, QDistinct>
-      distinctByTitle({bool caseSensitive = true}) {
+  distinctByTitle({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'title', caseSensitive: caseSensitive);
     });
   }
 }
 
-extension MemorizationCardGroupQueryProperty on QueryBuilder<
-    MemorizationCardGroup, MemorizationCardGroup, QQueryProperty> {
+extension MemorizationCardGroupQueryProperty
+    on
+        QueryBuilder<
+          MemorizationCardGroup,
+          MemorizationCardGroup,
+          QQueryProperty
+        > {
   QueryBuilder<MemorizationCardGroup, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
@@ -466,7 +558,7 @@ extension MemorizationCardGroupQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<MemorizationCardGroup, String, QQueryOperations>
-      titleProperty() {
+  titleProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'title');
     });

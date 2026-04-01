@@ -16,15 +16,15 @@ final class FirebaseAuthProvider
     extends $FunctionalProvider<FirebaseAuth, FirebaseAuth, FirebaseAuth>
     with $Provider<FirebaseAuth> {
   FirebaseAuthProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'firebaseAuthProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'firebaseAuthProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$firebaseAuthHash();
@@ -57,15 +57,15 @@ final class FirebaseUserProvider
     extends $FunctionalProvider<AsyncValue<User?>, User?, Stream<User?>>
     with $FutureModifier<User?>, $StreamProvider<User?> {
   FirebaseUserProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'firebaseUserProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'firebaseUserProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$firebaseUserHash();
@@ -86,20 +86,24 @@ String _$firebaseUserHash() => r'5b024f43ad3d70c4d847f7a7deb854c3ce160e6a';
 @ProviderFor(crashlytics)
 final crashlyticsProvider = CrashlyticsProvider._();
 
-final class CrashlyticsProvider extends $FunctionalProvider<
-    FirebaseCrashlytics,
-    FirebaseCrashlytics,
-    FirebaseCrashlytics> with $Provider<FirebaseCrashlytics> {
+final class CrashlyticsProvider
+    extends
+        $FunctionalProvider<
+          FirebaseCrashlytics,
+          FirebaseCrashlytics,
+          FirebaseCrashlytics
+        >
+    with $Provider<FirebaseCrashlytics> {
   CrashlyticsProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'crashlyticsProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'crashlyticsProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$crashlyticsHash();
@@ -107,8 +111,8 @@ final class CrashlyticsProvider extends $FunctionalProvider<
   @$internal
   @override
   $ProviderElement<FirebaseCrashlytics> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   FirebaseCrashlytics create(Ref ref) {
@@ -129,18 +133,24 @@ String _$crashlyticsHash() => r'155108b0d2e2c244304ed72e1be15318f2f933c5';
 @ProviderFor(analytics)
 final analyticsProvider = AnalyticsProvider._();
 
-final class AnalyticsProvider extends $FunctionalProvider<FirebaseAnalytics,
-    FirebaseAnalytics, FirebaseAnalytics> with $Provider<FirebaseAnalytics> {
+final class AnalyticsProvider
+    extends
+        $FunctionalProvider<
+          FirebaseAnalytics,
+          FirebaseAnalytics,
+          FirebaseAnalytics
+        >
+    with $Provider<FirebaseAnalytics> {
   AnalyticsProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'analyticsProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'analyticsProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$analyticsHash();
@@ -148,8 +158,8 @@ final class AnalyticsProvider extends $FunctionalProvider<FirebaseAnalytics,
   @$internal
   @override
   $ProviderElement<FirebaseAnalytics> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   FirebaseAnalytics create(Ref ref) {
@@ -170,18 +180,24 @@ String _$analyticsHash() => r'8fb06ce3653ba0d954e4379b42d73d731065c520';
 @ProviderFor(firestore)
 final firestoreProvider = FirestoreProvider._();
 
-final class FirestoreProvider extends $FunctionalProvider<FirebaseFirestore,
-    FirebaseFirestore, FirebaseFirestore> with $Provider<FirebaseFirestore> {
+final class FirestoreProvider
+    extends
+        $FunctionalProvider<
+          FirebaseFirestore,
+          FirebaseFirestore,
+          FirebaseFirestore
+        >
+    with $Provider<FirebaseFirestore> {
   FirestoreProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'firestoreProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'firestoreProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$firestoreHash();
@@ -189,8 +205,8 @@ final class FirestoreProvider extends $FunctionalProvider<FirebaseFirestore,
   @$internal
   @override
   $ProviderElement<FirebaseFirestore> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   FirebaseFirestore create(Ref ref) {
@@ -214,15 +230,15 @@ final isAdEnabledProvider = IsAdEnabledProvider._();
 final class IsAdEnabledProvider extends $FunctionalProvider<bool, bool, bool>
     with $Provider<bool> {
   IsAdEnabledProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'isAdEnabledProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'isAdEnabledProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$isAdEnabledHash();

@@ -12,20 +12,24 @@ part of 'social_auth_use_case.dart';
 @ProviderFor(socialAuthUseCase)
 final socialAuthUseCaseProvider = SocialAuthUseCaseProvider._();
 
-final class SocialAuthUseCaseProvider extends $FunctionalProvider<
-    SocialAuthUseCase,
-    SocialAuthUseCase,
-    SocialAuthUseCase> with $Provider<SocialAuthUseCase> {
+final class SocialAuthUseCaseProvider
+    extends
+        $FunctionalProvider<
+          SocialAuthUseCase,
+          SocialAuthUseCase,
+          SocialAuthUseCase
+        >
+    with $Provider<SocialAuthUseCase> {
   SocialAuthUseCaseProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'socialAuthUseCaseProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'socialAuthUseCaseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$socialAuthUseCaseHash();
@@ -33,8 +37,8 @@ final class SocialAuthUseCaseProvider extends $FunctionalProvider<
   @$internal
   @override
   $ProviderElement<SocialAuthUseCase> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   SocialAuthUseCase create(Ref ref) {

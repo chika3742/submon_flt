@@ -58,7 +58,7 @@ ActionPane createDeleteActionPane(
         icon: Icons.delete,
         backgroundColor: Colors.redAccent,
         foregroundColor: Colors.white,
-      )
+      ),
     ],
   );
 }
@@ -412,7 +412,7 @@ class TextFormFieldBottomSheetState extends State<TextFormFieldBottomSheet> {
             ),
           ),
         ),
-        SizedBox(height: MediaQuery.of(context).viewInsets.bottom)
+        SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
       ],
     );
   }

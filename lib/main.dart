@@ -226,14 +226,14 @@ class _ApplicationState extends ConsumerState<Application> {
     const pageTransitionsTheme = PageTransitionsTheme(builders: {
       TargetPlatform.android: SharedAxisPageTransitionsBuilder(
           transitionType: SharedAxisTransitionType.horizontal),
-      TargetPlatform.iOS: CupertinoPageTransitionsBuilder()
+      TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
     });
     return MaterialApp(
       title: "Submon",
       debugShowCheckedModeBanner: !screenShotMode,
       navigatorKey: _navigatorKey,
       navigatorObservers: [
-        FirebaseAnalyticsObserver(analytics: ref.watch(analyticsProvider))
+        FirebaseAnalyticsObserver(analytics: ref.watch(analyticsProvider)),
       ],
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),

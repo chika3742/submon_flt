@@ -74,7 +74,7 @@ class ColorPickerDialogState extends State<ColorPickerDialog> {
                 boxShadow: [
                   BoxShadow(
                       color: const Color(0x99000000),
-                      blurRadius: selectedColor == e ? 4 : 1)
+                      blurRadius: selectedColor == e ? 4 : 1),
                 ]),
             child: Stack(
               children: [
