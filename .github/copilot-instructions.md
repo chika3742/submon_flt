@@ -20,10 +20,10 @@ fvm flutter test
 fvm flutter test test/widget_test.dart
 
 # Code generation (freezed, riverpod_generator, Isar schemas)
-fvm dart run build_runner build --delete-conflicting-outputs
+./scripts/build_runner.sh
 
 # Regenerate Pigeon platform channel code
-./pigeon.sh   # outputs lib/src/pigeons.g.dart + native Kotlin/Swift files
+./scripts/pigeon.sh   # outputs lib/src/pigeons.g.dart + native Kotlin/Swift files
 ```
 
 ## Architecture
