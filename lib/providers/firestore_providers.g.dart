@@ -17,23 +17,26 @@ final userDocProvider = UserDocProvider._();
 /// 現在の認証ユーザーに対応する Firestore ドキュメント参照。
 /// 未認証時は null。
 
-final class UserDocProvider extends $FunctionalProvider<
-        DocumentReference<Map<String, dynamic>>?,
-        DocumentReference<Map<String, dynamic>>?,
-        DocumentReference<Map<String, dynamic>>?>
+final class UserDocProvider
+    extends
+        $FunctionalProvider<
+          DocumentReference<Map<String, dynamic>>?,
+          DocumentReference<Map<String, dynamic>>?,
+          DocumentReference<Map<String, dynamic>>?
+        >
     with $Provider<DocumentReference<Map<String, dynamic>>?> {
   /// 現在の認証ユーザーに対応する Firestore ドキュメント参照。
   /// 未認証時は null。
   UserDocProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'userDocProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'userDocProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$userDocHash();
@@ -41,8 +44,8 @@ final class UserDocProvider extends $FunctionalProvider<
   @$internal
   @override
   $ProviderElement<DocumentReference<Map<String, dynamic>>?> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   DocumentReference<Map<String, dynamic>>? create(Ref ref) {
@@ -80,15 +83,15 @@ final class FirestoreUserConfigNotifierProvider
   /// `build()` で Firestore ドキュメントの `snapshots()` を購読し、
   /// 各メソッドでの書き込みが自動的に state に反映される。
   FirestoreUserConfigNotifierProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'firestoreUserConfigProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'firestoreUserConfigProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$firestoreUserConfigNotifierHash();
@@ -113,11 +116,14 @@ abstract class _$FirestoreUserConfigNotifier
   @override
   void runBuild() {
     final ref = this.ref as $Ref<AsyncValue<UserConfig?>, UserConfig?>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<AsyncValue<UserConfig?>, UserConfig?>,
-        AsyncValue<UserConfig?>,
-        Object?,
-        Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<UserConfig?>, UserConfig?>,
+              AsyncValue<UserConfig?>,
+              Object?,
+              Object?
+            >;
     element.handleCreate(ref, build);
   }
 }
@@ -152,16 +158,16 @@ final class FirestoreCollectionNotifierProvider
   /// final notifier = ref.watch(firestoreCollectionProvider("submission").notifier);
   /// await notifier.set(docId, data);
   /// ```
-  FirestoreCollectionNotifierProvider._(
-      {required FirestoreCollectionNotifierFamily super.from,
-      required String super.argument})
-      : super(
-          retry: null,
-          name: r'firestoreCollectionProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+  FirestoreCollectionNotifierProvider._({
+    required FirestoreCollectionNotifierFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'firestoreCollectionProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$firestoreCollectionNotifierHash();
@@ -211,16 +217,21 @@ String _$firestoreCollectionNotifierHash() =>
 
 final class FirestoreCollectionNotifierFamily extends $Family
     with
-        $ClassFamilyOverride<FirestoreCollectionNotifier, void, void, void,
-            String> {
+        $ClassFamilyOverride<
+          FirestoreCollectionNotifier,
+          void,
+          void,
+          void,
+          String
+        > {
   FirestoreCollectionNotifierFamily._()
-      : super(
-          retry: null,
-          name: r'firestoreCollectionProvider',
-          dependencies: null,
-          $allTransitiveDependencies: null,
-          isAutoDispose: true,
-        );
+    : super(
+        retry: null,
+        name: r'firestoreCollectionProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
 
   /// Firestore コレクションへの CRUD をラップし、
   /// 書き込み時にタイムスタンプを自動更新する Notifier。
@@ -231,9 +242,7 @@ final class FirestoreCollectionNotifierFamily extends $Family
   /// await notifier.set(docId, data);
   /// ```
 
-  FirestoreCollectionNotifierProvider call(
-    String collectionId,
-  ) =>
+  FirestoreCollectionNotifierProvider call(String collectionId) =>
       FirestoreCollectionNotifierProvider._(argument: collectionId, from: this);
 
   @override
@@ -253,19 +262,19 @@ abstract class _$FirestoreCollectionNotifier extends $Notifier<void> {
   late final _$args = ref.$arg as String;
   String get collectionId => _$args;
 
-  void build(
-    String collectionId,
-  );
+  void build(String collectionId);
   @$mustCallSuper
   @override
   void runBuild() {
     final ref = this.ref as $Ref<void, void>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<void, void>, void, Object?, Object?>;
-    element.handleCreate(
-        ref,
-        () => build(
-              _$args,
-            ));
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<void, void>,
+              void,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, () => build(_$args));
   }
 }

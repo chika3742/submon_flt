@@ -12,20 +12,24 @@ part of 'email_link_auth_use_case.dart';
 @ProviderFor(emailLinkAuthUseCase)
 final emailLinkAuthUseCaseProvider = EmailLinkAuthUseCaseProvider._();
 
-final class EmailLinkAuthUseCaseProvider extends $FunctionalProvider<
-    EmailLinkAuthUseCase,
-    EmailLinkAuthUseCase,
-    EmailLinkAuthUseCase> with $Provider<EmailLinkAuthUseCase> {
+final class EmailLinkAuthUseCaseProvider
+    extends
+        $FunctionalProvider<
+          EmailLinkAuthUseCase,
+          EmailLinkAuthUseCase,
+          EmailLinkAuthUseCase
+        >
+    with $Provider<EmailLinkAuthUseCase> {
   EmailLinkAuthUseCaseProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'emailLinkAuthUseCaseProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'emailLinkAuthUseCaseProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$emailLinkAuthUseCaseHash();
@@ -33,8 +37,8 @@ final class EmailLinkAuthUseCaseProvider extends $FunctionalProvider<
   @$internal
   @override
   $ProviderElement<EmailLinkAuthUseCase> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   EmailLinkAuthUseCase create(Ref ref) {

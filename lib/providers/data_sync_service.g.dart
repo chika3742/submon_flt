@@ -24,15 +24,15 @@ final class DataSyncServiceProvider
   ///
   /// 旧 `FirestoreProvider.fetchData` / `checkMigration` / `_migrate` を置き換える。
   DataSyncServiceProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'dataSyncServiceProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'dataSyncServiceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$dataSyncServiceHash();
@@ -54,11 +54,14 @@ abstract class _$DataSyncService extends $AsyncNotifier<void> {
   @override
   void runBuild() {
     final ref = this.ref as $Ref<AsyncValue<void>, void>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<AsyncValue<void>, void>,
-        AsyncValue<void>,
-        Object?,
-        Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<void>, void>,
+              AsyncValue<void>,
+              Object?,
+              Object?
+            >;
     element.handleCreate(ref, build);
   }
 }

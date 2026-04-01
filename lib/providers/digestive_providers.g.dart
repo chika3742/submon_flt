@@ -12,20 +12,24 @@ part of 'digestive_providers.dart';
 @ProviderFor(digestiveRepository)
 final digestiveRepositoryProvider = DigestiveRepositoryProvider._();
 
-final class DigestiveRepositoryProvider extends $FunctionalProvider<
-    DigestiveRepository,
-    DigestiveRepository,
-    DigestiveRepository> with $Provider<DigestiveRepository> {
+final class DigestiveRepositoryProvider
+    extends
+        $FunctionalProvider<
+          DigestiveRepository,
+          DigestiveRepository,
+          DigestiveRepository
+        >
+    with $Provider<DigestiveRepository> {
   DigestiveRepositoryProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'digestiveRepositoryProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'digestiveRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$digestiveRepositoryHash();
@@ -33,8 +37,8 @@ final class DigestiveRepositoryProvider extends $FunctionalProvider<
   @$internal
   @override
   $ProviderElement<DigestiveRepository> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   DigestiveRepository create(Ref ref) {
@@ -56,19 +60,24 @@ String _$digestiveRepositoryHash() =>
 @ProviderFor(undoneDigestives)
 final undoneDigestivesProvider = UndoneDigestivesProvider._();
 
-final class UndoneDigestivesProvider extends $FunctionalProvider<
-        AsyncValue<List<Digestive>>, List<Digestive>, Stream<List<Digestive>>>
+final class UndoneDigestivesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Digestive>>,
+          List<Digestive>,
+          Stream<List<Digestive>>
+        >
     with $FutureModifier<List<Digestive>>, $StreamProvider<List<Digestive>> {
   UndoneDigestivesProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'undoneDigestivesProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'undoneDigestivesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$undoneDigestivesHash();
@@ -76,8 +85,8 @@ final class UndoneDigestivesProvider extends $FunctionalProvider<
   @$internal
   @override
   $StreamProviderElement<List<Digestive>> $createElement(
-          $ProviderPointer pointer) =>
-      $StreamProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
 
   @override
   Stream<List<Digestive>> create(Ref ref) {
@@ -90,19 +99,24 @@ String _$undoneDigestivesHash() => r'4e4bdc02d745a862d854383840ca1806072f2b5a';
 @ProviderFor(doneDigestives)
 final doneDigestivesProvider = DoneDigestivesProvider._();
 
-final class DoneDigestivesProvider extends $FunctionalProvider<
-        AsyncValue<List<Digestive>>, List<Digestive>, Stream<List<Digestive>>>
+final class DoneDigestivesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Digestive>>,
+          List<Digestive>,
+          Stream<List<Digestive>>
+        >
     with $FutureModifier<List<Digestive>>, $StreamProvider<List<Digestive>> {
   DoneDigestivesProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'doneDigestivesProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'doneDigestivesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$doneDigestivesHash();
@@ -110,8 +124,8 @@ final class DoneDigestivesProvider extends $FunctionalProvider<
   @$internal
   @override
   $StreamProviderElement<List<Digestive>> $createElement(
-          $ProviderPointer pointer) =>
-      $StreamProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
 
   @override
   Stream<List<Digestive>> create(Ref ref) {
@@ -124,19 +138,24 @@ String _$doneDigestivesHash() => r'590094234a56dbd06be864f4894f3f250d19d9a5';
 @ProviderFor(digestivesBySubmission)
 final digestivesBySubmissionProvider = DigestivesBySubmissionFamily._();
 
-final class DigestivesBySubmissionProvider extends $FunctionalProvider<
-        AsyncValue<List<Digestive>>, List<Digestive>, Stream<List<Digestive>>>
+final class DigestivesBySubmissionProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Digestive>>,
+          List<Digestive>,
+          Stream<List<Digestive>>
+        >
     with $FutureModifier<List<Digestive>>, $StreamProvider<List<Digestive>> {
-  DigestivesBySubmissionProvider._(
-      {required DigestivesBySubmissionFamily super.from,
-      required int super.argument})
-      : super(
-          retry: null,
-          name: r'digestivesBySubmissionProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+  DigestivesBySubmissionProvider._({
+    required DigestivesBySubmissionFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'digestivesBySubmissionProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$digestivesBySubmissionHash();
@@ -151,16 +170,13 @@ final class DigestivesBySubmissionProvider extends $FunctionalProvider<
   @$internal
   @override
   $StreamProviderElement<List<Digestive>> $createElement(
-          $ProviderPointer pointer) =>
-      $StreamProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
 
   @override
   Stream<List<Digestive>> create(Ref ref) {
     final argument = this.argument as int;
-    return digestivesBySubmission(
-      ref,
-      argument,
-    );
+    return digestivesBySubmission(ref, argument);
   }
 
   @override
@@ -181,17 +197,15 @@ String _$digestivesBySubmissionHash() =>
 final class DigestivesBySubmissionFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Digestive>>, int> {
   DigestivesBySubmissionFamily._()
-      : super(
-          retry: null,
-          name: r'digestivesBySubmissionProvider',
-          dependencies: null,
-          $allTransitiveDependencies: null,
-          isAutoDispose: true,
-        );
+    : super(
+        retry: null,
+        name: r'digestivesBySubmissionProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
 
-  DigestivesBySubmissionProvider call(
-    int submissionId,
-  ) =>
+  DigestivesBySubmissionProvider call(int submissionId) =>
       DigestivesBySubmissionProvider._(argument: submissionId, from: this);
 
   @override
@@ -206,24 +220,27 @@ final undoneDigestivesWithSubmissionProvider =
 
 /// Digestive リストを Submission 情報と結合して Stream で返す。
 
-final class UndoneDigestivesWithSubmissionProvider extends $FunctionalProvider<
-        AsyncValue<List<DigestiveWithSubmission>>,
-        List<DigestiveWithSubmission>,
-        Stream<List<DigestiveWithSubmission>>>
+final class UndoneDigestivesWithSubmissionProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<DigestiveWithSubmission>>,
+          List<DigestiveWithSubmission>,
+          Stream<List<DigestiveWithSubmission>>
+        >
     with
         $FutureModifier<List<DigestiveWithSubmission>>,
         $StreamProvider<List<DigestiveWithSubmission>> {
   /// Digestive リストを Submission 情報と結合して Stream で返す。
   UndoneDigestivesWithSubmissionProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'undoneDigestivesWithSubmissionProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'undoneDigestivesWithSubmissionProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$undoneDigestivesWithSubmissionHash();
@@ -231,8 +248,8 @@ final class UndoneDigestivesWithSubmissionProvider extends $FunctionalProvider<
   @$internal
   @override
   $StreamProviderElement<List<DigestiveWithSubmission>> $createElement(
-          $ProviderPointer pointer) =>
-      $StreamProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
 
   @override
   Stream<List<DigestiveWithSubmission>> create(Ref ref) {

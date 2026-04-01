@@ -11,67 +11,96 @@ part of 'submission_save_state_notifier.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
-
 /// @nodoc
 mixin _$SubmissionSaveState {
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is SubmissionSaveState);
-  }
 
-  @override
-  int get hashCode => runtimeType.hashCode;
 
-  @override
-  String toString() {
-    return 'SubmissionSaveState()';
-  }
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SubmissionSaveState);
 }
 
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'SubmissionSaveState()';
+}
+
+
+}
+
+
+
+
+
 /// @nodoc
+
 
 class SubmissionSaveStateNone implements SubmissionSaveState {
   const SubmissionSaveStateNone();
+  
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is SubmissionSaveStateNone);
-  }
 
-  @override
-  int get hashCode => runtimeType.hashCode;
 
-  @override
-  String toString() {
-    return 'SubmissionSaveState.none()';
-  }
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SubmissionSaveStateNone);
 }
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'SubmissionSaveState.none()';
+}
+
+
+}
+
+
+
 
 /// @nodoc
 
+
 class SubmissionSaveStateFailed implements SubmissionSaveState {
   const SubmissionSaveStateFailed(this.error);
+  
 
-  final Object error;
+ final  Object error;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is SubmissionSaveStateFailed &&
-            const DeepCollectionEquality().equals(other.error, error));
-  }
 
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(error));
 
-  @override
-  String toString() {
-    return 'SubmissionSaveState.failed(error: $error)';
-  }
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SubmissionSaveStateFailed&&const DeepCollectionEquality().equals(other.error, error));
 }
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(error));
+
+@override
+String toString() {
+  return 'SubmissionSaveState.failed(error: $error)';
+}
+
+
+}
+
+
+
 
 // dart format on

@@ -16,15 +16,15 @@ final class SignOutUseCaseProvider
     extends $FunctionalProvider<SignOutUseCase, SignOutUseCase, SignOutUseCase>
     with $Provider<SignOutUseCase> {
   SignOutUseCaseProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'signOutUseCaseProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'signOutUseCaseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$signOutUseCaseHash();

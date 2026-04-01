@@ -16,15 +16,15 @@ final class IsarProvider
     extends $FunctionalProvider<AsyncValue<Isar>, Isar, FutureOr<Isar>>
     with $FutureModifier<Isar>, $FutureProvider<Isar> {
   IsarProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'isarProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'isarProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$isarHash();
@@ -49,15 +49,15 @@ final class GoogleSignInProvider
     extends $FunctionalProvider<GoogleSignIn, GoogleSignIn, GoogleSignIn>
     with $Provider<GoogleSignIn> {
   GoogleSignInProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'googleSignInProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'googleSignInProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$googleSignInHash();
@@ -86,20 +86,24 @@ String _$googleSignInHash() => r'be6e657edfb1790d127cff1d3820a50c34e65011';
 @ProviderFor(appleSignInAndroid)
 final appleSignInAndroidProvider = AppleSignInAndroidProvider._();
 
-final class AppleSignInAndroidProvider extends $FunctionalProvider<
-    AppleSignInAndroid,
-    AppleSignInAndroid,
-    AppleSignInAndroid> with $Provider<AppleSignInAndroid> {
+final class AppleSignInAndroidProvider
+    extends
+        $FunctionalProvider<
+          AppleSignInAndroid,
+          AppleSignInAndroid,
+          AppleSignInAndroid
+        >
+    with $Provider<AppleSignInAndroid> {
   AppleSignInAndroidProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'appleSignInAndroidProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'appleSignInAndroidProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$appleSignInAndroidHash();
@@ -107,8 +111,8 @@ final class AppleSignInAndroidProvider extends $FunctionalProvider<
   @$internal
   @override
   $ProviderElement<AppleSignInAndroid> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   AppleSignInAndroid create(Ref ref) {
@@ -134,15 +138,15 @@ final class MessagingApiProvider
     extends $FunctionalProvider<MessagingApi, MessagingApi, MessagingApi>
     with $Provider<MessagingApi> {
   MessagingApiProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'messagingApiProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'messagingApiProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$messagingApiHash();
@@ -175,15 +179,15 @@ final class GeneralApiProvider
     extends $FunctionalProvider<GeneralApi, GeneralApi, GeneralApi>
     with $Provider<GeneralApi> {
   GeneralApiProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'generalApiProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'generalApiProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$generalApiHash();
@@ -216,15 +220,15 @@ final class BrowserApiProvider
     extends $FunctionalProvider<BrowserApi, BrowserApi, BrowserApi>
     with $Provider<BrowserApi> {
   BrowserApiProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'browserApiProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'browserApiProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$browserApiHash();

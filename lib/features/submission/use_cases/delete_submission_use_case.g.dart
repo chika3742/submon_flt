@@ -12,20 +12,24 @@ part of 'delete_submission_use_case.dart';
 @ProviderFor(deleteSubmissionUseCase)
 final deleteSubmissionUseCaseProvider = DeleteSubmissionUseCaseProvider._();
 
-final class DeleteSubmissionUseCaseProvider extends $FunctionalProvider<
-    DeleteSubmissionUseCase,
-    DeleteSubmissionUseCase,
-    DeleteSubmissionUseCase> with $Provider<DeleteSubmissionUseCase> {
+final class DeleteSubmissionUseCaseProvider
+    extends
+        $FunctionalProvider<
+          DeleteSubmissionUseCase,
+          DeleteSubmissionUseCase,
+          DeleteSubmissionUseCase
+        >
+    with $Provider<DeleteSubmissionUseCase> {
   DeleteSubmissionUseCaseProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'deleteSubmissionUseCaseProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'deleteSubmissionUseCaseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$deleteSubmissionUseCaseHash();
@@ -33,8 +37,8 @@ final class DeleteSubmissionUseCaseProvider extends $FunctionalProvider<
   @$internal
   @override
   $ProviderElement<DeleteSubmissionUseCase> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   DeleteSubmissionUseCase create(Ref ref) {

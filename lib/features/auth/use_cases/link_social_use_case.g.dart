@@ -12,20 +12,24 @@ part of 'link_social_use_case.dart';
 @ProviderFor(linkSocialUseCase)
 final linkSocialUseCaseProvider = LinkSocialUseCaseProvider._();
 
-final class LinkSocialUseCaseProvider extends $FunctionalProvider<
-    LinkSocialUseCase,
-    LinkSocialUseCase,
-    LinkSocialUseCase> with $Provider<LinkSocialUseCase> {
+final class LinkSocialUseCaseProvider
+    extends
+        $FunctionalProvider<
+          LinkSocialUseCase,
+          LinkSocialUseCase,
+          LinkSocialUseCase
+        >
+    with $Provider<LinkSocialUseCase> {
   LinkSocialUseCaseProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'linkSocialUseCaseProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'linkSocialUseCaseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$linkSocialUseCaseHash();
@@ -33,8 +37,8 @@ final class LinkSocialUseCaseProvider extends $FunctionalProvider<
   @$internal
   @override
   $ProviderElement<LinkSocialUseCase> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   LinkSocialUseCase create(Ref ref) {

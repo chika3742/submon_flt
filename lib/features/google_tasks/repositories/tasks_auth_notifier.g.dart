@@ -15,15 +15,15 @@ final tasksAuthProvider = TasksAuthNotifierProvider._();
 final class TasksAuthNotifierProvider
     extends $AsyncNotifierProvider<TasksAuthNotifier, AuthClient?> {
   TasksAuthNotifierProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: noRetry,
-          name: r'tasksAuthProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: noRetry,
+        name: r'tasksAuthProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$tasksAuthNotifierHash();
@@ -41,11 +41,14 @@ abstract class _$TasksAuthNotifier extends $AsyncNotifier<AuthClient?> {
   @override
   void runBuild() {
     final ref = this.ref as $Ref<AsyncValue<AuthClient?>, AuthClient?>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<AsyncValue<AuthClient?>, AuthClient?>,
-        AsyncValue<AuthClient?>,
-        Object?,
-        Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<AuthClient?>, AuthClient?>,
+              AsyncValue<AuthClient?>,
+              Object?,
+              Object?
+            >;
     element.handleCreate(ref, build);
   }
 }

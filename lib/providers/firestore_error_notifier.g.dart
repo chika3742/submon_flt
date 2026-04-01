@@ -12,18 +12,19 @@ part of 'firestore_error_notifier.dart';
 @ProviderFor(FirestoreErrorNotifier)
 final firestoreErrorProvider = FirestoreErrorNotifierProvider._();
 
-final class FirestoreErrorNotifierProvider extends $StreamNotifierProvider<
-    FirestoreErrorNotifier, Distinguish<Object?>> {
+final class FirestoreErrorNotifierProvider
+    extends
+        $StreamNotifierProvider<FirestoreErrorNotifier, Distinguish<Object?>> {
   FirestoreErrorNotifierProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'firestoreErrorProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'firestoreErrorProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$firestoreErrorNotifierHash();
@@ -42,13 +43,20 @@ abstract class _$FirestoreErrorNotifier
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref
-        as $Ref<AsyncValue<Distinguish<Object?>>, Distinguish<Object?>>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<AsyncValue<Distinguish<Object?>>, Distinguish<Object?>>,
-        AsyncValue<Distinguish<Object?>>,
-        Object?,
-        Object?>;
+    final ref =
+        this.ref
+            as $Ref<AsyncValue<Distinguish<Object?>>, Distinguish<Object?>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<Distinguish<Object?>>,
+                Distinguish<Object?>
+              >,
+              AsyncValue<Distinguish<Object?>>,
+              Object?,
+              Object?
+            >;
     element.handleCreate(ref, build);
   }
 }

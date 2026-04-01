@@ -12,20 +12,24 @@ part of 'complete_sign_in_use_case.dart';
 @ProviderFor(completeSignInUseCase)
 final completeSignInUseCaseProvider = CompleteSignInUseCaseProvider._();
 
-final class CompleteSignInUseCaseProvider extends $FunctionalProvider<
-    CompleteSignInUseCase,
-    CompleteSignInUseCase,
-    CompleteSignInUseCase> with $Provider<CompleteSignInUseCase> {
+final class CompleteSignInUseCaseProvider
+    extends
+        $FunctionalProvider<
+          CompleteSignInUseCase,
+          CompleteSignInUseCase,
+          CompleteSignInUseCase
+        >
+    with $Provider<CompleteSignInUseCase> {
   CompleteSignInUseCaseProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'completeSignInUseCaseProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'completeSignInUseCaseProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$completeSignInUseCaseHash();
@@ -33,8 +37,8 @@ final class CompleteSignInUseCaseProvider extends $FunctionalProvider<
   @$internal
   @override
   $ProviderElement<CompleteSignInUseCase> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   CompleteSignInUseCase create(Ref ref) {

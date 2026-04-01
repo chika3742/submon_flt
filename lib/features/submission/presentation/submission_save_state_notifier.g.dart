@@ -12,18 +12,22 @@ part of 'submission_save_state_notifier.dart';
 @ProviderFor(SubmissionSaveStateNotifier)
 final submissionSaveStateProvider = SubmissionSaveStateNotifierProvider._();
 
-final class SubmissionSaveStateNotifierProvider extends $NotifierProvider<
-    SubmissionSaveStateNotifier, Distinguish<SubmissionSaveState>> {
+final class SubmissionSaveStateNotifierProvider
+    extends
+        $NotifierProvider<
+          SubmissionSaveStateNotifier,
+          Distinguish<SubmissionSaveState>
+        > {
   SubmissionSaveStateNotifierProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'submissionSaveStateProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'submissionSaveStateProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$submissionSaveStateNotifierHash();
@@ -36,8 +40,9 @@ final class SubmissionSaveStateNotifierProvider extends $NotifierProvider<
   Override overrideWithValue(Distinguish<SubmissionSaveState> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride:
-          $SyncValueProvider<Distinguish<SubmissionSaveState>>(value),
+      providerOverride: $SyncValueProvider<Distinguish<SubmissionSaveState>>(
+        value,
+      ),
     );
   }
 }
@@ -51,14 +56,23 @@ abstract class _$SubmissionSaveStateNotifier
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<Distinguish<SubmissionSaveState>,
-        Distinguish<SubmissionSaveState>>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<Distinguish<SubmissionSaveState>,
-            Distinguish<SubmissionSaveState>>,
-        Distinguish<SubmissionSaveState>,
-        Object?,
-        Object?>;
+    final ref =
+        this.ref
+            as $Ref<
+              Distinguish<SubmissionSaveState>,
+              Distinguish<SubmissionSaveState>
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                Distinguish<SubmissionSaveState>,
+                Distinguish<SubmissionSaveState>
+              >,
+              Distinguish<SubmissionSaveState>,
+              Object?,
+              Object?
+            >;
     element.handleCreate(ref, build);
   }
 }

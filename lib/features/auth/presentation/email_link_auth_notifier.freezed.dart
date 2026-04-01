@@ -11,158 +11,224 @@ part of 'email_link_auth_notifier.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
-
 /// @nodoc
 mixin _$EmailLinkAuthState {
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is EmailLinkAuthState);
-  }
 
-  @override
-  int get hashCode => runtimeType.hashCode;
 
-  @override
-  String toString() {
-    return 'EmailLinkAuthState()';
-  }
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EmailLinkAuthState);
 }
 
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'EmailLinkAuthState()';
+}
+
+
+}
+
+
+
+
+
 /// @nodoc
+
 
 class EmailLinkAuthStateIdle implements EmailLinkAuthState {
   const EmailLinkAuthStateIdle();
+  
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is EmailLinkAuthStateIdle);
-  }
 
-  @override
-  int get hashCode => runtimeType.hashCode;
 
-  @override
-  String toString() {
-    return 'EmailLinkAuthState.idle()';
-  }
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EmailLinkAuthStateIdle);
 }
 
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'EmailLinkAuthState.idle()';
+}
+
+
+}
+
+
+
+
 /// @nodoc
+
 
 class EmailLinkAuthStateProcessing implements EmailLinkAuthState {
   const EmailLinkAuthStateProcessing();
+  
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is EmailLinkAuthStateProcessing);
-  }
 
-  @override
-  int get hashCode => runtimeType.hashCode;
 
-  @override
-  String toString() {
-    return 'EmailLinkAuthState.processing()';
-  }
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EmailLinkAuthStateProcessing);
 }
 
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'EmailLinkAuthState.processing()';
+}
+
+
+}
+
+
+
+
 /// @nodoc
+
 
 class EmailLinkAuthStateSignInSucceeded implements EmailLinkAuthState {
   const EmailLinkAuthStateSignInSucceeded(this.result);
+  
 
-  final CompleteSignInResult result;
+ final  CompleteSignInResult result;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is EmailLinkAuthStateSignInSucceeded &&
-            (identical(other.result, result) || other.result == result));
-  }
 
-  @override
-  int get hashCode => Object.hash(runtimeType, result);
 
-  @override
-  String toString() {
-    return 'EmailLinkAuthState.signInSucceeded(result: $result)';
-  }
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EmailLinkAuthStateSignInSucceeded&&(identical(other.result, result) || other.result == result));
 }
 
+
+@override
+int get hashCode => Object.hash(runtimeType,result);
+
+@override
+String toString() {
+  return 'EmailLinkAuthState.signInSucceeded(result: $result)';
+}
+
+
+}
+
+
+
+
 /// @nodoc
+
 
 class EmailLinkAuthStateReAuthSucceeded implements EmailLinkAuthState {
   const EmailLinkAuthStateReAuthSucceeded(this.destination);
+  
 
-  final AuthContinueDestination destination;
+ final  AuthContinueDestination destination;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is EmailLinkAuthStateReAuthSucceeded &&
-            (identical(other.destination, destination) ||
-                other.destination == destination));
-  }
 
-  @override
-  int get hashCode => Object.hash(runtimeType, destination);
 
-  @override
-  String toString() {
-    return 'EmailLinkAuthState.reAuthSucceeded(destination: $destination)';
-  }
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EmailLinkAuthStateReAuthSucceeded&&(identical(other.destination, destination) || other.destination == destination));
 }
 
+
+@override
+int get hashCode => Object.hash(runtimeType,destination);
+
+@override
+String toString() {
+  return 'EmailLinkAuthState.reAuthSucceeded(destination: $destination)';
+}
+
+
+}
+
+
+
+
 /// @nodoc
+
 
 class EmailLinkAuthStateUpgradeSucceeded implements EmailLinkAuthState {
   const EmailLinkAuthStateUpgradeSucceeded();
+  
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is EmailLinkAuthStateUpgradeSucceeded);
-  }
 
-  @override
-  int get hashCode => runtimeType.hashCode;
 
-  @override
-  String toString() {
-    return 'EmailLinkAuthState.upgradeSucceeded()';
-  }
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EmailLinkAuthStateUpgradeSucceeded);
 }
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'EmailLinkAuthState.upgradeSucceeded()';
+}
+
+
+}
+
+
+
 
 /// @nodoc
 
+
 class EmailLinkAuthStateFailed implements EmailLinkAuthState {
   const EmailLinkAuthStateFailed(this.error);
+  
 
-  final Object error;
+ final  Object error;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is EmailLinkAuthStateFailed &&
-            const DeepCollectionEquality().equals(other.error, error));
-  }
 
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(error));
 
-  @override
-  String toString() {
-    return 'EmailLinkAuthState.failed(error: $error)';
-  }
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EmailLinkAuthStateFailed&&const DeepCollectionEquality().equals(other.error, error));
 }
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(error));
+
+@override
+String toString() {
+  return 'EmailLinkAuthState.failed(error: $error)';
+}
+
+
+}
+
+
+
 
 // dart format on

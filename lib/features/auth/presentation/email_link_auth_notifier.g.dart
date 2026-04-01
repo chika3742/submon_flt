@@ -15,15 +15,15 @@ final emailLinkAuthProvider = EmailLinkAuthNotifierProvider._();
 final class EmailLinkAuthNotifierProvider
     extends $NotifierProvider<EmailLinkAuthNotifier, EmailLinkAuthState> {
   EmailLinkAuthNotifierProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'emailLinkAuthProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'emailLinkAuthProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$emailLinkAuthNotifierHash();
@@ -50,11 +50,14 @@ abstract class _$EmailLinkAuthNotifier extends $Notifier<EmailLinkAuthState> {
   @override
   void runBuild() {
     final ref = this.ref as $Ref<EmailLinkAuthState, EmailLinkAuthState>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<EmailLinkAuthState, EmailLinkAuthState>,
-        EmailLinkAuthState,
-        Object?,
-        Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<EmailLinkAuthState, EmailLinkAuthState>,
+              EmailLinkAuthState,
+              Object?,
+              Object?
+            >;
     element.handleCreate(ref, build);
   }
 }

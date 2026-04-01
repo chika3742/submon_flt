@@ -16,15 +16,15 @@ final class TasksServiceProvider
     extends $FunctionalProvider<TasksService?, TasksService?, TasksService?>
     with $Provider<TasksService?> {
   TasksServiceProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'tasksServiceProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'tasksServiceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$tasksServiceHash();
