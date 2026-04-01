@@ -268,7 +268,7 @@ class _FocusTimerPageState extends ConsumerState<FocusTimerPage>
                                       onPressed: () {
                                         DndApi().goToPolicySettings();
                                       },
-                                    )
+                                    ),
                                   ],
                                 ),
                               ),
@@ -368,7 +368,7 @@ class _FocusTimerPageState extends ConsumerState<FocusTimerPage>
                           ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),

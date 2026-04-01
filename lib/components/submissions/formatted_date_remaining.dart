@@ -26,7 +26,7 @@ class FormattedDateRemaining extends StatelessWidget {
           ),
           TextSpan(
               text: getRemainingString(diff, weekView)[1],
-              style: const TextStyle(fontSize: 18))
+              style: const TextStyle(fontSize: 18)),
         ]),
       ),
     );

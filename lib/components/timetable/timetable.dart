@@ -138,7 +138,7 @@ class Timetable extends ConsumerWidget {
         closedShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(6),
         ),
-        closedBuilder: (_, __) =>
+        closedBuilder: (_, _) =>
             _buildTimetableCell(context, ref, youbi, index),
         closedElevation: 4,
         openBuilder: (context, callback) => TimetableCellEditPage(

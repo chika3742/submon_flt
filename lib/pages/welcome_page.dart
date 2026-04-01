@@ -183,7 +183,7 @@ class WelcomePage extends ConsumerWidget {
                         ),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

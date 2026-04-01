@@ -96,7 +96,7 @@ class _AccountEditPageState extends ConsumerState<AccountEditPage> {
                       : null,
                 ),
               ),
-            )
+            ),
           ],
         ));
   }
@@ -141,7 +141,7 @@ class _AccountEditPageState extends ConsumerState<AccountEditPage> {
               style: TextStyle(
                   fontWeight: FontWeight.bold, color: Colors.redAccent)),
           TextSpan(
-              text: "※メールは「submon.app」ドメインから送信されます。迷惑メールに振り分けられていないか確認してください。")
+              text: "※メールは「submon.app」ドメインから送信されます。迷惑メールに振り分けられていないか確認してください。"),
         ],
         style: Theme.of(context).textTheme.bodyLarge,
       )),

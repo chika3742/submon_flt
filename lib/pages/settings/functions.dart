@@ -320,7 +320,7 @@ class _FunctionsSettingsPageState extends ConsumerState<FunctionsSettingsPage> {
   bool emailChangeable() {
     final providers = [
       EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD,
-      EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD
+      EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD,
     ];
     final currentUser = ref.read(firebaseUserProvider).requireValue!;
     return !currentUser.isAnonymous
