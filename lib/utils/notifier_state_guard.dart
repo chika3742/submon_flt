@@ -32,3 +32,17 @@ mixin NotifierStateGuard<StateT, ValueT> on AnyNotifier<StateT, ValueT> {
     }
   }
 }
+
+mixin NotifierStateGuardAsync<T> on AnyNotifier<AsyncValue<T>, T> {
+  @protected
+  void guard(Future<T> Function() action) {
+    unawaited(() async {
+      state = AsyncLoading();
+      try {
+        state = AsyncValue.data(await action());
+      } catch (e, st) {
+        state = AsyncValue.error(e, st);
+      }
+    }());
+  }
+}

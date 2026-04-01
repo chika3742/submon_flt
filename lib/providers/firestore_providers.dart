@@ -39,8 +39,8 @@ class FirestoreUserConfigNotifier extends _$FirestoreUserConfigNotifier
   @override
   Future<UserConfig?> build() async {
     final doc = ref.watch(userDocProvider)?.withConverter<UserConfig>(
-      fromFirestore: UserConfig.fromFirestore,
-      toFirestore: (config, options) => config.toFirestore(),
+      fromFirestore: (snapshot, _) => UserConfig.fromJson(snapshot.data()!),
+      toFirestore: (config, _) => config.toJson(),
     );
     if (doc == null) return null;
     return (await doc.get()).data();
