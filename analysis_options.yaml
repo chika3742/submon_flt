@@ -38,6 +38,11 @@ linter:
     - eol_at_end_of_file
     - prefer_relative_imports
     - directives_ordering
+    - unawaited_futures
+    - discarded_futures
+    - use_named_constants
+    - unnecessary_parenthesis
+    - prefer_const_declarations
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
