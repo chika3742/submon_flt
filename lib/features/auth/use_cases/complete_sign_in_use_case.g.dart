@@ -26,7 +26,7 @@ final class CompleteSignInUseCaseProvider
         argument: null,
         retry: null,
         name: r'completeSignInUseCaseProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -55,4 +55,4 @@ final class CompleteSignInUseCaseProvider
 }
 
 String _$completeSignInUseCaseHash() =>
-    r'e03c0beee75562e1eec96ff614c9010cf2102893';
+    r'7b6be5cdca43857706976167c1e9bf12681a3d96';

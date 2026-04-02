@@ -20,7 +20,7 @@ final class AuthActionNotifierProvider
         argument: null,
         retry: null,
         name: r'authActionProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -42,7 +42,7 @@ final class AuthActionNotifierProvider
 }
 
 String _$authActionNotifierHash() =>
-    r'1d8e7675f488711f7935fc22dc394419865f1fb4';
+    r'd53040f9c6a677b410ac53b2ca5018b667b90345';
 
 abstract class _$AuthActionNotifier extends $Notifier<AuthActionState> {
   AuthActionState build();

@@ -21,7 +21,7 @@ final class TasksServiceProvider
         argument: null,
         retry: null,
         name: r'tasksServiceProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -48,4 +48,4 @@ final class TasksServiceProvider
   }
 }
 
-String _$tasksServiceHash() => r'2f74b5fe155edc0437fadbb08c70ec3c0456666e';
+String _$tasksServiceHash() => r'21dbb939b487a696650848fc72c527db068b9380';

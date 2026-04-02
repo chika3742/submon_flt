@@ -18,7 +18,7 @@ abstract interface class TasksService {
   Future<void> deleteTask(String taskId);
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 TasksService? tasksService(Ref ref) {
   final authClient = ref.watch(tasksAuthProvider).value;
   if (authClient == null) return null;

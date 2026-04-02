@@ -26,7 +26,7 @@ final class SubmissionRepositoryProvider
         argument: null,
         retry: null,
         name: r'submissionRepositoryProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -55,7 +55,7 @@ final class SubmissionRepositoryProvider
 }
 
 String _$submissionRepositoryHash() =>
-    r'1b733da907471c0707c7be9fcbf16c92fa55142b';
+    r'e9786fdbe07473ce0ed310bdacc1f283d8ad96f7';
 
 @ProviderFor(undoneSubmissions)
 final undoneSubmissionsProvider = UndoneSubmissionsProvider._();

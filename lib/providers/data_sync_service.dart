@@ -1,3 +1,5 @@
+// ignore_for_file: only_use_keep_alive_inside_keep_alive
+
 import "dart:core";
 
 import "package:cloud_firestore/cloud_firestore.dart";

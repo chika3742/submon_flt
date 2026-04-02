@@ -17,7 +17,7 @@ class Browser {
 
   static void openChangelog() {
     BrowserApi()
-        .openWebPage("更新履歴", "https://github.com/chika3742/Submon2/releases");
+        .openWebPage("更新履歴", "https://github.com/chika3742/submon_flt/releases");
   }
 
   static void openHelp() {
@@ -35,7 +35,7 @@ class Browser {
           "https://play.google.com/store/apps/details?id=net.chikach.submon",
           mode: LaunchMode.externalApplication);
     } else if (Platform.isIOS || Platform.isMacOS) {
-      launchUrlString("https://apps.apple.com/jp/app/youtube/id1625033197",
+      launchUrlString("https://apps.apple.com/jp/app/id1625033197",
           mode: LaunchMode.externalApplication);
     }
   }

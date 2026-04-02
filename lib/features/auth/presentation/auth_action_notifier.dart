@@ -24,7 +24,7 @@ sealed class AuthActionState with _$AuthActionState {
   const factory AuthActionState.failed(Object error) = AuthActionStateFailed;
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 class AuthActionNotifier extends _$AuthActionNotifier
     with NotifierStateGuard {
   @override

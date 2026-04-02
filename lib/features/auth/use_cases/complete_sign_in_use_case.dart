@@ -21,7 +21,7 @@ sealed class CompleteSignInResult with _$CompleteSignInResult {
   }) = _CompleteSignInResult;
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 CompleteSignInUseCase completeSignInUseCase(Ref ref) {
   return CompleteSignInUseCase(
     ref.watch(prefProvider(PrefKey.firestoreLastChanged).notifier),
