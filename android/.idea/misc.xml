@@ -1,0 +1,98 @@
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/audioplayers_android-4.0.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/audioplayers_android-4.0.3/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/cloud_firestore-4.13.3/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/cloud_firestore-4.8.2/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/cloud_firestore-5.4.1/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/cloud_firestore-5.6.9/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/cloud_functions-4.3.3/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/cloud_functions-4.5.6/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/cloud_functions-5.1.1/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/cloud_functions-5.5.2/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/device_info_plus-9.0.3/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/device_info_plus-9.1.1/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/device_info_plus-9.1.2/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_analytics-10.4.3/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_analytics-10.7.2/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_analytics-11.3.1/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_analytics-11.5.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_auth-4.15.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_auth-4.6.3/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_auth-5.2.1/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_auth-5.6.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_core-2.14.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_core-2.24.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_core-3.14.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_core-3.4.1/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_crashlytics-3.3.3/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_crashlytics-3.4.6/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_crashlytics-4.1.1/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_crashlytics-4.3.7/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_dynamic_links-5.3.3/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_dynamic_links-5.4.6/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_dynamic_links-6.0.6/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_dynamic_links-6.1.7/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_performance-0.10.0+6/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_performance-0.10.1+7/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_performance-0.9.2+3/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_performance-0.9.3+6/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_dnd-0.1.4+1/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_exif_rotation-0.5.1/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_mobile_ads-3.0.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_mobile_ads-4.0.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_mobile_ads-5.1.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_mobile_ads-5.2.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_sign_in_android-6.1.18/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_sign_in_android-6.1.20/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_sign_in_android-6.1.31/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/isar_flutter_libs-3.1.0+1/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/package_info_plus-4.1.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/package_info_plus-5.0.1/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/package_info_plus-8.0.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/package_info_plus-8.0.2/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/package_info_plus-8.3.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_android-2.1.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_android-2.2.1/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_android-2.2.10/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_android-2.2.12/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/permission_handler_android-10.3.3/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/share_plus-7.1.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/share_plus-7.2.1/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/share_plus-7.2.2/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/shared_preferences_android-2.2.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/shared_preferences_android-2.2.1/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/shared_preferences_android-2.3.2/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/sign_in_with_apple-5.0.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/sign_in_with_apple-6.1.1/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/sign_in_with_apple-6.1.4/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/sqlite3_flutter_libs-0.5.26/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/url_launcher_android-6.0.37/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/url_launcher_android-6.2.0/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/url_launcher_android-6.3.9/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/webview_flutter_android-3.12.1/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/webview_flutter_android-3.16.7/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/webview_flutter_android-3.16.8/android" />
+    <file type="web" url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/webview_flutter_android-3.9.2/android" />
+    <file type="web" url="file://$USER_HOME$/development/flutter/packages/flutter_tools/gradle" />
+    <file type="web" url="file://$USER_HOME$/development/flutter/packages/integration_test/android" />
+    <file type="web" url="file://$USER_HOME$/fvm/versions/3.16.0/packages/flutter_tools/gradle" />
+    <file type="web" url="file://$USER_HOME$/fvm/versions/3.16.0/packages/integration_test/android" />
+    <file type="web" url="file://$USER_HOME$/fvm/versions/3.22.0/packages/flutter_tools/gradle" />
+    <file type="web" url="file://$USER_HOME$/fvm/versions/3.22.0/packages/integration_test/android" />
+    <file type="web" url="file://$USER_HOME$/fvm/versions/3.24.4/packages/flutter_tools/gradle" />
+    <file type="web" url="file://$USER_HOME$/fvm/versions/3.24.4/packages/integration_test/android" />
+    <file type="web" url="file://$USER_HOME$/fvm/versions/3.27.0/packages/flutter_tools/gradle" />
+    <file type="web" url="file://$USER_HOME$/fvm/versions/3.27.0/packages/integration_test/android" />
+    <file type="web" url="file://$USER_HOME$/fvm/versions/3.32.4/packages/flutter_tools/gradle" />
+    <file type="web" url="file://$USER_HOME$/fvm/versions/3.32.4/packages/integration_test/android" />
+    <file type="web" url="file://$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="corretto-21" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
