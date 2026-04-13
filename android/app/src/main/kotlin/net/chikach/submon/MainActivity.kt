@@ -26,8 +26,6 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        Utils.initAppCheck()
-
         val binaryMessenger = flutterEngine.dartExecutor.binaryMessenger
 
         uriEventApi = UriEventApi(binaryMessenger)

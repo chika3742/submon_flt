@@ -107,17 +107,5 @@ flutter {
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
     implementation 'androidx.appcompat:appcompat:1.7.1'
-    implementation "androidx.activity:activity-ktx:1.12.4"
-    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
-    implementation "androidx.browser:browser:1.9.0"
-    implementation 'androidx.preference:preference-ktx:1.2.1'
-
-    implementation platform('com.google.firebase:firebase-bom:33.16.0')
-    implementation 'com.google.firebase:firebase-auth'
-    implementation 'com.google.firebase:firebase-firestore'
-    implementation 'com.google.firebase:firebase-messaging'
-    implementation 'com.google.firebase:firebase-appcheck-playintegrity'
-    implementation 'com.google.firebase:firebase-appcheck-debug'
 }

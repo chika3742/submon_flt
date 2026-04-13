@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,8 +15,6 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		C74A2FC52F60FCCC009990F5 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C74A2FC42F60FCCC009990F5 /* GoogleService-Info.plist */; };
-		C766556C28614B0E00B244CA /* MyAppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C766556B28614B0E00B244CA /* MyAppCheckProviderFactory.swift */; };
-		C766556D28614B0E00B244CA /* MyAppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C766556B28614B0E00B244CA /* MyAppCheckProviderFactory.swift */; };
 		C78F1B022F7D337D008ED3F4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C78F1B012F7D337D008ED3F4 /* SceneDelegate.swift */; };
 		C79080A7283E22B1001C7835 /* UriEventApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79080A4283E22B1001C7835 /* UriEventApi.swift */; };
 		C797875E2A85308E0025319A /* Pigeons.g.swift in Sources */ = {isa = PBXBuildFile; fileRef = C797875D2A85308E0025319A /* Pigeons.g.swift */; };
@@ -91,7 +89,6 @@
 		C7263CC7285853D000416681 /* RunnerRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerRelease.entitlements; sourceTree = "<group>"; };
 		C73B6CC228AC684B0022A6B3 /* RunnerDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerDebug.entitlements; sourceTree = "<group>"; };
 		C74A2FC42F60FCCC009990F5 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		C766556B28614B0E00B244CA /* MyAppCheckProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAppCheckProviderFactory.swift; sourceTree = "<group>"; };
 		C78F1B012F7D337D008ED3F4 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		C7908096283E221D001C7835 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C79080A4283E22B1001C7835 /* UriEventApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UriEventApi.swift; sourceTree = "<group>"; };
@@ -186,7 +183,6 @@
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
-				C766556B28614B0E00B244CA /* MyAppCheckProviderFactory.swift */,
 				C78F1B012F7D337D008ED3F4 /* SceneDelegate.swift */,
 			);
 			path = Runner;
@@ -375,13 +371,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -418,13 +410,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -516,7 +504,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C79080A7283E22B1001C7835 /* UriEventApi.swift in Sources */,
-				C766556C28614B0E00B244CA /* MyAppCheckProviderFactory.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				C797875E2A85308E0025319A /* Pigeons.g.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
@@ -532,7 +519,6 @@
 				C7AAF560283E71BC00FB3CDE /* WidgetKit.swift in Sources */,
 				C7AAF575283E746D00FB3CDE /* DateExtension.swift in Sources */,
 				C7AAF573283E738E00FB3CDE /* SubmissionListWidget.swift in Sources */,
-				C766556D28614B0E00B244CA /* MyAppCheckProviderFactory.swift in Sources */,
 				C7AAF56F283E71D300FB3CDE /* WidgetKit.intentdefinition in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

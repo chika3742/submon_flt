@@ -4,9 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import android.icu.text.SimpleDateFormat
 import android.icu.util.TimeZone
-import com.google.firebase.appcheck.FirebaseAppCheck
-import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
-import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import java.util.*
 import kotlin.math.abs
 
@@ -38,19 +35,6 @@ object Utils {
             dateDiff < 0 -> Color.parseColor("#F44336")
             dateDiff < 2 * 24 * 60 * 60 * 1000 -> Color.parseColor("#FF9800")
             else -> Color.parseColor("#4CAF50")
-        }
-    }
-
-    fun initAppCheck() {
-        @Suppress("KotlinConstantConditions", "SimplifyBooleanWithConstants")
-        if (BuildConfig.BUILD_TYPE == "release") {
-            FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
-                PlayIntegrityAppCheckProviderFactory.getInstance()
-            )
-        } else {
-            FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
-                DebugAppCheckProviderFactory.getInstance()
-            )
         }
     }
 }
