@@ -13,10 +13,8 @@ Future<void> main(List<String> arguments) async {
     "fvm",
     ["dart", "run", "build_runner", command, "--delete-conflicting-outputs", "--force-aot"],
     workingDirectory: File(Platform.script.toFilePath()).parent.parent.path,
+    mode: ProcessStartMode.inheritStdio,
   );
 
-  unawaited(process.stdout.pipe(stdout));
-  unawaited(process.stderr.pipe(stderr));
-
-  await process.exitCode;
+  exitCode = await process.exitCode;
 }

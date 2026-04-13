@@ -10,10 +10,8 @@ Future<void> main() async {
     "fvm",
     ["dart", "run", "pigeon", "--input", "./pigeon/pigeons.dart"],
     workingDirectory: File(Platform.script.toFilePath()).parent.parent.path,
+    mode: ProcessStartMode.inheritStdio,
   );
 
-  unawaited(process.stdout.pipe(stdout));
-  unawaited(process.stderr.pipe(stderr));
-
-  await process.exitCode;
+  exitCode = await process.exitCode;
 }
