@@ -65,23 +65,10 @@
                     android:scheme="https" />
             </intent-filter>
 
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="signinwithapple" />
-                <data android:path="callback" />
-            </intent-filter>
-
             <meta-data
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
-
-        <activity
-            android:name=".WebPageActivity"
-            android:theme="@style/Theme.AppCompat.DayNight" />
 
         <receiver
             android:name=".SubmissionListAppWidgetProvider"
@@ -98,21 +85,9 @@
             android:name=".ListItemActionBroadcastReceiver"
             android:exported="false" />
 
-        <receiver
-            android:name=".DoneDigestiveBroadcastReceiver"
-            android:exported="false" />
-
         <service
             android:name=".AppWidgetSubmissionListService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
-
-        <service
-            android:name=".MyFirebaseMessagingService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
 
         <provider
             android:name="androidx.core.content.FileProvider"

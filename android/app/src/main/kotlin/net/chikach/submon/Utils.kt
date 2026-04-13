@@ -42,7 +42,7 @@ object Utils {
     }
 
     fun initAppCheck() {
-        @Suppress("KotlinConstantConditions")
+        @Suppress("KotlinConstantConditions", "SimplifyBooleanWithConstants")
         if (BuildConfig.BUILD_TYPE == "release") {
             FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
                 PlayIntegrityAppCheckProviderFactory.getInstance()

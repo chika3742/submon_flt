@@ -28,20 +28,9 @@ import WidgetKit
         AppCheck.setAppCheckProviderFactory(AppCheckDebugProviderFactory())
         #endif
         
-        FirebaseApp.configure()
-        
-        do {
-            try Auth.auth().useUserAccessGroup("B66Z929S96.net.chikach.submon")
-        } catch let error as NSError {
-            print(error)
-        }
-        
         initNotificationCategories()
         
-        // Firebase Cloud Messaging
-        Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
-        application.registerForRemoteNotifications()
 
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }

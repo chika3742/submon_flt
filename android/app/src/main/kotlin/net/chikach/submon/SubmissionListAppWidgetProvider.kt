@@ -1,6 +1,5 @@
 package net.chikach.submon
 
-import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
@@ -20,8 +19,6 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import net.chikach.submon.Utils.getDateDiff
 import net.chikach.submon.Utils.getDateDiffColor
@@ -33,7 +30,6 @@ import java.util.*
 const val SCHEMA_VERSION = 7L
 
 class SubmissionListAppWidgetProvider : AppWidgetProvider() {
-    @SuppressLint("WrongConstant")
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager?,
@@ -107,8 +103,6 @@ class SubmissionListAppWidgetProvider : AppWidgetProvider() {
 }
 
 class AppWidgetSubmissionListService : RemoteViewsService() {
-    val coroutineScope = CoroutineScope(Dispatchers.Default)
-
     override fun onGetViewFactory(intent: Intent?): RemoteViewsFactory {
         return Factory(this)
     }
@@ -216,8 +210,6 @@ class ListItemActionBroadcastReceiver : BroadcastReceiver() {
 
         const val EXTRA_SUBMISSION_ID = "net.chikach.submon.extra.SUBMISSION_ID"
     }
-
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == ACTION_LIST_ITEM_CLICK) {
