@@ -35,7 +35,7 @@
 			<string></string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>$(GOOGLE_CLIENT_ID)</string>
+				<string>$(GOOGLE_REVERSED_CLIENT_ID)</string>
 			</array>
 		</dict>
 		<dict>
