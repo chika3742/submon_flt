@@ -4,7 +4,6 @@ import "package:pigeon/pigeon.dart";
   dartOut: "lib/src/pigeons.g.dart",
   kotlinOut: "android/app/src/main/kotlin/net/chikach/submon/Pigeons.g.kt",
   swiftOut: "ios/Runner/Pigeons.g.swift",
-  copyrightHeader: "pigeons/copyright.txt",
 ))
 
 /// Whether the notification permission has been granted or denied.
