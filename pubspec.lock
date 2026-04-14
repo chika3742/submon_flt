@@ -755,10 +755,10 @@ packages:
     dependency: "direct main"
     description:
       name: google_mobile_ads
-      sha256: f35e040875bb54e8a3455bcffed3b4ac9e9263fbf7751b9fd1ae7f30793faee8
+      sha256: "50549f6c945d7a445d53c04f34d025b1a1723fbd02719de9e67de432e2597f40"
       url: "https://pub.dev"
     source: hosted
-    version: "7.0.0"
+    version: "8.0.0"
   google_sign_in:
     dependency: "direct main"
     description:
@@ -1344,10 +1344,10 @@ packages:
     dependency: "direct main"
     description:
       name: sign_in_with_apple
-      sha256: "8bd875c8e8748272749eb6d25b896f768e7e9d60988446d543fe85a37a2392b8"
+      sha256: "5c1bd4cceddbc885c695177211201ac62c99d0014e234c41245655c024990d50"
       url: "https://pub.dev"
     source: hosted
-    version: "7.0.1"
+    version: "8.0.0-spm.1"
   sign_in_with_apple_platform_interface:
     dependency: transitive
     description:
