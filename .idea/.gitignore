@@ -1,0 +1,6 @@
+shelf
+copilot.data.migration.*.xml
+deviceManager.xml
+workspace.xml
+libraries/**
+!libraries/Dart_SDK.xml

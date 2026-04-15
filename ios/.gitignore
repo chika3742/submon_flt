@@ -37,3 +37,6 @@ Runner/GeneratedPluginRegistrant.*
 
 Runner/InfoPlist.xcconfig
 Runner/InfoPlist-Release.xcconfig
+
+# SwiftPM project-level resolution file (Package.resolved within Runner.xcworkspace is version controlled)
+Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
