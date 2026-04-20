@@ -1,0 +1,8 @@
+name: isar_mapper_annotation
+description: Annotations for generating Isar to domain mappers.
+publish_to: "none"
+version: 0.0.1
+
+environment:
+  sdk: ^3.10.0
+

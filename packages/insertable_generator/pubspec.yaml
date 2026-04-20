@@ -1,0 +1,20 @@
+name: insertable_generator
+description: Generator for plain Dart Insertable classes from freezed models.
+publish_to: "none"
+version: 0.0.1
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  analyzer: ^9.0.0
+  build: ^4.0.0
+  freezed_annotation: ^3.1.0
+  insertable_annotation:
+    path: ../insertable_annotation
+  source_gen: ^4.2.0
+
+dev_dependencies:
+  build_test: ^3.3.2
+  build_runner: ^2.13.0
+  test: ^1.26.2

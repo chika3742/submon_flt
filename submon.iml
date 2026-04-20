@@ -11,6 +11,18 @@
       <excludeFolder url="file://$MODULE_DIR$/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/.fvm" />
       <excludeFolder url="file://$MODULE_DIR$/ios" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/insertable_generator/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/insertable_generator/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/insertable_generator/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/isar_mapper_generator/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/insertable_annotation/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/insertable_annotation/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/insertable_annotation/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/isar_mapper_annotation/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/isar_mapper_annotation/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/isar_mapper_annotation/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/isar_mapper_generator/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/isar_mapper_generator/build" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Dart SDK" level="project" />
