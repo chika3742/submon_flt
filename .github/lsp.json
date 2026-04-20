@@ -1,0 +1,11 @@
+{
+  "lspServers": {
+    "dart": {
+      "command": "fvm",
+      "args": ["dart", "language-server", "--protocol=lsp", "--client-id=copilot-cli"],
+      "fileExtensions": {
+        ".dart": "dart"
+      }
+    }
+  }
+}

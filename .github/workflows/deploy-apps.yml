@@ -28,6 +28,7 @@ jobs:
     with:
       build-name: ${{ needs.build-attr.outputs.build_name }}
       build-number: ${{ needs.build-attr.outputs.build_num }}
+      xcode-version: "26.4"
     secrets:
       provisioning_profile_1_base64: ${{ secrets.PROVISIONING_PROFILE }}
       provisioning_profile_2_base64: ${{ secrets.PROVISIONING_PROFILE_WIDGETKIT }}
@@ -51,6 +52,7 @@ jobs:
       build-name: ${{ needs.build-attr.outputs.build_name }}
       build-number: ${{ needs.build-attr.outputs.build_num }}
       wif-audience: ${{ vars.WI_AUDIENCE }}
+      java-version: "21"
     secrets:
       keystore_base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
       key_properties_base64: ${{ secrets.ANDROID_KEY_PROPERTIES_BASE64 }}
