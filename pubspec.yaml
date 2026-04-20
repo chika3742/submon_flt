@@ -70,6 +70,10 @@ dependencies:
   freezed_annotation: any
   flutter_hooks: ^0.21.3+1
   hooks_riverpod: ^3.3.1
+  insertable_annotation:
+    path: packages/insertable_annotation
+  isar_mapper_annotation:
+    path: packages/isar_mapper_annotation
 
 dev_dependencies:
   flutter_test:
@@ -88,6 +92,10 @@ dev_dependencies:
   isar_community_generator: any
   pigeon: ^26.3.2
   build_runner: ^2.13.1
+  insertable_generator:
+    path: packages/insertable_generator
+  isar_mapper_generator:
+    path: packages/isar_mapper_generator
   riverpod_generator: ^4.0.0+1
   freezed: ^3.2.3
   json_serializable: ^6.11.2
