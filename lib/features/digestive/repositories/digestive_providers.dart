@@ -1,14 +1,12 @@
 import "package:isar_community/isar.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
-import "../features/submission/models/submission.dart";
-import "../infrastructure/core_providers.dart";
-import "../infrastructure/firebase_providers.dart";
-import "../infrastructure/firestore_error_notifier.dart";
-import "../infrastructure/firestore_providers.dart";
-import "../isar_db/isar_digestive.dart";
-import "../pages/home_tabs/tab_digestive_list.dart";
-import "../repositories/digestive_repository.dart";
+import "../../../infrastructure/core_providers.dart";
+import "../../../infrastructure/firebase_providers.dart";
+import "../../../infrastructure/firestore_error_notifier.dart";
+import "../../../infrastructure/firestore_providers.dart";
+import "../models/isar_digestive.dart";
+import "digestive_repository.dart";
 
 part "digestive_providers.g.dart";
 
@@ -56,32 +54,4 @@ Stream<List<Digestive>> digestivesBySubmission(Ref ref, int submissionId) {
       .submissionIdEqualTo(submissionId)
       .sortByStartAt()
       .watch(fireImmediately: true);
-}
-
-/// Digestive リストを Submission 情報と結合して Stream で返す。
-@riverpod
-Stream<List<DigestiveWithSubmission>> undoneDigestivesWithSubmission(
-  Ref ref,
-) {
-  final repo = ref.watch(digestiveRepositoryProvider);
-  final isar = ref.watch(isarProvider).requireValue;
-
-  return repo.collection
-      .filter()
-      .doneEqualTo(false)
-      .sortByStartAt()
-      .watch(fireImmediately: true)
-      .asyncMap((digestives) async {
-    final ids =
-        digestives.map((d) => d.submissionId).whereType<int>().toSet().toList();
-    final submissions = await isar.submissions.getAll(ids);
-    final submissionMap = Map.fromIterables(ids, submissions);
-
-    return digestives
-        .map((d) => DigestiveWithSubmission.fromObject(
-              d,
-              d.submissionId != null ? submissionMap[d.submissionId] : null,
-            ))
-        .toList();
-  });
 }

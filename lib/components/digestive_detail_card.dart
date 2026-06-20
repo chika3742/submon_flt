@@ -2,9 +2,9 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:intl/intl.dart";
 
-import "../isar_db/isar_digestive.dart";
+import "../features/digestive/models/isar_digestive.dart";
+import "../features/digestive/repositories/digestive_providers.dart";
 import "../pages/focus_timer_page.dart";
-import "../providers/digestive_providers.dart";
 import "../utils/ui.dart";
 import "digestive_edit_bottom_sheet.dart";
 

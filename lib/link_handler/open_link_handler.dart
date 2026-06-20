@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:intl/intl.dart";
 
+import "../features/digestive/repositories/digestive_providers.dart";
 import "../features/submission/models/submission.dart";
 import "../features/submission/repositories/submission_providers.dart";
 import "../features/submission/repositories/submission_share_link_repository.dart";
@@ -9,7 +10,6 @@ import "../infrastructure/firebase_providers.dart";
 import "../pages/focus_timer_page.dart";
 import "../pages/submission_create_page.dart";
 import "../pages/submission_detail_page.dart";
-import "../providers/digestive_providers.dart";
 import "../utils/ui.dart";
 
 void handleOpenLink(
