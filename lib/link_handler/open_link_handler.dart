@@ -2,12 +2,12 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:intl/intl.dart";
 
+import "../infrastructure/firebase_providers.dart";
 import "../isar_db/isar_submission.dart";
 import "../pages/focus_timer_page.dart";
 import "../pages/submission_create_page.dart";
 import "../pages/submission_detail_page.dart";
 import "../providers/digestive_providers.dart";
-import "../providers/firebase_providers.dart";
 import "../providers/submission_providers.dart";
 import "../providers/submission_share_link_provider.dart";
 import "../utils/ui.dart";

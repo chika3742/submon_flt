@@ -4,7 +4,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../features/auth/presentation/sign_in_state_notifier.dart";
 import "../features/auth/use_cases/common.dart";
-import "../providers/firebase_providers.dart";
+import "../infrastructure/firebase_providers.dart";
 import "../utils/ui.dart";
 import "email_registration_page.dart";
 

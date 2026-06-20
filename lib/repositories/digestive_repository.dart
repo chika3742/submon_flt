@@ -1,7 +1,7 @@
 import "package:isar_community/isar.dart";
 
+import "../infrastructure/firestore_providers.dart";
 import "../isar_db/isar_digestive.dart";
-import "../providers/firestore_providers.dart";
 import "../utils/types.dart";
 import "synced_repository.dart";
 

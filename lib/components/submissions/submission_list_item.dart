@@ -4,12 +4,12 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:intl/intl.dart";
 
 import "../../features/submission/presentation/create_submission_share_link_state_notifier.dart";
+import "../../infrastructure/firebase_providers.dart";
 import "../../isar_db/isar_digestive.dart";
 import "../../isar_db/isar_submission.dart";
 import "../../pages/submission_detail_page.dart";
 import "../../pages/submission_edit_page.dart";
 import "../../providers/digestive_providers.dart";
-import "../../providers/firebase_providers.dart";
 import "../../utils/analytics.dart";
 import "../../utils/ui.dart";
 import "../../utils/utils.dart";
