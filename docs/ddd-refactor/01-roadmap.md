@@ -37,25 +37,30 @@
 ## Phase 0 — 基盤と規約
 | ID  | タスク                                  | 主な対象                                  | 依存 |
 |-----|---------------------------------------|------------------------------------------|------|
-| T00 | アーキ規約を CLAUDE.md に明文化 + `infrastructure/` 新設、インフラ系 provider を集約 | `providers/{firebase,firestore,core,pref}*`, `CLAUDE.md` | なし |
+| T00 | アーキ規約を CLAUDE.md に明文化 + `infrastructure/` 新設、インフラ系 provider を集約 | `providers/{firebase,firestore,core,pref}*`, `CLAUDE.md` | なし（完了済み） |
+| **TS** | **テスト安全網の整備**（シリアライズ／use_case／migration のテスト + 網羅性のエージェント監査）。**リスクの高い移行タスクの前提** | `test/**`, `pubspec.yaml`(mocktail), `data_sync_service` の変換部分 | T00 |
+
+> **TS はレビュー（[`02-review.md`](./02-review.md)）の最重要指摘への対応。** これ無しでは T01〜T06 / T09 の
+> 「挙動不変」を検証できない。**該当ドメインのテストを TS で用意してから、そのドメインの移行（T01/T03/T05/T09 等）に着手する。**
+> TS でカバーできない UI ロジック（widget 内）の移行は「move only・手動確認」に徹する（[`02-review.md`](./02-review.md) 提案7）。
 
 ## Phase 1 — submission を完成（既存移行のテンプレ確立）
 | ID  | タスク                                                          | 主な対象 | 依存 |
 |-----|---------------------------------------------------------------|---------|------|
-| T01 | submission の repository / エンティティ / クエリ provider / DTO mapper を `features/submission` へ集約 | `repositories/submission_repository.dart`, `isar_db/isar_submission.dart`, `providers/submission_providers.dart`, `providers/submission_share_link_provider.dart` | T00 |
-| T02 | submission の pages/components を `features/submission/presentation` へ移設し、`submission_editor` の保存ロジックを use_case/notifier へ抽出 | `pages/submission_*`, `pages/done_submissions_page.dart`, `components/submissions/*` | T01 |
+| T01 | submission の repository / エンティティ / クエリ provider / DTO mapper を `features/submission` へ集約 | `repositories/submission_repository.dart`, `isar_db/isar_submission.dart`, `providers/submission_providers.dart`, `providers/submission_share_link_provider.dart` | T00, TS |
+| T02 | submission の pages/components を `features/submission/presentation` へ移設し、`submission_editor` の保存ロジックを use_case/notifier へ抽出 | `pages/submission_*`, `pages/done_submissions_page.dart`, `components/submissions/*` | T01, TS |
 
 ## Phase 2 — digestive
 | ID  | タスク                                                                 | 主な対象 | 依存 |
 |-----|----------------------------------------------------------------------|---------|------|
-| T03 | digestive feature 切り出し。**P2 のレイヤー違反解消**（`DigestiveWithSubmission` を models へ、provider→pages 依存除去） | `repositories/digestive_repository.dart`, `isar_db/isar_digestive.dart`, `providers/digestive_providers.dart`, `pages/home_tabs/tab_digestive_list.dart` | T00 |
-| T04 | digestive の UI 移設 + `digestive_edit_bottom_sheet` のロジック抽出   | `components/digestive_*`, `pages/home_tabs/tab_digestive_list.dart` | T03 |
+| T03 | digestive feature 切り出し。**P2 のレイヤー違反解消**（`DigestiveWithSubmission` を models へ、provider→pages 依存除去） | `repositories/digestive_repository.dart`, `isar_db/isar_digestive.dart`, `providers/digestive_providers.dart`, `pages/home_tabs/tab_digestive_list.dart` | T00, TS |
+| T04 | digestive の UI 移設 + `digestive_edit_bottom_sheet` のロジック抽出   | `components/digestive_*`, `pages/home_tabs/tab_digestive_list.dart` | T03, TS |
 
 ## Phase 3 — timetable
 | ID  | タスク                                                                    | 主な対象 | 依存 |
 |-----|-------------------------------------------------------------------------|---------|------|
-| T05 | timetable feature 切り出し（3 repository, クエリ, undo-redo, `TimetableEditUseCase`） | `repositories/timetable*`, `isar_db/isar_timetable*`, `providers/timetable_providers.dart` | T00 |
-| T06 | timetable の UI 移設（編集・表示・設定ページのうち timetable 関連）           | `pages/timetable_*`, `pages/home_tabs/tab_timetable*`, `components/timetable/*`, `pages/settings/timetable.dart` | T05 |
+| T05 | timetable feature 切り出し（3 repository, クエリ, undo-redo, `TimetableEditUseCase`） | `repositories/timetable*`, `isar_db/isar_timetable*`, `providers/timetable_providers.dart` | T00, TS |
+| T06 | timetable の UI 移設（編集・表示・設定ページのうち timetable 関連）           | `pages/timetable_*`, `pages/home_tabs/tab_timetable*`, `components/timetable/*`, `pages/settings/timetable.dart` | T05, TS |
 
 ## Phase 4 — memorize_card（**移行せず完全削除**）
 memorize_card は既にほぼ全てがコメントアウト済みのデッドコード。feature 化せず削除する。
@@ -68,7 +73,7 @@ memorize_card は既にほぼ全てがコメントアウト済みのデッドコ
 ## Phase 5 — 横断・同期・設定
 | ID  | タスク                                                                   | 主な対象 | 依存 |
 |-----|------------------------------------------------------------------------|---------|------|
-| T09 | `sync` feature 切り出し。`DataSyncService` を整理し、スキーマ migration を別クラスへ分離 | `providers/data_sync_service.dart`, `providers/firestore_providers.dart` の同期部分 | T01,T03,T05 |
+| T09 | `sync` feature 切り出し。`DataSyncService` を整理し、スキーマ migration を別クラスへ分離 | `providers/data_sync_service.dart`, `providers/firestore_providers.dart` の同期部分 | T01,T03,T05,TS |
 | T10 | `settings` feature 整理。`user_config`・各 settings ページを集約        | `user_config.dart`, `pages/settings/*`, `pages/settings_page.dart` | T05,T09 |
 | T11 | `EventBus`(`events.dart`) を Riverpod ストリームへ置換し撤去             | `events.dart`, `main.dart`, `pages/home_page.dart` | T07 |
 
@@ -81,7 +86,9 @@ memorize_card は既にほぼ全てがコメントアウト済みのデッドコ
 ---
 
 ## 推奨順序と並列化
-- **T00 は必ず最初**（全タスクの土台）。
+- **T00 は必ず最初**（全タスクの土台。完了済み）。
+- **TS（テスト安全網）は T00 の直後、リスクの高い移行（T01/T03/T05/T09）より前**。
+  最低でも該当ドメインのテストを TS で用意してから、そのドメインの移行に着手する。
 - T01→T02、T03→T04、T05→T06 は **各 feature 内で直列**。
 - T07（memorize_card 削除）は独立。T00 後すぐ単独実施すると後続のスコープが縮む。
 - 異なる feature 同士（例: digestive と timetable）は **並列セッション可**（ただし共通の `infrastructure/` を触る競合に注意。T00 で安定させておく）。
