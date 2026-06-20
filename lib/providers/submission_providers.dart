@@ -1,12 +1,12 @@
 import "package:isar_community/isar.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
+import "../infrastructure/core_providers.dart";
+import "../infrastructure/firebase_providers.dart";
+import "../infrastructure/firestore_error_notifier.dart";
+import "../infrastructure/firestore_providers.dart";
 import "../isar_db/isar_submission.dart";
 import "../repositories/submission_repository.dart";
-import "core_providers.dart";
-import "firebase_providers.dart";
-import "firestore_error_notifier.dart";
-import "firestore_providers.dart";
 
 part "submission_providers.g.dart";
 

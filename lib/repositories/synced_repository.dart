@@ -5,8 +5,8 @@ import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:flutter/material.dart";
 import "package:isar_community/isar.dart";
 
-import "../providers/firestore_error_notifier.dart";
-import "../providers/firestore_providers.dart";
+import "../infrastructure/firestore_error_notifier.dart";
+import "../infrastructure/firestore_providers.dart";
 
 /// Isar ↔ Firestore 同期を自動化する Repository 基底クラス。
 ///

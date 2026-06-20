@@ -3,8 +3,8 @@ import "dart:async";
 import "package:freezed_annotation/freezed_annotation.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
+import "../../../infrastructure/firebase_providers.dart";
 import "../../../isar_db/isar_submission.dart";
-import "../../../providers/firebase_providers.dart";
 import "../../../utils/distinguish.dart";
 import "../../google_tasks/models/tasks_operation_exception.dart";
 import "../use_cases/save_submission_use_case.dart";

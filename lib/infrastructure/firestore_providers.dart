@@ -3,11 +3,11 @@ import "package:flutter/material.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../core/pref_key.dart";
+import "../providers/functions_service.dart";
 import "../user_config.dart";
 import "../utils/batch_operation.dart";
 import "core_providers.dart";
 import "firebase_providers.dart";
-import "functions_service.dart";
 
 part "firestore_providers.g.dart";
 
