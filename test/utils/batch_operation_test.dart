@@ -1,18 +1,18 @@
 import "package:flutter_test/flutter_test.dart";
 import "package:submon/utils/batch_operation.dart";
 
-/// `List.partition` のチャンク分割ロジックのテスト。
-/// Firestore バッチの 500 件上限分割に使われる。
+/// Tests for the `List.partition` chunking logic.
+/// Used to split Firestore batches by the 500-operation limit.
 void main() {
   group("List.partition", () {
-    test("chunkSize ちょうどなら 1 チャンク", () {
+    test("returns a single chunk when length equals chunkSize", () {
       final result = List.generate(3, (i) => i).partition(3);
       expect(result, [
         [0, 1, 2],
       ]);
     });
 
-    test("chunkSize を超えると複数チャンクに分割される", () {
+    test("splits into multiple chunks when length exceeds chunkSize", () {
       final result = List.generate(7, (i) => i).partition(3);
       expect(result, [
         [0, 1, 2],
@@ -21,14 +21,14 @@ void main() {
       ]);
     });
 
-    test("500 件境界: 501 件は 2 チャンク (500 + 1)", () {
+    test("500 boundary: 501 items -> 2 chunks (500 + 1)", () {
       final result = List.generate(501, (i) => i).partition(500);
       expect(result.length, 2);
       expect(result[0].length, 500);
       expect(result[1].length, 1);
     });
 
-    test("空リストは空チャンク 1 個を返す (現状挙動)", () {
+    test("empty list returns a single empty chunk (current behavior)", () {
       expect(<int>[].partition(500), [<int>[]]);
     });
   });

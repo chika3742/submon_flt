@@ -36,7 +36,7 @@ void main() {
     when(() => generalApi.updateWidgets()).thenAnswer((_) async {});
   });
 
-  test("トークン削除→サインアウト→ウィジェット更新の順に実行する", () async {
+  test("runs token removal -> sign out -> widget update in order", () async {
     await useCase.execute();
 
     verifyInOrder([

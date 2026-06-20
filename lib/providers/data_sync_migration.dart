@@ -1,20 +1,20 @@
-/// `DataSyncService._migrate` の **per-document データ変換** を Firestore I/O から
-/// 切り離した純粋関数群。
+/// Pure functions for the **per-document data conversion** part of
+/// `DataSyncService._migrate`, decoupled from Firestore I/O.
 ///
-/// これらは挙動不変のまま `_migrate` から呼び出される。テスト容易性のために
-/// 切り出しただけであり、**変換結果は 1 バイトも変えてはならない**
-/// (Firestore キー名はサーバ互換のため変更不可)。
+/// They are called from `_migrate` without changing behavior; they were
+/// extracted only for testability. **The conversion result must not change by
+/// even a single byte** (Firestore key names must stay server-compatible).
 library;
 
-/// Submission ドキュメントを schemaVersion 4 → 5 形式へ変換する (in-place)。
+/// Converts a Submission document from schemaVersion 4 to 5 format (in-place).
 ///
-/// - `detail` → `details` (リネーム)
-/// - `date` → `due` (リネーム)
+/// - `detail` → `details` (rename)
+/// - `date` → `due` (rename)
 /// - `done == 1` → `bool`
 /// - `important == 1` → `bool`
-/// - 旧キー `detail` / `date` を削除
+/// - removes the old keys `detail` / `date`
 ///
-/// 渡された [data] を破壊的に更新し、同じ参照を返す (旧実装と同じ挙動)。
+/// Mutates and returns the same [data] reference (same as the old impl).
 Map<String, dynamic> migrateSubmissionV4(Map<String, dynamic> data) {
   data["details"] = data["detail"];
   data["due"] = data["date"];
@@ -25,17 +25,17 @@ Map<String, dynamic> migrateSubmissionV4(Map<String, dynamic> data) {
   return data;
 }
 
-/// Digestive の `done` フィールドを schemaVersion 4 → 5 形式
-/// (`done == 1` → `bool`) へ変換する。
+/// Converts a Digestive `done` field from schemaVersion 4 to 5 format
+/// (`done == 1` → `bool`).
 bool migrateDigestiveV4Done(Map<String, dynamic> data) {
   return data["done"] == 1;
 }
 
-/// Timetable ドキュメントの `cells` マップに schemaVersion 4 → 5 変換を適用する
-/// (in-place)。各セルに `tableId = -1` を付与する。
+/// Applies the schemaVersion 4 → 5 conversion to a Timetable document's
+/// `cells` map (in-place), adding `tableId = -1` to every cell.
 ///
-/// `cells` が null の場合は何もしない (旧実装と同じ挙動)。
-/// 渡された [data] を破壊的に更新し、同じ参照を返す。
+/// Does nothing when `cells` is null (same as the old impl).
+/// Mutates and returns the same [data] reference.
 Map<String, dynamic> migrateTimetableCellsV4(Map<String, dynamic> data) {
   if (data["cells"] != null) {
     data["cells"] = (data["cells"] as Map<String, dynamic>)
@@ -44,12 +44,13 @@ Map<String, dynamic> migrateTimetableCellsV4(Map<String, dynamic> data) {
   return data;
 }
 
-/// TimetableClassTime ドキュメントを schemaVersion 4 → 5 形式へ変換する (in-place)。
+/// Converts a TimetableClassTime document from schemaVersion 4 to 5 format
+/// (in-place).
 ///
-/// - `id` → `period` (リネーム)
-/// - 旧キー `id` を削除
+/// - `id` → `period` (rename)
+/// - removes the old key `id`
 ///
-/// 渡された [data] を破壊的に更新し、同じ参照を返す。
+/// Mutates and returns the same [data] reference.
 Map<String, dynamic> migrateTimetableClassTimeV4(Map<String, dynamic> data) {
   data["period"] = data["id"];
   data.remove("id");

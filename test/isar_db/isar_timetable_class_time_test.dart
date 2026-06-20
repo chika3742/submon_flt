@@ -2,12 +2,12 @@ import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:submon/isar_db/isar_timetable_class_time.dart";
 
-/// `TimetableClassTime` のシリアライズ・ゴールデンテスト。
-/// start/end は "H:m" 文字列で保存される。計算プロパティ startTime/endTime
-/// (@ignore) はシリアライズ対象外。
+/// Golden serialization tests for `TimetableClassTime`.
+/// start/end are stored as "H:m" strings. The computed properties
+/// startTime/endTime (@ignore) are not serialized.
 void main() {
   group("TimetableClassTime.toMap", () {
-    test("固定キー名と値を返す (Firestore 互換)", () {
+    test("returns fixed key names and values (Firestore compatible)", () {
       final classTime = TimetableClassTime.from(
         period: 1,
         start: const TimeOfDay(hour: 8, minute: 30),
@@ -20,7 +20,7 @@ void main() {
       expect(map, containsPair("end", "9:20"));
     });
 
-    test("キー集合は period/start/end のみ (計算プロパティは含まない)", () {
+    test("key set is only period/start/end (no computed properties)", () {
       final classTime = TimetableClassTime.from(
         period: 1,
         start: const TimeOfDay(hour: 8, minute: 30),
@@ -34,7 +34,7 @@ void main() {
   });
 
   group("TimetableClassTime round-trip", () {
-    test("period/start/end が保存される", () {
+    test("preserves period/start/end", () {
       final original = TimetableClassTime.from(
         period: 2,
         start: const TimeOfDay(hour: 10, minute: 5),
@@ -47,7 +47,7 @@ void main() {
       expect(restored.end, original.end);
     });
 
-    test("startTime/endTime が TimeOfDay として復元される", () {
+    test("startTime/endTime are restored as TimeOfDay", () {
       final restored = TimetableClassTime.fromMap({
         "period": 3,
         "start": "13:15",

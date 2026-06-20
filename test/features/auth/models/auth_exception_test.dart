@@ -1,8 +1,9 @@
 import "package:flutter_test/flutter_test.dart";
 import "package:submon/features/auth/models/auth_exception.dart";
 
-/// `AuthErrorCode.fromFirebaseAuthErrorCode` は Firebase のエラーコードを
-/// アプリ内エラーコードへ写像する実体。移行で写像が壊れないよう固定する。
+/// `AuthErrorCode.fromFirebaseAuthErrorCode` is the actual mapping from Firebase
+/// error codes to in-app error codes. Pin it so the mapping does not break
+/// during the migration.
 void main() {
   group("AuthErrorCode.fromFirebaseAuthErrorCode", () {
     final cases = {
@@ -25,26 +26,26 @@ void main() {
     };
 
     cases.forEach((code, expected) {
-      test("$code → $expected", () {
+      test("$code -> $expected", () {
         expect(AuthErrorCode.fromFirebaseAuthErrorCode(code), expected);
       });
     });
 
-    test("firebase_auth/ プレフィックスを除去して写像する", () {
+    test("strips the firebase_auth/ prefix before mapping", () {
       expect(
         AuthErrorCode.fromFirebaseAuthErrorCode("firebase_auth/wrong-password"),
         AuthErrorCode.wrongPassword,
       );
     });
 
-    test("auth/ プレフィックスを除去して写像する", () {
+    test("strips the auth/ prefix before mapping", () {
       expect(
         AuthErrorCode.fromFirebaseAuthErrorCode("auth/invalid-email"),
         AuthErrorCode.invalidEmail,
       );
     });
 
-    test("未知のコードは unknown にフォールバックする", () {
+    test("falls back to unknown for an unrecognized code", () {
       expect(
         AuthErrorCode.fromFirebaseAuthErrorCode("something-unexpected"),
         AuthErrorCode.unknown,

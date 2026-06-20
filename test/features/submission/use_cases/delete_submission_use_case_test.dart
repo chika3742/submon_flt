@@ -50,8 +50,8 @@ void main() {
     )..googleTasksTaskId = googleTasksTaskId;
   }
 
-  group("削除の本処理", () {
-    test("対象が存在しない → ArgumentError", () async {
+  group("main deletion logic", () {
+    test("throws ArgumentError when the target does not exist", () async {
       when(() => repo.get(any())).thenAnswer((_) async => null);
       final useCase =
           DeleteSubmissionUseCase(repo, digestiveRepo, tasksService, "uid");
@@ -59,7 +59,7 @@ void main() {
       expect(() => useCase.execute(99), throwsArgumentError);
     });
 
-    test("digestive を削除し、submission を削除する", () async {
+    test("deletes digestives and the submission", () async {
       final submission = buildSubmission();
       final deletedDigestives = [
         Digestive.from(startAt: DateTime(2024, 1, 1), minute: 10, content: "x"),
@@ -76,7 +76,8 @@ void main() {
       verify(() => repo.remove(5)).called(1);
     });
 
-    test("googleTasksTaskId 有り + _tasksRepo 有り → deleteTask が呼ばれる", () async {
+    test("googleTasksTaskId present + _tasksRepo present -> deleteTask is called",
+        () async {
       final submission = buildSubmission(googleTasksTaskId: "gt-1");
       when(() => repo.get(5)).thenAnswer((_) async => submission);
       final useCase =
@@ -87,7 +88,7 @@ void main() {
       verify(() => tasksService.deleteTask("gt-1")).called(1);
     });
 
-    test("googleTasksTaskId 無し → deleteTask は呼ばれない", () async {
+    test("googleTasksTaskId absent -> deleteTask is not called", () async {
       when(() => repo.get(5))
           .thenAnswer((_) async => buildSubmission(googleTasksTaskId: null));
       final useCase =
@@ -98,7 +99,8 @@ void main() {
       verifyNever(() => tasksService.deleteTask(any()));
     });
 
-    test("googleTasksTaskId 有り + _tasksRepo == null → 例外を投げない", () async {
+    test("googleTasksTaskId present + _tasksRepo == null -> does not throw",
+        () async {
       when(() => repo.get(5))
           .thenAnswer((_) async => buildSubmission(googleTasksTaskId: "gt-1"));
       final useCase =
@@ -108,8 +110,8 @@ void main() {
     });
   });
 
-  group("Restorable (元に戻す)", () {
-    test("実行すると submission と digestive を再作成する", () async {
+  group("Restorable (undo)", () {
+    test("running it re-creates the submission and digestives", () async {
       final submission = buildSubmission(googleTasksTaskId: null);
       final deletedDigestives = [
         Digestive.from(startAt: DateTime(2024, 1, 1), minute: 10, content: "x"),
@@ -125,11 +127,12 @@ void main() {
 
       verify(() => repo.create(submission)).called(1);
       verify(() => digestiveRepo.createAll(deletedDigestives)).called(1);
-      // taskId が無いので Tasks 再作成はしない
+      // No taskId, so the Task is not re-created
       verifyNever(() => tasksService.addTask(any()));
     });
 
-    test("googleTasksTaskId 有りなら Tasks を再作成して新 ID で update する", () async {
+    test("re-creates the Task and updates with the new id when taskId present",
+        () async {
       final submission = buildSubmission(googleTasksTaskId: "gt-1");
       when(() => repo.get(5)).thenAnswer((_) async => submission);
       final useCase =
@@ -139,7 +142,7 @@ void main() {
       await restore();
 
       verify(() => tasksService.addTask(any())).called(1);
-      // 再作成された taskId が submission に反映され update される
+      // The re-created taskId is reflected on the submission and updated
       expect(submission.googleTasksTaskId, "restored-id");
       verify(() => repo.update(submission)).called(1);
     });

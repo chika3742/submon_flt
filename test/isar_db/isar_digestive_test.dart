@@ -1,8 +1,8 @@
 import "package:flutter_test/flutter_test.dart";
 import "package:submon/isar_db/isar_digestive.dart";
 
-/// `Digestive` のシリアライズ・ゴールデンテスト。
-/// Firestore キー名はサーバ互換のため変更不可。
+/// Golden serialization tests for `Digestive`.
+/// Firestore key names must not change (server compatibility).
 void main() {
   Digestive buildDigestive() {
     return Digestive.from(
@@ -11,30 +11,30 @@ void main() {
       done: true,
       startAt: DateTime(2024, 5, 6, 7, 8, 9),
       minute: 30,
-      content: "数学の復習",
+      content: "Math review",
     );
   }
 
   group("Digestive.toMap", () {
-    test("固定キー名と値を返す (Firestore 互換)", () {
+    test("returns fixed key names and values (Firestore compatible)", () {
       final map = buildDigestive().toMap();
 
       expect(map, containsPair("id", 7));
       expect(map, containsPair("submissionId", 42));
       expect(map, containsPair("done", true));
       expect(map, containsPair("minute", 30));
-      expect(map, containsPair("content", "数学の復習"));
+      expect(map, containsPair("content", "Math review"));
       expect(map["startAt"], isA<String>());
     });
 
-    test("キー集合が固定されている", () {
+    test("has a fixed key set", () {
       expect(
         buildDigestive().toMap().keys.toSet(),
         {"id", "submissionId", "done", "startAt", "minute", "content"},
       );
     });
 
-    test("startAt は UTC ISO8601 文字列化される", () {
+    test("serializes startAt as a UTC ISO8601 string", () {
       final startAt = DateTime(2024, 5, 6, 7, 8, 9);
       final digestive = Digestive.from(
         startAt: startAt,
@@ -48,7 +48,7 @@ void main() {
   });
 
   group("Digestive round-trip", () {
-    test("全フィールドが保存される", () {
+    test("preserves all fields", () {
       final original = buildDigestive();
       final restored = Digestive.fromMap(original.toMap());
 
@@ -60,7 +60,7 @@ void main() {
       expect(restored.content, original.content);
     });
 
-    test("startAt の UTC↔ローカル往復で同一時刻になる", () {
+    test("startAt is the same instant after the UTC<->local round-trip", () {
       final startAt = DateTime(2024, 12, 31, 12, 0);
       final digestive = Digestive.from(
         startAt: startAt,
@@ -73,7 +73,7 @@ void main() {
       expect(restored.startAt.isUtc, isFalse);
     });
 
-    test("submissionId が null のまま round-trip する", () {
+    test("keeps submissionId null across a round-trip", () {
       final digestive = Digestive.from(
         submissionId: null,
         startAt: DateTime(2024, 1, 1),

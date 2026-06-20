@@ -4,7 +4,7 @@ import "package:submon/utils/utils.dart";
 
 void main() {
   group("getTimetableCellId", () {
-    test("period * 6 + weekday を返す", () {
+    test("returns period * 6 + weekday", () {
       expect(getTimetableCellId(0, 0), 0);
       expect(getTimetableCellId(0, 5), 5);
       expect(getTimetableCellId(1, 0), 6);
@@ -13,7 +13,7 @@ void main() {
   });
 
   group("TimeOfDay.toMinutes", () {
-    test("hour * 60 + minute を返す", () {
+    test("returns hour * 60 + minute", () {
       expect(const TimeOfDay(hour: 0, minute: 0).toMinutes(), 0);
       expect(const TimeOfDay(hour: 1, minute: 30).toMinutes(), 90);
       expect(const TimeOfDay(hour: 23, minute: 59).toMinutes(), 1439);
@@ -24,46 +24,46 @@ void main() {
     const start = TimeOfDay(hour: 9, minute: 0);
     const end = TimeOfDay(hour: 10, minute: 0);
 
-    test("start 以上 end 未満なら true", () {
+    test("true when at or after start and before end", () {
       expect(const TimeOfDay(hour: 9, minute: 0).isInsideRange(start, end),
           isTrue);
       expect(const TimeOfDay(hour: 9, minute: 30).isInsideRange(start, end),
           isTrue);
     });
 
-    test("end ちょうどは範囲外 (排他的)", () {
+    test("end is exclusive (out of range)", () {
       expect(const TimeOfDay(hour: 10, minute: 0).isInsideRange(start, end),
           isFalse);
     });
 
-    test("start 未満は範囲外", () {
+    test("before start is out of range", () {
       expect(const TimeOfDay(hour: 8, minute: 59).isInsideRange(start, end),
           isFalse);
     });
   });
 
   group("range", () {
-    test("start から end まで (inclusive) を生成", () {
+    test("generates start to end (inclusive)", () {
       expect(range(1, 5).toList(), [1, 2, 3, 4, 5]);
     });
 
-    test("step 指定で間引く", () {
+    test("steps with the given step value", () {
       expect(range(0, 10, 2).toList(), [0, 2, 4, 6, 8, 10]);
     });
 
-    test("start == end なら 1 要素", () {
+    test("single element when start == end", () {
       expect(range(3, 3).toList(), [3]);
     });
 
-    test("start > end なら空", () {
+    test("empty when start > end", () {
       expect(range(5, 1).toList(), isEmpty);
     });
 
-    test("step == 0 は ArgumentError", () {
+    test("step == 0 throws ArgumentError", () {
       expect(() => range(0, 10, 0).toList(), throwsArgumentError);
     });
 
-    test("step < 0 は ArgumentError", () {
+    test("step < 0 throws ArgumentError", () {
       expect(() => range(0, 10, -1).toList(), throwsArgumentError);
     });
   });

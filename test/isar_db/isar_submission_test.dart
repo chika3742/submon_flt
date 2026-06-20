@@ -1,16 +1,16 @@
 import "package:flutter_test/flutter_test.dart";
 import "package:submon/isar_db/isar_submission.dart";
 
-/// `Submission` のシリアライズ・ゴールデンテスト。
+/// Golden serialization tests for `Submission`.
 ///
-/// Firestore キー名は **サーバ互換のため変更不可**。キー名のタイポ/変更を
-/// 検出できるよう、`containsPair` でキー名を直書きして固定する。
+/// Firestore key names **must not change** (server compatibility). To detect
+/// typos or renames of keys, assert key names literally with `containsPair`.
 void main() {
   Submission buildSubmission() {
     return Submission.from(
       id: 42,
-      title: "レポート",
-      details: "第3章まで",
+      title: "Report",
+      details: "Up to chapter 3",
       due: DateTime(2024, 1, 2, 3, 4, 5),
       color: 0xFF112233,
     )
@@ -23,12 +23,12 @@ void main() {
   }
 
   group("Submission.toMap", () {
-    test("固定キー名と値を返す (Firestore 互換)", () {
+    test("returns fixed key names and values (Firestore compatible)", () {
       final map = buildSubmission().toMap();
 
       expect(map, containsPair("id", 42));
-      expect(map, containsPair("title", "レポート"));
-      expect(map, containsPair("details", "第3章まで"));
+      expect(map, containsPair("title", "Report"));
+      expect(map, containsPair("details", "Up to chapter 3"));
       expect(map, containsPair("done", true));
       expect(map, containsPair("important", true));
       expect(map, containsPair("repeat", Repeat.weekly.index));
@@ -36,11 +36,11 @@ void main() {
       expect(map, containsPair("googleTasksTaskId", "task-1"));
       expect(map, containsPair("canvasPlannableId", 99));
       expect(map, containsPair("repeatSubmissionCreated", true));
-      // due は UTC ISO8601 文字列
+      // due is a UTC ISO8601 string
       expect(map["due"], isA<String>());
     });
 
-    test("キー集合が固定されている (キー追加/削除を検出)", () {
+    test("has a fixed key set (detects added/removed keys)", () {
       expect(
         buildSubmission().toMap().keys.toSet(),
         {
@@ -59,7 +59,7 @@ void main() {
       );
     });
 
-    test("due は toUtc().toIso8601String() で UTC 文字列化される", () {
+    test("serializes due as a UTC string via toUtc().toIso8601String()", () {
       final due = DateTime(2024, 1, 2, 3, 4, 5);
       final submission = Submission.from(
         id: 1,
@@ -70,13 +70,13 @@ void main() {
       );
 
       expect(submission.toMap()["due"], due.toUtc().toIso8601String());
-      // UTC 表記であることを確認 (末尾 Z)
+      // Confirm it is UTC notation (trailing Z)
       expect((submission.toMap()["due"] as String).endsWith("Z"), isTrue);
     });
   });
 
   group("Submission round-trip (fromMap(toMap()))", () {
-    test("全フィールドが保存される", () {
+    test("preserves all fields", () {
       final original = buildSubmission();
       final restored = Submission.fromMap(original.toMap());
 
@@ -93,7 +93,7 @@ void main() {
       expect(restored.repeatSubmissionCreated, original.repeatSubmissionCreated);
     });
 
-    test("nullable フィールドが null のまま round-trip する", () {
+    test("keeps nullable fields null across a round-trip", () {
       final submission = Submission.from(
         id: null,
         title: "t",
@@ -109,7 +109,7 @@ void main() {
       expect(restored.repeatSubmissionCreated, isNull);
     });
 
-    test("due の UTC↔ローカル往復で同一時刻になる", () {
+    test("due is the same instant after the UTC<->local round-trip", () {
       final due = DateTime(2024, 7, 15, 23, 59);
       final submission = Submission.from(
         id: 1,
@@ -121,11 +121,11 @@ void main() {
 
       final restored = Submission.fromMap(submission.toMap());
       expect(restored.due, due);
-      expect(restored.due.isUtc, isFalse); // toLocal されている
+      expect(restored.due.isUtc, isFalse); // converted back via toLocal
     });
   });
 
-  group("Submission.fromMap の done 後方互換", () {
+  group("Submission.fromMap done backward compatibility", () {
     Map<String, dynamic> baseMap(Object done) => {
           "id": 1,
           "title": "t",
@@ -140,26 +140,26 @@ void main() {
           "repeatSubmissionCreated": null,
         };
 
-    test("done が bool(true) → true", () {
+    test("done as bool(true) -> true", () {
       expect(Submission.fromMap(baseMap(true)).done, isTrue);
     });
 
-    test("done が bool(false) → false", () {
+    test("done as bool(false) -> false", () {
       expect(Submission.fromMap(baseMap(false)).done, isFalse);
     });
 
-    test("done が int(1) → true (旧スキーマ互換)", () {
+    test("done as int(1) -> true (legacy schema compatibility)", () {
       expect(Submission.fromMap(baseMap(1)).done, isTrue);
     });
 
-    test("done が int(0) → false (旧スキーマ互換)", () {
+    test("done as int(0) -> false (legacy schema compatibility)", () {
       expect(Submission.fromMap(baseMap(0)).done, isFalse);
     });
   });
 
-  group("Submission.repeat の enum 往復", () {
+  group("Submission.repeat enum round-trip", () {
     for (final repeat in Repeat.values) {
-      test("$repeat が index 経由で往復する", () {
+      test("$repeat round-trips via its index", () {
         final submission = Submission.from(
           id: 1,
           title: "t",

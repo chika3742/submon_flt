@@ -22,7 +22,7 @@ void main() {
     when(() => repo.linkWithCredential(any())).thenAnswer((_) async {});
   });
 
-  test("成功時は linkWithCredential を呼び、success を返す", () async {
+  test("on success calls linkWithCredential and returns success", () async {
     when(() => repo.fetchGoogleCredential()).thenAnswer(
       (_) async => FetchCredentialResult.success(credential: _FakeOAuthCredential()),
     );
@@ -33,7 +33,8 @@ void main() {
     verify(() => repo.linkWithCredential(any())).called(1);
   });
 
-  test("キャンセル時は canceled を返し、linkWithCredential を呼ばない", () async {
+  test("on cancel returns canceled and does not call linkWithCredential",
+      () async {
     when(() => repo.fetchAppleCredential())
         .thenAnswer((_) async => FetchCredentialResult.canceled());
 
@@ -43,7 +44,7 @@ void main() {
     verifyNever(() => repo.linkWithCredential(any()));
   });
 
-  test("apple provider は fetchAppleCredential を使う", () async {
+  test("apple provider uses fetchAppleCredential", () async {
     when(() => repo.fetchAppleCredential()).thenAnswer(
       (_) async => FetchCredentialResult.success(credential: _FakeOAuthCredential()),
     );

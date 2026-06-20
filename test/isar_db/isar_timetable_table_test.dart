@@ -1,17 +1,17 @@
 import "package:flutter_test/flutter_test.dart";
 import "package:submon/isar_db/isar_timetable_table.dart";
 
-/// `TimetableTable` のシリアライズ・ゴールデンテスト。
+/// Golden serialization tests for `TimetableTable`.
 void main() {
   group("TimetableTable.toMap", () {
-    test("固定キー名と値を返す (Firestore 互換)", () {
-      final map = TimetableTable.from(id: 5, title: "1年生").toMap();
+    test("returns fixed key names and values (Firestore compatible)", () {
+      final map = TimetableTable.from(id: 5, title: "Year 1").toMap();
 
       expect(map, containsPair("id", 5));
-      expect(map, containsPair("title", "1年生"));
+      expect(map, containsPair("title", "Year 1"));
     });
 
-    test("キー集合が固定されている", () {
+    test("has a fixed key set", () {
       expect(
         TimetableTable.from(id: 5, title: "x").toMap().keys.toSet(),
         {"id", "title"},
@@ -19,8 +19,8 @@ void main() {
     });
   });
 
-  test("round-trip で全フィールドが保存される", () {
-    final original = TimetableTable.from(id: 9, title: "後期");
+  test("round-trip preserves all fields", () {
+    final original = TimetableTable.from(id: 9, title: "Second term");
     final restored = TimetableTable.fromMap(original.toMap());
 
     expect(restored.id, original.id);

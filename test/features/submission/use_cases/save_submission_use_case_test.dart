@@ -39,8 +39,8 @@ void main() {
     )..googleTasksTaskId = googleTasksTaskId;
   }
 
-  group("永続化の分岐", () {
-    test("id == null → create が呼ばれ update は呼ばれない", () async {
+  group("persistence branch", () {
+    test("id == null -> create is called, update is not", () async {
       final useCase = SaveSubmissionUseCase(repo, tasksService, "uid");
       final submission = buildSubmission(id: null);
 
@@ -50,7 +50,7 @@ void main() {
       verifyNever(() => repo.update(any()));
     });
 
-    test("id != null → update が呼ばれ create は呼ばれない", () async {
+    test("id != null -> update is called, create is not", () async {
       final useCase = SaveSubmissionUseCase(repo, tasksService, "uid");
       final submission = buildSubmission(id: 5);
 
@@ -61,8 +61,8 @@ void main() {
     });
   });
 
-  group("Google Tasks 同期の分岐", () {
-    test("writeGoogleTasks == false → Tasks API を呼ばない", () async {
+  group("Google Tasks sync branch", () {
+    test("writeGoogleTasks == false -> Tasks API is not called", () async {
       final useCase = SaveSubmissionUseCase(repo, tasksService, "uid");
 
       await useCase.execute(buildSubmission(id: 5), writeGoogleTasks: false);
@@ -72,8 +72,8 @@ void main() {
     });
 
     test(
-        "writeGoogleTasks == true かつ googleTasksTaskId == null → "
-        "addTask の戻り値を update で保存", () async {
+        "writeGoogleTasks == true and googleTasksTaskId == null -> "
+        "saves addTask's return value via update", () async {
       final useCase = SaveSubmissionUseCase(repo, tasksService, "uid");
       final submission = buildSubmission(id: 5, googleTasksTaskId: null);
 
@@ -82,19 +82,19 @@ void main() {
       final captured =
           verify(() => tasksService.addTask(captureAny())).captured.single
               as Task;
-      // createTaskFromSubmission が submission を正しく Task へ写像している
+      // createTaskFromSubmission maps the submission to a Task correctly
       expect(captured.title, "t (Submon)");
       expect(captured.due, submission.due.toUtc().toIso8601String());
       verifyNever(() => tasksService.updateTask(any()));
-      // 戻り値の taskId が submission に保存される
+      // The returned taskId is saved on the submission
       expect(submission.googleTasksTaskId, "new-task-id");
-      // 更新は「初回の永続化」+「taskId 保存」で 2 回呼ばれる
+      // update is called twice: initial persistence + saving the taskId
       verify(() => repo.update(submission)).called(2);
     });
 
     test(
-        "writeGoogleTasks == true かつ googleTasksTaskId != null → "
-        "updateTask が呼ばれ addTask は呼ばれない", () async {
+        "writeGoogleTasks == true and googleTasksTaskId != null -> "
+        "updateTask is called, addTask is not", () async {
       final useCase = SaveSubmissionUseCase(repo, tasksService, "uid");
       final submission = buildSubmission(id: 5, googleTasksTaskId: "existing");
 
@@ -103,13 +103,14 @@ void main() {
       final captured =
           verify(() => tasksService.updateTask(captureAny())).captured.single
               as Task;
-      // 既存タスク更新時は Task.id に既存 ID が入る
+      // When updating an existing task, Task.id holds the existing id
       expect(captured.id, "existing");
       expect(captured.title, "t (Submon)");
       verifyNever(() => tasksService.addTask(any()));
     });
 
-    test("_tasksRepo == null でも例外を投げない (連携無効)", () async {
+    test("does not throw when _tasksRepo == null (integration disabled)",
+        () async {
       final useCase = SaveSubmissionUseCase(repo, null, "uid");
       final submission = buildSubmission(id: 5, googleTasksTaskId: null);
 
@@ -117,7 +118,7 @@ void main() {
         useCase.execute(submission, writeGoogleTasks: true),
         completes,
       );
-      // addTask が null を返すため googleTasksTaskId は null になる
+      // addTask returns null, so googleTasksTaskId becomes null
       expect(submission.googleTasksTaskId, isNull);
     });
   });

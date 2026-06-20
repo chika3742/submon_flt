@@ -3,10 +3,11 @@ import "package:flutter_test/flutter_test.dart";
 import "package:submon/isar_db/isar_timetable.dart";
 import "package:submon/providers/timetable_providers.dart";
 
-/// `UndoRedo` Notifier のスタック遷移ロジックのテスト。
-/// `TimetableEditUseCase` 側では `UndoRedoHandler` をモックするため、
-/// スタックの不変条件 (push で redo クリア、pop で current を反対側へ積む) は
-/// ここで直接検証する。
+/// Tests for the stack-transition logic of the `UndoRedo` Notifier.
+///
+/// `TimetableEditUseCase` mocks `UndoRedoHandler`, so the stack invariants
+/// (push clears redo, pop pushes current onto the opposite stack) are verified
+/// directly here.
 void main() {
   late ProviderContainer container;
 
@@ -27,13 +28,13 @@ void main() {
 
   TimetableSnapshot snapshot(int cellId) => {cellId: cell(cellId)};
 
-  test("初期状態は両スタック空で popUndo/popRedo は null", () {
+  test("initial state: both stacks empty, popUndo/popRedo return null", () {
     final h = handler();
     expect(h.popUndo(snapshot(0)), isNull);
     expect(h.popRedo(snapshot(0)), isNull);
   });
 
-  test("pushSnapshot → popUndo で同じ snapshot が返り、current が redo へ積まれる", () {
+  test("pushSnapshot then popUndo returns it and pushes current onto redo", () {
     final h = handler();
     final s1 = snapshot(1);
     final current = snapshot(2);
@@ -42,21 +43,21 @@ void main() {
     final popped = h.popUndo(current);
 
     expect(popped, s1);
-    // current が redo スタックに積まれ、popRedo で取り出せる
+    // current was pushed onto the redo stack and can be popped back
     expect(h.popRedo(snapshot(3)), current);
   });
 
-  test("pushSnapshot は redo スタックをクリアする", () {
+  test("pushSnapshot clears the redo stack", () {
     final h = handler();
     h.pushSnapshot(snapshot(1));
-    h.popUndo(snapshot(2)); // redo スタックに積まれる
+    h.popUndo(snapshot(2)); // pushed onto the redo stack
 
-    // 新しい操作 (pushSnapshot) で redo はクリアされる
+    // A new operation (pushSnapshot) clears redo
     h.pushSnapshot(snapshot(3));
     expect(h.popRedo(snapshot(4)), isNull);
   });
 
-  test("clear で両スタックが空になる", () {
+  test("clear empties both stacks", () {
     final h = handler();
     h.pushSnapshot(snapshot(1));
     h.clear();

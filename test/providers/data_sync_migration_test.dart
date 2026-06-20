@@ -2,31 +2,32 @@ import "package:flutter_test/flutter_test.dart";
 import "package:submon/providers/data_sync_migration.dart";
 import "package:submon/providers/data_sync_service.dart";
 
-/// schemaVersion 4 → 5 のデータ移行 (純粋関数) のゴールデンテスト。
+/// Golden tests for the schemaVersion 4 -> 5 data migration (pure functions).
 ///
-/// これはユーザーデータ移行コードで最も壊すと痛い箇所。旧 v4 形式の入力を渡し、
-/// 期待される v5 形式へ **フィールド単位** で変換されることを固定する。
+/// This is the most damaging place to break in the user-data migration code.
+/// Feed legacy v4 inputs and pin the conversion to the expected v5 format
+/// **field by field**.
 void main() {
   group("migrateSubmissionV4", () {
-    test("detail→details / date→due のリネームと旧キー削除", () {
+    test("renames detail->details / date->due and removes old keys", () {
       final result = migrateSubmissionV4({
-        "detail": "第3章まで",
+        "detail": "Up to chapter 3",
         "date": "2024-01-02T03:04:05.000Z",
         "done": 0,
         "important": 0,
-        "title": "レポート",
+        "title": "Report",
       });
 
-      expect(result["details"], "第3章まで");
+      expect(result["details"], "Up to chapter 3");
       expect(result["due"], "2024-01-02T03:04:05.000Z");
-      // 旧キーは削除される
+      // Old keys are removed
       expect(result.containsKey("detail"), isFalse);
       expect(result.containsKey("date"), isFalse);
-      // 変換対象外のキーは保持される
-      expect(result["title"], "レポート");
+      // Unrelated keys are preserved
+      expect(result["title"], "Report");
     });
 
-    test("done==1 / important==1 → true", () {
+    test("done==1 / important==1 -> true", () {
       final result = migrateSubmissionV4({
         "detail": "",
         "date": "",
@@ -38,7 +39,7 @@ void main() {
       expect(result["important"], isTrue);
     });
 
-    test("done==0 / important==0 → false", () {
+    test("done==0 / important==0 -> false", () {
       final result = migrateSubmissionV4({
         "detail": "",
         "date": "",
@@ -50,7 +51,7 @@ void main() {
       expect(result["important"], isFalse);
     });
 
-    test("done/important が欠落 (null) → false", () {
+    test("missing done/important (null) -> false", () {
       final result = migrateSubmissionV4({
         "detail": "",
         "date": "",
@@ -62,37 +63,37 @@ void main() {
   });
 
   group("migrateDigestiveV4Done", () {
-    test("done==1 → true", () {
+    test("done==1 -> true", () {
       expect(migrateDigestiveV4Done({"done": 1}), isTrue);
     });
 
-    test("done==0 → false", () {
+    test("done==0 -> false", () {
       expect(migrateDigestiveV4Done({"done": 0}), isFalse);
     });
 
-    test("done 欠落 (null) → false", () {
+    test("missing done (null) -> false", () {
       expect(migrateDigestiveV4Done({}), isFalse);
     });
   });
 
   group("migrateTimetableCellsV4", () {
-    test("各セルに tableId = -1 を付与する", () {
+    test("adds tableId = -1 to every cell", () {
       final result = migrateTimetableCellsV4({
         "cells": {
-          "0": {"cellId": 0, "subject": "国語"},
-          "1": {"cellId": 1, "subject": "数学"},
+          "0": {"cellId": 0, "subject": "Japanese"},
+          "1": {"cellId": 1, "subject": "Math"},
         },
       });
 
       final cells = result["cells"] as Map<String, dynamic>;
       expect(cells["0"]["tableId"], -1);
       expect(cells["1"]["tableId"], -1);
-      // 既存フィールドは保持される
-      expect(cells["0"]["subject"], "国語");
+      // Existing fields are preserved
+      expect(cells["0"]["subject"], "Japanese");
       expect(cells["1"]["cellId"], 1);
     });
 
-    test("cells が null の場合は何もしない", () {
+    test("does nothing when cells is null", () {
       final result = migrateTimetableCellsV4({"title": "main"});
 
       expect(result["cells"], isNull);
@@ -101,7 +102,7 @@ void main() {
   });
 
   group("migrateTimetableClassTimeV4", () {
-    test("id→period のリネームと旧キー削除", () {
+    test("renames id->period and removes the old key", () {
       final result = migrateTimetableClassTimeV4({
         "id": 3,
         "start": "8:30",
@@ -110,14 +111,14 @@ void main() {
 
       expect(result["period"], 3);
       expect(result.containsKey("id"), isFalse);
-      // 変換対象外のキーは保持される
+      // Unrelated keys are preserved
       expect(result["start"], "8:30");
       expect(result["end"], "9:20");
     });
   });
 
   group("SchemaVersionMismatchException", () {
-    test("サーバ/期待バージョンを保持し、メッセージに含める", () {
+    test("holds the server/expected versions and includes them in toString", () {
       final exception = SchemaVersionMismatchException(9, 7);
 
       expect(exception.serverVersion, 9);

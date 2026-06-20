@@ -38,7 +38,8 @@ void main() {
   }
 
   group("undo", () {
-    test("undo スタックが空 (popUndo == null) なら restoreSnapshot を呼ばない", () async {
+    test("does not call restoreSnapshot when undo stack is empty (popUndo == null)",
+        () async {
       when(() => undoRedo.popUndo(any())).thenReturn(null);
 
       await useCase.undo();
@@ -46,7 +47,7 @@ void main() {
       verifyNever(() => repo.restoreSnapshot(any(), any()));
     });
 
-    test("popUndo が snapshot を返すと、その snapshot で restoreSnapshot を呼ぶ", () async {
+    test("calls restoreSnapshot with the snapshot returned by popUndo", () async {
       final snapshot = {0: cell(0)};
       when(() => undoRedo.popUndo(any())).thenReturn(snapshot);
 
@@ -57,7 +58,8 @@ void main() {
   });
 
   group("redo", () {
-    test("redo スタックが空 (popRedo == null) なら restoreSnapshot を呼ばない", () async {
+    test("does not call restoreSnapshot when redo stack is empty (popRedo == null)",
+        () async {
       when(() => undoRedo.popRedo(any())).thenReturn(null);
 
       await useCase.redo();
@@ -65,7 +67,7 @@ void main() {
       verifyNever(() => repo.restoreSnapshot(any(), any()));
     });
 
-    test("popRedo が snapshot を返すと restoreSnapshot を呼ぶ", () async {
+    test("calls restoreSnapshot with the snapshot returned by popRedo", () async {
       final snapshot = {1: cell(1)};
       when(() => undoRedo.popRedo(any())).thenReturn(snapshot);
 
@@ -76,7 +78,7 @@ void main() {
   });
 
   group("pushUndoSnapshot", () {
-    test("現在のテーブル状態 (cellId マップ) を pushSnapshot する", () async {
+    test("pushes the current table state (cellId map)", () async {
       when(() => repo.getByTableId(tableId))
           .thenAnswer((_) async => [cell(0), cell(3)]);
 
@@ -90,7 +92,7 @@ void main() {
   });
 
   group("clearTable", () {
-    test("undo スナップショットを積んでからクリアする", () async {
+    test("pushes an undo snapshot before clearing", () async {
       when(() => undoRedo.popUndo(any())).thenReturn(null);
 
       await useCase.clearTable();

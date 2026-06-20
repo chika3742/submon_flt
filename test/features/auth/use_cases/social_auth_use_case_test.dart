@@ -29,8 +29,8 @@ void main() {
   FetchCredentialResult success() =>
       FetchCredentialResult.success(credential: _FakeOAuthCredential());
 
-  group("provider による credential 取得", () {
-    test("google → fetchGoogleCredential", () async {
+  group("credential fetch by provider", () {
+    test("google -> fetchGoogleCredential", () async {
       when(() => repo.fetchGoogleCredential())
           .thenAnswer((_) async => success());
 
@@ -40,7 +40,7 @@ void main() {
       verifyNever(() => repo.fetchAppleCredential());
     });
 
-    test("apple → fetchAppleCredential", () async {
+    test("apple -> fetchAppleCredential", () async {
       when(() => repo.fetchAppleCredential())
           .thenAnswer((_) async => success());
 
@@ -51,7 +51,7 @@ void main() {
     });
   });
 
-  test("キャンセル時は false を返し、認証処理を行わない", () async {
+  test("returns false and performs no auth when canceled", () async {
     when(() => repo.fetchGoogleCredential())
         .thenAnswer((_) async => FetchCredentialResult.canceled());
 
@@ -63,31 +63,31 @@ void main() {
     verifyNever(() => repo.linkWithCredential(any()));
   });
 
-  group("成功時の mode ルーティングと戻り値", () {
+  group("mode routing and return value on success", () {
     setUp(() {
       when(() => repo.fetchGoogleCredential())
           .thenAnswer((_) async => success());
     });
 
-    test("signIn → repo.signIn、true を返す", () async {
+    test("signIn -> repo.signIn, returns true", () async {
       final result = await useCase.execute(AuthProvider.google, AuthMode.signIn);
 
       expect(result, isTrue);
       verify(() => repo.signIn(any())).called(1);
     });
 
-    test("reauthenticate → repo.reauthenticate", () async {
+    test("reauthenticate -> repo.reauthenticate", () async {
       await useCase.execute(AuthProvider.google, AuthMode.reauthenticate);
       verify(() => repo.reauthenticate(any())).called(1);
     });
 
-    test("upgrade → repo.linkWithCredential", () async {
+    test("upgrade -> repo.linkWithCredential", () async {
       await useCase.execute(AuthProvider.google, AuthMode.upgrade);
       verify(() => repo.linkWithCredential(any())).called(1);
     });
   });
 
-  test("repo が AuthException を投げたら伝播する", () async {
+  test("propagates AuthException thrown by the repo", () async {
     when(() => repo.fetchGoogleCredential())
         .thenAnswer((_) async => success());
     when(() => repo.signIn(any()))
