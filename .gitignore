@@ -50,3 +50,6 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
+
+# Claude Code agent worktrees / local scratch
+.claude/
