@@ -16,3 +16,7 @@
 - provider/freezed を移動・追加したら `dart run build_runner build --delete-conflicting-outputs` を実行。
 - 完了条件: `flutter analyze` クリーン、生成物コミット済み、旧ファイル/旧 import 削除済み。
 - 既存の `features/auth`（最も完成度が高い）を **手本** として参照する。
+- **後で文脈が分かるよう、コメント・dartdoc を適切に残す**: public な型/メソッド/provider には責務とレイヤーを示す
+  dartdoc (`///`) を付け、移設・抽出・レイヤー違反解消など **意図が見えにくい箇所には理由コメント** を残す。
+  既存の有用なコメントは移設先へ持っていく。自明なコードへの冗長なコメントは避け、言語は日本語に統一。
+  （詳細は `01-roadmap.md`「コメント・dartdoc 方針」を参照）
