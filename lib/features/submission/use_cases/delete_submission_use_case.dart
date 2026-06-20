@@ -4,11 +4,11 @@ import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../../../infrastructure/firebase_providers.dart";
 import "../../../providers/digestive_providers.dart";
-import "../../../providers/submission_providers.dart";
 import "../../../repositories/digestive_repository.dart";
-import "../../../repositories/submission_repository.dart";
 import "../../../utils/types.dart";
 import "../../google_tasks/services/tasks_service.dart";
+import "../repositories/submission_providers.dart";
+import "../repositories/submission_repository.dart";
 import "common.dart";
 
 part "delete_submission_use_case.g.dart";

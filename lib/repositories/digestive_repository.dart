@@ -1,9 +1,9 @@
 import "package:isar_community/isar.dart";
 
 import "../infrastructure/firestore_providers.dart";
+import "../infrastructure/synced_repository.dart";
 import "../isar_db/isar_digestive.dart";
 import "../utils/types.dart";
-import "synced_repository.dart";
 
 class DigestiveRepository extends SyncedRepository<Digestive> {
   DigestiveRepository(

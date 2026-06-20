@@ -1,5 +1,6 @@
 import "package:flutter_test/flutter_test.dart";
-import "package:submon/isar_db/isar_submission.dart";
+import "package:submon/features/submission/models/submission.dart";
+import "package:submon/features/submission/repositories/submission_mapper.dart";
 
 /// Golden serialization tests for `Submission`.
 ///
@@ -78,7 +79,7 @@ void main() {
   group("Submission round-trip (fromMap(toMap()))", () {
     test("preserves all fields", () {
       final original = buildSubmission();
-      final restored = Submission.fromMap(original.toMap());
+      final restored = submissionFromMap(original.toMap());
 
       expect(restored.id, original.id);
       expect(restored.title, original.title);
@@ -101,7 +102,7 @@ void main() {
         due: DateTime(2024, 6, 1),
         color: 0,
       );
-      final restored = Submission.fromMap(submission.toMap());
+      final restored = submissionFromMap(submission.toMap());
 
       expect(restored.id, isNull);
       expect(restored.googleTasksTaskId, isNull);
@@ -119,7 +120,7 @@ void main() {
         color: 0,
       );
 
-      final restored = Submission.fromMap(submission.toMap());
+      final restored = submissionFromMap(submission.toMap());
       expect(restored.due, due);
       expect(restored.due.isUtc, isFalse); // converted back via toLocal
     });
@@ -141,19 +142,19 @@ void main() {
         };
 
     test("done as bool(true) -> true", () {
-      expect(Submission.fromMap(baseMap(true)).done, isTrue);
+      expect(submissionFromMap(baseMap(true)).done, isTrue);
     });
 
     test("done as bool(false) -> false", () {
-      expect(Submission.fromMap(baseMap(false)).done, isFalse);
+      expect(submissionFromMap(baseMap(false)).done, isFalse);
     });
 
     test("done as int(1) -> true (legacy schema compatibility)", () {
-      expect(Submission.fromMap(baseMap(1)).done, isTrue);
+      expect(submissionFromMap(baseMap(1)).done, isTrue);
     });
 
     test("done as int(0) -> false (legacy schema compatibility)", () {
-      expect(Submission.fromMap(baseMap(0)).done, isFalse);
+      expect(submissionFromMap(baseMap(0)).done, isFalse);
     });
   });
 
@@ -169,7 +170,7 @@ void main() {
         )..repeat = repeat;
 
         expect(submission.toMap()["repeat"], repeat.index);
-        expect(Submission.fromMap(submission.toMap()).repeat, repeat);
+        expect(submissionFromMap(submission.toMap()).repeat, repeat);
       });
     }
   });

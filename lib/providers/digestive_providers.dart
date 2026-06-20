@@ -1,12 +1,12 @@
 import "package:isar_community/isar.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
+import "../features/submission/models/submission.dart";
 import "../infrastructure/core_providers.dart";
 import "../infrastructure/firebase_providers.dart";
 import "../infrastructure/firestore_error_notifier.dart";
 import "../infrastructure/firestore_providers.dart";
 import "../isar_db/isar_digestive.dart";
-import "../isar_db/isar_submission.dart";
 import "../pages/home_tabs/tab_digestive_list.dart";
 import "../repositories/digestive_repository.dart";
 

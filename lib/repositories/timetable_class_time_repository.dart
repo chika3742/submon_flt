@@ -1,7 +1,7 @@
 import "package:isar_community/isar.dart";
 
+import "../infrastructure/synced_repository.dart";
 import "../isar_db/isar_timetable_class_time.dart";
-import "synced_repository.dart";
 
 class TimetableClassTimeRepository
     extends SyncedRepository<TimetableClassTime> {

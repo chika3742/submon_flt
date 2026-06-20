@@ -1,27 +1,10 @@
 import "package:isar_community/isar.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
-import "../infrastructure/core_providers.dart";
-import "../infrastructure/firebase_providers.dart";
-import "../infrastructure/firestore_error_notifier.dart";
-import "../infrastructure/firestore_providers.dart";
-import "../isar_db/isar_submission.dart";
-import "../repositories/submission_repository.dart";
+import "../models/submission.dart";
+import "submission_providers.dart";
 
-part "submission_providers.g.dart";
-
-@riverpod
-SubmissionRepository submissionRepository(Ref ref) {
-  final isar = ref.watch(isarProvider).requireValue;
-  final firestore = ref.watch(firestoreCollectionProvider("submission").notifier);
-  final crashlytics = ref.watch(crashlyticsProvider);
-  return SubmissionRepository(
-    isar,
-    firestore,
-    crashlytics,
-    ref.watch(firestoreErrorProvider.notifier),
-  );
-}
+part "submission_queries.g.dart";
 
 @riverpod
 Stream<List<Submission>> undoneSubmissions(Ref ref) {

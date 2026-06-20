@@ -1,7 +1,7 @@
 import "package:googleapis/tasks/v1.dart";
 
-import "../../../isar_db/isar_submission.dart";
 import "../../../utils/app_links.dart";
+import "../models/submission.dart";
 
 Task createTaskFromSubmission(Submission submission, {required String uid}) {
   return Task(
