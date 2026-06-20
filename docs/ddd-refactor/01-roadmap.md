@@ -40,18 +40,20 @@
 | T05 | timetable feature 切り出し（3 repository, クエリ, undo-redo, `TimetableEditUseCase`） | `repositories/timetable*`, `isar_db/isar_timetable*`, `providers/timetable_providers.dart` | T00 |
 | T06 | timetable の UI 移設（編集・表示・設定ページのうち timetable 関連）           | `pages/timetable_*`, `pages/home_tabs/tab_timetable*`, `components/timetable/*`, `pages/settings/timetable.dart` | T05 |
 
-## Phase 4 — memorize_card（repository から新設）
+## Phase 4 — memorize_card（**移行せず完全削除**）
+memorize_card は既にほぼ全てがコメントアウト済みのデッドコード。feature 化せず削除する。
+独立性が高く、T00 完了後の早い段階で単独実施してよい（後続のスコープを縮小できる）。
+
 | ID  | タスク                                                              | 主な対象 | 依存 |
 |-----|-------------------------------------------------------------------|---------|------|
-| T07 | memorize_card feature 新設。repository を新規作成し、Isar エンティティと `card_side_builder` を移設 | `isar_db/isar_memorization_card_group.dart`, `utils/card_side_builder.dart` | T00 |
-| T08 | memorize_card の UI 移設（6 ページ + タブ）                          | `pages/memorize_card/*`, `pages/home_tabs/tab_memorize_card.dart` | T07 |
+| T07 | memorize_card 関連機能を完全削除（ファイル・Isar スキーマ登録・コメントアウト済み参照） | `pages/memorize_card/*`, `pages/home_tabs/tab_memorize_card.dart`, `isar_db/isar_memorization_card_group.dart`, `providers/core_providers.dart`, `utils/{card_side_builder,text_recognized_candidate_painter,point}.dart` | T00 |
 
 ## Phase 5 — 横断・同期・設定
 | ID  | タスク                                                                   | 主な対象 | 依存 |
 |-----|------------------------------------------------------------------------|---------|------|
 | T09 | `sync` feature 切り出し。`DataSyncService` を整理し、スキーマ migration を別クラスへ分離 | `providers/data_sync_service.dart`, `providers/firestore_providers.dart` の同期部分 | T01,T03,T05 |
 | T10 | `settings` feature 整理。`user_config`・各 settings ページを集約        | `user_config.dart`, `pages/settings/*`, `pages/settings_page.dart` | T05,T09 |
-| T11 | `EventBus`(`events.dart`) を Riverpod ストリームへ置換し撤去             | `events.dart`, `main.dart`, `pages/home_page.dart`, `pages/home_tabs/tab_memorize_card.dart` | T08 |
+| T11 | `EventBus`(`events.dart`) を Riverpod ストリームへ置換し撤去             | `events.dart`, `main.dart`, `pages/home_page.dart` | T07 |
 
 ## Phase 6 — 仕上げ
 | ID  | タスク                                                                  | 主な対象 | 依存 |
@@ -62,7 +64,8 @@
 
 ## 推奨順序と並列化
 - **T00 は必ず最初**（全タスクの土台）。
-- T01→T02、T03→T04、T05→T06、T07→T08 は **各 feature 内で直列**。
+- T01→T02、T03→T04、T05→T06 は **各 feature 内で直列**。
+- T07（memorize_card 削除）は独立。T00 後すぐ単独実施すると後続のスコープが縮む。
 - 異なる feature 同士（例: digestive と timetable）は **並列セッション可**（ただし共通の `infrastructure/` を触る競合に注意。T00 で安定させておく）。
 - Phase 5 は各ドメイン feature が揃ってから着手する。
 - T12 は最後。

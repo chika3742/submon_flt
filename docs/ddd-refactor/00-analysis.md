@@ -73,8 +73,9 @@
 「保存とは何か」というユースケースが UI に埋没している。
 
 ### P6. 未移行ドメインの放置
-**digestive / timetable / memorize_card / data-sync / account-settings** は feature 化されていない。
-特に memorize_card は repository すら存在せず、Isar エンティティと UI が直結している。
+**digestive / timetable / data-sync / account-settings** は feature 化されていない。
+なお **memorize_card** は機能としてほぼ全てがコメントアウト済みのデッドコードであり、
+feature 化せず **移行の過程で完全に削除する**（[`prompts/T07-remove-memorize-card.md`](./prompts/T07-remove-memorize-card.md)）。
 
 ### P7. 横断的関心事の不透明な結合
 `events.dart` の `EventBus` によるグローバルなイベント配信（main / home_page / memorize_card 間）が、
@@ -126,7 +127,7 @@ data/repository 層が presentation 層を import することは禁止（P2 の
 | `submission`   | 提出物 CRUD・共有リンク・Google Tasks 同期トリガ（完成させる）         |
 | `digestive`    | 消化（学習タスク分割）・submission 結合ビュー                         |
 | `timetable`    | 時間割テーブル/セル/時限・undo-redo                                  |
-| `memorize_card`| 暗記カード・グループ・テスト・グラフ                                  |
+| ~~`memorize_card`~~ | **削除対象**（デッドコード。feature 化しない）                    |
 | `google_tasks` | Google Tasks 連携（移行済み）                                       |
 | `sync`         | Firestore↔Isar 同期・スキーマ migration（data_sync_service 由来）   |
 | `settings`     | ユーザー設定・user_config・各 settings ページ                        |
