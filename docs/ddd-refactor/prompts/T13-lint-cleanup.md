@@ -17,6 +17,34 @@
 - プラグイン: `riverpod_lint` / `better_require_trailing_commas`
 - `analyzer.exclude`: `lib/**.g.dart` / `lib/**.freezed.dart`（生成物は対象外）
 
+### 実測ベースライン（2026-06-20 / Flutter 3.41.6・Dart 3.11.4 / `main` 相当）
+`fvm flutter analyze` 実行結果: **338 issues**（info 326 / warning 12）。ルール別内訳:
+
+| ルール | 件数 | 重大度 | 備考 |
+|--------|-----:|--------|------|
+| `discarded_futures` | 260 | info | 大半。非 async 関数内の Future 呼び出し |
+| `unawaited_futures` | 62 | info | await されない Future |
+| `only_use_keep_alive_inside_keep_alive` | 11 | warning | riverpod_lint。keepAlive provider の依存 |
+| `use_named_constants` | 2 | info | |
+| `deprecated_member_use` | 2 | info | |
+| `asset_does_not_exist` | 1 | warning | `.env` 欠落。**環境固有で、コード修正対象外**（CI/秘匿ファイル） |
+
+- **約 95%（322件）が async 系**（`discarded_futures` + `unawaited_futures`）。`unawaited(...)` 付与か `await` 追加で対応するが、
+  **挙動を変えないか 1件ずつ確認が必要**（自動一括修正は危険）。最も多いのは `lib/pages/`（186件）。
+- `prefer_double_quotes` / `directives_ordering` / `prefer_relative_imports` / `eol_at_end_of_file` /
+  `prefer_final_locals` 等は **既に違反ゼロ**（コードベースは準拠済み）。実バックログは上表に集約されている。
+- ワースト10ファイル: `pages/settings/timetable.dart`(34), `pages/home_page.dart`(28),
+  `pages/focus_timer_page.dart`(28), `pages/settings/functions.dart`(22),
+  `pages/settings/account_edit_page.dart`(14), `pages/email_sign_in_page.dart`(14),
+  `link_handler/open_link_handler.dart`(14), `browser.dart`(14),
+  `infrastructure/pref_provider.dart`(12), `components/digestive_detail_card.dart`(12)。
+- これらの多くは T01〜T11 で各 feature へ移設されるため、**移設完了後にまとめて潰す**のが効率的（本タスクが最後である理由）。
+
+> 環境構築メモ: この環境には Flutter ツールチェーンが無いため、fvm バイナリ（GitHub Releases）を取得し
+> `fvm install 3.41.6 --setup` で SDK を用意して実測した。`fvm.app` のインストールスクリプトと
+> `dl.google.com` はネットワークポリシーで遮断されていたが、`storage.googleapis.com/flutter_infra_release`
+> と `github.com`（git）は到達可能だった。
+
 ## やること
 ### 1. 現状把握
 - `fvm flutter analyze`（または `./scripts/build_runner.sh` 後に analyze）を実行し、
