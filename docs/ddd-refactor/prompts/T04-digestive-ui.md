@@ -30,5 +30,25 @@ digestive の UI を `features/digestive/presentation/` に移設し、編集ロ
 - `flutter analyze` クリーン、生成物コミット済み、挙動不変。
 - コミット例: `refactor(digestive): T04 move digestive UI and extract edit logic`
 
+## T03 から繰越の tech debt（本タスクで対応）
+T03（#188）のレビューで指摘された、移設のため挙動不変としてあえて残した負債。T04 で UI を触る際に解消する。
+
+1. **`DigestiveWithSubmission` を継承から composition へ**
+   （`lib/features/digestive/models/digestive_with_submission.dart`）
+   - 現状 `class DigestiveWithSubmission extends Digestive` かつ `final Digestive digestive` も保持しており、
+     同じデータを二重に持つ。`Digestive` に `late` フィールドが増えると `fromObject` の更新漏れで
+     `LateInitializationError` が潜在。`@Collection` 型でないサブクラスが `isar.digestives.put()` に渡ると
+     Isar 実装依存の挙動になりうる。
+   - 修正: `extends Digestive` をやめ、`final Digestive digestive` / `final Submission? submission` を持つ
+     純粋な composition に変更。併せて呼び出し側（`DigestiveDetailCard(digestive: e)` →
+     `DigestiveDetailCard(digestive: e.digestive)` 等）を更新する。
+2. **use_case の Isar 直アクセスを `SubmissionRepository` 経由へ**
+   （`lib/features/digestive/use_cases/undone_digestives_with_submission.dart` の
+   `await isar.submissions.getAll(ids)`）
+   - use_case が `SubmissionRepository` を介さず Isar の `submissions` コレクションへ直アクセスしており、
+     依存方向ルール（`use_cases → repositories`）と features 間参照の原則に反する過渡的妥協。
+   - 解消が T04 時点で難しい場合は、最低限 TODO コメント（英語）を残し追跡する。submission feature が
+     公開する取得経路（repository/クエリ）が整い次第そちらへ寄せる。
+
 ## スコープ外
 - timetable / memorize_card（別タスク）。
