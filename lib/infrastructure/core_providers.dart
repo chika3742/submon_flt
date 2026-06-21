@@ -4,8 +4,8 @@ import "package:path_provider/path_provider.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../features/auth/repositories/apple_sign_in_android.dart";
+import "../features/submission/models/submission.dart";
 import "../isar_db/isar_digestive.dart";
-import "../isar_db/isar_submission.dart";
 import "../isar_db/isar_timetable.dart";
 import "../isar_db/isar_timetable_class_time.dart";
 import "../isar_db/isar_timetable_table.dart";

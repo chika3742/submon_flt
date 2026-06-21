@@ -1,8 +1,7 @@
 import "package:flutter/material.dart";
 import "package:isar_community/isar.dart";
 
-
-part "isar_submission.g.dart";
+part "submission.g.dart";
 
 @Collection()
 class Submission {
@@ -33,38 +32,9 @@ class Submission {
     required this.color,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      "id": id,
-      "title": title,
-      "details": details,
-      "due": due.toUtc().toIso8601String(),
-      "done": done,
-      "important": important,
-      "repeat": repeat.index,
-      "color": color,
-      "googleTasksTaskId": googleTasksTaskId,
-      "canvasPlannableId": canvasPlannableId,
-      "repeatSubmissionCreated": repeatSubmissionCreated,
-    };
-  }
-
   Color getColor() {
     return Color(color);
   }
-
-  Submission.fromMap(Map<String, dynamic> map)
-      : id = map["id"],
-        title = map["title"],
-        details = map["details"],
-        due = DateTime.parse(map["due"]).toLocal(),
-        done = map["done"] is bool ? map["done"] : map["done"] == 1,
-        important = map["important"],
-        repeat = Repeat.values[map["repeat"]],
-        color = map["color"],
-        googleTasksTaskId = map["googleTasksTaskId"],
-        canvasPlannableId = map["canvasPlannableId"],
-        repeatSubmissionCreated = map["repeatSubmissionCreated"];
 }
 
 enum Repeat {

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'submission_share_link_provider.dart';
+part of 'submission_share_link_repository.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -8,12 +8,18 @@ part of 'submission_share_link_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// 共有リンクから提出物データを取得する。
+/// Fetches submission data from a share link.
+///
+/// The Firestore-to-domain conversion (e.g. `Timestamp` -> [DateTime]) is done
+/// here so [SubmissionShareData] stays persistence-independent.
 
 @ProviderFor(submissionShareLink)
 final submissionShareLinkProvider = SubmissionShareLinkFamily._();
 
-/// 共有リンクから提出物データを取得する。
+/// Fetches submission data from a share link.
+///
+/// The Firestore-to-domain conversion (e.g. `Timestamp` -> [DateTime]) is done
+/// here so [SubmissionShareData] stays persistence-independent.
 
 final class SubmissionShareLinkProvider
     extends
@@ -25,7 +31,10 @@ final class SubmissionShareLinkProvider
     with
         $FutureModifier<SubmissionShareData?>,
         $FutureProvider<SubmissionShareData?> {
-  /// 共有リンクから提出物データを取得する。
+  /// Fetches submission data from a share link.
+  ///
+  /// The Firestore-to-domain conversion (e.g. `Timestamp` -> [DateTime]) is done
+  /// here so [SubmissionShareData] stays persistence-independent.
   SubmissionShareLinkProvider._({
     required SubmissionShareLinkFamily super.from,
     required String super.argument,
@@ -71,9 +80,12 @@ final class SubmissionShareLinkProvider
 }
 
 String _$submissionShareLinkHash() =>
-    r'4642cba4b9ade65947e1a309f31667ed54b0e6df';
+    r'db5ba36eafe5c987be21999ec0ae489cf724a348';
 
-/// 共有リンクから提出物データを取得する。
+/// Fetches submission data from a share link.
+///
+/// The Firestore-to-domain conversion (e.g. `Timestamp` -> [DateTime]) is done
+/// here so [SubmissionShareData] stays persistence-independent.
 
 final class SubmissionShareLinkFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<SubmissionShareData?>, String> {
@@ -86,7 +98,10 @@ final class SubmissionShareLinkFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// 共有リンクから提出物データを取得する。
+  /// Fetches submission data from a share link.
+  ///
+  /// The Firestore-to-domain conversion (e.g. `Timestamp` -> [DateTime]) is done
+  /// here so [SubmissionShareData] stays persistence-independent.
 
   SubmissionShareLinkProvider call(String id) =>
       SubmissionShareLinkProvider._(argument: id, from: this);

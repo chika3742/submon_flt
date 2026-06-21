@@ -1,8 +1,9 @@
 import "package:isar_community/isar.dart";
 
-import "../isar_db/isar_submission.dart";
-import "../src/pigeons.g.dart";
-import "synced_repository.dart";
+import "../../../infrastructure/synced_repository.dart";
+import "../../../src/pigeons.g.dart";
+import "../models/submission.dart";
+import "submission_mapper.dart";
 
 class SubmissionRepository extends SyncedRepository<Submission> {
   SubmissionRepository(
@@ -16,7 +17,7 @@ class SubmissionRepository extends SyncedRepository<Submission> {
   IsarCollection<Submission> get collection => isar.submissions;
 
   @override
-  Map<String, dynamic> toFirestoreMap(Submission data) => data.toMap();
+  Map<String, dynamic> toFirestoreMap(Submission data) => submissionToMap(data);
 
   @override
   void onFirestoreUpdated() {

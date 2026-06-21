@@ -2,9 +2,9 @@ import "package:flutter_test/flutter_test.dart";
 import "package:googleapis/tasks/v1.dart";
 import "package:mocktail/mocktail.dart";
 import "package:submon/features/google_tasks/services/tasks_service.dart";
+import "package:submon/features/submission/models/submission.dart";
+import "package:submon/features/submission/repositories/submission_repository.dart";
 import "package:submon/features/submission/use_cases/save_submission_use_case.dart";
-import "package:submon/isar_db/isar_submission.dart";
-import "package:submon/repositories/submission_repository.dart";
 
 class MockSubmissionRepository extends Mock implements SubmissionRepository {}
 

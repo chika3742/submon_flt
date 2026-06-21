@@ -2,7 +2,7 @@ import "package:cloud_functions/cloud_functions.dart";
 import "package:flutter/foundation.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
-import "../isar_db/isar_submission.dart";
+import "../features/submission/models/submission.dart";
 
 part "functions_service.g.dart";
 

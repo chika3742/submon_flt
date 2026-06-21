@@ -1,5 +1,6 @@
 import "package:flutter_test/flutter_test.dart";
-import "package:submon/isar_db/isar_submission.dart";
+import "package:submon/features/submission/models/submission.dart";
+import "package:submon/features/submission/repositories/submission_mapper.dart";
 
 /// Golden serialization tests for `Submission`.
 ///
@@ -24,7 +25,7 @@ void main() {
 
   group("Submission.toMap", () {
     test("returns fixed key names and values (Firestore compatible)", () {
-      final map = buildSubmission().toMap();
+      final map = submissionToMap(buildSubmission());
 
       expect(map, containsPair("id", 42));
       expect(map, containsPair("title", "Report"));
@@ -42,7 +43,7 @@ void main() {
 
     test("has a fixed key set (detects added/removed keys)", () {
       expect(
-        buildSubmission().toMap().keys.toSet(),
+        submissionToMap(buildSubmission()).keys.toSet(),
         {
           "id",
           "title",
@@ -69,16 +70,16 @@ void main() {
         color: 0,
       );
 
-      expect(submission.toMap()["due"], due.toUtc().toIso8601String());
+      expect(submissionToMap(submission)["due"], due.toUtc().toIso8601String());
       // Confirm it is UTC notation (trailing Z)
-      expect((submission.toMap()["due"] as String).endsWith("Z"), isTrue);
+      expect((submissionToMap(submission)["due"] as String).endsWith("Z"), isTrue);
     });
   });
 
   group("Submission round-trip (fromMap(toMap()))", () {
     test("preserves all fields", () {
       final original = buildSubmission();
-      final restored = Submission.fromMap(original.toMap());
+      final restored = submissionFromMap(submissionToMap(original));
 
       expect(restored.id, original.id);
       expect(restored.title, original.title);
@@ -101,7 +102,7 @@ void main() {
         due: DateTime(2024, 6, 1),
         color: 0,
       );
-      final restored = Submission.fromMap(submission.toMap());
+      final restored = submissionFromMap(submissionToMap(submission));
 
       expect(restored.id, isNull);
       expect(restored.googleTasksTaskId, isNull);
@@ -119,7 +120,7 @@ void main() {
         color: 0,
       );
 
-      final restored = Submission.fromMap(submission.toMap());
+      final restored = submissionFromMap(submissionToMap(submission));
       expect(restored.due, due);
       expect(restored.due.isUtc, isFalse); // converted back via toLocal
     });
@@ -141,19 +142,19 @@ void main() {
         };
 
     test("done as bool(true) -> true", () {
-      expect(Submission.fromMap(baseMap(true)).done, isTrue);
+      expect(submissionFromMap(baseMap(true)).done, isTrue);
     });
 
     test("done as bool(false) -> false", () {
-      expect(Submission.fromMap(baseMap(false)).done, isFalse);
+      expect(submissionFromMap(baseMap(false)).done, isFalse);
     });
 
     test("done as int(1) -> true (legacy schema compatibility)", () {
-      expect(Submission.fromMap(baseMap(1)).done, isTrue);
+      expect(submissionFromMap(baseMap(1)).done, isTrue);
     });
 
     test("done as int(0) -> false (legacy schema compatibility)", () {
-      expect(Submission.fromMap(baseMap(0)).done, isFalse);
+      expect(submissionFromMap(baseMap(0)).done, isFalse);
     });
   });
 
@@ -168,8 +169,8 @@ void main() {
           color: 0,
         )..repeat = repeat;
 
-        expect(submission.toMap()["repeat"], repeat.index);
-        expect(Submission.fromMap(submission.toMap()).repeat, repeat);
+        expect(submissionToMap(submission)["repeat"], repeat.index);
+        expect(submissionFromMap(submissionToMap(submission)).repeat, repeat);
       });
     }
   });
