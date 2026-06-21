@@ -32,6 +32,8 @@ class TimetableEditUseCase {
     _undoRedo.pushSnapshot(entries.toCellIdMap());
   }
 
+  /// Pops the latest undo snapshot and restores the table to that state.
+  /// No-op if the undo stack is empty.
   Future<void> undo() async {
     final current = await _repo.getByTableId(_tableId);
     final snapshot = _undoRedo.popUndo(current.toCellIdMap());
@@ -39,6 +41,8 @@ class TimetableEditUseCase {
     await _repo.restoreSnapshot(_tableId, snapshot);
   }
 
+  /// Pops the latest redo snapshot and restores the table to that state.
+  /// No-op if the redo stack is empty.
   Future<void> redo() async {
     final current = await _repo.getByTableId(_tableId);
     final snapshot = _undoRedo.popRedo(current.toCellIdMap());

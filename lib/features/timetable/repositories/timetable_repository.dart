@@ -113,7 +113,9 @@ class TimetableRepository {
     );
   }
 
-  /// [tableId]s in cells are ignored.
+  /// Writes every cell in [data] into the Firestore document identified by
+  /// [tableId]. The per-cell [Timetable.tableId] fields are ignored: the
+  /// destination document is determined solely by the [tableId] argument.
   void _syncSetAllCells(String tableId, List<Timetable> data) {
     _wrapFirestoreUpdate(
       _firestore.set(
