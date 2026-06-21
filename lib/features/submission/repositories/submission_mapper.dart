@@ -1,28 +1,30 @@
 import "../models/submission.dart";
 
-/// [Submission] ドメインモデルと Firestore 永続化表現（DTO）の相互変換を担う mapper。
+/// Bidirectional mapper between the [Submission] domain model and its Firestore
+/// persistence representation (DTO).
 ///
-/// Firestore のキー文字列・直列化フォーマットはサーバ互換のため一切変更しない。
-extension SubmissionFirestoreMapper on Submission {
-  /// Firestore 永続化用の Map へ変換する。
-  Map<String, dynamic> toMap() {
-    return {
-      "id": id,
-      "title": title,
-      "details": details,
-      "due": due.toUtc().toIso8601String(),
-      "done": done,
-      "important": important,
-      "repeat": repeat.index,
-      "color": color,
-      "googleTasksTaskId": googleTasksTaskId,
-      "canvasPlannableId": canvasPlannableId,
-      "repeatSubmissionCreated": repeatSubmissionCreated,
-    };
-  }
+/// Both directions are plain top-level functions so the call style stays
+/// symmetric (`submissionToMap` / `submissionFromMap`). Firestore key strings
+/// and the serialization format must never change (server compatibility).
+
+/// Converts a [Submission] into its Firestore persistence [Map].
+Map<String, dynamic> submissionToMap(Submission submission) {
+  return {
+    "id": submission.id,
+    "title": submission.title,
+    "details": submission.details,
+    "due": submission.due.toUtc().toIso8601String(),
+    "done": submission.done,
+    "important": submission.important,
+    "repeat": submission.repeat.index,
+    "color": submission.color,
+    "googleTasksTaskId": submission.googleTasksTaskId,
+    "canvasPlannableId": submission.canvasPlannableId,
+    "repeatSubmissionCreated": submission.repeatSubmissionCreated,
+  };
 }
 
-/// Firestore の Map から [Submission] を復元する。
+/// Restores a [Submission] from a Firestore [Map].
 Submission submissionFromMap(Map<String, dynamic> map) {
   return Submission.from(
     id: map["id"],

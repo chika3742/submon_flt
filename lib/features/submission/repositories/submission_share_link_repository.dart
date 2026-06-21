@@ -1,31 +1,11 @@
-import "package:cloud_firestore/cloud_firestore.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../../../infrastructure/firebase_providers.dart";
+import "../models/submission_share_data.dart";
 
 part "submission_share_link_repository.g.dart";
 
-class SubmissionShareData {
-  final String title;
-  final DateTime due;
-  final String? details;
-
-  const SubmissionShareData({
-    required this.title,
-    required this.due,
-    this.details,
-  });
-
-  factory SubmissionShareData.fromMap(Map<String, dynamic> data) {
-    return SubmissionShareData(
-      title: data["title"] as String,
-      due: (data["due"] as Timestamp).toDate(),
-      details: data["details"] as String?,
-    );
-  }
-}
-
-/// 共有リンクから提出物データを取得する。
+/// Fetches submission data from a share link.
 @riverpod
 Future<SubmissionShareData?> submissionShareLink(Ref ref, String id) async {
   final snapshot =

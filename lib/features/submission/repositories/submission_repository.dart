@@ -17,7 +17,7 @@ class SubmissionRepository extends SyncedRepository<Submission> {
   IsarCollection<Submission> get collection => isar.submissions;
 
   @override
-  Map<String, dynamic> toFirestoreMap(Submission data) => data.toMap();
+  Map<String, dynamic> toFirestoreMap(Submission data) => submissionToMap(data);
 
   @override
   void onFirestoreUpdated() {

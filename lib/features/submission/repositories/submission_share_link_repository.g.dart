@@ -8,12 +8,12 @@ part of 'submission_share_link_repository.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// 共有リンクから提出物データを取得する。
+/// Fetches submission data from a share link.
 
 @ProviderFor(submissionShareLink)
 final submissionShareLinkProvider = SubmissionShareLinkFamily._();
 
-/// 共有リンクから提出物データを取得する。
+/// Fetches submission data from a share link.
 
 final class SubmissionShareLinkProvider
     extends
@@ -25,7 +25,7 @@ final class SubmissionShareLinkProvider
     with
         $FutureModifier<SubmissionShareData?>,
         $FutureProvider<SubmissionShareData?> {
-  /// 共有リンクから提出物データを取得する。
+  /// Fetches submission data from a share link.
   SubmissionShareLinkProvider._({
     required SubmissionShareLinkFamily super.from,
     required String super.argument,
@@ -73,7 +73,7 @@ final class SubmissionShareLinkProvider
 String _$submissionShareLinkHash() =>
     r'4642cba4b9ade65947e1a309f31667ed54b0e6df';
 
-/// 共有リンクから提出物データを取得する。
+/// Fetches submission data from a share link.
 
 final class SubmissionShareLinkFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<SubmissionShareData?>, String> {
@@ -86,7 +86,7 @@ final class SubmissionShareLinkFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// 共有リンクから提出物データを取得する。
+  /// Fetches submission data from a share link.
 
   SubmissionShareLinkProvider call(String id) =>
       SubmissionShareLinkProvider._(argument: id, from: this);
