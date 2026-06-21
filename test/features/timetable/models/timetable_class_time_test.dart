@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
-import "package:submon/isar_db/isar_timetable_class_time.dart";
+import "package:submon/features/timetable/models/timetable_class_time.dart";
 
 /// Golden serialization tests for `TimetableClassTime`.
 /// start/end are stored as "H:m" strings. The computed properties

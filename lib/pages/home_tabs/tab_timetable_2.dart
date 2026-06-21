@@ -3,7 +3,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../components/timetable/timetable_day_list.dart";
 import "../../core/pref_key.dart";
-import "../../providers/timetable_providers.dart";
+import "../../features/timetable/repositories/timetable_queries.dart";
 
 class TabTimetable2 extends ConsumerStatefulWidget {
   const TabTimetable2({super.key});

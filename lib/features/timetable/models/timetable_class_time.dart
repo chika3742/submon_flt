@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:isar_community/isar.dart";
 
-part "isar_timetable_class_time.g.dart";
+part "timetable_class_time.g.dart";
 
 @Collection()
 class TimetableClassTime {

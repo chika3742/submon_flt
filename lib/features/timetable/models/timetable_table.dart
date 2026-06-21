@@ -1,6 +1,6 @@
 import "package:isar_community/isar.dart";
 
-part "isar_timetable_table.g.dart";
+part "timetable_table.g.dart";
 
 @Collection()
 class TimetableTable {

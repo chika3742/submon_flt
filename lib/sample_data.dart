@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 
 import "features/digestive/models/isar_digestive.dart";
 import "features/submission/models/submission.dart";
-import "isar_db/isar_timetable.dart";
+import "features/timetable/models/timetable.dart";
 import "utils/date_time_utils.dart";
 
 class SampleData {

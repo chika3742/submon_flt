@@ -1,7 +1,7 @@
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_test/flutter_test.dart";
-import "package:submon/isar_db/isar_timetable.dart";
-import "package:submon/providers/timetable_providers.dart";
+import "package:submon/features/timetable/models/timetable.dart";
+import "package:submon/features/timetable/use_cases/undo_redo.dart";
 
 /// Tests for the stack-transition logic of the `UndoRedo` Notifier.
 ///
