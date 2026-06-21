@@ -9,11 +9,17 @@ part of 'submission_share_link_repository.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 /// Fetches submission data from a share link.
+///
+/// The Firestore-to-domain conversion (e.g. `Timestamp` -> [DateTime]) is done
+/// here so [SubmissionShareData] stays persistence-independent.
 
 @ProviderFor(submissionShareLink)
 final submissionShareLinkProvider = SubmissionShareLinkFamily._();
 
 /// Fetches submission data from a share link.
+///
+/// The Firestore-to-domain conversion (e.g. `Timestamp` -> [DateTime]) is done
+/// here so [SubmissionShareData] stays persistence-independent.
 
 final class SubmissionShareLinkProvider
     extends
@@ -26,6 +32,9 @@ final class SubmissionShareLinkProvider
         $FutureModifier<SubmissionShareData?>,
         $FutureProvider<SubmissionShareData?> {
   /// Fetches submission data from a share link.
+  ///
+  /// The Firestore-to-domain conversion (e.g. `Timestamp` -> [DateTime]) is done
+  /// here so [SubmissionShareData] stays persistence-independent.
   SubmissionShareLinkProvider._({
     required SubmissionShareLinkFamily super.from,
     required String super.argument,
@@ -71,9 +80,12 @@ final class SubmissionShareLinkProvider
 }
 
 String _$submissionShareLinkHash() =>
-    r'4642cba4b9ade65947e1a309f31667ed54b0e6df';
+    r'db5ba36eafe5c987be21999ec0ae489cf724a348';
 
 /// Fetches submission data from a share link.
+///
+/// The Firestore-to-domain conversion (e.g. `Timestamp` -> [DateTime]) is done
+/// here so [SubmissionShareData] stays persistence-independent.
 
 final class SubmissionShareLinkFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<SubmissionShareData?>, String> {
@@ -87,6 +99,9 @@ final class SubmissionShareLinkFamily extends $Family
       );
 
   /// Fetches submission data from a share link.
+  ///
+  /// The Firestore-to-domain conversion (e.g. `Timestamp` -> [DateTime]) is done
+  /// here so [SubmissionShareData] stays persistence-independent.
 
   SubmissionShareLinkProvider call(String id) =>
       SubmissionShareLinkProvider._(argument: id, from: this);

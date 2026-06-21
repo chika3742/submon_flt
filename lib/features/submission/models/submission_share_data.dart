@@ -1,9 +1,7 @@
-import "package:cloud_firestore/cloud_firestore.dart";
-
 /// Submission payload fetched from a share link (Firestore `submissionShares`).
 ///
-/// This is a read-only view used when opening a shared submission; it is not the
-/// full [Submission] domain model.
+/// A plain, persistence-independent value object. The Firestore-to-domain
+/// conversion (e.g. `Timestamp` -> [DateTime]) lives in the repository layer.
 class SubmissionShareData {
   final String title;
   final DateTime due;
@@ -14,12 +12,4 @@ class SubmissionShareData {
     required this.due,
     this.details,
   });
-
-  factory SubmissionShareData.fromMap(Map<String, dynamic> data) {
-    return SubmissionShareData(
-      title: data["title"] as String,
-      due: (data["due"] as Timestamp).toDate(),
-      details: data["details"] as String?,
-    );
-  }
 }
