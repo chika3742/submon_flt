@@ -6,12 +6,12 @@ import "package:cloud_firestore/cloud_firestore.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../core/pref_key.dart";
+import "../features/digestive/models/isar_digestive.dart";
 import "../features/submission/models/submission.dart";
 import "../features/submission/repositories/submission_mapper.dart";
 import "../infrastructure/core_providers.dart";
 import "../infrastructure/firebase_providers.dart";
 import "../infrastructure/firestore_providers.dart";
-import "../isar_db/isar_digestive.dart";
 import "../isar_db/isar_timetable.dart";
 import "../isar_db/isar_timetable_class_time.dart";
 import "../isar_db/isar_timetable_table.dart";

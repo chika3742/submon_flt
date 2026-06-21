@@ -1,5 +1,5 @@
 import "package:flutter_test/flutter_test.dart";
-import "package:submon/isar_db/isar_digestive.dart";
+import "package:submon/features/digestive/models/isar_digestive.dart";
 
 /// Golden serialization tests for `Digestive`.
 /// Firestore key names must not change (server compatibility).

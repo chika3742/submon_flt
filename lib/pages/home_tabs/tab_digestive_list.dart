@@ -3,9 +3,8 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:intl/intl.dart";
 
 import "../../components/digestive_detail_card.dart";
-import "../../features/submission/models/submission.dart";
-import "../../isar_db/isar_digestive.dart";
-import "../../providers/digestive_providers.dart";
+import "../../features/digestive/models/digestive_with_submission.dart";
+import "../../features/digestive/use_cases/undone_digestives_with_submission.dart";
 import "../../sample_data.dart";
 import "../../utils/ui.dart";
 import "../../utils/utils.dart";
@@ -123,19 +122,5 @@ class TabDigestiveList extends ConsumerWidget {
           const Center(child: Text("Digestiveがありません")),
       ],
     );
-  }
-}
-
-class DigestiveWithSubmission extends Digestive {
-  final Submission? submission;
-  final Digestive digestive;
-
-  DigestiveWithSubmission.fromObject(this.digestive, this.submission) {
-    id = digestive.id!;
-    submissionId = digestive.submissionId;
-    startAt = digestive.startAt;
-    minute = digestive.minute;
-    content = digestive.content;
-    done = digestive.done;
   }
 }
