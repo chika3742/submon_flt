@@ -40,7 +40,7 @@ final class IsarProvider
   }
 }
 
-String _$isarHash() => r'6ae460417b62705de43397fca348fc4f268eda3c';
+String _$isarHash() => r'df6262b240e4deb34461e515fde933790f0dda9d';
 
 @ProviderFor(googleSignIn)
 final googleSignInProvider = GoogleSignInProvider._();

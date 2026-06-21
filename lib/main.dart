@@ -365,13 +365,6 @@ class _ApplicationState extends ConsumerState<Application> {
           default:
             return null;
         }
-
-        // "/memorize_card/create": (context) => const MemorizeCardCreatePage(),
-        // "/memorize_card/view": (context) =>
-        // CardViewPage(arguments: settings.arguments),
-        // "/memorize_card/test": (context) => const CardTestPage(),
-        // "/memorize_card/graph": (context) => const CardGraphPage(),
-        // "/memorize_card/forum": (context) => const CardForumPage(),
       },
     );
   }
