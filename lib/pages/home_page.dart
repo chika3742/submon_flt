@@ -11,13 +11,13 @@ import "package:google_mobile_ads/google_mobile_ads.dart";
 import "../browser.dart";
 import "../components/digestive_edit_bottom_sheet.dart";
 import "../core/pref_key.dart";
-import "../events.dart";
 import "../fade_through_page_route.dart";
 import "../features/auth/use_cases/sign_out_use_case.dart";
 import "../features/digestive/models/isar_digestive.dart";
 import "../features/digestive/repositories/digestive_providers.dart";
 import "../infrastructure/core_providers.dart";
 import "../infrastructure/firebase_providers.dart";
+import "../infrastructure/tab_switch_provider.dart";
 import "../providers/data_sync_service.dart";
 import "../src/pigeons.g.dart";
 import "../ui_components/hidable_progress_indicator.dart";
@@ -43,7 +43,6 @@ class HomePage extends ConsumerStatefulWidget {
 
 class HomePageState extends ConsumerState<HomePage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
-  StreamSubscription? switchBottomNavListener;
 
   final _scrollControllers = {
     for (final path in ["home", "digestive", "more"])
@@ -130,27 +129,6 @@ class HomePageState extends ConsumerState<HomePage> {
       }
     });
 
-    switchBottomNavListener = eventBus.on<SwitchBottomNav>().listen((event) {
-      Timer.periodic(const Duration(milliseconds: 25), (timer) {
-        if (_navigatorKey.currentState != null && ref.read(isarProvider).hasValue) {
-          final showTimetable = ref.readPref(PrefKey.showTimetableMenu);
-          final paths = [
-            "home",
-            "digestive",
-            if (showTimetable) "timetable",
-            "more",
-          ];
-          final index = paths.indexOf(event.path);
-          if (index != -1) {
-            _onBottomNavTap(index, event.path);
-          } else {
-            showSnackBar(context, "この機能は無効化されています。カスタマイズ設定から有効化してください。");
-          }
-          timer.cancel();
-        }
-      });
-    });
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(dataSyncServiceProvider.notifier).fetchData();
     });
@@ -159,11 +137,37 @@ class HomePageState extends ConsumerState<HomePage> {
   @override
   void dispose() {
     bannerAd?.dispose();
-    switchBottomNavListener?.cancel();
     for (final controller in _scrollControllers.values) {
       controller.dispose();
     }
     super.dispose();
+  }
+
+  /// Handles a deep-link tab-switch request.
+  ///
+  /// Polls until the navigator is mounted and Isar has loaded before switching
+  /// the bottom navigation, preserving the readiness timing of the former
+  /// event-driven flow.
+  void _handleTabSwitchRequest(TabSwitchRequest request) {
+    Timer.periodic(const Duration(milliseconds: 25), (timer) {
+      if (_navigatorKey.currentState != null &&
+          ref.read(isarProvider).hasValue) {
+        final showTimetable = ref.readPref(PrefKey.showTimetableMenu);
+        final paths = [
+          "home",
+          "digestive",
+          if (showTimetable) "timetable",
+          "more",
+        ];
+        final index = paths.indexOf(request.path);
+        if (index != -1) {
+          _onBottomNavTap(index, request.path);
+        } else {
+          showSnackBar(context, "この機能は無効化されています。カスタマイズ設定から有効化してください。");
+        }
+        timer.cancel();
+      }
+    });
   }
 
   @override
@@ -175,6 +179,12 @@ class HomePageState extends ConsumerState<HomePage> {
     ref.listen(dataSyncServiceProvider, (_, next) {
       if (next is AsyncError) {
         _handleSyncError(next.error, next.stackTrace);
+      }
+    });
+
+    ref.listen(tabSwitchProvider, (_, next) {
+      if (next case AsyncData(:final value)) {
+        _handleTabSwitchRequest(value);
       }
     });
 
