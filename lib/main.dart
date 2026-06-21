@@ -20,7 +20,6 @@ import "package:package_info_plus/package_info_plus.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
 import "core/pref_key.dart";
-import "events.dart";
 import "features/auth/presentation/auth_action_notifier.dart";
 import "features/auth/presentation/auth_messages.dart";
 import "features/auth/presentation/email_link_auth_notifier.dart";
@@ -30,6 +29,7 @@ import "infrastructure/core_providers.dart";
 import "infrastructure/firebase_providers.dart";
 import "infrastructure/firestore_error_notifier.dart";
 import "infrastructure/pref_provider.dart";
+import "infrastructure/tab_switch_provider.dart";
 import "link_handler/link_handler.dart";
 import "pages/done_submissions_page.dart";
 import "pages/email_registration_page.dart";
@@ -147,7 +147,7 @@ class _ApplicationState extends ConsumerState<Application> {
     ref.listen(linkEventsProvider, (_, next) {
       if (next case AsyncData(:final value)) {
         handleLink(_navContext, ref, value.value, onSwitchTab: (tabName) {
-          eventBus.fire(SwitchBottomNav(tabName));
+          ref.read(tabSwitchProvider.notifier).fire(tabName);
         });
       }
     });
