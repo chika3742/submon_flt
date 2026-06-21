@@ -3,7 +3,8 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../components/timetable/timetable.dart";
 import "../core/pref_key.dart";
-import "../providers/timetable_providers.dart";
+import "../features/timetable/use_cases/timetable_edit_use_case.dart";
+import "../features/timetable/use_cases/undo_redo.dart";
 
 class TimetableEditPage extends ConsumerWidget {
   const TimetableEditPage({super.key});
