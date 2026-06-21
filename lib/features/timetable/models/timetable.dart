@@ -1,6 +1,6 @@
 import "package:isar_community/isar.dart";
 
-part "isar_timetable.g.dart";
+part "timetable.g.dart";
 
 @Collection()
 class Timetable {
@@ -37,4 +37,12 @@ class Timetable {
       "note": note,
     };
   }
+}
+
+/// A snapshot of a timetable keyed by cellId.
+typedef TimetableSnapshot = Map<int, Timetable>;
+
+/// Converts a [List<Timetable>] into a [Map] keyed by cellId.
+extension TimetableCellIdMap on List<Timetable> {
+  TimetableSnapshot toCellIdMap() => {for (final e in this) e.cellId: e};
 }

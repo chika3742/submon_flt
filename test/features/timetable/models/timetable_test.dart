@@ -1,5 +1,5 @@
 import "package:flutter_test/flutter_test.dart";
-import "package:submon/isar_db/isar_timetable.dart";
+import "package:submon/features/timetable/models/timetable.dart";
 
 /// Golden serialization tests for `Timetable` (a cell).
 /// Firestore key names must not change (server compatibility).

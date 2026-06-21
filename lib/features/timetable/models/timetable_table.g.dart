@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'isar_timetable_table.dart';
+part of 'timetable_table.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator

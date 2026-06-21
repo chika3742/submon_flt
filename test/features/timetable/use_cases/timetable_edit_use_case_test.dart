@@ -1,8 +1,9 @@
 import "package:flutter_test/flutter_test.dart";
 import "package:mocktail/mocktail.dart";
-import "package:submon/isar_db/isar_timetable.dart";
-import "package:submon/providers/timetable_providers.dart";
-import "package:submon/repositories/timetable_repository.dart";
+import "package:submon/features/timetable/models/timetable.dart";
+import "package:submon/features/timetable/repositories/timetable_repository.dart";
+import "package:submon/features/timetable/use_cases/timetable_edit_use_case.dart";
+import "package:submon/features/timetable/use_cases/undo_redo.dart";
 
 class MockTimetableRepository extends Mock implements TimetableRepository {}
 

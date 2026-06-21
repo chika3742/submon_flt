@@ -1,5 +1,5 @@
 import "package:flutter_test/flutter_test.dart";
-import "package:submon/isar_db/isar_timetable_table.dart";
+import "package:submon/features/timetable/models/timetable_table.dart";
 
 /// Golden serialization tests for `TimetableTable`.
 void main() {

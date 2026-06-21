@@ -6,9 +6,9 @@ import "package:riverpod_annotation/riverpod_annotation.dart";
 import "../features/auth/repositories/apple_sign_in_android.dart";
 import "../features/digestive/models/isar_digestive.dart";
 import "../features/submission/models/submission.dart";
-import "../isar_db/isar_timetable.dart";
-import "../isar_db/isar_timetable_class_time.dart";
-import "../isar_db/isar_timetable_table.dart";
+import "../features/timetable/models/timetable.dart";
+import "../features/timetable/models/timetable_class_time.dart";
+import "../features/timetable/models/timetable_table.dart";
 import "../src/pigeons.g.dart";
 import "firebase_providers.dart";
 

@@ -2,9 +2,9 @@ import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_crashlytics/firebase_crashlytics.dart";
 import "package:isar_community/isar.dart";
 
-import "../infrastructure/firestore_error_notifier.dart";
-import "../infrastructure/firestore_providers.dart";
-import "../isar_db/isar_timetable.dart";
+import "../../../infrastructure/firestore_error_notifier.dart";
+import "../../../infrastructure/firestore_providers.dart";
+import "../models/timetable.dart";
 
 /// Timetable (セル) のリポジトリ。
 ///
