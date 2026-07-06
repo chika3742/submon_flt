@@ -17,6 +17,10 @@ class Submission {
   Repeat repeat = Repeat.none;
   int color = Colors.white.toARGB32();
   String? googleTasksTaskId;
+
+  /// @deprecated Canvas LMS連携機能の名残。連携機能自体は廃止済みで、このフィールドを
+  /// 書き込むコードは存在しない。ただし既存端末のローカルDB・Firestore上のデータとの
+  /// 互換性があるため、schemaVersionを上げたマイグレーションを実施するまでは残す。
   int? canvasPlannableId;
   bool? repeatSubmissionCreated;
 

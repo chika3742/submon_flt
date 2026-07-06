@@ -27,6 +27,10 @@ Future<Isar> isar(Ref ref) async {
       TimetableSchema,
       TimetableClassTimeSchema,
       TimetableTableSchema,
+      // MemorizationCardGroup自体は暗記カード機能(未実装/削除済み)の名残で、これを使うコードは
+      // 存在しない。ただし既存端末のローカルDBに本スキーマでコレクションが作成されている可能性が
+      // あるため、Isar.open() のスキーマ一覧から不用意に外すとローカルDBとの互換性が壊れる懸念が
+      // ある。安全な移行手順(マイグレーション)を用意するまでは登録を残す。
       MemorizationCardGroupSchema,
     ],
     directory: dir.path,
