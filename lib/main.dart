@@ -365,13 +365,6 @@ class _ApplicationState extends ConsumerState<Application> {
           default:
             return null;
         }
-
-        // "/memorize_card/create": (context) => const MemorizeCardCreatePage(),
-        // "/memorize_card/view": (context) =>
-        // CardViewPage(arguments: settings.arguments),
-        // "/memorize_card/test": (context) => const CardTestPage(),
-        // "/memorize_card/graph": (context) => const CardGraphPage(),
-        // "/memorize_card/forum": (context) => const CardForumPage(),
       },
     );
   }
@@ -379,8 +372,7 @@ class _ApplicationState extends ConsumerState<Application> {
   PageRoute<T> generatePageRoute<T>(
       WidgetBuilder builder, RouteSettings settings) {
     if (Platform.isIOS || Platform.isMacOS) {
-      return CupertinoPageRoute<T>(
-          builder: builder, title: "asdf", settings: settings);
+      return CupertinoPageRoute<T>(builder: builder, settings: settings);
     } else {
       return MaterialPageRoute<T>(builder: builder, settings: settings);
     }

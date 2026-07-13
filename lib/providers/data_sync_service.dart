@@ -263,6 +263,37 @@ class DataSyncService extends _$DataSyncService with NotifierStateGuard {
     if (oldVersion == 6) {
       oldVersion++;
     }
+
+    if (oldVersion == 7) {
+      // Canvas LMS 連携の削除に伴い、submission から canvasPlannableId を除去
+      final submissions = await ref
+          .read(firestoreCollectionProvider("submission").notifier)
+          .get();
+      final operations = [
+        for (final item in submissions.docs)
+          if (item.data().containsKey("canvasPlannableId"))
+            BatchOperation.set(
+              doc: item.reference,
+              data: {"canvasPlannableId": FieldValue.delete()},
+              setOptions: SetOptions(merge: true),
+            ),
+      ];
+
+      // 暗記カード機能の削除に伴い、memorizeCard コレクションを削除
+      final memorizeCards = await ref
+          .read(firestoreCollectionProvider("memorizeCard").notifier)
+          .get();
+      operations.addAll([
+        for (final item in memorizeCards.docs)
+          BatchOperation.delete(doc: item.reference),
+      ]);
+
+      await BatchOperation.commit(
+        operations,
+        firestore: ref.read(firestoreProvider),
+      );
+      oldVersion++;
+    }
   }
 }
 

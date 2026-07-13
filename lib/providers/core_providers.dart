@@ -5,7 +5,6 @@ import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../features/auth/repositories/apple_sign_in_android.dart";
 import "../isar_db/isar_digestive.dart";
-import "../isar_db/isar_memorization_card_group.dart";
 import "../isar_db/isar_submission.dart";
 import "../isar_db/isar_timetable.dart";
 import "../isar_db/isar_timetable_class_time.dart";
@@ -15,7 +14,7 @@ import "firebase_providers.dart";
 
 part "core_providers.g.dart";
 
-const schemaVersion = 7;
+const schemaVersion = 8;
 
 @riverpod
 Future<Isar> isar(Ref ref) async {
@@ -27,7 +26,6 @@ Future<Isar> isar(Ref ref) async {
       TimetableSchema,
       TimetableClassTimeSchema,
       TimetableTableSchema,
-      MemorizationCardGroupSchema,
     ],
     directory: dir.path,
   );

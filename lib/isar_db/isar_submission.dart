@@ -17,7 +17,6 @@ class Submission {
   Repeat repeat = Repeat.none;
   int color = Colors.white.toARGB32();
   String? googleTasksTaskId;
-  int? canvasPlannableId;
   bool? repeatSubmissionCreated;
 
   Submission() {
@@ -44,7 +43,6 @@ class Submission {
       "repeat": repeat.index,
       "color": color,
       "googleTasksTaskId": googleTasksTaskId,
-      "canvasPlannableId": canvasPlannableId,
       "repeatSubmissionCreated": repeatSubmissionCreated,
     };
   }
@@ -63,7 +61,6 @@ class Submission {
         repeat = Repeat.values[map["repeat"]],
         color = map["color"],
         googleTasksTaskId = map["googleTasksTaskId"],
-        canvasPlannableId = map["canvasPlannableId"],
         repeatSubmissionCreated = map["repeatSubmissionCreated"];
 }
 

@@ -345,13 +345,6 @@ class HomePageState extends ConsumerState<HomePage> {
             }
           },
         );
-      // case BottomNavItemId.memorizeCard:
-      //   return FloatingActionButton(
-      //     child: const Icon(Icons.add),
-      //     onPressed: () {
-      //       eventBus.fire(MemorizeCardAddButtonPressed());
-      //     },
-      //   );
       default:
         return null;
     }
