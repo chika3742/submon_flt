@@ -278,6 +278,16 @@ class DataSyncService extends _$DataSyncService with NotifierStateGuard {
               setOptions: SetOptions(merge: true),
             ),
       ];
+
+      // 暗記カード機能の削除に伴い、memorizeCard コレクションを削除
+      final memorizeCards = await ref
+          .read(firestoreCollectionProvider("memorizeCard").notifier)
+          .get();
+      operations.addAll([
+        for (final item in memorizeCards.docs)
+          BatchOperation.delete(doc: item.reference),
+      ]);
+
       await BatchOperation.commit(
         operations,
         firestore: ref.read(firestoreProvider),
