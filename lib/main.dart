@@ -372,8 +372,7 @@ class _ApplicationState extends ConsumerState<Application> {
   PageRoute<T> generatePageRoute<T>(
       WidgetBuilder builder, RouteSettings settings) {
     if (Platform.isIOS || Platform.isMacOS) {
-      return CupertinoPageRoute<T>(
-          builder: builder, title: "asdf", settings: settings);
+      return CupertinoPageRoute<T>(builder: builder, settings: settings);
     } else {
       return MaterialPageRoute<T>(builder: builder, settings: settings);
     }

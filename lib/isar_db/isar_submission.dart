@@ -17,6 +17,11 @@ class Submission {
   Repeat repeat = Repeat.none;
   int color = Colors.white.toARGB32();
   String? googleTasksTaskId;
+
+  /// Canvas LMS 連携機能の残骸。機能自体は削除済みだが、Firestore 上の既存
+  /// ドキュメントとの互換性維持のためフィールドのみ残している。
+  /// 削除する場合は schemaVersion を上げてマイグレーションで対応すること。
+  @Deprecated("Canvas LMS 連携は削除済み。Firestore データ互換のためにのみ残存")
   int? canvasPlannableId;
   bool? repeatSubmissionCreated;
 
