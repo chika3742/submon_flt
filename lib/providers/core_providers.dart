@@ -14,7 +14,7 @@ import "firebase_providers.dart";
 
 part "core_providers.g.dart";
 
-const schemaVersion = 7;
+const schemaVersion = 8;
 
 @riverpod
 Future<Isar> isar(Ref ref) async {

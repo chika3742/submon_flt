@@ -42,7 +42,7 @@ final class DataSyncServiceProvider
   DataSyncService create() => DataSyncService();
 }
 
-String _$dataSyncServiceHash() => r'e9d0c5dba19a5cb6b38b57bf2531fa2cce8020af';
+String _$dataSyncServiceHash() => r'1e5f5671b4d6e164a730d323ebf43ab558a63904';
 
 /// Firestore → Isar のデータ同期を行うサービス。Stateは同期状態を表す。
 ///

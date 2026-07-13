@@ -17,37 +17,32 @@ const SubmissionSchema = CollectionSchema(
   name: r'Submission',
   id: -3538876163806880374,
   properties: {
-    r'canvasPlannableId': PropertySchema(
-      id: 0,
-      name: r'canvasPlannableId',
-      type: IsarType.long,
-    ),
-    r'color': PropertySchema(id: 1, name: r'color', type: IsarType.long),
-    r'details': PropertySchema(id: 2, name: r'details', type: IsarType.string),
-    r'done': PropertySchema(id: 3, name: r'done', type: IsarType.bool),
-    r'due': PropertySchema(id: 4, name: r'due', type: IsarType.dateTime),
+    r'color': PropertySchema(id: 0, name: r'color', type: IsarType.long),
+    r'details': PropertySchema(id: 1, name: r'details', type: IsarType.string),
+    r'done': PropertySchema(id: 2, name: r'done', type: IsarType.bool),
+    r'due': PropertySchema(id: 3, name: r'due', type: IsarType.dateTime),
     r'googleTasksTaskId': PropertySchema(
-      id: 5,
+      id: 4,
       name: r'googleTasksTaskId',
       type: IsarType.string,
     ),
     r'important': PropertySchema(
-      id: 6,
+      id: 5,
       name: r'important',
       type: IsarType.bool,
     ),
     r'repeat': PropertySchema(
-      id: 7,
+      id: 6,
       name: r'repeat',
       type: IsarType.byte,
       enumMap: _SubmissionrepeatEnumValueMap,
     ),
     r'repeatSubmissionCreated': PropertySchema(
-      id: 8,
+      id: 7,
       name: r'repeatSubmissionCreated',
       type: IsarType.bool,
     ),
-    r'title': PropertySchema(id: 9, name: r'title', type: IsarType.string),
+    r'title': PropertySchema(id: 8, name: r'title', type: IsarType.string),
   },
 
   estimateSize: _submissionEstimateSize,
@@ -88,16 +83,15 @@ void _submissionSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeLong(offsets[0], object.canvasPlannableId);
-  writer.writeLong(offsets[1], object.color);
-  writer.writeString(offsets[2], object.details);
-  writer.writeBool(offsets[3], object.done);
-  writer.writeDateTime(offsets[4], object.due);
-  writer.writeString(offsets[5], object.googleTasksTaskId);
-  writer.writeBool(offsets[6], object.important);
-  writer.writeByte(offsets[7], object.repeat.index);
-  writer.writeBool(offsets[8], object.repeatSubmissionCreated);
-  writer.writeString(offsets[9], object.title);
+  writer.writeLong(offsets[0], object.color);
+  writer.writeString(offsets[1], object.details);
+  writer.writeBool(offsets[2], object.done);
+  writer.writeDateTime(offsets[3], object.due);
+  writer.writeString(offsets[4], object.googleTasksTaskId);
+  writer.writeBool(offsets[5], object.important);
+  writer.writeByte(offsets[6], object.repeat.index);
+  writer.writeBool(offsets[7], object.repeatSubmissionCreated);
+  writer.writeString(offsets[8], object.title);
 }
 
 Submission _submissionDeserialize(
@@ -107,19 +101,18 @@ Submission _submissionDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Submission();
-  object.canvasPlannableId = reader.readLongOrNull(offsets[0]);
-  object.color = reader.readLong(offsets[1]);
-  object.details = reader.readString(offsets[2]);
-  object.done = reader.readBool(offsets[3]);
-  object.due = reader.readDateTime(offsets[4]);
-  object.googleTasksTaskId = reader.readStringOrNull(offsets[5]);
+  object.color = reader.readLong(offsets[0]);
+  object.details = reader.readString(offsets[1]);
+  object.done = reader.readBool(offsets[2]);
+  object.due = reader.readDateTime(offsets[3]);
+  object.googleTasksTaskId = reader.readStringOrNull(offsets[4]);
   object.id = id;
-  object.important = reader.readBool(offsets[6]);
+  object.important = reader.readBool(offsets[5]);
   object.repeat =
-      _SubmissionrepeatValueEnumMap[reader.readByteOrNull(offsets[7])] ??
+      _SubmissionrepeatValueEnumMap[reader.readByteOrNull(offsets[6])] ??
       Repeat.none;
-  object.repeatSubmissionCreated = reader.readBoolOrNull(offsets[8]);
-  object.title = reader.readString(offsets[9]);
+  object.repeatSubmissionCreated = reader.readBoolOrNull(offsets[7]);
+  object.title = reader.readString(offsets[8]);
   return object;
 }
 
@@ -131,26 +124,24 @@ P _submissionDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readLongOrNull(offset)) as P;
-    case 1:
       return (reader.readLong(offset)) as P;
-    case 2:
+    case 1:
       return (reader.readString(offset)) as P;
+    case 2:
+      return (reader.readBool(offset)) as P;
     case 3:
-      return (reader.readBool(offset)) as P;
-    case 4:
       return (reader.readDateTime(offset)) as P;
-    case 5:
+    case 4:
       return (reader.readStringOrNull(offset)) as P;
-    case 6:
+    case 5:
       return (reader.readBool(offset)) as P;
-    case 7:
+    case 6:
       return (_SubmissionrepeatValueEnumMap[reader.readByteOrNull(offset)] ??
               Repeat.none)
           as P;
-    case 8:
+    case 7:
       return (reader.readBoolOrNull(offset)) as P;
-    case 9:
+    case 8:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -258,79 +249,6 @@ extension SubmissionQueryWhere
 
 extension SubmissionQueryFilter
     on QueryBuilder<Submission, Submission, QFilterCondition> {
-  QueryBuilder<Submission, Submission, QAfterFilterCondition>
-  canvasPlannableIdIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNull(property: r'canvasPlannableId'),
-      );
-    });
-  }
-
-  QueryBuilder<Submission, Submission, QAfterFilterCondition>
-  canvasPlannableIdIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNotNull(property: r'canvasPlannableId'),
-      );
-    });
-  }
-
-  QueryBuilder<Submission, Submission, QAfterFilterCondition>
-  canvasPlannableIdEqualTo(int? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'canvasPlannableId', value: value),
-      );
-    });
-  }
-
-  QueryBuilder<Submission, Submission, QAfterFilterCondition>
-  canvasPlannableIdGreaterThan(int? value, {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'canvasPlannableId',
-          value: value,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Submission, Submission, QAfterFilterCondition>
-  canvasPlannableIdLessThan(int? value, {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'canvasPlannableId',
-          value: value,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Submission, Submission, QAfterFilterCondition>
-  canvasPlannableIdBetween(
-    int? lower,
-    int? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.between(
-          property: r'canvasPlannableId',
-          lower: lower,
-          includeLower: includeLower,
-          upper: upper,
-          includeUpper: includeUpper,
-        ),
-      );
-    });
-  }
-
   QueryBuilder<Submission, Submission, QAfterFilterCondition> colorEqualTo(
     int value,
   ) {
@@ -1096,19 +1014,6 @@ extension SubmissionQueryLinks
 
 extension SubmissionQuerySortBy
     on QueryBuilder<Submission, Submission, QSortBy> {
-  QueryBuilder<Submission, Submission, QAfterSortBy> sortByCanvasPlannableId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'canvasPlannableId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Submission, Submission, QAfterSortBy>
-  sortByCanvasPlannableIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'canvasPlannableId', Sort.desc);
-    });
-  }
-
   QueryBuilder<Submission, Submission, QAfterSortBy> sortByColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'color', Sort.asc);
@@ -1223,19 +1128,6 @@ extension SubmissionQuerySortBy
 
 extension SubmissionQuerySortThenBy
     on QueryBuilder<Submission, Submission, QSortThenBy> {
-  QueryBuilder<Submission, Submission, QAfterSortBy> thenByCanvasPlannableId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'canvasPlannableId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Submission, Submission, QAfterSortBy>
-  thenByCanvasPlannableIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'canvasPlannableId', Sort.desc);
-    });
-  }
-
   QueryBuilder<Submission, Submission, QAfterSortBy> thenByColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'color', Sort.asc);
@@ -1362,13 +1254,6 @@ extension SubmissionQuerySortThenBy
 
 extension SubmissionQueryWhereDistinct
     on QueryBuilder<Submission, Submission, QDistinct> {
-  QueryBuilder<Submission, Submission, QDistinct>
-  distinctByCanvasPlannableId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'canvasPlannableId');
-    });
-  }
-
   QueryBuilder<Submission, Submission, QDistinct> distinctByColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'color');
@@ -1439,12 +1324,6 @@ extension SubmissionQueryProperty
   QueryBuilder<Submission, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
-    });
-  }
-
-  QueryBuilder<Submission, int?, QQueryOperations> canvasPlannableIdProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'canvasPlannableId');
     });
   }
 
