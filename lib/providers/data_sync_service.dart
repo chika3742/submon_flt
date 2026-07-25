@@ -6,17 +6,19 @@ import "package:cloud_firestore/cloud_firestore.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../core/pref_key.dart";
-import "../isar_db/isar_digestive.dart";
-import "../isar_db/isar_submission.dart";
-import "../isar_db/isar_timetable.dart";
-import "../isar_db/isar_timetable_class_time.dart";
-import "../isar_db/isar_timetable_table.dart";
+import "../features/digestive/models/isar_digestive.dart";
+import "../features/submission/models/submission.dart";
+import "../features/submission/repositories/submission_mapper.dart";
+import "../features/timetable/models/timetable.dart";
+import "../features/timetable/models/timetable_class_time.dart";
+import "../features/timetable/models/timetable_table.dart";
+import "../infrastructure/core_providers.dart";
+import "../infrastructure/firebase_providers.dart";
+import "../infrastructure/firestore_providers.dart";
 import "../user_config.dart";
 import "../utils/batch_operation.dart";
 import "../utils/notifier_state_guard.dart";
-import "core_providers.dart";
-import "firebase_providers.dart";
-import "firestore_providers.dart";
+import "data_sync_migration.dart";
 
 part "data_sync_service.g.dart";
 
@@ -75,7 +77,7 @@ class DataSyncService extends _$DataSyncService with NotifierStateGuard {
       final timetableClassTimeSnapshot = results[3];
 
       final submissions = submissionSnapshot.docs
-          .map((e) => Submission.fromMap(e.data()))
+          .map((e) => submissionFromMap(e.data()))
           .toList();
       final digestives = digestiveSnapshot.docs
           .map((e) => Digestive.fromMap(e.data()))
@@ -191,16 +193,9 @@ class DataSyncService extends _$DataSyncService with NotifierStateGuard {
           .read(firestoreCollectionProvider("submission").notifier)
           .get();
       for (final item in submissions.docs) {
-        final data = item.data();
-        data["details"] = data["detail"];
-        data["due"] = data["date"];
-        data["done"] = data["done"] == 1;
-        data["important"] = data["important"] == 1;
-        data.remove("detail");
-        data.remove("date");
         operations.add(BatchOperation.set(
           doc: userDoc.collection("submission").doc(item.id),
-          data: data,
+          data: migrateSubmissionV4(item.data()),
         ));
       }
 
@@ -210,7 +205,7 @@ class DataSyncService extends _$DataSyncService with NotifierStateGuard {
       for (final item in digestives.docs) {
         operations.add(BatchOperation.set(
           doc: item.reference,
-          data: {"done": item.data()["done"] == 1},
+          data: {"done": migrateDigestiveV4Done(item.data())},
           setOptions: SetOptions(merge: true),
         ));
       }
@@ -219,14 +214,9 @@ class DataSyncService extends _$DataSyncService with NotifierStateGuard {
           .read(firestoreCollectionProvider("timetable").notifier)
           .getDoc("main");
       if (mainTimetable.exists) {
-        final data = mainTimetable.data()!;
-        if (data["cells"] != null) {
-          data["cells"] = (data["cells"] as Map<String, dynamic>)
-              .map((key, value) => MapEntry(key, value..["tableId"] = -1));
-        }
         operations.add(BatchOperation.set(
           doc: userDoc.collection("timetable").doc("-1"),
-          data: data,
+          data: migrateTimetableCellsV4(mainTimetable.data()!),
         ));
         operations.add(BatchOperation.delete(
           doc: userDoc.collection("timetable").doc("main"),
@@ -237,12 +227,9 @@ class DataSyncService extends _$DataSyncService with NotifierStateGuard {
           .read(firestoreCollectionProvider("timetableClassTime").notifier)
           .get();
       for (final item in timetableClassTimes.docs) {
-        final data = item.data();
-        data["period"] = data["id"];
-        data.remove("id");
         operations.add(BatchOperation.set(
           doc: userDoc.collection("timetableClassTime").doc(item.id),
-          data: data,
+          data: migrateTimetableClassTimeV4(item.data()),
         ));
       }
 

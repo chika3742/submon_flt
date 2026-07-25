@@ -2,8 +2,9 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../core/pref_key.dart";
-import "../isar_db/isar_timetable.dart";
-import "../providers/timetable_providers.dart";
+import "../features/timetable/models/timetable.dart";
+import "../features/timetable/repositories/timetable_providers.dart";
+import "../features/timetable/use_cases/timetable_edit_use_case.dart";
 import "../utils/ui.dart";
 import "../utils/utils.dart";
 import "timetable_edit_page.dart";

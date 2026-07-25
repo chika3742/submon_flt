@@ -1,8 +1,8 @@
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
-import "../../../isar_db/isar_submission.dart";
 import "../../../providers/functions_service.dart";
 import "../../../utils/notifier_state_guard.dart";
+import "../models/submission.dart";
 
 part "create_submission_share_link_state_notifier.g.dart";
 

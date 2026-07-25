@@ -1,7 +1,7 @@
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
-import "../../../providers/core_providers.dart";
-import "../../../providers/firestore_providers.dart";
+import "../../../infrastructure/core_providers.dart";
+import "../../../infrastructure/firestore_providers.dart";
 import "../../../src/pigeons.g.dart";
 import "../repositories/auth_repository.dart";
 

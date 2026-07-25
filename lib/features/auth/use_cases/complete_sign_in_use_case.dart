@@ -4,9 +4,9 @@ import "package:isar_community/isar.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
 import "../../../core/pref_key.dart";
-import "../../../providers/core_providers.dart";
-import "../../../providers/firestore_providers.dart";
-import "../../../providers/pref_provider.dart";
+import "../../../infrastructure/core_providers.dart";
+import "../../../infrastructure/firestore_providers.dart";
+import "../../../infrastructure/pref_provider.dart";
 import "../../../src/pigeons.g.dart";
 import "../../../user_config.dart";
 

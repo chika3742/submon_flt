@@ -4,11 +4,12 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:share_plus/share_plus.dart";
 
 import "../../core/extensions/async_value_ui.dart";
+import "../../features/submission/models/submission.dart";
 import "../../features/submission/presentation/create_submission_share_link_state_notifier.dart";
+import "../../features/submission/repositories/submission_providers.dart";
+import "../../features/submission/repositories/submission_queries.dart";
 import "../../features/submission/use_cases/delete_submission_use_case.dart";
-import "../../isar_db/isar_submission.dart";
-import "../../providers/firebase_providers.dart";
-import "../../providers/submission_providers.dart";
+import "../../infrastructure/firebase_providers.dart";
 import "../../sample_data.dart";
 import "../../utils/ui.dart";
 import "../../utils/utils.dart";

@@ -1,10 +1,10 @@
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
-import "../../../isar_db/isar_submission.dart";
-import "../../../providers/firebase_providers.dart";
-import "../../../providers/submission_providers.dart";
-import "../../../repositories/submission_repository.dart";
+import "../../../infrastructure/firebase_providers.dart";
 import "../../google_tasks/services/tasks_service.dart";
+import "../models/submission.dart";
+import "../repositories/submission_providers.dart";
+import "../repositories/submission_repository.dart";
 import "common.dart";
 
 part "save_submission_use_case.g.dart";

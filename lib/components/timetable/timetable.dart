@@ -3,9 +3,9 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../core/pref_key.dart";
-import "../../isar_db/isar_timetable.dart" as db;
+import "../../features/timetable/models/timetable.dart" as db;
+import "../../features/timetable/repositories/timetable_queries.dart";
 import "../../pages/timetable_cell_edit_page.dart";
-import "../../providers/timetable_providers.dart";
 import "../../utils/ui.dart";
 import "../../utils/utils.dart";
 import "open_modal_animation.dart";

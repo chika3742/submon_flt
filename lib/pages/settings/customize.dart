@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../core/pref_key.dart";
-import "../../providers/firestore_providers.dart";
+import "../../infrastructure/firestore_providers.dart";
 import "../../ui_components/settings_ui.dart";
 import "../../utils/ui.dart";
 

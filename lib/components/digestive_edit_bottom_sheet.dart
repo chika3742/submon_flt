@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
-import "../isar_db/isar_digestive.dart";
+import "../features/digestive/models/isar_digestive.dart";
 
 class DigestiveEditBottomSheet extends StatefulWidget {
   const DigestiveEditBottomSheet(

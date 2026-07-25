@@ -7,9 +7,9 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:google_mobile_ads/google_mobile_ads.dart";
 
-import "../isar_db/isar_digestive.dart";
-import "../providers/digestive_providers.dart";
-import "../providers/submission_providers.dart";
+import "../features/digestive/models/isar_digestive.dart";
+import "../features/digestive/repositories/digestive_providers.dart";
+import "../features/submission/repositories/submission_queries.dart";
 import "../src/pigeons.g.dart";
 import "../utils/ad_unit_ids.dart";
 import "../utils/ui.dart";

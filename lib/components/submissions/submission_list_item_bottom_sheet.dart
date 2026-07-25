@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 
-import "../../isar_db/isar_submission.dart";
+import "../../features/submission/models/submission.dart";
 import "../../utils/ui.dart";
 
 enum SubmissionContextMenuAction {

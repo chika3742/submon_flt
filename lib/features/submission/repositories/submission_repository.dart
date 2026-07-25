@@ -1,0 +1,42 @@
+import "package:isar_community/isar.dart";
+
+import "../../../infrastructure/synced_repository.dart";
+import "../../../src/pigeons.g.dart";
+import "../models/submission.dart";
+import "submission_mapper.dart";
+
+class SubmissionRepository extends SyncedRepository<Submission> {
+  SubmissionRepository(
+    super.isar,
+    super._firestore,
+    super._crashlytics,
+    super._errorNotifier,
+  );
+
+  @override
+  IsarCollection<Submission> get collection => isar.submissions;
+
+  @override
+  Map<String, dynamic> toFirestoreMap(Submission data) => submissionToMap(data);
+
+  @override
+  void onFirestoreUpdated() {
+    GeneralApi().updateWidgets();
+  }
+
+  /// 新規作成。
+  Future<int> create(Submission data) => put(data);
+
+  /// 既存データを更新。
+  Future<void> update(Submission data) => put(data);
+
+  Future<void> remove(int id) => delete(id);
+
+  Future<void> invertDone(Submission data) {
+    return put(data..done = !data.done);
+  }
+
+  Future<void> toggleImportant(Submission data) {
+    return put(data..important = !data.important);
+  }
+}
