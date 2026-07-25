@@ -1,0 +1,9 @@
+builders:
+  isar_mapper:
+    import: "package:isar_mapper_generator/isar_mapper_generator.dart"
+    builder_factories: ["isarMapperBuilder"]
+    build_extensions: {".dart": [".isar_mapper.g.part"]}
+    auto_apply: dependents
+    build_to: cache
+    applies_builders: ["source_gen:combining_builder"]
+

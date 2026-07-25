@@ -8,8 +8,6 @@
 import WidgetKit
 import SwiftUI
 import Intents
-import FirebaseAuth
-import FirebaseFirestore
 
 @available(iOS 15.0, *)
 struct Provider: TimelineProvider {
@@ -25,56 +23,7 @@ struct Provider: TimelineProvider {
     }
     
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        var entries: [SubmissionEntry] = []
         
-        do {
-            try Auth.auth().useUserAccessGroup("B66Z929S96.net.chikach.submon")
-        } catch let error as NSError {
-            print(error)
-        }
-        
-        Auth.auth().addStateDidChangeListener { auth, user in
-            if user != nil {
-                let db = Firestore.firestore()
-                
-                db.document("users/\(user!.uid)").getDocument { docSnapshot, error in
-                    if (error == nil && docSnapshot!.data()?["schemaVersion"] as! Int64 == schemaVer) {
-                        db.collection("users/\(user!.uid)/submission").whereField("done", isEqualTo: false).getDocuments { snapshot, error  in
-                            if error == nil {
-                                let docs = snapshot!.documents
-                                let submissions = docs.map { e in
-                                    SubmissionData.fromDic(dic: e.data())!
-                                }
-                                
-                                let currentDate = Date()
-                                for dateOffset in 0 ..< 3 {
-                                    let entryDate = Calendar.current.date(byAdding: .day, value: dateOffset, to: currentDate)!
-                                    let entry = SubmissionEntry.entry(date: entryDate, submissions: submissions)
-                                    entries.append(entry)
-                                }
-                                
-                                let timeline = Timeline(entries: entries, policy: .atEnd)
-                                
-                                completion(timeline)
-                            } else {
-                                print("An error occured while generating widget timeline.")
-                                print(error!)
-                            }
-                        }
-                    } else {
-                        print("An error occured while generating widget timeline.")
-                        print(error ?? "")
-                    }
-                    
-                }
-            } else {
-                entries.append(SubmissionEntry.notSignedIn())
-                
-                let timeline = Timeline(entries: entries, policy: .atEnd)
-                
-                completion(timeline)
-            }
-        }
 
         // Generate a timeline consisting of five entries an hour apart, starting from the current date.
         

@@ -1,0 +1,10 @@
+/caches
+/shelf
+deploymentTargetSelector.xml
+deploymentTargetDropDown.xml
+deviceManager.xml
+gradle.xml
+workspace.xml
+copilot.data.migration.*.xml
+compiler.xml
+migrations.xml

@@ -1,0 +1,9 @@
+builders:
+  insertable:
+    import: "package:insertable_generator/insertable_generator.dart"
+    builder_factories: ["insertableBuilder"]
+    build_extensions: {".dart": [".insertable.g.part"]}
+    auto_apply: dependents
+    build_to: cache
+    applies_builders: ["source_gen:combining_builder"]
+

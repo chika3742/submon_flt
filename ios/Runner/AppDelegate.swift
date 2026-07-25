@@ -2,10 +2,6 @@ import UIKit
 import Flutter
 import AuthenticationServices
 import SafariServices
-import Firebase
-import FirebaseMessaging
-import FirebaseAuth
-import FirebaseAppCheck
 import WidgetKit
 
 @main
@@ -16,32 +12,14 @@ import WidgetKit
     }
     
     var uriEventApi: UriEventApi?
-    var fcmTokenRefreshEventApi: FcmTokenRefreshEventApi?
     
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        #if RELEASE
-        AppCheck.setAppCheckProviderFactory(MyAppCheckProviderFactory())
-        #else
-        AppCheck.setAppCheckProviderFactory(AppCheckDebugProviderFactory())
-        #endif
-        
-        FirebaseApp.configure()
-        
-        do {
-            try Auth.auth().useUserAccessGroup("B66Z929S96.net.chikach.submon")
-        } catch let error as NSError {
-            print(error)
-        }
-        
         initNotificationCategories()
         
-        // Firebase Cloud Messaging
-        Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
-        application.registerForRemoteNotifications()
 
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
@@ -52,13 +30,6 @@ import WidgetKit
         // Event Channels
         uriEventApi = UriEventApi(binaryMessenger: binaryMessenger)
         uriEventApi!.initHandler()
-        fcmTokenRefreshEventApi = FcmTokenRefreshEventApi(binaryMessenger: binaryMessenger)
-        fcmTokenRefreshEventApi!.initHandler()
-        
-        // Pigeon APIs
-        MessagingApiSetup.setUp(binaryMessenger: binaryMessenger, api: MessagingApiImplementation(appDelegate: self))
-        BrowserApiSetup.setUp(binaryMessenger: binaryMessenger, api: BrowserApiImplementation())
-        GeneralApiSetup.setUp(binaryMessenger: binaryMessenger, api: GeneralApiImplementation())
         
         // Register plugins
         GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
@@ -125,16 +96,6 @@ import WidgetKit
                 notificationCenter.delegate = self
             }
         })
-    }
-}
-
-extension AppDelegate : MessagingDelegate {
-    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: ["token": fcmToken ?? ""])
-        
-        if (fcmToken != nil) {
-            fcmTokenRefreshEventApi?.onFcmTokenRefresh(token: fcmToken!)
-        }
     }
 }
 
