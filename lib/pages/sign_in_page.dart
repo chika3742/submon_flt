@@ -6,6 +6,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:submon/auth/sign_in_handler.dart';
+import 'package:submon/auth/sign_in_methods.dart';
 import 'package:submon/browser.dart';
 import 'package:submon/main.dart';
 import 'package:submon/pages/email_sign_in_page.dart';
@@ -225,7 +226,7 @@ class _SignInPageState extends State<SignInPage> {
       if (providerId == EmailAuthProvider.PROVIDER_ID) {
         showLoadingModal(context);
 
-        var methods = await auth.fetchSignInMethodsForEmail(currentUser.email!);
+        var methods = await fetchSignInMethodsForEmail(currentUser.email!);
 
         Navigator.pop(globalContext!); // Close Loading modal
 

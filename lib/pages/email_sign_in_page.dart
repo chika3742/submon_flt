@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:submon/auth/sign_in_methods.dart';
 import 'package:submon/db/shared_prefs.dart';
 import 'package:submon/main.dart';
 import 'package:submon/models/sign_in_result.dart';
@@ -210,7 +211,7 @@ class EmailSignInPageState extends State<EmailSignInPage>
       if (pwOpacity == 0) {
         // サインイン方法別の処理
         var result =
-            await auth.fetchSignInMethodsForEmail(emailController.text);
+            await fetchSignInMethodsForEmail(emailController.text);
 
         setState(() {
           enablePWForm = true;

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:submon/auth/sign_in_handler.dart';
+import 'package:submon/auth/sign_in_methods.dart';
 import 'package:submon/components/dropdown_time_picker_bottom_sheet.dart';
 import 'package:submon/db/firestore_provider.dart';
 import 'package:submon/main.dart';
@@ -249,7 +250,7 @@ class _FunctionsSettingsPageState extends State<FunctionsSettingsPage> {
     showLoadingModal(context);
     try {
       var provider =
-          await auth.fetchSignInMethodsForEmail(auth.currentUser!.email!);
+          await fetchSignInMethodsForEmail(auth.currentUser!.email!);
       if (provider.isEmpty) throw FirebaseAuthException(code: "user-not-found");
       Navigator.pop(globalContext!);
       if (provider.first == EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) {

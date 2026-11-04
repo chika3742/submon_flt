@@ -42,7 +42,6 @@ import 'package:submon/pages/timetable_edit_page.dart';
 import 'package:submon/pages/timetable_table_view_page.dart';
 import 'package:submon/pages/welcome_page.dart';
 
-import 'link_handler/link_handler.dart';
 
 var scopes = [tasks.TasksApi.tasksScope];
 var googleSignIn = GoogleSignIn(scopes: scopes);
@@ -353,7 +352,6 @@ class _ApplicationState extends State<Application> {
         });
         WidgetsBinding.instance.addPostFrameCallback((_) {
           UriEventApi().listen();
-          LinkHandler.initDynamicLinksListener();
         });
       });
     } catch (e) {
