@@ -93,7 +93,12 @@ class SubmissionListItemBottomSheet extends StatelessWidget {
             "due": submission.due.toUtc().toIso8601String(),
             if (submission.details.isNotEmpty) "details": submission.details,
           });
-          await Share.share(link, subject: submission.title);
+          // share_plus 7 rejects an empty origin whenever a popover exists (iPad, and iPhone on iOS 26+)
+          final screen = MediaQuery.sizeOf(globalContext!);
+          await Share.share(link,
+              subject: submission.title,
+              sharePositionOrigin: Rect.fromCenter(
+                  center: screen.center(Offset.zero), width: 1, height: 1));
           showSnackBar(globalContext!, "共有リンクの有効期間は7日間です。");
         } catch (error, stackTrace) {
           showSnackBar(globalContext!, "エラーが発生しました。");
